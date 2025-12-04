@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --shell-bg: #f5f5f5;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --widget-bg: #ffffff;
+  --widget-border: #e5e5e5;
+}
+
+[data-theme='dark'] {
+  --shell-bg: #0a0a0f;
+  --text-primary: #f0f0f5;
+  --text-secondary: #999999;
+  --widget-bg: #141419;
+  --widget-border: #2a2a2e;
+}
+
+body {
+  background-color: var(--shell-bg);
+  color: var(--text-primary);
+  font-weight: 100; /* Futura PT hairline */
+  font-feature-settings: 'ss01' on, 'ss02' on;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Widget frame base styles */
+.widget-frame {
+  background-color: var(--widget-bg);
+  border: 1px solid var(--widget-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.widget-frame:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Live indicator pulse */
+@keyframes pulse-live {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.live-indicator {
+  animation: pulse-live 2s ease-in-out infinite;
+}
+
+/* Smooth number transitions for counters */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
