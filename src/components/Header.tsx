@@ -32,8 +32,8 @@ export default function Header() {
         <div className="col-span-1">
           <Link href="/" className="hover:text-[#e6007e] transition-colors block">
             <Logo className="h-10 w-auto" />
-            <span className="text-base text-black tracking-wide mt-2 block">a digital laboratory</span>
-          </Link>
+            <span className="text-base text-black tracking-wide mt-2 block font-normal">a digital laboratory</span>
+            </Link>
         </div>
 
         {/* Col 2: Empty */}
@@ -61,15 +61,15 @@ export default function Header() {
                       <Link
                         key={subItem.label}
                         href={subItem.href}
-                        className="block text-sm text-black hover:text-[#e6007e] transition-colors"
-                      >
+                        className="block text-sm text-black hover:text-[#e6007e] transition-colors font-normal"
+                        >
                         {subItem.label}
                       </Link>
                     ) : (
                       <span
                         key={subItem.label}
-                        className="block text-sm text-[var(--text-muted)]"
-                      >
+                        className="block text-sm text-[var(--text-muted)] font-normal"
+                        >
                         {subItem.label}
                       </span>
                     )
