@@ -29,7 +29,7 @@ const config: Config = {
         'widget-dark': '#141419',
       },
       fontFamily: {
-        sans: ['futura-100', 'futura-100-latin-extended', 'system-ui', 'sans-serif'],
+        sans: ['"neue-haas-unica"', 'system-ui', 'sans-serif'],
         mono: ['var(--font-jetbrains-mono)', 'monospace'],
       },
       fontWeight: {

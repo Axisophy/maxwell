@@ -19,8 +19,8 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="w-full px-6 py-8 border-t border-[var(--widget-border)]">
-      <div className="max-w-7xl mx-auto">
+    <footer className="w-full px-12 lg:px-16 py-8 border-t border-[var(--widget-border)]">
+      <div>
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
           {/* Brand */}
           <div className="flex flex-col gap-2">

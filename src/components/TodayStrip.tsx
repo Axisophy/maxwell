@@ -17,15 +17,15 @@ export default function TodayStrip({ data }: TodayStripProps) {
   }
 
   return (
-    <div className="w-full px-6 py-2 bg-[var(--widget-bg)] border-b border-[var(--widget-border)]">
-      <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-xs text-[var(--text-secondary)]">
-        <span>Solar activity: <strong className="text-[var(--text-primary)]">{stats.solarActivity}</strong></span>
+    <div className="w-full px-12 lg:px-16 py-2 bg-[var(--widget-bg)] border-b border-[var(--widget-border)]">
+      <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+        <span>Solar activity: <span className="text-[var(--text-primary)] font-normal">{stats.solarActivity}</span></span>
         <span className="opacity-30">·</span>
-        <span>UK grid: <strong className="text-[var(--text-primary)]">{stats.gridRenewables}% renewables</strong></span>
+        <span>UK grid: <span className="text-[var(--text-primary)] font-normal">{stats.gridRenewables}% renewables</span></span>
         <span className="opacity-30">·</span>
-        <span>Kp index: <strong className="text-[var(--text-primary)]">{stats.kpIndex}</strong></span>
+        <span>Kp index: <span className="text-[var(--text-primary)] font-normal">{stats.kpIndex}</span></span>
         <span className="opacity-30">·</span>
-        <span><strong className="text-[var(--text-primary)]">{stats.earthquakes}</strong> earthquakes &gt;5.0 today</span>
+        <span><span className="text-[var(--text-primary)] font-normal">{stats.earthquakes}</span> earthquakes &gt;5.0 today</span>
       </div>
     </div>
   )
