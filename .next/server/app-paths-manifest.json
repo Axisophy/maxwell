@@ -1,8 +1,6 @@
 {
   "/page": "app/page.js",
-  "/design-test/page": "app/design-test/page.js",
-  "/knowledge/page": "app/knowledge/page.js",
-  "/api/pulse/route": "app/api/pulse/route.js",
   "/api/space-weather/route": "app/api/space-weather/route.js",
-  "/api/uk-energy/route": "app/api/uk-energy/route.js"
+  "/api/uk-energy/route": "app/api/uk-energy/route.js",
+  "/api/pulse/route": "app/api/pulse/route.js"
 }
