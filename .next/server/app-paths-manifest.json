@@ -1,6 +1,4 @@
 {
-  "/page": "app/page.js",
-  "/api/space-weather/route": "app/api/space-weather/route.js",
-  "/api/uk-energy/route": "app/api/uk-energy/route.js",
-  "/api/pulse/route": "app/api/pulse/route.js"
+  "/vault/page": "app/vault/page.js",
+  "/page": "app/page.js"
 }
