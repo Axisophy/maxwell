@@ -9,7 +9,7 @@ const navItems = [
   { href: '/', label: 'Observe', icon: Eye, matchPaths: ['/', '/observe'] },
   { href: '/tools', label: 'Tools', icon: Wrench, matchPaths: ['/tools'] },
   { href: '/data', label: 'Data', icon: Database, matchPaths: ['/data'] },
-  { href: '/knowledge', label: 'Knowledge', icon: BookOpen, matchPaths: ['/knowledge'] },
+  { href: '/vault', label: 'vault', icon: BookOpen, matchPaths: ['/vault'] },
   { href: '/play', label: 'Play', icon: Sparkles, matchPaths: ['/play'] },
 ]
 
