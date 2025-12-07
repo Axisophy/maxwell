@@ -1,4 +1,4 @@
-// File: /Users/simontyler/maxwell/src/app/api/pulse/route.ts
+// File: /Users/simontyler/Maxwell/maxwell/src/app/api/pulse/route.ts
 import * as entry from '../../../../../src/app/api/pulse/route.js'
 import type { NextRequest } from 'next/server.js'
 

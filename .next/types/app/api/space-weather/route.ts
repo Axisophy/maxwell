@@ -1,4 +1,4 @@
-// File: /Users/simontyler/maxwell/src/app/api/space-weather/route.ts
+// File: /Users/simontyler/Maxwell/maxwell/src/app/api/space-weather/route.ts
 import * as entry from '../../../../../src/app/api/space-weather/route.js'
 import type { NextRequest } from 'next/server.js'
 

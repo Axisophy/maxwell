@@ -1,4 +1,4 @@
-// File: /Users/simontyler/maxwell/src/app/api/uk-energy/route.ts
+// File: /Users/simontyler/Maxwell/maxwell/src/app/api/uk-energy/route.ts
 import * as entry from '../../../../../src/app/api/uk-energy/route.js'
 import type { NextRequest } from 'next/server.js'
 

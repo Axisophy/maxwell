@@ -58,3 +58,52 @@ body {
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+/* 
+  MXWLL Typography Utilities
+  Add to globals.css
+  
+  The rule: ≤20px uses NHG Text, >20px uses NHG Display
+  
+  Usage pattern:
+  - text-xl and below: use font-sans (defaults to text cut)
+  - text-2xl and above: add font-sans-display explicitly
+  
+  Examples:
+  <p className="text-base font-sans">Body text</p>
+  <h1 className="text-4xl font-sans-display">Heading</h1>
+  <nav className="text-2xl font-sans-display font-light">Navigation</nav>
+*/
+
+/* Base font is NHG Text (set in tailwind.config) */
+
+/* 
+  For convenience, you can add this layer to auto-switch,
+  but explicit is clearer and more maintainable:
+*/
+
+@layer utilities {
+  /* Apply display cut to large text automatically */
+  .text-2xl,
+  .text-3xl,
+  .text-4xl,
+  .text-5xl,
+  .text-6xl {
+    font-family: "neue-haas-grotesk-display", system-ui, sans-serif;
+  }
+  
+  /* Override back to text cut if needed */
+  .font-sans-text {
+    font-family: "neue-haas-grotesk-text", system-ui, sans-serif !important;
+  }
+}
+
+/* 
+  Recommended: Don't use the auto-switch above.
+  Instead, be explicit in your components:
+  
+  Navigation:  font-sans-display text-2xl font-light
+  Body:        font-sans text-base
+  Widget data: font-mono text-2xl
+  Reading:     font-serif text-lg
+*/

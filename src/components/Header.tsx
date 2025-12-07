@@ -16,7 +16,7 @@ const navItems = [
   { href: '/observe', label: 'observe' },
   { href: '/tools', label: 'tools' },
   { href: '/data', label: 'data' },
-  { href: '/knowledge', label: 'knowledge' },
+  { href: '/vault', label: 'vault' },
   { href: '/play', label: 'play' },
 ]
 
@@ -40,10 +40,10 @@ const dataSubmenu = [
   { href: '#', label: 'Visualizations', active: false },
 ]
 
-const knowledgeSubmenu = [
-  { href: '/knowledge?era=ancient', label: 'Ancient', active: true },
-  { href: '/knowledge?era=renaissance', label: 'Renaissance', active: true },
-  { href: '/knowledge?era=modern', label: 'Modern', active: true },
+const vaultSubmenu = [
+  { href: '/vault?era=ancient', label: 'Ancient', active: true },
+  { href: '/vault?era=renaissance', label: 'Renaissance', active: true },
+  { href: '/vault?era=modern', label: 'Modern', active: true },
 ]
 
 // Map nav items to their submenus
@@ -51,27 +51,27 @@ const submenus: Record<string, typeof observeSubmenu> = {
   '/observe': observeSubmenu,
   '/tools': toolsSubmenu,
   '/data': dataSubmenu,
-  '/knowledge': knowledgeSubmenu,
+  '/vault': vaultSubmenu,
 }
 
 export default function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="w-full px-8 lg:px-12 py-8 border-b border-[var(--widget-border)]">
+    <header className="hidden md:block w-full px-8 lg:px-12 py-8 border-b border-border-light bg-shell-light">
       <div className="grid grid-cols-12 items-start">
         {/* Logo + tagline: cols 1-2 */}
         <div className="col-span-2">
-          <Link href="/" className="hover:text-[#e6007e] transition-colors block">
+          <Link href="/" className="block group">
             <Logo className="h-7 w-auto" />
-            <span className="text-sm text-black tracking-wide mt-1.5 block font-normal">
+            <span className="text-sm text-text-primary tracking-wide mt-1.5 block font-sans">
               a digital laboratory
             </span>
           </Link>
         </div>
 
         {/* Navigation: cols 3-10 */}
-        <div className="col-span-8 flex items-start">
+        <div className="col-span-8 flex items-start gap-4">
           {navItems.map((item) => {
             const isObserve = item.href === '/observe'
             const isActive =
@@ -85,7 +85,7 @@ export default function Header() {
               <div key={item.href} className="flex-1">
                 <Link
                   href={isObserve ? '/' : item.href}
-                  className="text-2xl font-light tracking-wide text-black hover:text-[#e6007e] transition-colors block"
+                  className="text-nav font-sans-display font-light tracking-wide text-text-primary cursor-pointer block"
                 >
                   {item.label}
                 </Link>
@@ -98,14 +98,14 @@ export default function Header() {
                         <Link
                           key={subItem.label}
                           href={subItem.href}
-                          className="block text-sm text-black hover:text-[#e6007e] transition-colors font-normal"
+                          className="block text-sm text-text-primary cursor-pointer font-sans"
                         >
                           {subItem.label}
                         </Link>
                       ) : (
                         <span
                           key={subItem.label}
-                          className="block text-sm text-[var(--text-muted)] font-normal"
+                          className="block text-sm text-text-muted font-sans"
                         >
                           {subItem.label}
                         </span>
@@ -125,7 +125,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="block text-sm text-[var(--text-muted)] hover:text-[#e6007e] transition-colors font-normal"
+                className="block text-sm text-text-muted cursor-pointer font-sans"
               >
                 {item.label}
               </Link>
@@ -133,11 +133,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-
-      {/* Mobile hamburger stub */}
-      <button className="hidden" aria-label="Menu">
-        {/* TODO: implement mobile nav */}
-      </button>
     </header>
   )
 }

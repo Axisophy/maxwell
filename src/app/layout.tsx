@@ -1,7 +1,9 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header'
+import MobileHeader from '@/components/MobileHeader'
+import MobileNav from '@/components/MobileNav'
 import Footer from '@/components/Footer'
 
 const jetbrainsMono = JetBrains_Mono({
@@ -11,8 +13,14 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'MAXWELL — A Digital Laboratory for Looking at Science',
+  title: 'MXWLL — A Digital Laboratory',
   description: 'Live data feeds, interactive instruments, scientific tools, and reference charts. Science, beautifully observed.',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover', // For iPhone notch/safe areas
 }
 
 export default function RootLayout({
@@ -23,15 +31,25 @@ export default function RootLayout({
   return (
     <html lang="en" className={jetbrainsMono.variable}>
       <head>
-        {/* Adobe Fonts - Futura 100 */}
-        {/* Replace XXXXXXX with your Adobe Fonts Web Project ID */}
+        {/* Adobe Fonts - Neue Haas Grotesk, Sabon, Input Mono, Trade Gothic, Sausage */}
         <link rel="stylesheet" href="https://use.typekit.net/toy5zlj.css" />
       </head>
-      <body className="min-h-screen flex flex-col font-sans">
+      <body className="min-h-screen flex flex-col font-sans bg-shell-light text-text-primary">
+        {/* Desktop header */}
         <Header />
-        <main className="flex-1">
+        
+        {/* Mobile header (fixed top) */}
+        <MobileHeader />
+        
+        {/* Main content with padding for fixed mobile nav */}
+        <main className="flex-1 pt-14 pb-16 md:pt-0 md:pb-0">
           {children}
         </main>
+        
+        {/* Mobile bottom nav (fixed bottom) */}
+        <MobileNav />
+        
+        {/* Desktop footer */}
         <Footer />
       </body>
     </html>
