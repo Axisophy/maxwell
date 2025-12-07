@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import BookWidget, { type Series } from '@/components/BookWidget'
 
@@ -100,7 +100,7 @@ const eraLabels: Record<Era, string> = {
   modern: 'Modern',
 }
 
-export default function KnowledgePage() {
+function VaultContent() {
   const searchParams = useSearchParams()
   const eraParam = searchParams.get('era') as Era | null
   
@@ -137,25 +137,25 @@ export default function KnowledgePage() {
   }
 
   return (
-    <main className="w-full px-8 lg:px-12 py-8">
+    <>
       {/* Page header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-light text-black">
-            {currentEra === 'all' ? 'Knowledge' : eraLabels[currentEra]}
+          <h1 className="text-2xl font-sans-display font-light text-text-primary">
+            {currentEra === 'all' ? 'Vault' : eraLabels[currentEra]}
           </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
+          <p className="text-sm text-text-muted mt-1">
             {sortedBooks.length} {sortedBooks.length === 1 ? 'work' : 'works'}
           </p>
         </div>
 
         {/* Sort control */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[var(--text-muted)]">Sort:</span>
+          <span className="text-sm text-text-muted">Sort:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="text-sm text-black bg-transparent border border-[var(--widget-border)] rounded px-2 py-1 focus:outline-none focus:border-[#e6007e]"
+            className="text-sm text-text-primary bg-transparent border border-border-light rounded px-2 py-1 focus:outline-none"
           >
             <option value="chronological">Chronological</option>
             <option value="alphabetical-title">Title A–Z</option>
@@ -178,6 +178,16 @@ export default function KnowledgePage() {
           />
         ))}
       </div>
+    </>
+  )
+}
+
+export default function VaultPage() {
+  return (
+    <main className="w-full px-8 lg:px-12 py-8">
+      <Suspense fallback={<div className="text-text-muted">Loading...</div>}>
+        <VaultContent />
+      </Suspense>
     </main>
   )
 }
