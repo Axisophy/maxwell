@@ -34,17 +34,16 @@ export default function WidgetFrame({
   const header = (
     <div className="px-4 py-3 flex items-center justify-between border-b border-[var(--widget-border)] shrink-0">
       <div className="flex items-center gap-3">
-        <h3 className={`font-light ${isExpanded ? 'text-xl' : 'text-sm'}`}>{title}</h3>
+        <h3 className={`font-normal text-black ${isExpanded ? 'text-xl' : 'text-sm'}`}>{title}</h3>
         {isLive && (
-          <span className="live-indicator flex items-center gap-1.5 text-xs text-accent-green">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-green" />
-            LIVE
+          <span className="flex items-center">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#e6007e] animate-pulse" />
           </span>
         )}
       </div>
       <div className="flex items-center gap-2">
         {timestamp && (
-          <span className="text-xs text-[var(--text-muted)]">{timestamp}</span>
+          <span className="text-xs font-normal text-black/60">{timestamp}</span>
         )}
         {/* Info button */}
         {info && (
@@ -52,8 +51,8 @@ export default function WidgetFrame({
             onClick={() => setShowInfo(!showInfo)}
             className={`p-1 rounded transition-colors ${
               showInfo 
-                ? 'bg-[var(--text-primary)] text-[var(--widget-bg)]' 
-                : 'hover:bg-[var(--shell-bg)] text-[var(--text-muted)]'
+                ? 'bg-black text-white' 
+                : 'text-black/50 hover:text-black hover:bg-[var(--shell-bg)]'
             }`}
             aria-label={showInfo ? 'Hide info' : 'Show info'}
           >
@@ -67,7 +66,7 @@ export default function WidgetFrame({
         {/* Expand/Collapse button */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="p-1 hover:bg-[var(--shell-bg)] rounded transition-colors"
+          className="p-1 rounded transition-colors text-black/50 hover:text-black hover:bg-[var(--shell-bg)]"
           aria-label={isExpanded ? 'Collapse' : 'Expand'}
         >
           {isExpanded ? (
@@ -93,21 +92,23 @@ export default function WidgetFrame({
   const infoPanel = info && showInfo && (
     <div className="px-4 py-3 bg-[var(--shell-bg)] border-b border-[var(--widget-border)] text-sm">
       {/* Description */}
-      <p className="text-[var(--text-primary)] mb-3">{info.description}</p>
+      <p className="text-black font-medium mb-3">{info.description}</p>
       
       {/* Sources */}
       {info.sources && info.sources.length > 0 && (
         <div className="mb-3">
-          <h4 className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Source{info.sources.length > 1 ? 's' : ''}</h4>
+          <h4 className="text-xs font-medium text-black uppercase tracking-wide mb-1">
+            Source{info.sources.length > 1 ? 's' : ''}
+          </h4>
           <ul className="space-y-0.5">
             {info.sources.map((source, i) => (
-              <li key={i} className="text-[var(--text-muted)]">
+              <li key={i} className="text-black/70 font-medium">
                 {source.url ? (
                   <a 
                     href={source.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="hover:text-[var(--text-primary)] underline underline-offset-2"
+                    className="hover:text-[#e6007e] transition-colors"
                   >
                     {source.name}
                   </a>
@@ -123,12 +124,12 @@ export default function WidgetFrame({
       {/* Controls */}
       {info.controls && info.controls.length > 0 && (
         <div className="mb-3">
-          <h4 className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Controls</h4>
+          <h4 className="text-xs font-medium text-black uppercase tracking-wide mb-1">Controls</h4>
           <ul className="space-y-1">
             {info.controls.map((control, i) => (
-              <li key={i} className="text-[var(--text-muted)]">
-                <span className="text-[var(--text-primary)]">{control.name}</span>
-                <span className="mx-1">—</span>
+              <li key={i} className="text-black/70 font-medium">
+                <span className="text-black">{control.name}</span>
+                <span className="mx-1 font-extralight">—</span>
                 {control.description}
               </li>
             ))}
@@ -138,7 +139,7 @@ export default function WidgetFrame({
       
       {/* Notes */}
       {info.notes && (
-        <p className="text-xs text-[var(--text-muted)] italic">{info.notes}</p>
+        <p className="text-xs text-black/60 italic">{info.notes}</p>
       )}
     </div>
   )

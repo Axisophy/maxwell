@@ -1,16 +1,19 @@
-import TodayStrip from '@/components/TodayStrip'
+import ThePulse from '@/components/ThePulse'
 import WidgetFrame from '@/components/WidgetFrame'
 import SolarLive from '@/components/widgets/SolarLive'
-import DeepSeaLive from '@/components/widgets/DeepSeaLive'
+// import DeepSeaLive from '@/components/widgets/DeepSeaLive'  // ARCHIVED
+import SafariLive from '@/components/widgets/SafariLive'
 import HimawariLive from '@/components/widgets/HimawariLive'
 import StrangeAttractor from '@/components/widgets/StrangeAttractor'
+import SpaceWeather from '@/components/widgets/SpaceWeather'
+import UKEnergyNow from '@/components/widgets/UKEnergyNow'
 
 export default function Home() {
   return (
     <>
-      <TodayStrip />
+      <ThePulse />
       
-      <div className="px-12 lg:px-16 py-8">
+      <div className="px-8 lg:px-12 py-8">
         {/* Widget Grid - max 3 columns, responsive */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
           
@@ -59,14 +62,28 @@ export default function Home() {
             <HimawariLive />
           </WidgetFrame>
 
-          {/* Space Weather - Placeholder */}
-          <WidgetFrame title="Space Weather" isLive timestamp="Updated 1m ago" aspectRatio="square">
-            <div className="w-full h-full min-h-[300px] flex items-center justify-center bg-gradient-to-br from-blue-900/20 to-purple-900/20">
-              <span className="text-sm text-[var(--text-muted)]">NOAA SWPC Data</span>
-            </div>
+          {/* Space Weather */}
+          <WidgetFrame 
+            title="Space Weather" 
+            isLive 
+            aspectRatio="square"
+            info={{
+              description: "Real-time space weather conditions from NOAA's Space Weather Prediction Center. Monitors solar activity and its effects on Earth's magnetosphere.",
+              sources: [
+                { name: "NOAA Space Weather Prediction Center", url: "https://www.swpc.noaa.gov/" }
+              ],
+              controls: [
+                { name: "Kp Index", description: "Planetary geomagnetic activity index (0-9). Higher values indicate stronger geomagnetic storms and better aurora visibility." },
+                { name: "Solar Wind", description: "Speed and density of the solar wind plasma flowing past Earth." },
+                { name: "X-ray Flux", description: "Solar X-ray emission levels indicating flare activity." }
+              ],
+              notes: "Data updates every few minutes. Kp ≥5 indicates geomagnetic storm conditions with potential aurora visibility at lower latitudes."
+            }}
+          >
+            <SpaceWeather />
           </WidgetFrame>
 
-          {/* Deep Sea Live - spans 2 columns on larger screens */}
+         {/* Deep Sea Live - ARCHIVED - kept for potential future use
           <WidgetFrame 
             title="Deep Sea Live" 
             isLive 
@@ -86,12 +103,49 @@ export default function Home() {
           >
             <DeepSeaLive />
           </WidgetFrame>
+*/}
 
-          {/* UK Energy Now - Placeholder */}
-          <WidgetFrame title="UK Energy Now" isLive timestamp="Updated 30s ago" aspectRatio="square">
-            <div className="w-full h-full min-h-[300px] flex items-center justify-center bg-gradient-to-br from-green-900/20 to-emerald-900/20">
-              <span className="text-sm text-[var(--text-muted)]">Carbon Intensity API</span>
-            </div>
+          {/* UK Energy Now */}
+          <WidgetFrame 
+            title="UK Energy Now" 
+            isLive 
+            aspectRatio="square"
+            info={{
+              description: "Real-time electricity generation mix for Great Britain, showing how power is being generated right now across different fuel types.",
+              sources: [
+                { name: "National Grid ESO Carbon Intensity API", url: "https://carbonintensity.org.uk/" }
+              ],
+              controls: [
+                { name: "Generation Mix", description: "Percentage breakdown of electricity by source: gas, wind, nuclear, solar, hydro, imports, biomass, and coal." },
+                { name: "Carbon Intensity", description: "Grams of CO₂ emitted per kilowatt-hour of electricity. Lower is cleaner." }
+              ],
+              notes: "Data from National Grid ESO, updated every 30 minutes. Carbon intensity varies throughout the day based on demand and renewable availability."
+            }}
+          >
+            <UKEnergyNow />
+          </WidgetFrame>
+
+          {/* Safari Live - African wildlife webcams */}
+          <WidgetFrame 
+            title="Safari Live" 
+            isLive 
+            aspectRatio="square"
+            info={{
+              description: "Live wildlife cameras from African research stations and game reserves. Watch elephants, hippos, giraffes, zebras, and other animals gather at watering holes in their natural habitat.",
+              sources: [
+                { name: "Mpala Research Centre", url: "https://www.mpalalive.org/" },
+                { name: "Explore.org", url: "https://explore.org/livecams/african-wildlife" },
+                { name: "Africam", url: "https://africam.com/" }
+              ],
+              controls: [
+                { name: "Watering Hole", description: "Hippo pool at Mpala Research Centre, Laikipia, Kenya" },
+                { name: "River", description: "Ewaso Ng'iro river view upstream from the watering hole" },
+                { name: "Tau", description: "Tau waterhole at Madikwe Game Reserve, South Africa" }
+              ],
+              notes: "Best viewing at dawn and dusk (East African Time: UTC+3). Video IDs may need periodic updates as livestreams restart. Night feeds use infrared — expect monochrome footage after sunset."
+            }}
+          >
+            <SafariLive />
           </WidgetFrame>
 
           {/* Strange Attractor - Braun T1000 inspired */}
