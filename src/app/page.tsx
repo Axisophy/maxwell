@@ -69,37 +69,42 @@ const userTypes = [
   },
 ]
 
-// Explore sections
+// Explore sections with themed placeholder colors
 const exploreSections = [
   {
     href: '/observe',
     label: 'Observe',
     description: 'Live windows into science happening right now',
-    image: '/images/explore-observe.jpg', // placeholder
+    image: '/assets/homepage/homepage_explore_observe.jpg',
+    placeholderGradient: 'from-orange-900 via-red-900 to-yellow-900', // solar/space
   },
   {
     href: '/tools',
     label: 'Tools',
     description: 'Scientific instruments that actually work',
-    image: '/images/explore-tools.jpg',
+    image: '/assets/homepage/homepage_explore_tools.jpg',
+    placeholderGradient: 'from-slate-700 via-slate-800 to-slate-900', // instruments
   },
   {
     href: '/data',
     label: 'Data',
     description: 'Reference datasets beautifully presented',
-    image: '/images/explore-data.jpg',
+    image: '/assets/homepage/homepage_explore_data.jpg',
+    placeholderGradient: 'from-cyan-900 via-blue-900 to-indigo-900', // data/digital
   },
   {
     href: '/vault',
     label: 'Vault',
     description: '2,500 years of scientific texts',
-    image: '/images/explore-vault.jpg',
+    image: '/assets/homepage/homepage_explore_vault.jpg',
+    placeholderGradient: 'from-amber-900 via-yellow-900 to-orange-900', // old books
   },
   {
     href: '/play',
     label: 'Play',
     description: 'Games, simulations and explorations',
-    image: '/images/explore-play.jpg',
+    image: '/assets/homepage/homepage_explore_play.jpg',
+    placeholderGradient: 'from-purple-900 via-fuchsia-900 to-pink-900', // playful
   },
 ]
 
@@ -117,18 +122,21 @@ export default function HomePage() {
 
       {/* HERO SECTION */}
       <section className="relative h-[70vh] min-h-[500px] bg-black">
-        {/* Hero image - placeholder for JWST/space image */}
-        <div className="absolute inset-0">
+        {/* Hero image background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
+          {/* Uncomment when image exists:
           <Image
-            src="/images/hero-space.jpg"
+            src="/assets/homepage/homepage_hero_supernova.jpg"
             alt="Supernova remnant from JWST"
             fill
             className="object-cover opacity-60"
             priority
           />
-          {/* Fallback gradient if image doesn't load */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80" />
+          */}
         </div>
+        
+        {/* Gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
         {/* Hero content */}
         <div className="relative h-full flex items-end">
@@ -244,11 +252,11 @@ export default function HomePage() {
               <Link
                 key={section.href}
                 href={section.href}
-                className="group relative aspect-square bg-gray-200 rounded-xl overflow-hidden"
+                className="group relative aspect-square rounded-xl overflow-hidden"
               >
-                {/* Background image placeholder */}
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400">
-                  {/* When you have images, uncomment this:
+                {/* Background - themed gradient placeholder, or image when available */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${section.placeholderGradient}`}>
+                  {/* Uncomment when images exist:
                   <Image
                     src={section.image}
                     alt={section.label}
@@ -259,7 +267,7 @@ export default function HomePage() {
                 </div>
                 
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
                 
                 {/* Content */}
                 <div className="absolute inset-0 flex flex-col justify-end p-6">
