@@ -1,90 +1,283 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
+import { useState } from 'react'
+
+// User type content
+const userTypes = [
+  {
+    id: 'curious',
+    label: 'Just a curious person',
+    content: {
+      intro: "If you're just curious then you came to the right place! MXWLL has a huge amount of carefully curated visualisations, data streams, video and image feeds and a host of other stuff which should keep you occupied for hours.",
+      prompt: "Why don't you start with:",
+      links: [
+        { href: '/observe/the-pulse', label: 'Get the lowdown via The Pulse' },
+        { href: '/observe/your-dashboard', label: 'Start observing via Your Dashboard' },
+      ]
+    }
+  },
+  {
+    id: 'student',
+    label: 'Student',
+    content: {
+      intro: "Whether you're studying physics, biology, chemistry or any other science, MXWLL gives you access to real data, interactive tools, and beautifully presented scientific literature that'll make your studies come alive.",
+      prompt: "Get started with:",
+      links: [
+        { href: '/tools', label: 'Explore our scientific Tools' },
+        { href: '/vault', label: 'Browse the Vault of scientific texts' },
+        { href: '/data', label: 'Dive into real Data' },
+      ]
+    }
+  },
+  {
+    id: 'researcher',
+    label: 'Researcher or Scientist',
+    content: {
+      intro: "Even experts need a break from their own field. MXWLL lets you explore the wonders of disciplines beyond your own, beautifully presented. And if you'd like your work featured here, we'd love to hear from you.",
+      prompt: "Explore or collaborate:",
+      links: [
+        { href: '/observe/your-dashboard', label: 'Explore the Dashboard' },
+        { href: '/about/contact', label: 'Get in touch about featuring your work' },
+      ]
+    }
+  },
+  {
+    id: 'institution',
+    label: 'Institution or Organisation',
+    content: {
+      intro: "Universities, research institutions, museums and science organisations — we're building partnerships to bring your work to curious audiences worldwide. Beautiful presentation, effortless engagement.",
+      prompt: "Let's work together:",
+      links: [
+        { href: '/about/partnerships', label: 'Partnership opportunities' },
+        { href: '/about/contact', label: 'Contact us' },
+      ]
+    }
+  },
+  {
+    id: 'investor',
+    label: 'Investor',
+    content: {
+      intro: "MXWLL is building the quality layer for science — a platform that combines beautiful design, live data, and deep content. We're seeking partners who share our vision for transforming how the world engages with science.",
+      prompt: "Learn more:",
+      links: [
+        { href: '/about/company', label: 'About our company' },
+        { href: '/about/investment', label: 'Investment potential' },
+      ]
+    }
+  },
+]
+
+// Explore sections
+const exploreSections = [
+  {
+    href: '/observe',
+    label: 'Observe',
+    description: 'Live windows into science happening right now',
+    image: '/images/explore-observe.jpg', // placeholder
+  },
+  {
+    href: '/tools',
+    label: 'Tools',
+    description: 'Scientific instruments that actually work',
+    image: '/images/explore-tools.jpg',
+  },
+  {
+    href: '/data',
+    label: 'Data',
+    description: 'Reference datasets beautifully presented',
+    image: '/images/explore-data.jpg',
+  },
+  {
+    href: '/vault',
+    label: 'Vault',
+    description: '2,500 years of scientific texts',
+    image: '/images/explore-vault.jpg',
+  },
+  {
+    href: '/play',
+    label: 'Play',
+    description: 'Games, simulations and explorations',
+    image: '/images/explore-play.jpg',
+  },
+]
 
 export default function HomePage() {
+  const [expandedUser, setExpandedUser] = useState<string | null>(null)
+
+  const toggleUser = (id: string) => {
+    setExpandedUser(expandedUser === id ? null : id)
+  }
+
   return (
-    <main className="min-h-screen bg-shell-light">
+    <main className="min-h-screen">
       {/* Mobile top padding */}
       <div className="h-14 md:hidden" />
-      
-      <div className="px-8 lg:px-12 py-12 md:py-20">
-        {/* Hero / Mission */}
-        <div className="max-w-3xl mb-16">
-          <h1 className="text-4xl md:text-5xl font-light text-text-primary mb-6">
-            A digital laboratory
-          </h1>
-          <p className="text-xl md:text-2xl font-light text-text-muted leading-relaxed">
-            Science is happening everywhere, all the time. Stars fusing. Particles decaying. 
-            Data flowing. Mostly, you can't see it. We build windows.
-          </p>
+
+      {/* HERO SECTION */}
+      <section className="relative h-[70vh] min-h-[500px] bg-black">
+        {/* Hero image - placeholder for JWST/space image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/hero-space.jpg"
+            alt="Supernova remnant from JWST"
+            fill
+            className="object-cover opacity-60"
+            priority
+          />
+          {/* Fallback gradient if image doesn't load */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80" />
         </div>
 
-        {/* Quick entry point */}
-        <div className="mb-16">
-          <Link 
-            href="/observe/your-dashboard"
-            className="inline-flex items-center gap-3 bg-black text-white px-6 py-4 rounded-xl hover:bg-gray-800 transition-colors"
+        {/* Hero content */}
+        <div className="relative h-full flex items-end">
+          <div className="px-8 lg:px-12 pb-12 md:pb-16 max-w-4xl">
+            <h1 
+              className="text-white text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6"
+              style={{ letterSpacing: '-0.02em' }}
+            >
+              A digital laboratory
+            </h1>
+            <p 
+              className="text-white/90 text-xl md:text-2xl font-normal leading-relaxed"
+            >
+              Science is happening everywhere, all the time. Stars are fusing. Particles are decaying. 
+              Earthquakes are rippling. Data is flowing. Mostly, you can't see any of it. 
+              <span className="block mt-4">
+                We build windows. Beautiful windows. The kind of windows you'll want to look through every day.
+              </span>
+              <span className="block mt-4">
+                MXWLL curates the best freely available scientific data and presents it the way it deserves 
+                — with the care usually reserved for luxury products or art books. No ugly government websites. 
+                No paywalls. No algorithmic noise. Just science, presented properly.
+              </span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* WHAT CAN MXWLL DO FOR YOU? SECTION */}
+      <section className="bg-black text-white py-16 md:py-24">
+        <div className="px-8 lg:px-12">
+          <h2 
+            className="text-3xl md:text-5xl font-bold mb-12"
+            style={{ letterSpacing: '-0.02em' }}
           >
-            <span className="text-lg font-medium">Enter the observatory</span>
-            <span>→</span>
-          </Link>
-        </div>
-
-        {/* WHO ARE YOU? Section */}
-        <div className="mb-16">
-          <h2 className="text-sm font-medium text-text-muted uppercase tracking-wide mb-6">
-            Who are you?
+            What can MXWLL<br />do for you?
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {[
-              { label: 'Curious', href: '/observe/your-dashboard' },
-              { label: 'Student', href: '/observe/your-dashboard' },
-              { label: 'Researcher', href: '/observe/your-dashboard' },
-              { label: 'Institution', href: '/about' },
-              { label: 'Investor', href: '/about' },
-            ].map((item) => (
+
+          {/* User type buttons */}
+          <div className="max-w-2xl">
+            {userTypes.map((userType) => {
+              const isExpanded = expandedUser === userType.id
+              
+              return (
+                <div key={userType.id} className="border-t border-white/20">
+                  {/* Button */}
+                  <button
+                    onClick={() => toggleUser(userType.id)}
+                    className="w-full py-5 flex items-center justify-between text-left group"
+                  >
+                    <span 
+                      className={`text-xl md:text-2xl transition-colors ${
+                        isExpanded ? 'text-white font-medium' : 'text-white/70 italic'
+                      } group-hover:text-white`}
+                    >
+                      {userType.label}
+                    </span>
+                    <span 
+                      className={`text-2xl transition-transform ${
+                        isExpanded ? 'rotate-45' : ''
+                      }`}
+                    >
+                      +
+                    </span>
+                  </button>
+
+                  {/* Expanded content */}
+                  {isExpanded && (
+                    <div className="bg-white text-black -mx-8 lg:-mx-12 px-8 lg:px-12 py-8 mb-4">
+                      <div className="max-w-2xl">
+                        <p className="text-lg mb-6 leading-relaxed">
+                          {userType.content.intro}
+                        </p>
+                        <p className="font-medium mb-4">
+                          {userType.content.prompt}
+                        </p>
+                        <div className="flex flex-col gap-3">
+                          {userType.content.links.map((link) => (
+                            <Link
+                              key={link.href}
+                              href={link.href}
+                              className="text-lg underline underline-offset-4 hover:no-underline"
+                            >
+                              {link.label} →
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+            {/* Final border */}
+            <div className="border-t border-white/20" />
+          </div>
+        </div>
+      </section>
+
+      {/* EXPLORE SECTION */}
+      <section className="bg-shell-light py-16 md:py-24">
+        <div className="px-8 lg:px-12">
+          <h2 
+            className="text-3xl md:text-5xl font-bold mb-12 text-text-primary"
+            style={{ letterSpacing: '-0.02em' }}
+          >
+            Explore
+          </h2>
+
+          {/* Section grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {exploreSections.map((section) => (
               <Link
-                key={item.label}
-                href={item.href}
-                className="bg-white px-4 py-3 rounded-lg text-center hover:bg-gray-50 transition-colors border border-gray-200"
+                key={section.href}
+                href={section.href}
+                className="group relative aspect-square bg-gray-200 rounded-xl overflow-hidden"
               >
-                <span className="text-sm font-medium">{item.label}</span>
+                {/* Background image placeholder */}
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400">
+                  {/* When you have images, uncomment this:
+                  <Image
+                    src={section.image}
+                    alt={section.label}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  */}
+                </div>
+                
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
+                
+                {/* Content */}
+                <div className="absolute inset-0 flex flex-col justify-end p-6">
+                  <h3 
+                    className="text-white text-2xl md:text-3xl font-bold mb-2"
+                    style={{ letterSpacing: '-0.02em' }}
+                  >
+                    {section.label}
+                  </h3>
+                  <p className="text-white/80 text-sm md:text-base">
+                    {section.description}
+                  </p>
+                </div>
               </Link>
             ))}
           </div>
         </div>
-
-        {/* Sections preview */}
-        <div>
-          <h2 className="text-sm font-medium text-text-muted uppercase tracking-wide mb-6">
-            Explore
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Link 
-              href="/observe"
-              className="bg-white p-6 rounded-xl hover:shadow-md transition-shadow border border-gray-200"
-            >
-              <h3 className="text-lg font-medium mb-2">Observe</h3>
-              <p className="text-sm text-text-muted">Live data from the sun, Earth, space, and beyond.</p>
-            </Link>
-            <Link 
-              href="/tools"
-              className="bg-white p-6 rounded-xl hover:shadow-md transition-shadow border border-gray-200"
-            >
-              <h3 className="text-lg font-medium mb-2">Tools</h3>
-              <p className="text-sm text-text-muted">Scientific instruments that actually work.</p>
-            </Link>
-            <Link 
-              href="/vault"
-              className="bg-white p-6 rounded-xl hover:shadow-md transition-shadow border border-gray-200"
-            >
-              <h3 className="text-lg font-medium mb-2">Vault</h3>
-              <p className="text-sm text-text-muted">2,500 years of scientific texts, beautifully presented.</p>
-            </Link>
-          </div>
-        </div>
-      </div>
+      </section>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
