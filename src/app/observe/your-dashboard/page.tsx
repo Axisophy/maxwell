@@ -23,8 +23,11 @@ export default function YourDashboardPage() {
           {/* Solar Live */}
           <WidgetFrame
             title="Solar Live"
-            description="Real-time imagery of the Sun from NASA's Solar Dynamics Observatory. Switch between wavelengths to see different layers of the solar atmosphere."
-            source="NASA Solar Dynamics Observatory"
+            info={{
+              description:
+                "Real-time imagery of the Sun from NASA's Solar Dynamics Observatory. Switch between wavelengths to see different layers of the solar atmosphere.",
+              source: 'NASA Solar Dynamics Observatory',
+            }}
             status="live"
           >
             <SolarLive />
@@ -33,8 +36,11 @@ export default function YourDashboardPage() {
           {/* Himawari Pacific Disc */}
           <WidgetFrame
             title="Pacific Disc"
-            description="Full-disc Earth imagery from the Himawari-9 satellite, showing the Pacific Ocean and Asia-Pacific region. Updated every 10 minutes."
-            source="NICT Japan / Himawari-9"
+            info={{
+              description:
+                'Full-disc Earth imagery from the Himawari-9 satellite, showing the Pacific Ocean and Asia-Pacific region. Updated every 10 minutes.',
+              source: 'NICT Japan / Himawari-9',
+            }}
             status="live"
           >
             <HimawariLive />
@@ -43,8 +49,11 @@ export default function YourDashboardPage() {
           {/* Space Weather */}
           <WidgetFrame
             title="Space Weather"
-            description="Current space weather conditions including geomagnetic activity (Kp index), solar wind speed, and X-ray flux levels."
-            source="NOAA Space Weather Prediction Center"
+            info={{
+              description:
+                'Current space weather conditions including geomagnetic activity (Kp index), solar wind speed, and X-ray flux levels.',
+              source: 'NOAA Space Weather Prediction Center',
+            }}
             status="live"
           >
             <SpaceWeather />
