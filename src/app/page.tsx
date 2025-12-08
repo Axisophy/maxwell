@@ -117,14 +117,13 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen">
-      {/* Mobile top padding */}
-      <div className="h-14 md:hidden" />
+      {/* NO mobile top padding here - hero goes full bleed */}
 
       {/* HERO SECTION */}
-      <section className="relative h-[70vh] min-h-[500px] bg-black">
+      <section className="relative h-[80vh] min-h-[500px] bg-black pt-14 md:pt-0">
         {/* Hero image background */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
-          {
+          {/* Uncomment when image exists:
           <Image
             src="/assets/homepage/homepage_hero_supernova.jpg"
             alt="Supernova remnant from JWST"
@@ -132,7 +131,7 @@ export default function HomePage() {
             className="object-cover opacity-60"
             priority
           />
-          }
+          */}
         </div>
         
         {/* Gradient overlay for text readability */}
@@ -148,7 +147,8 @@ export default function HomePage() {
               A digital laboratory
             </h1>
             <p 
-              className="text-white/90 text-xl md:text-2xl font-normal leading-relaxed"
+              className="text-white/90 text-2xl md:text-3xl lg:text-4xl font-bold leading-[1.3]"
+              style={{ letterSpacing: '-0.02em' }}
             >
               Science is happening everywhere, all the time. Stars are fusing. Particles are decaying. 
               Earthquakes are rippling. Data is flowing. Mostly, you can't see any of it. 
@@ -166,7 +166,7 @@ export default function HomePage() {
       </section>
 
       {/* WHAT CAN MXWLL DO FOR YOU? SECTION */}
-      <section className="bg-black text-white py-16 md:py-24">
+      <section className="bg-white text-black py-16 md:py-24">
         <div className="px-8 lg:px-12">
           <h2 
             className="text-3xl md:text-5xl font-bold mb-12"
@@ -181,7 +181,7 @@ export default function HomePage() {
               const isExpanded = expandedUser === userType.id
               
               return (
-                <div key={userType.id} className="border-t border-white/20">
+                <div key={userType.id} className="border-t border-black/20">
                   {/* Button */}
                   <button
                     onClick={() => toggleUser(userType.id)}
@@ -189,8 +189,8 @@ export default function HomePage() {
                   >
                     <span 
                       className={`text-xl md:text-2xl transition-colors ${
-                        isExpanded ? 'text-white font-medium' : 'text-white/70 italic'
-                      } group-hover:text-white`}
+                        isExpanded ? 'text-black font-medium' : 'text-black/60 italic'
+                      } group-hover:text-black`}
                     >
                       {userType.label}
                     </span>
@@ -203,9 +203,9 @@ export default function HomePage() {
                     </span>
                   </button>
 
-                  {/* Expanded content */}
+                  {/* Expanded content - white on black */}
                   {isExpanded && (
-                    <div className="bg-white text-black -mx-8 lg:-mx-12 px-8 lg:px-12 py-8 mb-4">
+                    <div className="bg-black text-white -mx-8 lg:-mx-12 px-8 lg:px-12 py-8 mb-4">
                       <div className="max-w-2xl">
                         <p className="text-lg mb-6 leading-relaxed">
                           {userType.content.intro}
@@ -231,16 +231,16 @@ export default function HomePage() {
               )
             })}
             {/* Final border */}
-            <div className="border-t border-white/20" />
+            <div className="border-t border-black/20" />
           </div>
         </div>
       </section>
 
       {/* EXPLORE SECTION */}
-      <section className="bg-shell-light py-16 md:py-24">
+      <section className="bg-black py-16 md:py-24">
         <div className="px-8 lg:px-12">
           <h2 
-            className="text-3xl md:text-5xl font-bold mb-12 text-text-primary"
+            className="text-3xl md:text-5xl font-bold mb-12 text-white"
             style={{ letterSpacing: '-0.02em' }}
           >
             Explore
@@ -287,8 +287,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Mobile bottom padding */}
-      <div className="h-20 md:hidden" />
+      {/* Mobile bottom padding - matches Explore section bg */}
+      <div className="h-20 md:hidden bg-black" />
     </main>
   )
 }
