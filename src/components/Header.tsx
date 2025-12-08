@@ -20,10 +20,10 @@ const navItems = [
   { href: '/play', label: 'play' },
 ]
 
-// Simplified OBSERVE submenu - only The Pulse and Your Dashboard
+// Submenus
 const observeSubmenu = [
   { href: '/observe/the-pulse', label: 'The Pulse', active: true },
-  { href: '/', label: 'Your Dashboard', active: true },
+  { href: '/observe/your-dashboard', label: 'Your Dashboard', active: true },
 ]
 
 const toolsSubmenu = [
@@ -73,19 +73,19 @@ export default function Header() {
         {/* Navigation: cols 3-10 */}
         <div className="col-span-8 flex items-start gap-4">
           {navItems.map((item) => {
-            const isObserve = item.href === '/observe'
             const isActive =
               pathname === item.href ||
-              pathname?.startsWith(item.href + '/') ||
-              (isObserve && pathname === '/')
+              pathname?.startsWith(item.href + '/')
 
             const submenu = submenus[item.href]
 
             return (
               <div key={item.href} className="flex-1">
                 <Link
-                  href={isObserve ? '/' : item.href}
-                  className="text-nav font-sans-display font-light tracking-wide text-text-primary cursor-pointer block"
+                  href={item.href}
+                  className={`text-nav font-sans-display font-light tracking-wide cursor-pointer block ${
+                    isActive ? 'text-text-primary' : 'text-text-primary'
+                  }`}
                 >
                   {item.label}
                 </Link>
@@ -98,7 +98,11 @@ export default function Header() {
                         <Link
                           key={subItem.label}
                           href={subItem.href}
-                          className="block text-sm text-text-primary cursor-pointer font-sans"
+                          className={`block text-sm cursor-pointer font-sans ${
+                            pathname === subItem.href 
+                              ? 'text-text-primary font-medium' 
+                              : 'text-text-primary'
+                          }`}
                         >
                           {subItem.label}
                         </Link>
