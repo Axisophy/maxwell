@@ -22,7 +22,7 @@ export default function ObservePage() {
       {/* Mobile top padding */}
       <div className="h-14 md:hidden" />
       
-      <div className="px-8 lg:px-12 py-8">
+      <div className="px-4 md:px-8 lg:px-12 py-8">
         {/* Page header */}
         <div className="mb-8">
           <h1 className="text-3xl font-light text-text-primary mb-2">Observe</h1>
