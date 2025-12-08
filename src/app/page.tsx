@@ -124,7 +124,7 @@ export default function HomePage() {
       <section className="relative min-h-screen bg-black pt-20 md:pt-48 pb-12 md:pb-16 flex flex-col justify-end">
         {/* Hero image background */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
-          {/* Uncomment when image exists:
+          {
           <Image
             src="/assets/homepage/homepage_hero_supernova.jpg"
             alt="Supernova remnant from JWST"
@@ -132,14 +132,14 @@ export default function HomePage() {
             className="object-cover opacity-60"
             priority
           />
-          */}
+          }
         </div>
         
         {/* Gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
         {/* Hero content - at bottom of section */}
-        <div className="relative px-8 lg:px-12 max-w-4xl">
+        <div className="relative px-4 md:px-8 lg:px-12 max-w-4xl">
           <h1 
             className="text-white text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6"
             style={{ letterSpacing: '-0.02em' }}
@@ -166,7 +166,7 @@ export default function HomePage() {
 
       {/* WHAT CAN MXWLL DO FOR YOU? SECTION */}
       <section className="bg-white text-black py-16 md:py-24">
-        <div className="px-8 lg:px-12">
+        <div className="px-4 md:px-8 lg:px-12">
           <h2 
             className="text-3xl md:text-5xl font-bold mb-12"
             style={{ letterSpacing: '-0.02em' }}
@@ -204,7 +204,7 @@ export default function HomePage() {
 
                   {/* Expanded content - white on black */}
                   {isExpanded && (
-                    <div className="bg-black text-white -mx-8 lg:-mx-12 px-8 lg:px-12 py-8 mb-4">
+                    <div className="bg-black text-white -mx-4 md:-mx-8 lg:-mx-12 px-4 md:px-8 lg:px-12 py-8 mb-4">
                       <div className="max-w-2xl">
                         <p className="text-lg mb-6 leading-relaxed">
                           {userType.content.intro}
@@ -237,7 +237,7 @@ export default function HomePage() {
 
       {/* EXPLORE SECTION */}
       <section className="bg-black py-16 md:py-24">
-        <div className="px-8 lg:px-12">
+        <div className="px-4 md:px-8 lg:px-12">
           <h2 
             className="text-3xl md:text-5xl font-bold mb-12 text-white"
             style={{ letterSpacing: '-0.02em' }}
