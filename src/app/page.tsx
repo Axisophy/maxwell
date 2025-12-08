@@ -120,10 +120,11 @@ export default function HomePage() {
       {/* NO mobile top padding here - hero goes full bleed */}
 
       {/* HERO SECTION */}
-      <section className="relative h-[80vh] min-h-[500px] bg-black pt-14 md:pt-0">
+      {/* pt-20 for mobile header (~80px), md:pt-48 for desktop header with submenus (~192px) */}
+      <section className="relative min-h-screen bg-black pt-20 md:pt-48 pb-12 md:pb-16 flex flex-col justify-end">
         {/* Hero image background */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
-          {
+          {/* Uncomment when image exists:
           <Image
             src="/assets/homepage/homepage_hero_supernova.jpg"
             alt="Supernova remnant from JWST"
@@ -131,37 +132,35 @@ export default function HomePage() {
             className="object-cover opacity-60"
             priority
           />
-          }
+          */}
         </div>
         
         {/* Gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-        {/* Hero content */}
-        <div className="relative h-full flex items-end">
-          <div className="px-8 lg:px-12 pb-12 md:pb-16 max-w-4xl">
-            <h1 
-              className="text-white text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6"
-              style={{ letterSpacing: '-0.02em' }}
-            >
-              A digital laboratory
-            </h1>
-            <p 
-              className="text-white/90 text-2xl md:text-3xl lg:text-4xl font-bold leading-[1.3]"
-              style={{ letterSpacing: '-0.02em' }}
-            >
-              Science is happening everywhere, all the time. Stars are fusing. Particles are decaying. 
-              Earthquakes are rippling. Data is flowing. Mostly, you can't see any of it. 
-              <span className="block mt-4">
-                We build windows. Beautiful windows. The kind of windows you'll want to look through every day.
-              </span>
-              <span className="block mt-4">
-                MXWLL curates the best freely available scientific data and presents it the way it deserves 
-                — with the care usually reserved for luxury products or art books. No ugly government websites. 
-                No paywalls. No algorithmic noise. Just science, presented properly.
-              </span>
-            </p>
-          </div>
+        {/* Hero content - at bottom of section */}
+        <div className="relative px-8 lg:px-12 max-w-4xl">
+          <h1 
+            className="text-white text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6"
+            style={{ letterSpacing: '-0.02em' }}
+          >
+            A digital laboratory
+          </h1>
+          <p 
+            className="text-white/90 text-2xl md:text-3xl lg:text-4xl font-bold leading-[1.3]"
+            style={{ letterSpacing: '-0.02em' }}
+          >
+            Science is happening everywhere, all the time. Stars are fusing. Particles are decaying. 
+            Earthquakes are rippling. Data is flowing. Mostly, you can't see any of it. 
+            <span className="block mt-4">
+              We build windows. Beautiful windows. The kind of windows you'll want to look through every day.
+            </span>
+            <span className="block mt-4">
+              MXWLL curates the best freely available scientific data and presents it the way it deserves 
+              — with the care usually reserved for luxury products or art books. No ugly government websites. 
+              No paywalls. No algorithmic noise. Just science, presented properly.
+            </span>
+          </p>
         </div>
       </section>
 
