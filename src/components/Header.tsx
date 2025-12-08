@@ -41,9 +41,16 @@ const dataSubmenu = [
 ]
 
 const vaultSubmenu = [
-  { href: '/vault?era=ancient', label: 'Ancient', active: true },
-  { href: '/vault?era=renaissance', label: 'Renaissance', active: true },
-  { href: '/vault?era=modern', label: 'Modern', active: true },
+  { href: '/vault/ancient', label: 'Ancient', active: true },
+  { href: '/vault/renaissance', label: 'Renaissance', active: true },
+  { href: '/vault/modern', label: 'Modern', active: true },
+  { href: '/vault/scientific-fiction', label: 'Scientific Fiction', active: true },
+  { href: '/vault/paths', label: 'Reading Paths', active: true },
+]
+
+const playSubmenu = [
+  { href: '#', label: 'Games', active: false },
+  { href: '#', label: 'Simulations', active: false },
 ]
 
 // Map nav items to their submenus
@@ -52,6 +59,7 @@ const submenus: Record<string, typeof observeSubmenu> = {
   '/tools': toolsSubmenu,
   '/data': dataSubmenu,
   '/vault': vaultSubmenu,
+  '/play': playSubmenu,
 }
 
 export default function Header() {

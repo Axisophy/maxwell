@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
-// Expanded intellectual series for design grouping
-type Series = 
+// Series definitions with colours and graphics
+export type Series = 
   | 'geometry' 
   | 'natural-philosophy' 
   | 'heavens' 
@@ -15,6 +15,153 @@ type Series =
   | 'medicine'
   | 'mathematics'
   | 'scientific-fiction'
+
+interface SeriesStyle {
+  bg: string
+  text: string
+  accent: string
+  graphic: React.ReactNode
+  label: string
+}
+
+const seriesStyles: Record<Series, SeriesStyle> = {
+  'geometry': {
+    bg: '#ffffff',
+    text: '#000000',
+    accent: '#000000',
+    label: 'Geometry',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <polygon points="50,10 90,90 10,90" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <circle cx="50" cy="60" r="25" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+      </svg>
+    ),
+  },
+  'natural-philosophy': {
+    bg: '#f5f0e6',
+    text: '#000000',
+    accent: '#8b4513',
+    label: 'Natural Philosophy',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path d="M50 20 Q30 50 50 80 Q70 50 50 20" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <circle cx="50" cy="50" r="8" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+      </svg>
+    ),
+  },
+  'heavens': {
+    bg: '#1a1a2e',
+    text: '#ffffff',
+    accent: '#ffd700',
+    label: 'The Heavens',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+        <circle cx="50" cy="50" r="20" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+        <circle cx="50" cy="50" r="10" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+        <circle cx="50" cy="50" r="3" fill="currentColor" opacity="0.3" />
+        <circle cx="50" cy="20" r="2" fill="currentColor" opacity="0.3" />
+      </svg>
+    ),
+  },
+  'forces-fields': {
+    bg: '#1a0a2e',
+    text: '#ffffff',
+    accent: '#ff4444',
+    label: 'Forces & Fields',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path d="M20 50 Q35 30 50 50 Q65 70 80 50" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <path d="M20 40 Q35 20 50 40 Q65 60 80 40" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <path d="M20 60 Q35 40 50 60 Q65 80 80 60" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+      </svg>
+    ),
+  },
+  'living-world': {
+    bg: '#0a2618',
+    text: '#ffffff',
+    accent: '#90ee90',
+    label: 'The Living World',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path d="M50 90 L50 50 M50 50 Q30 30 50 20 Q70 30 50 50" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <path d="M50 60 Q30 55 25 45" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <path d="M50 60 Q70 55 75 45" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+      </svg>
+    ),
+  },
+  'observers': {
+    bg: '#d4c5b5',
+    text: '#000000',
+    accent: '#5c4033',
+    label: 'The Observers',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <circle cx="50" cy="50" r="10" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <circle cx="50" cy="50" r="3" fill="currentColor" opacity="0.3" />
+      </svg>
+    ),
+  },
+  'chemistry': {
+    bg: '#2d1f14',
+    text: '#ffffff',
+    accent: '#f59e0b',
+    label: 'Chemistry',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <polygon points="50,25 72,38 72,62 50,75 28,62 28,38" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <line x1="50" y1="25" x2="50" y2="75" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+        <line x1="28" y1="38" x2="72" y2="62" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+        <line x1="72" y1="38" x2="28" y2="62" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+      </svg>
+    ),
+  },
+  'medicine': {
+    bg: '#4a0e0e',
+    text: '#ffffff',
+    accent: '#f5e6d3',
+    label: 'Medicine',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path d="M15 50 L30 50 L35 35 L45 65 L55 35 L65 65 L70 50 L85 50" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.3" />
+      </svg>
+    ),
+  },
+  'mathematics': {
+    bg: '#000000',
+    text: '#ffffff',
+    accent: '#ffffff',
+    label: 'Mathematics',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path d="M25 50 Q25 25 50 25 Q75 25 75 50 Q75 75 50 75 Q25 75 25 50 M50 25 Q50 50 75 50 Q50 50 50 75 Q50 50 25 50 Q50 50 50 25" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+      </svg>
+    ),
+  },
+  'scientific-fiction': {
+    bg: '#2a0a0a',
+    text: '#ffffff',
+    accent: '#ffd700',
+    label: 'Scientific Fiction',
+    graphic: (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path d="M50 85 L50 35 M40 45 L50 35 L60 45 M35 85 L65 85 M30 85 L35 75 L65 75 L70 85" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+        <circle cx="50" cy="25" r="5" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+      </svg>
+    ),
+  },
+}
+
+// Calculate title font size based on length
+function getTitleSize(title: string): string {
+  const len = title.length
+  if (len <= 15) return '2.4em'      // Short: "Elements", "Opticks"
+  if (len <= 25) return '2em'        // Medium: "On the Origin of Species"
+  if (len <= 40) return '1.6em'      // Long: "Dialogue Concerning Two Chief World Systems"
+  if (len <= 60) return '1.3em'      // Very long
+  return '1.1em'                      // Extremely long
+}
 
 interface BookWidgetProps {
   slug: string
@@ -28,417 +175,213 @@ interface BookWidgetProps {
   pageCount?: number
 }
 
-// Series-based styling
-const seriesStyles: Record<Series, {
-  bgColor: string
-  textColor: string
-  accentColor?: string
-  label: string
-}> = {
-  'geometry': {
-    bgColor: '#ffffff',
-    textColor: '#000000',
-    label: 'Geometry',
-  },
-  'natural-philosophy': {
-    bgColor: '#f5f0e6',
-    textColor: '#000000',
-    accentColor: '#8b7355',
-    label: 'Natural Philosophy',
-  },
-  'heavens': {
-    bgColor: '#0a1628',
-    textColor: '#ffffff',
-    accentColor: '#c9a227',
-    label: 'The Heavens',
-  },
-  'forces-fields': {
-    bgColor: '#1a1a2e',
-    textColor: '#ffffff',
-    accentColor: '#e63946',
-    label: 'Forces & Fields',
-  },
-  'living-world': {
-    bgColor: '#2d4739',
-    textColor: '#ffffff',
-    accentColor: '#a7c4a0',
-    label: 'The Living World',
-  },
-  'observers': {
-    bgColor: '#e8e4dc',
-    textColor: '#000000',
-    accentColor: '#8b7355',
-    label: 'Observers',
-  },
-  'chemistry': {
-    bgColor: '#4a3728',
-    textColor: '#ffffff',
-    accentColor: '#d4a574',
-    label: 'Chemistry',
-  },
-  'medicine': {
-    bgColor: '#6b2c2c',
-    textColor: '#ffffff',
-    accentColor: '#f5e6d3',
-    label: 'Medicine',
-  },
-  'mathematics': {
-    bgColor: '#000000',
-    textColor: '#ffffff',
-    accentColor: '#ffffff',
-    label: 'Mathematics',
-  },
-  'scientific-fiction': {
-    bgColor: '#2d1f1f',
-    textColor: '#ffffff',
-    accentColor: '#c9a227',
-    label: 'Scientific Fiction',
-  },
-}
-
-// MXWLL Editions logo placeholder (update when final logo ready)
-function MXWLLEditionsLogo({ color = '#000000' }: { color?: string }) {
-  return (
-    <div 
-      style={{ 
-        color, 
-        opacity: 0.7,
-        fontSize: '0.5em',
-        fontFamily: 'system-ui, sans-serif',
-        fontWeight: 500,
-        letterSpacing: '0.1em',
-      }}
-    >
-      MXWLL EDITIONS
-    </div>
-  )
-}
-
-// Series graphic component
-function SeriesGraphic({ series, color }: { series: Series; color?: string }) {
-  const style = seriesStyles[series]
-  const graphicColor = color || style.accentColor || style.textColor
-  
-  switch (series) {
-    case 'geometry':
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <circle cx="70" cy="100" r="50" fill="none" stroke={graphicColor} strokeWidth="0.75" />
-          <circle cx="130" cy="100" r="50" fill="none" stroke={graphicColor} strokeWidth="0.75" />
-          <line x1="100" y1="57" x2="100" y2="143" stroke={graphicColor} strokeWidth="0.75" />
-        </svg>
-      )
-    case 'heavens':
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <ellipse cx="100" cy="100" rx="90" ry="35" fill="none" stroke={graphicColor} strokeWidth="0.5" />
-          <ellipse cx="100" cy="100" rx="60" ry="23" fill="none" stroke={graphicColor} strokeWidth="0.5" />
-          <ellipse cx="100" cy="100" rx="35" ry="14" fill="none" stroke={graphicColor} strokeWidth="0.5" />
-          <circle cx="100" cy="100" r="4" fill={graphicColor} />
-        </svg>
-      )
-    case 'forces-fields':
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          {[1, 2, 3, 4, 5, 6, 7].map(i => (
-            <circle 
-              key={i} 
-              cx="100" 
-              cy="100" 
-              r={12 * i} 
-              fill="none" 
-              stroke={graphicColor} 
-              strokeWidth="0.5" 
-            />
-          ))}
-        </svg>
-      )
-    case 'living-world':
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <path 
-            d="M100 190 L100 100 M100 100 L50 40 M100 100 L150 40 M50 40 L25 10 M50 40 L75 10 M150 40 L125 10 M150 40 L175 10 M100 130 L70 90 M100 130 L130 90" 
-            fill="none" 
-            stroke={graphicColor} 
-            strokeWidth="1" 
-          />
-        </svg>
-      )
-    case 'observers':
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <ellipse cx="100" cy="100" rx="25" ry="70" fill="none" stroke={graphicColor} strokeWidth="0.75" />
-          <line x1="10" y1="100" x2="75" y2="100" stroke={graphicColor} strokeWidth="0.5" />
-          <line x1="125" y1="100" x2="190" y2="100" stroke={graphicColor} strokeWidth="0.5" />
-          <line x1="10" y1="70" x2="75" y2="100" stroke={graphicColor} strokeWidth="0.5" strokeDasharray="2,2" />
-          <line x1="125" y1="100" x2="190" y2="130" stroke={graphicColor} strokeWidth="0.5" strokeDasharray="2,2" />
-        </svg>
-      )
-    case 'chemistry':
-      // Hexagonal benzene-like structure
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <polygon 
-            points="100,30 157,65 157,135 100,170 43,135 43,65" 
-            fill="none" 
-            stroke={graphicColor} 
-            strokeWidth="0.75" 
-          />
-          <polygon 
-            points="100,55 137,75 137,125 100,145 63,125 63,75" 
-            fill="none" 
-            stroke={graphicColor} 
-            strokeWidth="0.5" 
-          />
-        </svg>
-      )
-    case 'medicine':
-      // Caduceus-inspired / heartbeat line
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <path 
-            d="M20 100 L60 100 L80 60 L100 140 L120 60 L140 100 L180 100" 
-            fill="none" 
-            stroke={graphicColor} 
-            strokeWidth="1" 
-          />
-        </svg>
-      )
-    case 'mathematics':
-      // Infinity / möbius inspired
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <path 
-            d="M40 100 C40 60 70 60 100 100 C130 140 160 140 160 100 C160 60 130 60 100 100 C70 140 40 140 40 100" 
-            fill="none" 
-            stroke={graphicColor} 
-            strokeWidth="0.75" 
-          />
-        </svg>
-      )
-    case 'scientific-fiction':
-      // Rocket / futuristic
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <path 
-            d="M100 20 L120 80 L120 140 L110 160 L100 140 L90 160 L80 140 L80 80 Z" 
-            fill="none" 
-            stroke={graphicColor} 
-            strokeWidth="0.75" 
-          />
-          <ellipse cx="100" cy="90" rx="15" ry="20" fill="none" stroke={graphicColor} strokeWidth="0.5" />
-        </svg>
-      )
-    case 'natural-philosophy':
-    default:
-      return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <rect x="70" y="30" width="60" height="140" fill="none" stroke={graphicColor} strokeWidth="0.75" />
-          <line x1="70" y1="45" x2="130" y2="45" stroke={graphicColor} strokeWidth="0.75" />
-          <line x1="70" y1="155" x2="130" y2="155" stroke={graphicColor} strokeWidth="0.75" />
-          <line x1="85" y1="45" x2="85" y2="155" stroke={graphicColor} strokeWidth="0.5" />
-          <line x1="115" y1="45" x2="115" y2="155" stroke={graphicColor} strokeWidth="0.5" />
-        </svg>
-      )
-  }
-}
-
-export default function BookWidget({ 
-  slug, 
-  title, 
+export default function BookWidget({
+  slug,
+  title,
   author,
   authorDates,
-  yearDisplay, 
+  yearDisplay,
   series,
   description,
   readingTime,
   pageCount,
 }: BookWidgetProps) {
   const [isFlipped, setIsFlipped] = useState(false)
+  const router = useRouter()
   const style = seriesStyles[series]
-
-  const handleFlip = () => {
-    setIsFlipped(!isFlipped)
-  }
+  const titleSize = getTitleSize(title)
 
   const handleStartReading = (e: React.MouseEvent) => {
     e.stopPropagation()
-    // Navigation handled by Link
+    router.push(`/vault/${slug}`)
   }
 
   return (
     <div 
-      className="aspect-[2/3] perspective-1000"
+      className="w-full cursor-pointer"
       style={{ perspective: '1000px' }}
+      onClick={() => setIsFlipped(!isFlipped)}
     >
-      <div 
-        className="relative w-full h-full transition-transform duration-500"
+      <div
+        className="relative w-full transition-transform duration-500"
         style={{ 
+          aspectRatio: '2 / 3',
           transformStyle: 'preserve-3d',
           transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
         }}
       >
-        {/* FRONT - Book Cover */}
+        {/* Front - Book Cover */}
         <div
-          onClick={handleFlip}
-          className="absolute inset-0 rounded-lg overflow-hidden cursor-pointer transition-shadow duration-200 hover:shadow-lg"
+          className="absolute inset-0 rounded-sm overflow-hidden"
           style={{ 
-            backgroundColor: style.bgColor,
             backfaceVisibility: 'hidden',
+            backgroundColor: style.bg,
+            color: style.text,
+            fontSize: 'clamp(10px, 2.5vw, 12px)',
           }}
         >
-          {/* Use container width for em-based scaling */}
-          <div className="relative w-full h-full text-[10px] sm:text-[12px]">
-            
-            {/* Graphic - positioned in middle area */}
-            <div 
+          {/* Left edge / spine */}
+          <div 
+            className="absolute left-0 top-0 bottom-0"
+            style={{ 
+              width: '10%',
+              backgroundColor: style.accent,
+              opacity: 0.3,
+            }}
+          />
+
+          {/* Content area */}
+          <div 
+            className="absolute"
+            style={{
+              left: '10%',
+              right: 0,
+              top: 0,
+              bottom: 0,
+            }}
+          >
+            {/* Author */}
+            <div
+              className="absolute w-full px-[1em]"
+              style={{ top: '8%' }}
+            >
+              <p 
+                className="font-sans uppercase tracking-widest"
+                style={{ 
+                  fontSize: '0.8em',
+                  color: style.text,
+                  opacity: 0.7,
+                }}
+              >
+                {author}
+              </p>
+            </div>
+
+            {/* Series graphic */}
+            <div
               className="absolute"
               style={{
                 top: '18%',
                 left: '10%',
                 right: '10%',
                 height: '40%',
+                color: style.accent,
                 opacity: 0.4,
               }}
             >
-              <SeriesGraphic series={series} />
+              {style.graphic}
             </div>
 
-            {/* Author - at top */}
-            <div 
-              className="absolute uppercase"
+            {/* Title - dynamic sizing */}
+            <div
+              className="absolute w-full px-[1em]"
               style={{ 
-                top: '8%',
-                left: '10%',
-                right: '8%',
-                color: style.textColor,
-                fontSize: '1em',
-                fontFamily: '"trade-gothic-next", "Helvetica Neue", sans-serif',
-                fontWeight: 400,
-                letterSpacing: '0.15em',
+                top: '62%',
+                bottom: '15%',
               }}
             >
-              {author}
+              <h3 
+                className="font-serif leading-tight"
+                style={{ 
+                  fontSize: titleSize,
+                  color: style.text,
+                }}
+              >
+                {title}
+              </h3>
             </div>
 
-            {/* Title - at 70% down */}
-            <div 
-              className="absolute uppercase leading-[0.95]"
-              style={{ 
-                top: '68%',
-                left: '10%',
-                right: '8%',
-                color: style.textColor,
-                fontSize: '2.2em',
-                fontFamily: '"trade-gothic-next-compressed", "Arial Narrow", sans-serif',
-                fontWeight: 700,
-                letterSpacing: '0.02em',
-              }}
+            {/* Logo placeholder */}
+            <div
+              className="absolute w-full px-[1em]"
+              style={{ bottom: '5%' }}
             >
-              {title}
-            </div>
-
-            {/* Publisher logo - at bottom */}
-            <div 
-              className="absolute"
-              style={{ 
-                bottom: '6%',
-                left: '10%',
-              }}
-            >
-              <MXWLLEditionsLogo color={style.textColor} />
+              <p 
+                className="font-sans tracking-widest"
+                style={{ 
+                  fontSize: '0.55em',
+                  color: style.text,
+                  opacity: 0.5,
+                }}
+              >
+                MXWLL EDITIONS
+              </p>
             </div>
           </div>
         </div>
 
-        {/* BACK - Info Card */}
+        {/* Back - Info Card */}
         <div
-          onClick={handleFlip}
-          className="absolute inset-0 rounded-lg overflow-hidden cursor-pointer"
+          className="absolute inset-0 rounded-sm overflow-hidden p-[1em] flex flex-col"
           style={{ 
-            backgroundColor: style.bgColor,
             backfaceVisibility: 'hidden',
             transform: 'rotateY(180deg)',
+            backgroundColor: '#ffffff',
+            color: '#000000',
+            fontSize: 'clamp(10px, 2.5vw, 12px)',
+            border: '1px solid #e5e5e5',
           }}
         >
-          <div 
-            className="relative w-full h-full p-[10%] flex flex-col text-[10px] sm:text-[12px]"
-            style={{ color: style.textColor }}
+          {/* Title */}
+          <h3 
+            className="font-serif leading-tight mb-[0.3em]"
+            style={{ fontSize: '1.4em' }}
           >
-            {/* Title */}
-            <h3 
-              className="font-bold leading-tight mb-1"
-              style={{ 
-                fontSize: '1.6em',
-                fontFamily: '"trade-gothic-next-compressed", "Arial Narrow", sans-serif',
-              }}
-            >
-              {title}
-            </h3>
+            {title}
+          </h3>
 
-            {/* Author with dates */}
+          {/* Author + dates */}
+          <p 
+            className="font-sans mb-[1em]"
+            style={{ 
+              fontSize: '0.9em',
+              color: '#666666',
+            }}
+          >
+            {author}{authorDates ? `, ${authorDates}` : ''}
+          </p>
+
+          {/* Description */}
+          {description && (
             <p 
-              className="mb-3"
+              className="font-sans leading-relaxed flex-1 overflow-hidden"
               style={{ 
-                fontSize: '1em',
-                opacity: 0.8,
+                fontSize: '0.85em',
+                color: '#333333',
               }}
             >
-              {author}{authorDates && ` (${authorDates})`}
+              {description}
             </p>
+          )}
 
-            {/* Description */}
-            {description && (
-              <p 
-                className="flex-1 overflow-hidden leading-relaxed"
-                style={{ 
-                  fontSize: '1.1em',
-                  opacity: 0.9,
-                  display: '-webkit-box',
-                  WebkitLineClamp: 5,
-                  WebkitBoxOrient: 'vertical',
-                }}
-              >
-                {description}
-              </p>
-            )}
-
-            {/* Meta info */}
-            <div 
-              className="mt-auto pt-3 space-y-1"
-              style={{ 
-                fontSize: '0.9em',
-                opacity: 0.7,
-                borderTop: `1px solid ${style.textColor}20`,
-              }}
-            >
-              <p>First published: {yearDisplay}</p>
-              {pageCount && <p>{pageCount} pages</p>}
-              {readingTime && <p>Reading time: {readingTime}</p>}
-              <p className="capitalize">{seriesStyles[series].label}</p>
+          {/* Meta info */}
+          <div 
+            className="mt-[0.8em] pt-[0.8em] border-t border-gray-200"
+            style={{ fontSize: '0.75em' }}
+          >
+            <div className="flex flex-wrap gap-x-[1em] gap-y-[0.3em] text-gray-500">
+              <span>{yearDisplay}</span>
+              {pageCount && <span>{pageCount} pages</span>}
+              {readingTime && <span>{readingTime}</span>}
             </div>
-
-            {/* Start Reading button */}
-            <Link
-              href={`/vault/${slug}`}
-              onClick={handleStartReading}
-              className="mt-3 block text-center py-2 rounded transition-opacity hover:opacity-80"
-              style={{ 
-                fontSize: '1.1em',
-                fontWeight: 600,
-                backgroundColor: style.accentColor || style.textColor,
-                color: style.bgColor,
-              }}
+            <p 
+              className="mt-[0.5em]"
+              style={{ color: style.accent !== '#ffffff' ? style.accent : '#666666' }}
             >
-              Start Reading
-            </Link>
+              {style.label}
+            </p>
           </div>
+
+          {/* Start Reading button */}
+          <button
+            onClick={handleStartReading}
+            className="mt-[0.8em] w-full py-[0.6em] bg-black text-white text-center font-sans rounded"
+            style={{ fontSize: '0.85em' }}
+          >
+            Start Reading →
+          </button>
         </div>
       </div>
     </div>
   )
 }
-
-// Export types for use in pages
-export type { Series }
-export { seriesStyles }

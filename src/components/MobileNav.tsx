@@ -36,7 +36,13 @@ const navItems = [
     label: 'Vault', 
     icon: BookOpen, 
     matchPaths: ['/vault'],
-    submenu: []
+    submenu: [
+      { href: '/vault/ancient', label: 'Ancient' },
+      { href: '/vault/renaissance', label: 'Renaissance' },
+      { href: '/vault/modern', label: 'Modern' },
+      { href: '/vault/scientific-fiction', label: 'Scientific Fiction' },
+      { href: '/vault/paths', label: 'Reading Paths' },
+    ]
   },
   { 
     href: '/play', 
