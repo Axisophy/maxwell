@@ -139,15 +139,15 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
         {/* Hero content - at bottom of section */}
-        <div className="relative px-4 md:px-8 lg:px-12 max-w-4xl">
+        <div className="relative px-4 md:px-8 lg:px-12">
           <h1 
-            className="text-white text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6"
-            style={{ letterSpacing: '-0.02em' }}
+            className="text-white text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.95] mb-6 max-w-[85%]"
+            style={{ letterSpacing: '-0.03em' }}
           >
             A digital laboratory
           </h1>
           <p 
-            className="text-white/90 text-2xl md:text-3xl lg:text-4xl font-bold leading-[1.3]"
+            className="text-white/90 text-2xl md:text-3xl lg:text-4xl font-bold leading-[1.3] max-w-4xl"
             style={{ letterSpacing: '-0.02em' }}
           >
             Science is happening everywhere, all the time. Stars are fusing. Particles are decaying. 
@@ -156,8 +156,8 @@ export default function HomePage() {
               We build windows. Beautiful windows. The kind of windows you'll want to look through every day.
             </span>
             <span className="block mt-4">
-              MXWLL curates the best freely available scientific data and presents it the way it deserves 
-              — with the care usually reserved for luxury products or art books. No ugly government websites. 
+              MXWLL curates the best freely available scientific data and presents it the way it deserves. 
+              No ugly government websites. 
               No paywalls. No algorithmic noise. Just science, presented properly.
             </span>
           </p>
