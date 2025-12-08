@@ -147,22 +147,3 @@ export default function VaultPage() {
     </main>
   )
 }
-```
-
----
-
-**Summary of new structure:**
-```
-/vault                          → Landing (era cards + path previews)
-/vault/ancient                  → Ancient books grid
-/vault/renaissance              → Renaissance books grid  
-/vault/modern                   → Modern books grid
-/vault/scientific-fiction       → Scientific Fiction books grid
-/vault/paths                    → Reading Paths hub
-/vault/paths/impress-at-dinner  → Individual path
-/vault/paths/fill-with-wonder   → Individual path
-/vault/paths/need-to-concentrate → Individual path
-/vault/paths/something-short    → Individual path
-/vault/paths/under-30           → Individual path
-/vault/paths/changed-everything → Individual path
-/vault/[slug]                   → Individual book reader (future)
