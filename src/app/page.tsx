@@ -123,7 +123,7 @@ export default function HomePage() {
       <section className="relative h-[80vh] min-h-[500px] bg-black pt-14 md:pt-0">
         {/* Hero image background */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
-          {/* Uncomment when image exists:
+          {
           <Image
             src="/assets/homepage/homepage_hero_supernova.jpg"
             alt="Supernova remnant from JWST"
@@ -131,7 +131,7 @@ export default function HomePage() {
             className="object-cover opacity-60"
             priority
           />
-          */}
+          }
         </div>
         
         {/* Gradient overlay for text readability */}
