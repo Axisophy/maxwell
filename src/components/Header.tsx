@@ -20,10 +20,10 @@ const navItems = [
   { href: '/play', label: 'play' },
 ]
 
+// Simplified OBSERVE submenu - only The Pulse and Your Dashboard
 const observeSubmenu = [
+  { href: '/observe/the-pulse', label: 'The Pulse', active: true },
   { href: '/', label: 'Your Dashboard', active: true },
-  { href: '#', label: 'Scale Navigator', active: false },
-  { href: '#', label: 'Ask Maxwell', active: false },
 ]
 
 const toolsSubmenu = [

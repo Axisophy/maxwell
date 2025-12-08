@@ -1,193 +1,89 @@
-'use client'
+import Link from 'next/link'
 
-import { useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
-import BookWidget, { type Series } from '@/components/BookWidget'
-
-type SortOption = 'chronological' | 'alphabetical-title' | 'alphabetical-author'
-type Era = 'all' | 'ancient' | 'renaissance' | 'modern'
-
-// Book data with intellectual series assignments
-// Note: Books are DISPLAYED chronologically but DESIGNED by series
-const books = [
+const eras = [
   {
-    slug: 'elements',
-    title: 'Elements',
-    author: 'Euclid',
-    year: -300,
-    yearDisplay: '~300 BCE',
-    era: 'ancient' as Era,
-    series: 'geometry' as Series,
+    id: 'ancient',
+    name: 'Ancient',
+    period: 'Before 1500',
+    description: 'The foundations of scientific thought from Euclid, Aristotle, and the classical world.',
+    count: 25,
   },
   {
-    slug: 'history-of-animals',
-    title: 'The History of Animals',
-    author: 'Aristotle',
-    year: -350,
-    yearDisplay: '~350 BCE',
-    era: 'ancient' as Era,
-    series: 'natural-philosophy' as Series,
+    id: 'renaissance',
+    name: 'Renaissance',
+    period: '1500–1800',
+    description: 'The scientific revolution: Copernicus, Galileo, Newton, and the birth of modern science.',
+    count: 40,
   },
   {
-    slug: 'revolutions',
-    title: 'On the Revolutions of Heavenly Spheres',
-    author: 'Copernicus',
-    year: 1543,
-    yearDisplay: '1543',
-    era: 'renaissance' as Era,
-    series: 'heavens' as Series,
-  },
-  {
-    slug: 'dialogue',
-    title: 'Dialogue Concerning Two Chief World Systems',
-    author: 'Galileo',
-    year: 1632,
-    yearDisplay: '1632',
-    era: 'renaissance' as Era,
-    series: 'heavens' as Series,
-  },
-  {
-    slug: 'micrographia',
-    title: 'Micrographia',
-    author: 'Robert Hooke',
-    year: 1665,
-    yearDisplay: '1665',
-    era: 'renaissance' as Era,
-    series: 'observers' as Series,
-  },
-  {
-    slug: 'principia',
-    title: 'Principia Mathematica',
-    author: 'Isaac Newton',
-    year: 1687,
-    yearDisplay: '1687',
-    era: 'renaissance' as Era,
-    series: 'forces-fields' as Series,
-  },
-  {
-    slug: 'origin-of-species',
-    title: 'On the Origin of Species',
-    author: 'Charles Darwin',
-    year: 1859,
-    yearDisplay: '1859',
-    era: 'modern' as Era,
-    series: 'living-world' as Series,
-  },
-  {
-    slug: 'electromagnetic-field',
-    title: 'A Dynamical Theory of the Electromagnetic Field',
-    author: 'James Clerk Maxwell',
-    year: 1865,
-    yearDisplay: '1865',
-    era: 'modern' as Era,
-    series: 'forces-fields' as Series,
-  },
-  {
-    slug: 'plant-hybridization',
-    title: 'Experiments on Plant Hybridization',
-    author: 'Gregor Mendel',
-    year: 1866,
-    yearDisplay: '1866',
-    era: 'modern' as Era,
-    series: 'living-world' as Series,
+    id: 'modern',
+    name: 'Modern',
+    period: '1800–1950',
+    description: 'Darwin, Maxwell, Einstein, and the explosive growth of scientific knowledge.',
+    count: 95,
   },
 ]
 
-const eraLabels: Record<Era, string> = {
-  all: 'All Eras',
-  ancient: 'Ancient',
-  renaissance: 'Renaissance',
-  modern: 'Modern',
-}
-
-function VaultContent() {
-  const searchParams = useSearchParams()
-  const eraParam = searchParams.get('era') as Era | null
-  
-  const [sortBy, setSortBy] = useState<SortOption>('chronological')
-  const [expandedBook, setExpandedBook] = useState<string | null>(null)
-  
-  const currentEra: Era = eraParam && ['ancient', 'renaissance', 'modern'].includes(eraParam) 
-    ? eraParam 
-    : 'all'
-
-  // Filter by era
-  const filteredBooks = currentEra === 'all' 
-    ? books 
-    : books.filter(book => book.era === currentEra)
-
-  // Sort books
-  const sortedBooks = [...filteredBooks].sort((a, b) => {
-    switch (sortBy) {
-      case 'chronological':
-        return a.year - b.year
-      case 'alphabetical-title':
-        return a.title.localeCompare(b.title)
-      case 'alphabetical-author':
-        return a.author.localeCompare(b.author)
-      default:
-        return 0
-    }
-  })
-
-  const handleBookClick = (slug: string) => {
-    setExpandedBook(expandedBook === slug ? null : slug)
-    // TODO: This will open the reader view
-    console.log('Open book:', slug)
-  }
-
+export default function VaultPage() {
   return (
-    <>
-      {/* Page header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-sans-display font-light text-text-primary">
-            {currentEra === 'all' ? 'Vault' : eraLabels[currentEra]}
-          </h1>
-          <p className="text-sm text-text-muted mt-1">
-            {sortedBooks.length} {sortedBooks.length === 1 ? 'work' : 'works'}
+    <main className="min-h-screen bg-shell-light">
+      {/* Mobile top padding */}
+      <div className="h-14 md:hidden" />
+      
+      <div className="px-8 lg:px-12 py-8">
+        {/* Page header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-light text-text-primary mb-2">Vault</h1>
+          <p className="text-text-muted max-w-2xl">
+            A curated collection of scientific texts spanning 2,500 years of human inquiry. 
+            Public domain works presented as beautiful, readable digital editions.
           </p>
         </div>
 
-        {/* Sort control */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-text-muted">Sort:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="text-sm text-text-primary bg-transparent border border-border-light rounded px-2 py-1 focus:outline-none"
-          >
-            <option value="chronological">Chronological</option>
-            <option value="alphabetical-title">Title A–Z</option>
-            <option value="alphabetical-author">Author A–Z</option>
-          </select>
+        {/* Era cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {eras.map((era) => (
+            <Link
+              key={era.id}
+              href={`/knowledge?era=${era.id}`}
+              className="bg-white rounded-xl border border-[#e5e5e5] p-6 hover:border-text-primary transition-colors group"
+            >
+              <h2 className="text-xl font-normal text-text-primary mb-1 group-hover:underline">
+                {era.name}
+              </h2>
+              <span className="text-sm text-text-muted block mb-3">{era.period}</span>
+              <p className="text-sm text-text-primary mb-4">{era.description}</p>
+              <span className="text-xs text-text-muted">
+                {era.count} works →
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Additional sections */}
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl border border-[#e5e5e5] p-6">
+            <h3 className="text-lg font-normal text-text-primary mb-2">Canon</h3>
+            <p className="text-sm text-text-muted mb-4">
+              Commentary on significant modern books still under copyright. 
+              Our take on Kuhn, Dawkins, Sagan, and more.
+            </p>
+            <span className="text-xs text-text-muted">Coming soon</span>
+          </div>
+
+          <div className="bg-white rounded-xl border border-[#e5e5e5] p-6">
+            <h3 className="text-lg font-normal text-text-primary mb-2">Papers</h3>
+            <p className="text-sm text-text-muted mb-4">
+              Landmark journal articles where breakthroughs first appeared. 
+              Many are surprisingly short.
+            </p>
+            <span className="text-xs text-text-muted">Coming soon</span>
+          </div>
         </div>
       </div>
-
-      {/* Book grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-        {sortedBooks.map((book) => (
-          <BookWidget
-            key={book.slug}
-            slug={book.slug}
-            title={book.title}
-            author={book.author}
-            yearDisplay={book.yearDisplay}
-            series={book.series}
-            onClick={() => handleBookClick(book.slug)}
-          />
-        ))}
-      </div>
-    </>
-  )
-}
-
-export default function VaultPage() {
-  return (
-    <main className="w-full px-8 lg:px-12 py-8">
-      <Suspense fallback={<div className="text-text-muted">Loading...</div>}>
-        <VaultContent />
-      </Suspense>
+      
+      {/* Mobile bottom padding */}
+      <div className="h-20 md:hidden" />
     </main>
   )
 }

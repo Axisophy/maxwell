@@ -1,188 +1,233 @@
 'use client'
 
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, useEffect, useRef } from 'react'
 
 interface WidgetInfo {
   description: string
-  sources?: { name: string; url?: string }[]
+  source?: string
+  sourceUrl?: string
   controls?: { name: string; description: string }[]
-  notes?: string
 }
 
 interface WidgetFrameProps {
   title: string
-  isLive?: boolean
-  timestamp?: string
+  status?: 'live' | 'ok' | 'error' | 'loading'
   children: ReactNode
-  className?: string
-  aspectRatio?: 'square' | 'video' | 'wide'
   info?: WidgetInfo
 }
 
+/**
+ * WidgetFrame - Unified widget container
+ * 
+ * Structure:
+ * ┌─────────────────────────────────────────┐
+ * │  WIDGET FRAME (header)                  │
+ * └─────────────────────────────────────────┘
+ *          ↓ 8px gap (0.5em)
+ * ┌─────────────────────────────────────────┐
+ * │                                         │
+ * │  WIDGET CONTENT                         │
+ * │                                         │
+ * └─────────────────────────────────────────┘
+ * 
+ * All measurements use em units for proportional scaling.
+ * Reference: 400px width = 16px base font-size
+ */
 export default function WidgetFrame({
   title,
-  isLive = false,
-  timestamp,
+  status = 'ok',
   children,
-  className = '',
-  aspectRatio = 'square',
   info,
 }: WidgetFrameProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [baseFontSize, setBaseFontSize] = useState(16)
   const [showInfo, setShowInfo] = useState(false)
 
-  const header = (
-    <div className="px-4 py-3 flex items-center justify-between border-b border-[var(--widget-border)] shrink-0">
-      <div className="flex items-center gap-3">
-        <h3 className={`font-normal text-black ${isExpanded ? 'text-xl' : 'text-sm'}`}>{title}</h3>
-        {isLive && (
-          <span className="flex items-center">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#e6007e] animate-pulse" />
-          </span>
-        )}
-      </div>
-      <div className="flex items-center gap-2">
-        {timestamp && (
-          <span className="text-xs font-normal text-black/60">{timestamp}</span>
-        )}
-        {/* Info button */}
-        {info && (
-          <button
-            onClick={() => setShowInfo(!showInfo)}
-            className={`p-1 rounded transition-colors ${
-              showInfo 
-                ? 'bg-black text-white' 
-                : 'text-black/50 hover:text-black hover:bg-[var(--shell-bg)]'
-            }`}
-            aria-label={showInfo ? 'Hide info' : 'Show info'}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="16" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-            </svg>
-          </button>
-        )}
-        {/* Expand/Collapse button */}
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="p-1 rounded transition-colors text-black/50 hover:text-black hover:bg-[var(--shell-bg)]"
-          aria-label={isExpanded ? 'Collapse' : 'Expand'}
+  // Scale base font-size with container width
+  // Reference: 400px = 16px base (scale factor: width ÷ 25)
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const updateSize = () => {
+      const width = containerRef.current?.clientWidth || 400
+      setBaseFontSize(width / 25)
+    }
+
+    updateSize()
+    const observer = new ResizeObserver(updateSize)
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  const statusColour = {
+    live: '#22c55e',
+    ok: '#22c55e',
+    error: '#ef4444',
+    loading: '#f59e0b',
+  }[status]
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full"
+      style={{ fontSize: `${baseFontSize}px` }}
+    >
+      {/* Frame (Header) */}
+      <div
+        className="flex flex-col"
+        style={{
+          backgroundColor: '#e5e5e5',
+          borderRadius: '0.75em',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Title bar - height: 3em (48px at 400px) */}
+        <div
+          className="flex items-center justify-between"
+          style={{ padding: '0 1em', height: '3em' }}
         >
-          {isExpanded ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="4 14 10 14 10 20" />
-              <polyline points="20 10 14 10 14 4" />
-              <line x1="14" y1="10" x2="21" y2="3" />
-              <line x1="3" y1="21" x2="10" y2="14" />
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 3 21 3 21 9" />
-              <polyline points="9 21 3 21 3 15" />
-              <line x1="21" y1="3" x2="14" y2="10" />
-              <line x1="3" y1="21" x2="10" y2="14" />
-            </svg>
-          )}
-        </button>
-      </div>
-    </div>
-  )
+          {/* Title */}
+          <span
+            className="font-sans"
+            style={{ fontSize: '1.125em', fontWeight: 400 }}
+          >
+            {title}
+          </span>
 
-  const infoPanel = info && showInfo && (
-    <div className="px-4 py-3 bg-[var(--shell-bg)] border-b border-[var(--widget-border)] text-sm">
-      {/* Description */}
-      <p className="text-black font-medium mb-3">{info.description}</p>
-      
-      {/* Sources */}
-      {info.sources && info.sources.length > 0 && (
-        <div className="mb-3">
-          <h4 className="text-xs font-medium text-black uppercase tracking-wide mb-1">
-            Source{info.sources.length > 1 ? 's' : ''}
-          </h4>
-          <ul className="space-y-0.5">
-            {info.sources.map((source, i) => (
-              <li key={i} className="text-black/70 font-medium">
-                {source.url ? (
-                  <a 
-                    href={source.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="hover:text-[#e6007e] transition-colors"
-                  >
-                    {source.name}
-                  </a>
-                ) : (
-                  source.name
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      
-      {/* Controls */}
-      {info.controls && info.controls.length > 0 && (
-        <div className="mb-3">
-          <h4 className="text-xs font-medium text-black uppercase tracking-wide mb-1">Controls</h4>
-          <ul className="space-y-1">
-            {info.controls.map((control, i) => (
-              <li key={i} className="text-black/70 font-medium">
-                <span className="text-black">{control.name}</span>
-                <span className="mx-1 font-extralight">—</span>
-                {control.description}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      
-      {/* Notes */}
-      {info.notes && (
-        <p className="text-xs text-black/60 italic">{info.notes}</p>
-      )}
-    </div>
-  )
+          {/* Right side: status + info button */}
+          <div className="flex items-center" style={{ gap: '0.75em' }}>
+            {/* Status indicator */}
+            <div
+              className={status === 'live' ? 'animate-pulse' : ''}
+              style={{
+                width: '0.5em',
+                height: '0.5em',
+                borderRadius: '50%',
+                backgroundColor: statusColour,
+              }}
+            />
 
-  // Expanded: full screen overlay with centered, height-scaled content
-  if (isExpanded) {
-    const aspectValue = aspectRatio === 'square' ? '1/1' : aspectRatio === 'video' ? '16/9' : '2/1'
-    
-    return (
-      <div className="fixed inset-0 z-50 bg-[var(--shell-bg)] p-8">
-        <div className="w-full h-full flex flex-col widget-frame">
-          {header}
-          {infoPanel}
-          
-          {/* Content area - centers the widget, scales to fit within bounds */}
-          <div className="flex-1 flex items-center justify-center p-8 min-h-0 overflow-hidden">
-            <div 
-              className="h-full w-auto max-w-full"
-              style={{ aspectRatio: aspectValue }}
-            >
-              {children}
-            </div>
+            {/* Info button */}
+            {info && (
+              <button
+                onClick={() => setShowInfo(!showInfo)}
+                className="transition-opacity"
+                style={{
+                  opacity: showInfo ? 1 : 0.4,
+                  width: '1.25em',
+                  height: '1.25em',
+                }}
+                aria-label={showInfo ? 'Hide info' : 'Show info'}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
-      </div>
-    )
-  }
 
-  // Normal: in grid
-  const aspectValue = aspectRatio === 'square' ? '1/1' : aspectRatio === 'video' ? '16/9' : '2/1'
-  
-  return (
-    <div className={`widget-frame flex flex-col ${className}`}>
-      {header}
-      {infoPanel}
-      {/* Content area with padding, maintaining aspect ratio */}
-      <div className="p-4">
-        <div 
-          className="w-full"
-          style={{ aspectRatio: aspectValue }}
-        >
-          {children}
-        </div>
+        {/* Info panel (expanded) */}
+        {info && showInfo && (
+          <div
+            style={{
+              padding: '1em',
+              borderTop: '1px solid #d0d0d0',
+            }}
+          >
+            {/* Description */}
+            <p style={{ fontSize: '0.875em', marginBottom: '0.75em' }}>
+              {info.description}
+            </p>
+
+            {/* Source */}
+            {info.source && (
+              <div style={{ marginBottom: info.controls ? '0.75em' : 0 }}>
+                <span
+                  style={{
+                    fontSize: '0.625em',
+                    fontWeight: 500,
+                    opacity: 0.5,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    display: 'block',
+                    marginBottom: '0.25em',
+                  }}
+                >
+                  Source
+                </span>
+                {info.sourceUrl ? (
+                  <a
+                    href={info.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: '0.875em', opacity: 0.8 }}
+                    className="hover:opacity-100 transition-opacity"
+                  >
+                    {info.source}
+                  </a>
+                ) : (
+                  <span style={{ fontSize: '0.875em', opacity: 0.8 }}>
+                    {info.source}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Controls */}
+            {info.controls && info.controls.length > 0 && (
+              <div>
+                <span
+                  style={{
+                    fontSize: '0.625em',
+                    fontWeight: 500,
+                    opacity: 0.5,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    display: 'block',
+                    marginBottom: '0.25em',
+                  }}
+                >
+                  Controls
+                </span>
+                <ul style={{ fontSize: '0.875em', opacity: 0.8 }}>
+                  {info.controls.map((control, i) => (
+                    <li key={i}>
+                      <span style={{ fontWeight: 500, opacity: 1 }}>
+                        {control.name}
+                      </span>
+                      <span style={{ margin: '0 0.25em' }}>—</span>
+                      {control.description}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Gap between frame and content: 0.5em (8px at 400px) */}
+      <div style={{ height: '0.5em' }} />
+
+      {/* Content block */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '0.75em',
+          padding: '1em',
+        }}
+      >
+        {children}
       </div>
     </div>
   )
