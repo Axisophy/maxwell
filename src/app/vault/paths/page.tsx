@@ -1,8 +1,9 @@
-import BookWidget from '@/components/BookWidget'
-import { getBooksByEra } from '@/lib/books'
+import Link from 'next/link'
+import { readingPaths } from '@/lib/reading-paths'
 
-export default function ScientificFictionPage() {
-  const books = getBooksByEra('scientific-fiction')
+export default function PathsPage() {
+  const moodPaths = readingPaths.filter(p => p.category === 'mood')
+  const depthPaths = readingPaths.filter(p => p.category === 'depth')
 
   return (
     <main className="min-h-screen bg-shell-light">
@@ -10,30 +11,75 @@ export default function ScientificFictionPage() {
       
       <div className="px-4 md:px-8 lg:px-12 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-light text-text-primary mb-2">Scientific Fiction</h1>
+          <h1 className="text-3xl font-light text-text-primary mb-2">Reading Paths</h1>
           <p className="text-text-muted max-w-2xl">
-            1818–1920 — Shelley, Verne, Wells, Čapek. The birth of science fiction 
-            as a literary form, when writers first imagined what science might make possible.
+            Curated journeys through the collection. Not sure where to start? 
+            Tell us what you're in the mood for.
           </p>
-          <p className="text-sm text-text-muted mt-2">{books.length} works</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-          {books.map((book) => (
-            <BookWidget
-              key={book.slug}
-              slug={book.slug}
-              title={book.title}
-              author={book.author}
-              authorDates={book.authorDates}
-              yearDisplay={book.yearDisplay}
-              series={book.series}
-              description={book.description}
-              readingTime={book.readingTime}
-              pageCount={book.pageCount}
-            />
-          ))}
-        </div>
+        {/* Mood-based paths */}
+        <section className="mb-12">
+          <h2 className="text-lg font-normal text-text-primary mb-4">What are you in the mood for?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {moodPaths.map((path) => (
+              <Link
+                key={path.slug}
+                href={`/vault/paths/${path.slug}`}
+                className="bg-white rounded-xl border border-[#e5e5e5] p-5 hover:border-text-primary transition-colors group"
+              >
+                <p className="text-lg font-normal text-text-primary mb-2 group-hover:underline">
+                  "{path.question}"
+                </p>
+                <p className="text-sm text-text-muted line-clamp-2">{path.description}</p>
+                <span className="text-xs text-text-muted mt-3 block">
+                  {path.bookSlugs.length} books →
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Depth-based paths */}
+        <section className="mb-12">
+          <h2 className="text-lg font-normal text-text-primary mb-4">By difficulty</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {depthPaths.map((path) => (
+              <Link
+                key={path.slug}
+                href={`/vault/paths/${path.slug}`}
+                className="bg-white rounded-xl border border-[#e5e5e5] p-5 hover:border-text-primary transition-colors group"
+              >
+                <p className="text-lg font-normal text-text-primary mb-2 group-hover:underline">
+                  {path.title}
+                </p>
+                <p className="text-sm text-text-muted line-clamp-2">{path.description}</p>
+                <span className="text-xs text-text-muted mt-3 block">
+                  {path.bookSlugs.length} books →
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Future sections */}
+        <section>
+          <h2 className="text-lg font-normal text-text-primary mb-4">Coming Soon</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-xl border border-[#e5e5e5] p-5">
+              <p className="text-lg font-normal text-text-primary mb-2">Top 5 by Subject</p>
+              <p className="text-sm text-text-muted">
+                Biology, Physics, Mathematics, Philosophy of Science...
+              </p>
+            </div>
+            <div className="bg-white rounded-xl border border-[#e5e5e5] p-5">
+              <p className="text-lg font-normal text-text-primary mb-2">Maps & Timelines</p>
+              <p className="text-sm text-text-muted">
+                Visual exploration — who influenced whom, where ideas emerged.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
       
       <div className="h-20 md:hidden" />
