@@ -1,36 +1,47 @@
 import Link from 'next/link'
+import { getBooksByEra } from '@/lib/books'
+import { readingPaths } from '@/lib/reading-paths'
 
 const eras = [
   {
     id: 'ancient',
+    href: '/vault/ancient',
     name: 'Ancient',
     period: 'Before 1500',
     description: 'The foundations of scientific thought from Euclid, Aristotle, and the classical world.',
-    count: 25,
   },
   {
     id: 'renaissance',
+    href: '/vault/renaissance',
     name: 'Renaissance',
     period: '1500–1800',
-    description: 'The scientific revolution: Copernicus, Galileo, Newton, and the birth of modern science.',
-    count: 40,
+    description: 'The Scientific Revolution: Copernicus, Galileo, Newton, and the birth of modern science.',
   },
   {
     id: 'modern',
+    href: '/vault/modern',
     name: 'Modern',
     period: '1800–1950',
     description: 'Darwin, Maxwell, Einstein, and the explosive growth of scientific knowledge.',
-    count: 95,
+  },
+  {
+    id: 'scientific-fiction',
+    href: '/vault/scientific-fiction',
+    name: 'Scientific Fiction',
+    period: '1818–1920',
+    description: 'Shelley, Verne, Wells, Čapek — the birth of science fiction as a literary form.',
   },
 ]
 
 export default function VaultPage() {
+  // Get a few featured paths
+  const featuredPaths = readingPaths.slice(0, 3)
+
   return (
     <main className="min-h-screen bg-shell-light">
-      {/* Mobile top padding */}
       <div className="h-14 md:hidden" />
       
-      <div className="px-4 md:px-8 lg:px-12">
+      <div className="px-4 md:px-8 lg:px-12 py-8">
         {/* Page header */}
         <div className="mb-8">
           <h1 className="text-3xl font-light text-text-primary mb-2">Vault</h1>
@@ -40,50 +51,118 @@ export default function VaultPage() {
           </p>
         </div>
 
-        {/* Era cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {eras.map((era) => (
-            <Link
-              key={era.id}
-              href={`/knowledge?era=${era.id}`}
-              className="bg-white rounded-xl border border-[#e5e5e5] p-6 hover:border-text-primary transition-colors group"
+        {/* Browse by Era */}
+        <section className="mb-12">
+          <h2 className="text-lg font-normal text-text-primary mb-4">Browse by Era</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {eras.map((era) => {
+              const books = getBooksByEra(era.id as any)
+              return (
+                <Link
+                  key={era.id}
+                  href={era.href}
+                  className="bg-white rounded-xl border border-[#e5e5e5] p-5 hover:border-text-primary transition-colors group"
+                >
+                  <h3 className="text-xl font-normal text-text-primary mb-1 group-hover:underline">
+                    {era.name}
+                  </h3>
+                  <span className="text-sm text-text-muted block mb-2">{era.period}</span>
+                  <p className="text-sm text-text-primary mb-3">{era.description}</p>
+                  <span className="text-xs text-text-muted">
+                    {books.length} works →
+                  </span>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* Reading Paths */}
+        <section className="mb-12">
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-lg font-normal text-text-primary">Reading Paths</h2>
+            <Link 
+              href="/vault/paths" 
+              className="text-sm text-text-muted hover:text-text-primary"
             >
-              <h2 className="text-xl font-normal text-text-primary mb-1 group-hover:underline">
-                {era.name}
-              </h2>
-              <span className="text-sm text-text-muted block mb-3">{era.period}</span>
-              <p className="text-sm text-text-primary mb-4">{era.description}</p>
-              <span className="text-xs text-text-muted">
-                {era.count} works →
-              </span>
+              See all →
             </Link>
-          ))}
-        </div>
-
-        {/* Additional sections */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-[#e5e5e5] p-6">
-            <h3 className="text-lg font-normal text-text-primary mb-2">Canon</h3>
-            <p className="text-sm text-text-muted mb-4">
-              Commentary on significant modern books still under copyright. 
-              Our take on Kuhn, Dawkins, Sagan, and more.
-            </p>
-            <span className="text-xs text-text-muted">Coming soon</span>
           </div>
-
-          <div className="bg-white rounded-xl border border-[#e5e5e5] p-6">
-            <h3 className="text-lg font-normal text-text-primary mb-2">Papers</h3>
-            <p className="text-sm text-text-muted mb-4">
-              Landmark journal articles where breakthroughs first appeared. 
-              Many are surprisingly short.
-            </p>
-            <span className="text-xs text-text-muted">Coming soon</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {featuredPaths.map((path) => (
+              <Link
+                key={path.slug}
+                href={`/vault/paths/${path.slug}`}
+                className="bg-white rounded-xl border border-[#e5e5e5] p-5 hover:border-text-primary transition-colors group"
+              >
+                <p className="text-base font-normal text-text-primary mb-2 group-hover:underline">
+                  "{path.question}"
+                </p>
+                <p className="text-sm text-text-muted line-clamp-2">{path.description}</p>
+              </Link>
+            ))}
           </div>
-        </div>
+        </section>
+
+        {/* Coming Soon */}
+        <section>
+          <h2 className="text-lg font-normal text-text-primary mb-4">Coming Soon</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-xl border border-[#e5e5e5] p-5 opacity-70">
+              <h3 className="text-base font-normal text-text-primary mb-2">Canon</h3>
+              <p className="text-sm text-text-muted">
+                Commentary on significant modern books still under copyright. 
+                Our take on Kuhn, Dawkins, Sagan, and more.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl border border-[#e5e5e5] p-5 opacity-70">
+              <h3 className="text-base font-normal text-text-primary mb-2">Papers</h3>
+              <p className="text-sm text-text-muted">
+                Landmark journal articles where breakthroughs first appeared. 
+                Watson & Crick's DNA paper is one page.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl border border-[#e5e5e5] p-5 opacity-70">
+              <h3 className="text-base font-normal text-text-primary mb-2">Maps & Timelines</h3>
+              <p className="text-sm text-text-muted">
+                Visual discovery — trace who influenced whom, 
+                see where ideas emerged geographically.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl border border-[#e5e5e5] p-5 opacity-70">
+              <h3 className="text-base font-normal text-text-primary mb-2">Your Library</h3>
+              <p className="text-sm text-text-muted">
+                Track what you've read, save favourites, 
+                pick up where you left off.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
       
-      {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
     </main>
   )
 }
+```
+
+---
+
+**Summary of new structure:**
+```
+/vault                          → Landing (era cards + path previews)
+/vault/ancient                  → Ancient books grid
+/vault/renaissance              → Renaissance books grid  
+/vault/modern                   → Modern books grid
+/vault/scientific-fiction       → Scientific Fiction books grid
+/vault/paths                    → Reading Paths hub
+/vault/paths/impress-at-dinner  → Individual path
+/vault/paths/fill-with-wonder   → Individual path
+/vault/paths/need-to-concentrate → Individual path
+/vault/paths/something-short    → Individual path
+/vault/paths/under-30           → Individual path
+/vault/paths/changed-everything → Individual path
+/vault/[slug]                   → Individual book reader (future)
