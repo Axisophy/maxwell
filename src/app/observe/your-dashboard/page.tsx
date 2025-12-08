@@ -11,7 +11,7 @@ export default function YourDashboardPage() {
       {/* Mobile top padding */}
       <div className="h-14 md:hidden" />
       
-      <div className="px-8 lg:px-12 py-6">
+      <div className="px-4 md:px-8 lg:px-12 py-8">
         {/* Page header */}
         <div className="mb-6">
           <h1 className="text-2xl font-light text-text-primary">Your Dashboard</h1>

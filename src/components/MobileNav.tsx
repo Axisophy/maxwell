@@ -22,28 +22,28 @@ const navItems = [
     label: 'Tools', 
     icon: Wrench, 
     matchPaths: ['/tools'],
-    submenu: null
+    submenu: []
   },
   { 
     href: '/data', 
     label: 'Data', 
     icon: Database, 
     matchPaths: ['/data'],
-    submenu: null
+    submenu: []
   },
   { 
     href: '/vault', 
     label: 'Vault', 
     icon: BookOpen, 
     matchPaths: ['/vault'],
-    submenu: null
+    submenu: []
   },
   { 
     href: '/play', 
     label: 'Play', 
     icon: Sparkles, 
     matchPaths: ['/play'],
-    submenu: null
+    submenu: []
   },
 ]
 
@@ -61,11 +61,8 @@ export default function MobileNav() {
   }
 
   const handleNavClick = (item: typeof navItems[0], e: React.MouseEvent) => {
-    // If item has submenu, toggle it instead of navigating
-    if (item.submenu && item.submenu.length > 0) {
-      e.preventDefault()
-      setOpenSubmenu(openSubmenu === item.href ? null : item.href)
-    }
+    e.preventDefault()
+    setOpenSubmenu(openSubmenu === item.href ? null : item.href)
   }
 
   const closeSubmenu = () => setOpenSubmenu(null)
@@ -82,83 +79,82 @@ export default function MobileNav() {
         />
       )}
 
-      {/* Submenu panel - slides up from bottom nav */}
-      {openSubmenu && activeItem?.submenu && (
+      {/* Submenu panel - seamless with bottom nav */}
+      {openSubmenu && activeItem && (
         <div 
-          className="fixed bottom-16 left-0 right-0 z-50 md:hidden"
+          className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
           style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         >
-          <div className="mx-4 mb-2 bg-white rounded-xl shadow-lg border border-border-light overflow-hidden">
+          <div className="bg-white border-t border-border-light">
             {/* Section header - links to section landing */}
             <Link
               href={activeItem.href}
               onClick={closeSubmenu}
-              className="block px-4 py-3 border-b border-border-light bg-gray-50"
+              className="flex items-center gap-3 px-4 py-4 border-b border-border-light"
             >
-              <span className="text-xs font-medium text-text-muted uppercase tracking-wide">
+              <activeItem.icon className="w-5 h-5 text-text-primary" strokeWidth={1.5} />
+              <span className="text-lg font-medium text-text-primary">
                 {activeItem.label}
               </span>
             </Link>
             
             {/* Submenu items */}
-            {activeItem.submenu.map((subitem) => {
-              const isSubActive = pathname === subitem.href
-              return (
-                <Link
-                  key={subitem.href}
-                  href={subitem.href}
-                  onClick={closeSubmenu}
-                  className={`
-                    block px-4 py-3 
-                    ${isSubActive ? 'bg-gray-50 text-text-primary font-medium' : 'text-text-primary'}
-                    active:bg-gray-100
-                  `}
-                >
-                  {subitem.label}
-                </Link>
-              )
-            })}
+            {activeItem.submenu && activeItem.submenu.length > 0 && (
+              <div className="border-b border-border-light">
+                {activeItem.submenu.map((subitem) => {
+                  const isSubActive = pathname === subitem.href
+                  return (
+                    <Link
+                      key={subitem.href}
+                      href={subitem.href}
+                      onClick={closeSubmenu}
+                      className={`
+                        block px-4 py-3 pl-12
+                        ${isSubActive ? 'bg-gray-50 text-text-primary font-medium' : 'text-text-muted'}
+                        active:bg-gray-100
+                      `}
+                    >
+                      {subitem.label}
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
           </div>
-        </div>
-      )}
 
-      {/* Main nav bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-        <div 
-          className="bg-shell-light border-t border-border-light"
-          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-        >
-          <div className="flex items-center h-16">
-            {/* Home button - slightly narrower */}
-            <Link
-              href="/"
-              className={`
-                flex flex-col items-center justify-center 
-                w-14 h-full
-                transition-colors
-                ${pathname === '/' ? 'text-text-primary' : 'text-text-muted'}
-              `}
-            >
-              <Home 
-                className="w-5 h-5 mb-1" 
-                strokeWidth={pathname === '/' ? 2 : 1.5}
-              />
-              <span className="text-[10px] font-medium">Home</span>
-            </Link>
+          {/* Nav bar integrated below */}
+          <div 
+            className="bg-shell-light border-t border-border-light"
+          >
+            <div className="flex items-center h-16">
+              {/* Home button - slightly narrower */}
+              <Link
+                href="/"
+                onClick={closeSubmenu}
+                className={`
+                  flex flex-col items-center justify-center 
+                  w-14 h-full
+                  transition-colors
+                  ${pathname === '/' ? 'text-text-primary' : 'text-text-muted'}
+                `}
+              >
+                <Home 
+                  className="w-5 h-5 mb-1" 
+                  strokeWidth={pathname === '/' ? 2 : 1.5}
+                />
+                <span className="text-[10px] font-medium">Home</span>
+              </Link>
 
-            {/* Divider */}
-            <div className="w-px h-8 bg-border-light" />
+              {/* Divider */}
+              <div className="w-px h-8 bg-border-light" />
 
-            {/* Section items */}
-            <div className="flex-1 flex items-center justify-around">
-              {navItems.map((item) => {
-                const Icon = item.icon
-                const active = isActive(item)
-                const hasSubmenu = item.submenu && item.submenu.length > 0
-                const isOpen = openSubmenu === item.href
-                
-                // Items with submenus are buttons, others are links
-                if (hasSubmenu) {
+              {/* Section items */}
+              <div className="flex-1 flex items-center justify-around">
+                {navItems.map((item) => {
+                  const Icon = item.icon
+                  const active = isActive(item)
+                  const isOpen = openSubmenu === item.href
+                  
                   return (
                     <button
                       key={item.href}
@@ -179,33 +175,73 @@ export default function MobileNav() {
                       </span>
                     </button>
                   )
-                }
-                
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`
-                      flex flex-col items-center justify-center 
-                      h-full px-3
-                      transition-colors
-                      ${active ? 'text-text-primary' : 'text-text-muted'}
-                    `}
-                  >
-                    <Icon 
-                      className="w-5 h-5 mb-1" 
-                      strokeWidth={active ? 2 : 1.5}
-                    />
-                    <span className="text-[10px] font-medium">
-                      {item.label}
-                    </span>
-                  </Link>
-                )
-              })}
+                })}
+              </div>
             </div>
           </div>
         </div>
-      </nav>
+      )}
+
+      {/* Main nav bar - only show when no submenu open */}
+      {!openSubmenu && (
+        <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+          <div 
+            className="bg-shell-light border-t border-border-light"
+            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+          >
+            <div className="flex items-center h-16">
+              {/* Home button - slightly narrower */}
+              <Link
+                href="/"
+                className={`
+                  flex flex-col items-center justify-center 
+                  w-14 h-full
+                  transition-colors
+                  ${pathname === '/' ? 'text-text-primary' : 'text-text-muted'}
+                `}
+              >
+                <Home 
+                  className="w-5 h-5 mb-1" 
+                  strokeWidth={pathname === '/' ? 2 : 1.5}
+                />
+                <span className="text-[10px] font-medium">Home</span>
+              </Link>
+
+              {/* Divider */}
+              <div className="w-px h-8 bg-border-light" />
+
+              {/* Section items */}
+              <div className="flex-1 flex items-center justify-around">
+                {navItems.map((item) => {
+                  const Icon = item.icon
+                  const active = isActive(item)
+                  
+                  return (
+                    <button
+                      key={item.href}
+                      onClick={(e) => handleNavClick(item, e)}
+                      className={`
+                        flex flex-col items-center justify-center 
+                        h-full px-3
+                        transition-colors
+                        ${active ? 'text-text-primary' : 'text-text-muted'}
+                      `}
+                    >
+                      <Icon 
+                        className="w-5 h-5 mb-1" 
+                        strokeWidth={active ? 2 : 1.5}
+                      />
+                      <span className="text-[10px] font-medium">
+                        {item.label}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        </nav>
+      )}
     </>
   )
 }
