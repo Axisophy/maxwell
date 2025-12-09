@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import Header from '@/components/Header'
 import MobileHeader from '@/components/MobileHeader'
@@ -33,6 +34,20 @@ export default function RootLayout({
       <head>
         {/* Adobe Fonts - Neue Haas Grotesk, Sabon, Input Mono, Trade Gothic, Sausage */}
         <link rel="stylesheet" href="https://use.typekit.net/toy5zlj.css" />
+        
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-37GEW93SEC"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-37GEW93SEC');
+          `}
+        </Script>
       </head>
       <body className="min-h-screen flex flex-col font-sans bg-shell-light text-text-primary">
         {/* Desktop header */}
