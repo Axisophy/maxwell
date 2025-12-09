@@ -131,8 +131,7 @@ export default function YourDashboardPage() {
             <DSCOVREpic />
           </WidgetFrame>
 
-        </div>
-      </div>
+    
 
           {/* Earthquakes Live */}
           <WidgetFrame
@@ -159,6 +158,10 @@ export default function YourDashboardPage() {
           >
             <ISSTracker />
           </WidgetFrame>
+
+          </div>
+        </div>
+
 
       {/* Mobile bottom padding for nav */}
       <div className="h-20 md:hidden" />
