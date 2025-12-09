@@ -12,7 +12,7 @@ export default function MobileHeader() {
         <div className="flex items-center justify-between px-4 h-14 border-b border-border-light">
           {/* Logo - tap to go home */}
           <Link href="/" className="flex items-center">
-            <Logo className="h-5 w-auto" />
+            <Logo className="h-6 w-auto" />
           </Link>
 
           {/* Right side icons */}

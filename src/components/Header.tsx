@@ -71,7 +71,7 @@ export default function Header() {
         {/* Logo + tagline: cols 1-2 */}
         <div className="col-span-2">
           <Link href="/" className="block group">
-            <Logo className="h-7 w-auto" />
+            <Logo className="h-9 w-auto" />
             <span className="text-sm text-text-primary tracking-wide mt-1.5 block font-sans">
               a digital laboratory
             </span>
