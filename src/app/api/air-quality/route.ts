@@ -79,11 +79,11 @@ function getCacheKey(lat: number, lon: number): string {
 // Clean expired cache entries periodically
 function cleanCache() {
   const now = Date.now()
-  for (const [key, entry] of cache.entries()) {
+  cache.forEach((entry, key) => {
     if (now - entry.timestamp > CACHE_TTL) {
       cache.delete(key)
     }
-  }
+  })
 }
 
 export async function GET(request: Request) {
