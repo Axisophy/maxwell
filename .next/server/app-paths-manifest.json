@@ -1,6 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/api/uk-energy/route": "app/api/uk-energy/route.js",
-  "/api/space-weather/route": "app/api/space-weather/route.js",
-  "/api/pulse/route": "app/api/pulse/route.js"
-}

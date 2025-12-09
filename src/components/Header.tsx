@@ -2,6 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 import Logo from './Logo'
 
 const navItems = [
@@ -122,14 +129,26 @@ export default function Header() {
           })}
         </div>
 
-        {/* Sign In: cols 11-12 */}
-        <div className="col-span-2 flex justify-end">
-          <Link
-            href="/signin"
-            className="text-sm text-black/60 hover:text-black transition-colors"
-          >
-            Sign In
-          </Link>
+        {/* Auth: cols 11-12 */}
+        <div className="col-span-2 flex justify-end items-center gap-3">
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="text-sm text-black/60 hover:text-black transition-colors cursor-pointer">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+          
+          <SignedIn>
+            <UserButton 
+              afterSignOutUrl="/"
+              appearance={{
+                elements: {
+                  avatarBox: 'w-8 h-8',
+                },
+              }}
+            />
+          </SignedIn>
         </div>
       </div>
     </header>

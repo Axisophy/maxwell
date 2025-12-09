@@ -3,6 +3,13 @@
 import Link from 'next/link'
 import { X, Search } from 'lucide-react'
 import { useState } from 'react'
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 
 interface MobileMenuProps {
   isOpen: boolean
@@ -102,22 +109,40 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
         {/* Account section */}
         <div className="px-4 py-6 border-b border-black/10">
-          <div className="flex gap-3">
-            <Link
-              href="/signin"
-              onClick={onClose}
-              className="flex-1 py-3 px-4 bg-black text-white text-center text-sm font-medium rounded-lg"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              onClick={onClose}
-              className="flex-1 py-3 px-4 bg-neutral-100 text-black text-center text-sm font-medium rounded-lg"
-            >
-              Register
-            </Link>
-          </div>
+          <SignedOut>
+            <div className="flex gap-3">
+              <SignInButton mode="modal">
+                <button 
+                  onClick={onClose}
+                  className="flex-1 py-3 px-4 bg-black text-white text-center text-sm font-medium rounded-lg cursor-pointer"
+                >
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button 
+                  onClick={onClose}
+                  className="flex-1 py-3 px-4 bg-neutral-100 text-black text-center text-sm font-medium rounded-lg cursor-pointer"
+                >
+                  Register
+                </button>
+              </SignUpButton>
+            </div>
+          </SignedOut>
+          
+          <SignedIn>
+            <div className="flex items-center gap-3">
+              <UserButton 
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    avatarBox: 'w-10 h-10',
+                  },
+                }}
+              />
+              <span className="text-sm text-black">Your Account</span>
+            </div>
+          </SignedIn>
         </div>
 
         {/* Link sections */}
