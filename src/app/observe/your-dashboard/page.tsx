@@ -8,6 +8,7 @@ import AirQuality from '@/components/widgets/AirQuality'
 import APOD from '@/components/widgets/APOD'
 import AuroraForecast from '@/components/widgets/AuroraForecast'
 import CO2Now from '@/components/widgets/CO2Now'
+import DSCOVREpic from '@/components/widgets/DSCOVREpic'
 
 export default function YourDashboardPage() {
   return (
@@ -113,6 +114,19 @@ export default function YourDashboardPage() {
             status="ok"
           >
             <CO2Now />
+          </WidgetFrame>
+
+          {/* DSCOVR EPIC */}
+          <WidgetFrame
+            title="Earth from L1"
+            info={{
+              description:
+                'DSCOVR orbits the L1 Lagrange point, 1.5 million km from Earth, where the gravity of the Sun and Earth balance. From there it always sees the sunlit side of our planet — Earth as a distant traveller would see it.',
+              source: 'NASA DSCOVR EPIC Camera',
+            }}
+            status="live"
+          >
+            <DSCOVREpic />
           </WidgetFrame>
 
         </div>
