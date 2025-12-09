@@ -4,14 +4,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Logo from './Logo'
 
-const utilityItems = [
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
-  { href: '/newsletter', label: 'Newsletter' },
-  { href: '/store', label: 'Store' },
-  { href: '/signin', label: 'Sign In' },
-]
-
 const navItems = [
   { href: '/observe', label: 'observe' },
   { href: '/tools', label: 'tools' },
@@ -66,13 +58,13 @@ export default function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="hidden md:block w-full px-8 lg:px-12 py-8 border-b border-border-light bg-shell-light">
+    <header className="hidden md:block w-full px-4 md:px-8 lg:px-12 py-6 border-b border-black/10 bg-white">
       <div className="grid grid-cols-12 items-start">
         {/* Logo + tagline: cols 1-2 */}
         <div className="col-span-2">
           <Link href="/" className="block group">
-            <Logo className="h-9 w-auto" />
-            <span className="text-sm text-text-primary tracking-wide mt-1.5 block font-sans">
+            <Logo className="h-8 w-auto text-black" />
+            <span className="text-xs text-black/60 tracking-wide mt-1 block">
               a digital laboratory
             </span>
           </Link>
@@ -91,8 +83,8 @@ export default function Header() {
               <div key={item.href} className="flex-1">
                 <Link
                   href={item.href}
-                  className={`text-nav font-sans-display font-light tracking-wide cursor-pointer block ${
-                    isActive ? 'text-text-primary' : 'text-text-primary'
+                  className={`text-xl font-light tracking-wide cursor-pointer block leading-none ${
+                    isActive ? 'text-black' : 'text-black'
                   }`}
                 >
                   {item.label}
@@ -106,10 +98,10 @@ export default function Header() {
                         <Link
                           key={subItem.label}
                           href={subItem.href}
-                          className={`block text-sm cursor-pointer font-sans ${
+                          className={`block text-sm cursor-pointer ${
                             pathname === subItem.href 
-                              ? 'text-text-primary font-medium' 
-                              : 'text-text-primary'
+                              ? 'text-black font-medium' 
+                              : 'text-black'
                           }`}
                         >
                           {subItem.label}
@@ -117,7 +109,7 @@ export default function Header() {
                       ) : (
                         <span
                           key={subItem.label}
-                          className="block text-sm text-text-muted font-sans"
+                          className="block text-sm text-black/40"
                         >
                           {subItem.label}
                         </span>
@@ -130,19 +122,14 @@ export default function Header() {
           })}
         </div>
 
-        {/* Utility column: cols 11-12 */}
-        <div className="col-span-2 text-right">
-          <div className="mt-3 space-y-0.5">
-            {utilityItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="block text-sm text-text-muted cursor-pointer font-sans"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
+        {/* Sign In: cols 11-12 */}
+        <div className="col-span-2 flex justify-end">
+          <Link
+            href="/signin"
+            className="text-sm text-black/60 hover:text-black transition-colors"
+          >
+            Sign In
+          </Link>
         </div>
       </div>
     </header>

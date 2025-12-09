@@ -19,6 +19,7 @@ const footerLinks = {
     { href: '/about/partnerships', label: 'Institutions' },
     { href: '/about/investment', label: 'Investors' },
     { href: '/about/advertising', label: 'Advertising' },
+    { href: '/store', label: 'Store' },
   ],
   legal: [
     { href: '/privacy', label: 'Privacy' },
