@@ -39,7 +39,7 @@ const userTypes = [
       prompt: "Explore or collaborate:",
       links: [
         { href: '/observe/your-dashboard', label: 'Explore the Dashboard' },
-        { href: '/about/contact', label: 'Get in touch about featuring your work' },
+        { href: '/collaborations', label: 'Collaborate with us' },
       ]
     }
   },
@@ -62,8 +62,8 @@ const userTypes = [
       intro: "MXWLL is building the quality layer for science — a platform that combines beautiful design, live data, and deep content. We're seeking partners who share our vision for transforming how the world engages with science.",
       prompt: "Learn more:",
       links: [
-        { href: '/about/company', label: 'About our company' },
-        { href: '/about/investment', label: 'Investment potential' },
+        { href: '/about', label: 'About MXWLL' },
+        { href: '/about/investment', label: 'Investment opportunities' },
       ]
     }
   },
