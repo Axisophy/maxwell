@@ -7,6 +7,7 @@ import SpaceWeather from '@/components/widgets/SpaceWeather'
 import AirQuality from '@/components/widgets/AirQuality'
 import APOD from '@/components/widgets/APOD'
 import AuroraForecast from '@/components/widgets/AuroraForecast'
+import CO2Now from '@/components/widgets/CO2Now'
 
 export default function YourDashboardPage() {
   return (
@@ -99,6 +100,19 @@ export default function YourDashboardPage() {
             status="live"
           >
             <AuroraForecast />
+          </WidgetFrame>
+
+          {/* CO2 Now */}
+          <WidgetFrame
+            title="CO₂ Now"
+            info={{
+              description:
+                'Current atmospheric carbon dioxide concentration measured at Mauna Loa Observatory, Hawaii. The Keeling Curve measurements began in 1958 and represent the longest continuous record of atmospheric CO₂.',
+              source: 'NOAA Global Monitoring Laboratory',
+            }}
+            status="ok"
+          >
+            <CO2Now />
           </WidgetFrame>
 
         </div>
