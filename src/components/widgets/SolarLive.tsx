@@ -82,8 +82,8 @@ export default function SolarLive({
         </div>
       </div>
 
-      {/* Controls - using unified button styles */}
-      <div className="mt-4 flex items-center justify-between">
+      {/* Controls */}
+      <div className="mt-4">
         {/* Wavelength selector - segmented control style */}
         <div 
           className="flex p-1 rounded-lg"
@@ -93,7 +93,7 @@ export default function SolarLive({
             <button
               key={key}
               onClick={() => setWavelength(key as WavelengthKey)}
-              className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors"
+              className="flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors"
               style={{
                 backgroundColor: wavelength === key ? '#ffffff' : 'transparent',
                 color: wavelength === key ? '#000000' : 'rgba(0,0,0,0.5)',
@@ -104,9 +104,14 @@ export default function SolarLive({
           ))}
         </div>
 
-        {/* Timestamp */}
-        <div className="text-xs font-mono text-text-muted">
-          {formatTime(lastUpdate)}
+        {/* Timestamp and source */}
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#e5e5e5]">
+          <span className="text-xs text-text-muted">
+            {WAVELENGTHS[wavelength].description}
+          </span>
+          <span className="text-xs font-mono text-text-muted">
+            {formatTime(lastUpdate)}
+          </span>
         </div>
       </div>
     </div>

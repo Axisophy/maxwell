@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server'
 
+// ===========================================
+// SPACE WEATHER API ROUTE
+// ===========================================
+// Proxies NOAA SWPC APIs with server-side caching
+// Cache TTL: 5 minutes (space weather updates every 3 hours, but we want freshness)
+// ===========================================
+
 // NOAA SWPC API endpoints
 const NOAA_KP_URL = 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json'
 const NOAA_SOLAR_WIND_URL = 'https://services.swpc.noaa.gov/products/summary/solar-wind-speed.json'
@@ -24,6 +31,15 @@ interface SpaceWeatherData {
   timestamp: string
 }
 
+interface CacheEntry {
+  data: SpaceWeatherData
+  timestamp: number
+}
+
+// Server-side cache
+let cache: CacheEntry | null = null
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
 function getKpStatus(kp: number): string {
   if (kp >= 8) return 'Extreme Storm'
   if (kp >= 7) return 'Severe Storm'
@@ -36,11 +52,21 @@ function getKpStatus(kp: number): string {
 }
 
 export async function GET() {
+  // Check cache first
+  if (cache && Date.now() - cache.timestamp < CACHE_TTL) {
+    return NextResponse.json(cache.data, {
+      headers: {
+        'X-Cache': 'HIT',
+        'X-Cache-Age': String(Math.round((Date.now() - cache.timestamp) / 1000)),
+      },
+    })
+  }
+
   try {
     // Fetch all data in parallel
     const [kpResponse, solarWindResponse] = await Promise.all([
-      fetch(NOAA_KP_URL, { next: { revalidate: 300 } }),
-      fetch(NOAA_SOLAR_WIND_URL, { next: { revalidate: 300 } }),
+      fetch(NOAA_KP_URL, { cache: 'no-store' }),
+      fetch(NOAA_SOLAR_WIND_URL, { cache: 'no-store' }),
     ])
 
     // Parse Kp data
@@ -76,7 +102,7 @@ export async function GET() {
     let xrayClass = 'Quiet'
     
     try {
-      const xrayResponse = await fetch(NOAA_XRAY_URL, { next: { revalidate: 300 } })
+      const xrayResponse = await fetch(NOAA_XRAY_URL, { cache: 'no-store' })
       if (xrayResponse.ok) {
         const xrayData = await xrayResponse.json()
         if (xrayData && xrayData.length > 0) {
@@ -92,7 +118,7 @@ export async function GET() {
     // Try to get alerts
     let alerts: string[] = []
     try {
-      const alertsResponse = await fetch(NOAA_ALERTS_URL, { next: { revalidate: 300 } })
+      const alertsResponse = await fetch(NOAA_ALERTS_URL, { cache: 'no-store' })
       if (alertsResponse.ok) {
         const alertsData = await alertsResponse.json()
         // Get last 3 alerts
@@ -127,9 +153,28 @@ export async function GET() {
       timestamp: new Date().toISOString()
     }
 
-    return NextResponse.json(data)
+    // Update cache
+    cache = {
+      data,
+      timestamp: Date.now(),
+    }
+
+    return NextResponse.json(data, {
+      headers: { 'X-Cache': 'MISS' },
+    })
   } catch (error) {
     console.error('Error fetching space weather data:', error)
+    
+    // If we have stale cache, return it rather than error
+    if (cache) {
+      return NextResponse.json(cache.data, {
+        headers: {
+          'X-Cache': 'STALE',
+          'X-Cache-Age': String(Math.round((Date.now() - cache.timestamp) / 1000)),
+        },
+      })
+    }
+    
     return NextResponse.json(
       { error: 'Failed to fetch space weather data' },
       { status: 500 }

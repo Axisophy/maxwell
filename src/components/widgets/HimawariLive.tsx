@@ -137,30 +137,30 @@ export default function HimawariLive({
         </div>
       </div>
 
-      {/* Controls - unified styling */}
-      <div className="mt-4 flex items-center justify-between flex-wrap gap-2">
-        {/* Image type selector */}
-        <div 
-          className="flex p-1 rounded-lg"
-          style={{ backgroundColor: '#e5e5e5' }}
-        >
-          {Object.entries(IMAGE_TYPES).map(([key, { label }]) => (
-            <button
-              key={key}
-              onClick={() => handleImageTypeChange(key as ImageTypeKey)}
-              className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors"
-              style={{
-                backgroundColor: imageType === key ? '#ffffff' : 'transparent',
-                color: imageType === key ? '#000000' : 'rgba(0,0,0,0.5)',
-              }}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+      {/* Controls */}
+      <div className="mt-4">
+        {/* Top row: Image type + Animation controls */}
+        <div className="flex items-center justify-between gap-2">
+          {/* Image type selector */}
+          <div 
+            className="flex p-1 rounded-lg"
+            style={{ backgroundColor: '#e5e5e5' }}
+          >
+            {Object.entries(IMAGE_TYPES).map(([key, { label }]) => (
+              <button
+                key={key}
+                onClick={() => handleImageTypeChange(key as ImageTypeKey)}
+                className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors"
+                style={{
+                  backgroundColor: imageType === key ? '#ffffff' : 'transparent',
+                  color: imageType === key ? '#000000' : 'rgba(0,0,0,0.5)',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
 
-        {/* Animation controls + Timestamp */}
-        <div className="flex items-center gap-2">
           {/* Animation duration selector */}
           <div 
             className="flex p-1 rounded-lg"
@@ -192,11 +192,16 @@ export default function HimawariLive({
               </button>
             )}
           </div>
+        </div>
 
-          {/* Timestamp */}
-          <div className="text-xs font-mono text-text-muted">
+        {/* Bottom row: Description + Timestamp */}
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#e5e5e5]">
+          <span className="text-xs text-text-muted">
+            {IMAGE_TYPES[imageType].description}
+          </span>
+          <span className="text-xs font-mono text-text-muted">
             {formatTime(currentTime)}
-          </div>
+          </span>
         </div>
       </div>
     </div>

@@ -5,6 +5,8 @@ import SolarLive from '@/components/widgets/SolarLive'
 import HimawariLive from '@/components/widgets/HimawariLive'
 import SpaceWeather from '@/components/widgets/SpaceWeather'
 import AirQuality from '@/components/widgets/AirQuality'
+import APOD from '@/components/widgets/APOD'
+import AuroraForecast from '@/components/widgets/AuroraForecast'
 
 export default function YourDashboardPage() {
   return (
@@ -71,6 +73,32 @@ export default function YourDashboardPage() {
             status="live"
           >
             <AirQuality />
+          </WidgetFrame>
+
+          {/* Astronomy Picture of the Day */}
+          <WidgetFrame
+            title="Picture of the Day"
+            info={{
+              description:
+                "NASA's Astronomy Picture of the Day. Each day a different image or photograph of our universe is featured, along with a brief explanation written by a professional astronomer.",
+              source: 'NASA APOD',
+            }}
+            status="ok"
+          >
+            <APOD />
+          </WidgetFrame>
+
+          {/* Aurora Forecast */}
+          <WidgetFrame
+            title="Aurora Forecast"
+            info={{
+              description:
+                'Will you see aurora tonight? Based on geomagnetic activity forecasts and your latitude. Best viewing is on clear nights, away from city lights, between 10pm and 2am.',
+              source: 'NOAA Space Weather Prediction Center',
+            }}
+            status="live"
+          >
+            <AuroraForecast />
           </WidgetFrame>
 
         </div>
