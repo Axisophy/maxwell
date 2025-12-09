@@ -39,12 +39,12 @@ function getMagnitudeColor(mag: number): string {
   return '#84cc16'                 // Minor - lime
 }
 
-// Marker size based on magnitude (scaled for new viewBox)
+// Marker size based on magnitude (scaled for 784x458 viewBox)
 function getMagnitudeSize(mag: number): number {
-  if (mag >= 7) return 20
-  if (mag >= 6) return 14
-  if (mag >= 5) return 10
-  return 7
+  if (mag >= 7) return 12
+  if (mag >= 6) return 8
+  if (mag >= 5) return 6
+  return 4
 }
 
 // ===========================================
@@ -68,7 +68,7 @@ function EarthquakeMarkers({ earthquakes }: { earthquakes: Earthquake[] }) {
                 r={size}
                 fill="none"
                 stroke={color}
-                strokeWidth="2"
+                strokeWidth="1.5"
                 opacity="0.6"
               >
                 <animate

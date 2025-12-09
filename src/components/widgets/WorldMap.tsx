@@ -1,5 +1,7 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
 // ===========================================
 // WORLD MAP COMPONENT
 // ===========================================
@@ -10,50 +12,84 @@
 
 interface WorldMapProps {
   className?: string
+  oceanColor?: string
+  landColor?: string
   children?: React.ReactNode
 }
 
-// The source SVG has viewBox="0 0 1009.6727 665.96301"
-// We need to map lat/lon to these coordinates
-const MAP_WIDTH = 1009.6727
-const MAP_HEIGHT = 665.96301
+// The source SVG viewBox: "30.767 241.591 784.077 458.627"
+const VIEW_X = 30.767
+const VIEW_Y = 241.591
+const VIEW_WIDTH = 784.077
+const VIEW_HEIGHT = 458.627
 
 // Convert lat/lng to SVG coordinates
-// Equirectangular projection: x = lon, y = -lat (scaled)
 export function latLonToXY(
   lat: number, 
   lon: number
 ): { x: number; y: number } {
-  // Map longitude (-180 to 180) to x (0 to MAP_WIDTH)
-  const x = ((lon + 180) / 360) * MAP_WIDTH
-  // Map latitude (90 to -90) to y (0 to MAP_HEIGHT)
-  const y = ((90 - lat) / 180) * MAP_HEIGHT
+  const x = VIEW_X + ((lon + 180) / 360) * VIEW_WIDTH
+  const y = VIEW_Y + ((90 - lat) / 180) * VIEW_HEIGHT
   return { x, y }
 }
 
 export default function WorldMap({
   className = '',
+  oceanColor = '#0f172a',
+  landColor = '#1e3a5f',
   children,
 }: WorldMapProps) {
+  const [svgContent, setSvgContent] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/maps/world-map.svg')
+      .then(res => res.text())
+      .then(text => {
+        // Extract just the path elements from the SVG
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(text, 'image/svg+xml')
+        const paths = doc.querySelectorAll('path')
+        
+        // Convert paths to string with our fill color
+        let pathsHtml = ''
+        paths.forEach(path => {
+          const d = path.getAttribute('d')
+          if (d) {
+            pathsHtml += `<path d="${d}" />`
+          }
+        })
+        
+        setSvgContent(pathsHtml)
+      })
+      .catch(err => console.error('Failed to load map:', err))
+  }, [])
+
   return (
     <div className={`relative ${className}`}>
-      {/* Base map image */}
-      <img 
-        src="/maps/world-map.svg" 
-        alt="World map"
-        className="w-full h-auto block"
-        style={{
-          filter: 'brightness(0.4) saturate(0.8)',
-          background: '#0f172a',
-        }}
-      />
-      
-      {/* Marker overlay - positioned exactly over the map */}
       <svg
-        viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-        className="absolute inset-0 w-full h-full"
+        viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
+        className="w-full h-auto block"
         preserveAspectRatio="xMidYMid meet"
       >
+        {/* Ocean background */}
+        <rect 
+          x={VIEW_X} 
+          y={VIEW_Y} 
+          width={VIEW_WIDTH} 
+          height={VIEW_HEIGHT} 
+          fill={oceanColor} 
+        />
+        
+        {/* Land masses */}
+        {svgContent && (
+          <g 
+            fill={landColor} 
+            stroke="none"
+            dangerouslySetInnerHTML={{ __html: svgContent }}
+          />
+        )}
+        
+        {/* Markers overlay */}
         {children}
       </svg>
     </div>

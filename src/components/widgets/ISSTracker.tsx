@@ -44,11 +44,11 @@ function ISSMarker({ latitude, longitude }: { latitude: number; longitude: numbe
   return (
     <g transform={`translate(${x}, ${y})`}>
       {/* Pulse ring */}
-      <circle r="12" fill="none" stroke="#fbbf24" strokeWidth="3" opacity="0.3">
+      <circle r="6" fill="none" stroke="#fbbf24" strokeWidth="2" opacity="0.3">
         <animate
           attributeName="r"
-          from="12"
-          to="35"
+          from="6"
+          to="20"
           dur="2s"
           repeatCount="indefinite"
         />
@@ -61,9 +61,9 @@ function ISSMarker({ latitude, longitude }: { latitude: number; longitude: numbe
         />
       </circle>
       {/* ISS body */}
-      <circle r="8" fill="#fbbf24" />
+      <circle r="5" fill="#fbbf24" />
       {/* Solar panels */}
-      <rect x="-22" y="-3" width="44" height="6" fill="#fbbf24" rx="2" />
+      <rect x="-12" y="-2" width="24" height="4" fill="#fbbf24" rx="1" />
     </g>
   )
 }
