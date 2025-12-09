@@ -4,6 +4,7 @@ import WidgetFrame from '@/components/WidgetFrame'
 import SolarLive from '@/components/widgets/SolarLive'
 import HimawariLive from '@/components/widgets/HimawariLive'
 import SpaceWeather from '@/components/widgets/SpaceWeather'
+import AirQuality from '@/components/widgets/AirQuality'
 
 export default function YourDashboardPage() {
   return (
@@ -57,6 +58,19 @@ export default function YourDashboardPage() {
             status="live"
           >
             <SpaceWeather />
+          </WidgetFrame>
+
+          {/* Air Quality */}
+          <WidgetFrame
+            title="Air Quality"
+            info={{
+              description:
+                'Current air quality index based on your location. Shows PM2.5 levels and comparison to WHO guidelines. Expand to see individual pollutant readings.',
+              source: 'OpenAQ',
+            }}
+            status="live"
+          >
+            <AirQuality />
           </WidgetFrame>
 
         </div>
