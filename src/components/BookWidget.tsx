@@ -272,7 +272,7 @@ export default function BookWidget({
               {style.graphic}
             </div>
 
-            {/* Title - dynamic sizing */}
+            {/* Title - dynamic sizing with Trade Gothic Condensed Bold */}
             <div
               className="absolute w-full px-[1em]"
               style={{ 
@@ -281,8 +281,10 @@ export default function BookWidget({
               }}
             >
               <h3 
-                className="font-serif leading-tight"
+                className="leading-tight uppercase"
                 style={{ 
+                  fontFamily: 'trade-gothic-next-condensed, sans-serif',
+                  fontWeight: 700,
                   fontSize: titleSize,
                   color: style.text,
                 }}
@@ -291,21 +293,26 @@ export default function BookWidget({
               </h3>
             </div>
 
-            {/* Logo placeholder */}
+            {/* MXWLL Logo */}
             <div
               className="absolute w-full px-[1em]"
               style={{ bottom: '5%' }}
             >
-              <p 
-                className="font-sans tracking-widest"
+              <svg 
+                viewBox="0 0 401 86.38" 
                 style={{ 
-                  fontSize: '0.55em',
-                  color: style.text,
+                  width: '5em',
+                  height: 'auto',
+                  fill: style.text,
                   opacity: 0.5,
                 }}
               >
-                MXWLL EDITIONS
-              </p>
+                <path d="M18.48,64.68c0,14,1.82,16.38,13.44,16.38v2.94H0v-2.94c11.62,0,13.3-2.38,13.3-16.38V19.18C13.3,5.18,11.62,2.94,0,2.94V0h23.8l29.68,68.18L83.02,0h21.98v2.94c-11.76,0-13.44,2.24-13.44,16.24v45.5c0,14,1.68,16.38,13.44,16.38v2.94h-37.8v-2.94c11.62,0,13.3-2.38,13.3-16.38V19.04l-29.12,67.34h-1.82L18.48,14.84v49.84Z"/>
+                <path d="M133.88,70.42c-6.3,8.12-4.48,10.64,3.64,10.64v2.94h-26.32v-2.94c6.58,0,10.36-3.22,17.5-12.18l11.48-14.56-11.2-15.82c-6.58-9.52-9.52-12.32-16.8-12.32v-2.8h31.36v2.8c-8.96,0-9.1,2.8-3.64,10.64l6.58,9.66,7.7-9.66c6.58-8.54,4.9-10.64-3.64-10.64v-2.8h26.32v2.8c-7.14,0-10.64,3.5-17.5,12.32l-9.8,12.18,12.74,18.2c6.58,9.38,10.22,12.18,16.94,12.18v2.94h-31.36v-2.94c8.82,0,9.24-2.38,3.5-10.64l-8.12-11.62-9.38,11.62Z"/>
+                <path d="M246.15,65.38l9.66-28.56c2.8-8.26,1.54-10.64-7.42-10.64v-2.8h26.32v2.8c-8.68,0-10.92,2.1-14.28,12.32l-16.1,47.88h-1.82l-14.28-43.82-14.56,43.82h-1.82l-15.54-47.88c-3.36-10.22-5.6-12.32-13.72-12.32v-2.8h31.08v2.8c-8.26,0-10.36,1.96-7.56,10.64l9.38,28.56,14.14-42h2.8l13.72,42Z"/>
+                <path d="M281.3,26.18v-2.8h32.06v2.8c-9.38,0-11.06,2.24-11.06,16.24v20.16c0,14,1.68,16.24,11.06,16.24h4.9c12.88,0,14.56-2.38,16.24-8.96l.7-2.8h2.94l-.98,16.94h-55.86v-2.8c9.38,0,11.06-2.38,11.06-16.38v-22.4c0-14-1.68-16.24-11.06-16.24Z"/>
+                <path d="M344.16,26.18v-2.8h32.06v2.8c-9.38,0-11.06,2.24-11.06,16.24v20.16c0,14,1.68,16.24,11.06,16.24h4.9c12.88,0,14.56-2.38,16.24-8.96l.7-2.8h2.94l-.98,16.94h-55.86v-2.8c9.38,0,11.06-2.38,11.06-16.38v-22.4c0-14-1.68-16.24-11.06-16.24Z"/>
+              </svg>
             </div>
           </div>
         </div>
@@ -324,8 +331,12 @@ export default function BookWidget({
         >
           {/* Title */}
           <h3 
-            className="font-serif leading-tight mb-[0.3em]"
-            style={{ fontSize: '1.4em' }}
+            className="leading-tight mb-[0.3em]"
+            style={{ 
+              fontFamily: 'trade-gothic-next-condensed, sans-serif',
+              fontWeight: 700,
+              fontSize: '1.4em',
+            }}
           >
             {title}
           </h3>
