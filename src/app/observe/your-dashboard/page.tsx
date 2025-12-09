@@ -9,6 +9,8 @@ import APOD from '@/components/widgets/APOD'
 import AuroraForecast from '@/components/widgets/AuroraForecast'
 import CO2Now from '@/components/widgets/CO2Now'
 import DSCOVREpic from '@/components/widgets/DSCOVREpic'
+import EarthquakesLive from '@/components/widgets/EarthquakesLive'
+import ISSTracker from '@/components/widgets/ISSTracker'
 
 export default function YourDashboardPage() {
   return (
@@ -131,6 +133,32 @@ export default function YourDashboardPage() {
 
         </div>
       </div>
+
+          {/* Earthquakes Live */}
+          <WidgetFrame
+            title="Earthquakes"
+            info={{
+              description:
+                'Real-time seismic activity showing earthquakes magnitude 4.5 and above. Colour indicates severity: yellow (M4-5), orange (M5-6), red (M6-7), dark red (M7+).',
+              source: 'USGS Earthquake Hazards Program',
+            }}
+            status="live"
+          >
+            <EarthquakesLive />
+          </WidgetFrame>
+
+          {/* ISS Tracker */}
+          <WidgetFrame
+            title="ISS Tracker"
+            info={{
+              description:
+                'Real-time position of the International Space Station, orbiting at approximately 420 km altitude and 27,600 km/h. Updates every 30 seconds.',
+              source: 'Where The ISS At / Open Notify',
+            }}
+            status="live"
+          >
+            <ISSTracker />
+          </WidgetFrame>
 
       {/* Mobile bottom padding for nav */}
       <div className="h-20 md:hidden" />
