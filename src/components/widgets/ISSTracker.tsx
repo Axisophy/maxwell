@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import WorldMap, { latLonToXY } from './WorldMap'
 
 // ===========================================
 // ISS TRACKER WIDGET
@@ -33,85 +34,37 @@ interface APIResponse {
   astronauts: AstronautData
 }
 
-// Convert lat/lng to map coordinates
-function latLonToXY(lat: number, lon: number, width: number, height: number) {
-  const x = ((lon + 180) / 360) * width
-  const y = ((90 - lat) / 180) * height
-  return { x, y }
-}
-
 // ===========================================
-// WORLD MAP WITH ISS
+// ISS MARKER
 // ===========================================
 
-function ISSMap({ 
-  latitude, 
-  longitude,
-  width = 360, 
-  height = 180 
-}: { 
-  latitude: number
-  longitude: number
-  width?: number
-  height?: number
-}) {
-  const { x, y } = latLonToXY(latitude, longitude, width, height)
+function ISSMarker({ latitude, longitude }: { latitude: number; longitude: number }) {
+  const { x, y } = latLonToXY(latitude, longitude)
   
   return (
-    <svg 
-      viewBox={`0 0 ${width} ${height}`}
-      className="w-full h-auto"
-      preserveAspectRatio="xMidYMid meet"
-    >
-      {/* Ocean */}
-      <rect x="0" y="0" width={width} height={height} fill="#0f172a" />
-      
-      {/* Grid lines */}
-      <g stroke="#1e293b" strokeWidth="0.5">
-        {[-60, -30, 0, 30, 60].map(lat => {
-          const lineY = ((90 - lat) / 180) * height
-          return <line key={`lat-${lat}`} x1="0" y1={lineY} x2={width} y2={lineY} />
-        })}
-        {[-120, -60, 0, 60, 120].map(lon => {
-          const lineX = ((lon + 180) / 360) * width
-          return <line key={`lon-${lon}`} x1={lineX} y1="0" x2={lineX} y2={height} />
-        })}
-      </g>
-      
-      {/* Simplified continents */}
-      <g fill="#1e3a5f" opacity="0.6">
-        {/* North America */}
-        <path d="M 30,30 Q 60,25 90,35 L 95,55 Q 80,70 70,75 L 50,70 Q 35,60 30,45 Z" />
-        {/* South America */}
-        <path d="M 70,85 Q 85,80 90,90 L 85,130 Q 75,145 65,140 L 60,110 Q 60,95 70,85 Z" />
-        {/* Europe */}
-        <path d="M 160,30 Q 180,25 195,35 L 200,50 Q 185,55 170,50 L 160,40 Z" />
-        {/* Africa */}
-        <path d="M 165,55 Q 185,50 200,60 L 195,100 Q 180,115 165,105 L 160,75 Z" />
-        {/* Asia */}
-        <path d="M 200,25 Q 260,20 310,35 L 320,55 Q 300,70 260,65 L 220,55 Q 205,45 200,35 Z" />
-        {/* Australia */}
-        <path d="M 280,100 Q 310,95 325,105 L 320,125 Q 300,135 285,125 L 280,110 Z" />
-      </g>
-      
-      {/* ISS marker */}
-      <g transform={`translate(${x}, ${y})`}>
-        {/* Pulse ring */}
-        <circle 
-          r="10" 
-          fill="none" 
-          stroke="#fbbf24"
-          strokeWidth="2"
-          opacity="0.4"
-          className="animate-ping"
-          style={{ animationDuration: '2s' }}
+    <g transform={`translate(${x}, ${y})`}>
+      {/* Pulse ring */}
+      <circle r="12" fill="none" stroke="#fbbf24" strokeWidth="3" opacity="0.3">
+        <animate
+          attributeName="r"
+          from="12"
+          to="35"
+          dur="2s"
+          repeatCount="indefinite"
         />
-        {/* ISS dot */}
-        <circle r="5" fill="#fbbf24" />
-        {/* ISS icon hint - solar panels */}
-        <rect x="-8" y="-1" width="16" height="2" fill="#fbbf24" rx="1" />
-      </g>
-    </svg>
+        <animate
+          attributeName="opacity"
+          from="0.5"
+          to="0"
+          dur="2s"
+          repeatCount="indefinite"
+        />
+      </circle>
+      {/* ISS body */}
+      <circle r="8" fill="#fbbf24" />
+      {/* Solar panels */}
+      <rect x="-22" y="-3" width="44" height="6" fill="#fbbf24" rx="2" />
+    </g>
   )
 }
 
@@ -195,10 +148,9 @@ export default function ISSTracker() {
 
       {/* Map */}
       <div className="rounded-lg overflow-hidden">
-        <ISSMap 
-          latitude={data.iss.latitude} 
-          longitude={data.iss.longitude} 
-        />
+        <WorldMap>
+          <ISSMarker latitude={data.iss.latitude} longitude={data.iss.longitude} />
+        </WorldMap>
       </div>
 
       {/* Coordinates */}
