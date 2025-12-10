@@ -48,7 +48,7 @@ const userTypes = [
     id: 'institution',
     label: 'Institution or Organisation',
     content: {
-      intro: "Universities, research institutions, museums and science organisations — we're building partnerships to bring your work to curious audiences worldwide. Beautiful presentation, effortless engagement.",
+      intro: "Universities, research institutions, museums and science organisations - we're building partnerships to bring your work to curious audiences worldwide. Beautiful presentation, effortless engagement.",
       prompt: "Let's work together:",
       links: [
         { href: '/about/partnerships', label: 'Partnership opportunities' },
@@ -60,7 +60,7 @@ const userTypes = [
     id: 'investor',
     label: 'Investor',
     content: {
-      intro: "MXWLL is building the quality layer for science — a platform that combines beautiful design, live data, and deep content. We're seeking partners who share our vision for transforming how the world engages with science.",
+      intro: "MXWLL is building the quality layer for science - a platform that combines beautiful design, live data, and deep content. We're seeking partners who share our vision for transforming how the world engages with science.",
       prompt: "Learn more:",
       links: [
         { href: '/about', label: 'About MXWLL' },
@@ -143,26 +143,31 @@ export default function HomePage() {
         {/* Gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-       {/* Hero content - at bottom of section */}
+        {/* Hero content - at bottom of section */}
         <div className="relative px-4 md:px-8 lg:px-12">
           <h1 
-            className="text-white text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.95] mb-6 max-w-[85%]"
+            className="text-white text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[0.95] mb-6 max-w-[90%]"
             style={{ letterSpacing: '-0.03em' }}
           >
-            A digital laboratory
+            A digital laboratory for the living story of science
           </h1>
-          <p className="text-white/90 text-xl md:text-2xl lg:text-3xl font-light leading-relaxed max-w-4xl lg:max-w-5xl xl:max-w-7xl">
-            Science is happening everywhere, all the time. Stars are fusing. Particles are decaying. 
-            Earthquakes are rippling. Data is flowing. Mostly, you can't see any of it. 
-            <span className="block mt-4">
-              We build windows. Beautiful windows. The kind of windows you'll want to look through every day.
-            </span>
-            <span className="block mt-4">
-              MXWLL curates the best freely available scientific data and presents it the way it deserves. 
-              No ugly government websites. 
-              No paywalls. No algorithmic noise. Just science, presented properly.
-            </span>
+          <p className="text-white text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed max-w-4xl mb-8">
+            MXWLL finds the signals, then builds the instruments to see them.
           </p>
+          <div className="text-white/80 text-base md:text-lg lg:text-xl font-light leading-relaxed max-w-4xl space-y-4">
+            <p>
+              Science is not abstract. It is weather moving across oceans, starlight crossing millions of years, the quiet drift of tectonic plates beneath your feet. It is notebooks, satellites, supercomputers and hand-built experiments, all generating data that is too often hidden away in archives, PDFs and dashboards no one loves.
+            </p>
+            <p>
+              MXWLL spends its time in those places. We search through observatories, missions, research groups and public institutions for the streams of data that actually matter - the elusive patterns that say something about the Earth, the universe and our place inside both. When we find them, we treat them as material. We model them, tune them, and build precise, beautiful interfaces around them.
+            </p>
+            <p>
+              The result is a set of instruments rather than a website: live windows onto earthquakes, climate, deep time and distant galaxies; working tools that can be used by a curious twelve-year-old, a postgraduate researcher or a museum curator; reading rooms where ancient ideas sit alongside current papers and speculative futures. Everything is designed to feel calm, legible and quietly obsessive.
+            </p>
+            <p>
+              MXWLL is not a feed and it is not a portal. It is a long-term project to give science the visual and editorial care it deserves - to make the machinery of the world visible, in real time, on devices you enjoy using.
+            </p>
+          </div>
         </div>
       </section>
 
