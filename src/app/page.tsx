@@ -146,13 +146,13 @@ export default function HomePage() {
         {/* Hero content - at bottom of section */}
         <div className="relative px-4 md:px-8 lg:px-12">
           <h1 
-            className="text-white text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[0.95] mb-6 max-w-[90%]"
+            className="text-white text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.9] mb-8 max-w-[85%]"
             style={{ letterSpacing: '-0.03em' }}
           >
-            A digital laboratory for the living story of science
+            A digital laboratory
           </h1>
           <p className="text-white text-xl md:text-2xl lg:text-3xl font-medium leading-relaxed max-w-4xl mb-8">
-            MXWLL finds the signals, then builds the instruments to see them.
+            MXWLL finds the signals, then builds the instruments to see them. We tell the living story of science.
           </p>
           <div className="text-white/80 text-base md:text-lg lg:text-xl font-light leading-relaxed max-w-4xl space-y-4">
             <p>
