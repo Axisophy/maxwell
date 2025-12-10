@@ -13,7 +13,7 @@ const userTypes = [
       intro: "If you're just curious then you came to the right place! MXWLL has a huge amount of carefully curated visualisations, data streams, video and image feeds and a host of other stuff which should keep you occupied for hours.",
       prompt: "Why don't you start with:",
       links: [
-        { href: '/observe/the-pulse', label: 'Get the lowdown via The Pulse' },
+        { href: '/observe/vital-signs', label: 'Check Earth\'s Vital Signs' },
         { href: '/observe/your-dashboard', label: 'Start observing via Your Dashboard' },
       ]
     }
@@ -38,6 +38,7 @@ const userTypes = [
       intro: "Even experts need a break from their own field. MXWLL lets you explore the wonders of disciplines beyond your own, beautifully presented. And if you'd like your work featured here, we'd love to hear from you.",
       prompt: "Explore or collaborate:",
       links: [
+        { href: '/pulse', label: 'See what\'s new in the Pulse' },
         { href: '/observe/your-dashboard', label: 'Explore the Dashboard' },
         { href: '/collaborations', label: 'Collaborate with us' },
       ]
@@ -77,6 +78,13 @@ const exploreSections = [
     description: 'Live windows into science happening right now',
     image: '/assets/homepage/homepage_explore_observe.jpg',
     placeholderGradient: 'from-orange-900 via-red-900 to-yellow-900',
+  },
+  {
+    href: '/pulse',
+    label: 'Pulse',
+    description: 'Science news and partner highlights',
+    image: '/assets/homepage/homepage_explore_pulse.jpg',
+    placeholderGradient: 'from-emerald-900 via-teal-900 to-cyan-900',
   },
   {
     href: '/tools',
@@ -239,7 +247,7 @@ export default function HomePage() {
             Explore
           </h2>
 
-          {/* Section grid */}
+          {/* Section grid - 6 items now */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {exploreSections.map((section) => (
               <Link

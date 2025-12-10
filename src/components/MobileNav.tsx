@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Home, Eye, Wrench, Database, BookOpen, Sparkles } from 'lucide-react'
+import { Home, Eye, Radio, Wrench, Database, BookOpen, Sparkles } from 'lucide-react'
 
 // Navigation items with submenus where applicable
 const navItems = [
@@ -13,9 +13,16 @@ const navItems = [
     icon: Eye, 
     matchPaths: ['/observe'],
     submenu: [
-      { href: '/observe/the-pulse', label: 'The Pulse' },
+      { href: '/observe/vital-signs', label: 'Vital Signs' },
       { href: '/observe/your-dashboard', label: 'Your Dashboard' },
     ]
+  },
+  { 
+    href: '/pulse', 
+    label: 'Pulse', 
+    icon: Radio, 
+    matchPaths: ['/pulse'],
+    submenu: []
   },
   { 
     href: '/tools', 
@@ -68,7 +75,13 @@ export default function MobileNav() {
 
   const handleNavClick = (item: typeof navItems[0], e: React.MouseEvent) => {
     e.preventDefault()
-    setOpenSubmenu(openSubmenu === item.href ? null : item.href)
+    // If item has submenu, toggle it. Otherwise navigate directly.
+    if (item.submenu && item.submenu.length > 0) {
+      setOpenSubmenu(openSubmenu === item.href ? null : item.href)
+    } else {
+      // Navigate directly for items without submenus
+      window.location.href = item.href
+    }
   }
 
   const closeSubmenu = () => setOpenSubmenu(null)
@@ -139,7 +152,7 @@ export default function MobileNav() {
                 onClick={closeSubmenu}
                 className={`
                   flex flex-col items-center justify-center 
-                  w-14 h-full
+                  w-12 h-full
                   transition-colors
                   ${pathname === '/' ? 'text-text-primary' : 'text-text-muted'}
                 `}
@@ -148,13 +161,13 @@ export default function MobileNav() {
                   className="w-5 h-5 mb-1" 
                   strokeWidth={pathname === '/' ? 2 : 1.5}
                 />
-                <span className="text-[10px] font-medium">Home</span>
+                <span className="text-[9px] font-medium">Home</span>
               </Link>
 
               {/* Divider */}
               <div className="w-px h-8 bg-border-light" />
 
-              {/* Section items */}
+              {/* Section items - 6 items now */}
               <div className="flex-1 flex items-center justify-around">
                 {navItems.map((item) => {
                   const Icon = item.icon
@@ -167,7 +180,7 @@ export default function MobileNav() {
                       onClick={(e) => handleNavClick(item, e)}
                       className={`
                         flex flex-col items-center justify-center 
-                        h-full px-3
+                        h-full px-2
                         transition-colors
                         ${active || isOpen ? 'text-text-primary' : 'text-text-muted'}
                       `}
@@ -176,7 +189,7 @@ export default function MobileNav() {
                         className="w-5 h-5 mb-1" 
                         strokeWidth={active || isOpen ? 2 : 1.5}
                       />
-                      <span className="text-[10px] font-medium">
+                      <span className="text-[9px] font-medium">
                         {item.label}
                       </span>
                     </button>
@@ -201,7 +214,7 @@ export default function MobileNav() {
                 href="/"
                 className={`
                   flex flex-col items-center justify-center 
-                  w-14 h-full
+                  w-12 h-full
                   transition-colors
                   ${pathname === '/' ? 'text-text-primary' : 'text-text-muted'}
                 `}
@@ -210,13 +223,13 @@ export default function MobileNav() {
                   className="w-5 h-5 mb-1" 
                   strokeWidth={pathname === '/' ? 2 : 1.5}
                 />
-                <span className="text-[10px] font-medium">Home</span>
+                <span className="text-[9px] font-medium">Home</span>
               </Link>
 
               {/* Divider */}
               <div className="w-px h-8 bg-border-light" />
 
-              {/* Section items */}
+              {/* Section items - 6 items now */}
               <div className="flex-1 flex items-center justify-around">
                 {navItems.map((item) => {
                   const Icon = item.icon
@@ -228,7 +241,7 @@ export default function MobileNav() {
                       onClick={(e) => handleNavClick(item, e)}
                       className={`
                         flex flex-col items-center justify-center 
-                        h-full px-3
+                        h-full px-2
                         transition-colors
                         ${active ? 'text-text-primary' : 'text-text-muted'}
                       `}
@@ -237,7 +250,7 @@ export default function MobileNav() {
                         className="w-5 h-5 mb-1" 
                         strokeWidth={active ? 2 : 1.5}
                       />
-                      <span className="text-[10px] font-medium">
+                      <span className="text-[9px] font-medium">
                         {item.label}
                       </span>
                     </button>

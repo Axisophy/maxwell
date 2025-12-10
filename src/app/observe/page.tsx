@@ -3,8 +3,8 @@ import { Activity, LayoutDashboard } from 'lucide-react'
 
 const observePages = [
   {
-    href: '/observe/the-pulse',
-    title: 'The Pulse',
+    href: '/observe/vital-signs',
+    title: 'Vital Signs',
     description: 'Live data from Earth and space at a glance. Earthquakes, CO₂, solar activity, and more.',
     icon: Activity,
   },

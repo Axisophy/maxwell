@@ -13,6 +13,7 @@ import Logo from './Logo'
 
 const navItems = [
   { href: '/observe', label: 'observe' },
+  { href: '/pulse', label: 'pulse' },
   { href: '/tools', label: 'tools' },
   { href: '/data', label: 'data' },
   { href: '/vault', label: 'vault' },
@@ -21,8 +22,14 @@ const navItems = [
 
 // Submenus
 const observeSubmenu = [
-  { href: '/observe/the-pulse', label: 'The Pulse', active: true },
+  { href: '/observe/vital-signs', label: 'Vital Signs', active: true },
   { href: '/observe/your-dashboard', label: 'Your Dashboard', active: true },
+]
+
+const pulseSubmenu = [
+  { href: '/pulse', label: 'Latest', active: false },
+  { href: '#', label: 'Partner Highlights', active: false },
+  { href: '#', label: 'Archive', active: false },
 ]
 
 const toolsSubmenu = [
@@ -55,6 +62,7 @@ const playSubmenu = [
 // Map nav items to their submenus
 const submenus: Record<string, typeof observeSubmenu> = {
   '/observe': observeSubmenu,
+  '/pulse': pulseSubmenu,
   '/tools': toolsSubmenu,
   '/data': dataSubmenu,
   '/vault': vaultSubmenu,
