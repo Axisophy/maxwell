@@ -70,7 +70,7 @@ export default function Header() {
         {/* Logo + tagline: cols 1-2 */}
         <div className="col-span-2">
           <Link href="/" className="block group">
-            <Logo className="h-8 w-auto text-black" />
+            <Logo className="h-10 w-auto text-black" />
             <span className="text-xs text-black/60 tracking-wide mt-1 block">
               a digital laboratory
             </span>
