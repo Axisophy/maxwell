@@ -76,35 +76,35 @@ const exploreSections = [
     label: 'Observe',
     description: 'Live windows into science happening right now',
     image: '/assets/homepage/homepage_explore_observe.jpg',
-    placeholderGradient: 'from-orange-900 via-red-900 to-yellow-900', // solar/space
+    placeholderGradient: 'from-orange-900 via-red-900 to-yellow-900',
   },
   {
     href: '/tools',
     label: 'Tools',
     description: 'Scientific instruments that actually work',
     image: '/assets/homepage/homepage_explore_tools.jpg',
-    placeholderGradient: 'from-slate-700 via-slate-800 to-slate-900', // instruments
+    placeholderGradient: 'from-slate-700 via-slate-800 to-slate-900',
   },
   {
     href: '/data',
     label: 'Data',
     description: 'Reference datasets beautifully presented',
     image: '/assets/homepage/homepage_explore_data.jpg',
-    placeholderGradient: 'from-cyan-900 via-blue-900 to-indigo-900', // data/digital
+    placeholderGradient: 'from-cyan-900 via-blue-900 to-indigo-900',
   },
   {
     href: '/vault',
     label: 'Vault',
     description: '2,500 years of scientific texts',
     image: '/assets/homepage/homepage_explore_vault.jpg',
-    placeholderGradient: 'from-amber-900 via-yellow-900 to-orange-900', // old books
+    placeholderGradient: 'from-amber-900 via-yellow-900 to-orange-900',
   },
   {
     href: '/play',
     label: 'Play',
     description: 'Games, simulations and explorations',
     image: '/assets/homepage/homepage_explore_play.jpg',
-    placeholderGradient: 'from-purple-900 via-fuchsia-900 to-pink-900', // playful
+    placeholderGradient: 'from-purple-900 via-fuchsia-900 to-pink-900',
   },
 ]
 
@@ -120,11 +120,9 @@ export default function HomePage() {
       {/* NO mobile top padding here - hero goes full bleed */}
 
       {/* HERO SECTION */}
-      {/* pt-20 for mobile header (~80px), md:pt-48 for desktop header with submenus (~192px) */}
       <section className="relative min-h-screen bg-black pt-20 md:pt-48 pb-12 md:pb-16 flex flex-col justify-end">
         {/* Hero image background */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
-          {
           <Image
             src="/assets/homepage/homepage_hero_supernova.jpg"
             alt="Supernova remnant from JWST"
@@ -132,13 +130,12 @@ export default function HomePage() {
             className="object-cover opacity-60"
             priority
           />
-          }
         </div>
         
         {/* Gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-        {/* Hero content - at bottom of section */}
+       {/* Hero content - at bottom of section */}
         <div className="relative px-4 md:px-8 lg:px-12">
           <h1 
             className="text-white text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.95] mb-6 max-w-[85%]"
@@ -146,10 +143,7 @@ export default function HomePage() {
           >
             A digital laboratory
           </h1>
-          <p 
-            className="text-white/90 text-2xl md:text-3xl lg:text-4xl font-bold leading-[1.3] max-w-4xl"
-            style={{ letterSpacing: '-0.02em' }}
-          >
+          <p className="text-white/90 text-xl md:text-2xl lg:text-3xl font-light leading-relaxed max-w-4xl lg:max-w-5xl xl:max-w-7xl">
             Science is happening everywhere, all the time. Stars are fusing. Particles are decaying. 
             Earthquakes are rippling. Data is flowing. Mostly, you can't see any of it. 
             <span className="block mt-4">
@@ -174,8 +168,8 @@ export default function HomePage() {
             What can MXWLL<br />do for you?
           </h2>
 
-          {/* User type buttons */}
-          <div className="max-w-2xl">
+         {/* User type buttons */}
+          <div className="max-w-2xl lg:max-w-3xl xl:max-w-4xl">
             {userTypes.map((userType) => {
               const isExpanded = expandedUser === userType.id
               
@@ -186,10 +180,10 @@ export default function HomePage() {
                     onClick={() => toggleUser(userType.id)}
                     className="w-full py-5 flex items-center justify-between text-left group"
                   >
-                    <span 
-                      className={`text-xl md:text-2xl transition-colors ${
-                        isExpanded ? 'text-black font-medium' : 'text-black/60 italic'
-                      } group-hover:text-black`}
+                  <span 
+                      className={`text-xl md:text-2xl text-black ${
+                        isExpanded ? 'font-medium' : 'font-normal'
+                      }`}
                     >
                       {userType.label}
                     </span>

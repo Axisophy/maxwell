@@ -4,6 +4,7 @@ import Logo from './Logo'
 const footerLinks = {
   explore: [
     { href: '/observe', label: 'Observe' },
+    { href: '/pulse', label: 'Pulse' },
     { href: '/tools', label: 'Tools' },
     { href: '/data', label: 'Data' },
     { href: '/vault', label: 'Vault' },
@@ -13,7 +14,6 @@ const footerLinks = {
     { href: '/about', label: 'About MXWLL' },
     { href: '/about/contact', label: 'Contact' },
     { href: '/collaborations', label: 'Collaborations' },
-    { href: '/newsletter', label: 'Newsletter' },
   ],
   partners: [
     { href: '/about/partnerships', label: 'Institutions' },
@@ -120,7 +120,7 @@ export default function Footer() {
 
       {/* Copyright */}
       <div className="mt-12 pt-6 border-t border-black/10">
-        <p className="text-xs text-black/40">
+        <p className="text-xs text-black/50">
           © {new Date().getFullYear()} MXWLL. All rights reserved.
         </p>
       </div>

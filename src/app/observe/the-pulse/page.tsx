@@ -200,12 +200,12 @@ function Section({
         className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <Icon size={20} strokeWidth={1.5} className="text-text-muted" />
-          <span className="text-lg font-normal text-text-primary">{title}</span>
+          <Icon size={20} strokeWidth={1.5} className="text-black/50" />
+          <span className="text-lg font-medium text-black">{title}</span>
         </div>
         <ChevronDown 
           size={20} 
-          className={`text-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-black/50 transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
       
@@ -271,19 +271,19 @@ export default function ThePulsePage() {
   const daylightData = getDaylightHours()
 
   return (
-    <main className="min-h-screen bg-shell-light">
+    <main className="min-h-screen bg-[#f5f5f5]">
       {/* Mobile top padding for fixed header */}
       <div className="h-14 md:hidden" />
       
-      <div className="px-4 md:px-8 lg:px-12 py-8">
+      <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
         {/* Page header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-light text-text-primary mb-2">The Pulse</h1>
-          <p className="text-text-muted">Live data from Earth and space, updated every 5 minutes.</p>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-4">The Pulse</h1>
+          <p className="text-base md:text-lg text-black">Live data from Earth and space, updated every 5 minutes.</p>
         </div>
 
         {isLoading ? (
-          <div className="text-center py-12 text-text-muted">Loading live data...</div>
+          <div className="text-center py-12 text-black/50">Loading live data...</div>
         ) : error ? (
           <div className="text-center py-12 text-red-500">{error}</div>
         ) : data && (
@@ -295,19 +295,19 @@ export default function ThePulsePage() {
                 {/* Earthquakes */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-text-muted uppercase tracking-wide">Earthquakes (7 days)</span>
+                    <span className="text-sm text-black/50 uppercase tracking-wide">Earthquakes (7 days)</span>
                     <span className="text-2xl font-mono font-bold">{data.earthquakes.count}</span>
                   </div>
                   <Sparkline data={data.earthquakes.daily} color="#dc2626" fillOpacity={0.15} />
                   
                   {data.earthquakes.significant.length > 0 && (
                     <div className="mt-4">
-                      <span className="text-xs text-text-muted uppercase tracking-wide block mb-2">Significant (≥M5.0)</span>
+                      <span className="text-xs text-black/50 uppercase tracking-wide block mb-2">Significant (≥M5.0)</span>
                       <div className="space-y-2">
                         {data.earthquakes.significant.slice(0, 5).map((eq, i) => (
                           <div key={i} className="flex items-center gap-3">
                             <span className="font-mono font-bold text-red-600 w-12">M{eq.mag.toFixed(1)}</span>
-                            <span className="text-sm text-text-primary truncate">{eq.place}</span>
+                            <span className="text-sm text-black truncate">{eq.place}</span>
                           </div>
                         ))}
                       </div>
@@ -318,14 +318,14 @@ export default function ThePulsePage() {
                 {/* CO2 */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-text-muted uppercase tracking-wide">Atmospheric CO₂</span>
+                    <span className="text-sm text-black/50 uppercase tracking-wide">Atmospheric CO₂</span>
                     <div className="text-right">
                       <span className="text-2xl font-mono font-bold">{data.co2.current.toFixed(1)}</span>
-                      <span className="text-sm text-text-muted ml-1">ppm</span>
+                      <span className="text-sm text-black/50 ml-1">ppm</span>
                     </div>
                   </div>
                   <Sparkline data={data.co2.trend} color="#0284c7" fillOpacity={0.15} />
-                  <p className="text-xs text-text-muted mt-2">30-day trend from Mauna Loa Observatory</p>
+                  <p className="text-xs text-black/50 mt-2">30-day trend from Mauna Loa Observatory</p>
                 </div>
               </div>
             </Section>
@@ -336,7 +336,7 @@ export default function ThePulsePage() {
                 {/* Kp Index */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-text-muted uppercase tracking-wide">Geomagnetic (Kp)</span>
+                    <span className="text-sm text-black/50 uppercase tracking-wide">Geomagnetic (Kp)</span>
                     <div className="flex items-center gap-2">
                       <span className="text-2xl font-mono font-bold">{data.solar.kp}</span>
                       <span className={`text-sm font-medium ${
@@ -348,17 +348,17 @@ export default function ThePulsePage() {
                     </div>
                   </div>
                   <KpBarChart data={data.solar.kpHistory} />
-                  <p className="text-xs text-text-muted mt-2">72-hour history</p>
+                  <p className="text-xs text-black/50 mt-2">72-hour history</p>
                 </div>
 
                 {/* ISS */}
                 <div>
-                  <span className="text-sm text-text-muted uppercase tracking-wide block mb-3">ISS Position</span>
+                  <span className="text-sm text-black/50 uppercase tracking-wide block mb-3">ISS Position</span>
                   <div className="flex items-center gap-2 mb-2">
-                    <Satellite size={20} className="text-text-muted" />
+                    <Satellite size={20} className="text-black/50" />
                     <span className="text-lg font-medium">{data.iss.region || 'Tracking...'}</span>
                   </div>
-                  <span className="font-mono text-sm text-text-muted">
+                  <span className="font-mono text-sm text-black/50">
                     {data.iss.lat.toFixed(2)}°, {data.iss.lng.toFixed(2)}°
                   </span>
                 </div>
@@ -366,12 +366,12 @@ export default function ThePulsePage() {
                 {/* Upcoming Launches */}
                 {data.launches.length > 0 && (
                   <div>
-                    <span className="text-sm text-text-muted uppercase tracking-wide block mb-3">Upcoming Launches</span>
+                    <span className="text-sm text-black/50 uppercase tracking-wide block mb-3">Upcoming Launches</span>
                     <div className="space-y-3">
                       {data.launches.slice(0, 3).map((launch, i) => (
                         <div key={i} className="flex items-center justify-between">
                           <span className="text-sm truncate max-w-[180px]" title={launch.name}>{launch.rocket}</span>
-                          <span className="font-mono text-sm text-text-muted">T-{formatTimeUntil(launch.net)}</span>
+                          <span className="font-mono text-sm text-black/50">T-{formatTimeUntil(launch.net)}</span>
                         </div>
                       ))}
                     </div>
@@ -385,32 +385,32 @@ export default function ThePulsePage() {
               <div className="pt-6 grid grid-cols-2 md:grid-cols-4 gap-6">
                 {/* Moon */}
                 <div className="text-center">
-                  <Moon size={32} className="mx-auto mb-2 text-text-muted" />
+                  <Moon size={32} className="mx-auto mb-2 text-black/50" />
                   <span className="text-2xl font-mono font-bold block">{moonData.illumination}%</span>
-                  <span className="text-sm text-text-muted">{moonData.phase}</span>
+                  <span className="text-sm text-black/50">{moonData.phase}</span>
                 </div>
                 
                 {/* Daylight */}
                 <div className="text-center">
-                  <Sunrise size={32} className="mx-auto mb-2 text-text-muted" />
+                  <Sunrise size={32} className="mx-auto mb-2 text-black/50" />
                   <span className="text-2xl font-mono font-bold block">{daylightData.formatted}</span>
-                  <span className="text-sm text-text-muted">Daylight today</span>
+                  <span className="text-sm text-black/50">Daylight today</span>
                 </div>
                 
                 {/* UV */}
                 {data.uv && (
                   <div className="text-center">
-                    <Thermometer size={32} className="mx-auto mb-2 text-text-muted" />
+                    <Thermometer size={32} className="mx-auto mb-2 text-black/50" />
                     <span className="text-2xl font-mono font-bold block">{data.uv.index}</span>
-                    <span className="text-sm text-text-muted">UV Index ({data.uv.level})</span>
+                    <span className="text-sm text-black/50">UV Index ({data.uv.level})</span>
                   </div>
                 )}
                 
                 {/* Aurora */}
                 <div className="text-center">
-                  <Sparkles size={32} className="mx-auto mb-2 text-text-muted" />
+                  <Sparkles size={32} className="mx-auto mb-2 text-black/50" />
                   <span className="text-2xl font-mono font-bold block">Kp {data.solar.kp}</span>
-                  <span className="text-sm text-text-muted">
+                  <span className="text-sm text-black/50">
                     {data.solar.kp >= 5 ? 'Aurora possible!' : 'Aurora unlikely'}
                   </span>
                 </div>
@@ -421,7 +421,7 @@ export default function ThePulsePage() {
         )}
 
         {/* Update indicator */}
-        <div className="text-center text-xs text-text-muted mt-8">
+        <div className="text-center text-xs text-black/50 mt-8">
           Data updates every 5 minutes
         </div>
       </div>

@@ -26,7 +26,7 @@ interface SeriesStyle {
 
 const seriesStyles: Record<Series, SeriesStyle> = {
   'geometry': {
-    bg: '#ffffff',
+    bg: '#f0f0f0',
     text: '#000000',
     accent: '#000000',
     label: 'Geometry',
@@ -38,7 +38,7 @@ const seriesStyles: Record<Series, SeriesStyle> = {
     ),
   },
   'natural-philosophy': {
-    bg: '#f5f0e6',
+    bg: '#e5d9c3',
     text: '#000000',
     accent: '#8b4513',
     label: 'Natural Philosophy',
@@ -91,7 +91,7 @@ const seriesStyles: Record<Series, SeriesStyle> = {
     ),
   },
   'observers': {
-    bg: '#d4c5b5',
+    bg: '#c2b198',
     text: '#000000',
     accent: '#5c4033',
     label: 'The Observers',
@@ -156,11 +156,11 @@ const seriesStyles: Record<Series, SeriesStyle> = {
 // Calculate title font size based on length
 function getTitleSize(title: string): string {
   const len = title.length
-  if (len <= 15) return '2.4em'      // Short: "Elements", "Opticks"
-  if (len <= 25) return '2em'        // Medium: "On the Origin of Species"
-  if (len <= 40) return '1.6em'      // Long: "Dialogue Concerning Two Chief World Systems"
-  if (len <= 60) return '1.3em'      // Very long
-  return '1.1em'                      // Extremely long
+  if (len <= 15) return '2.4em'
+  if (len <= 25) return '2em'
+  if (len <= 40) return '1.6em'
+  if (len <= 60) return '1.3em'
+  return '1.1em'
 }
 
 interface BookWidgetProps {
@@ -220,29 +220,11 @@ export default function BookWidget({
             fontSize: 'clamp(10px, 2.5vw, 12px)',
           }}
         >
-          {/* Left edge / spine */}
-          <div 
-            className="absolute left-0 top-0 bottom-0"
-            style={{ 
-              width: '10%',
-              backgroundColor: style.accent,
-              opacity: 0.3,
-            }}
-          />
-
-          {/* Content area */}
-          <div 
-            className="absolute"
-            style={{
-              left: '10%',
-              right: 0,
-              top: 0,
-              bottom: 0,
-            }}
-          >
-            {/* Author */}
+       {/* Content area - full width with more generous padding */}
+        <div className="absolute inset-0 px-[3em]">
+          {/* Author */}
             <div
-              className="absolute w-full px-[1em]"
+              className="absolute w-full"
               style={{ top: '8%' }}
             >
               <p 
@@ -274,7 +256,7 @@ export default function BookWidget({
 
             {/* Title - dynamic sizing with Trade Gothic Condensed Bold */}
             <div
-              className="absolute w-full px-[1em]"
+              className="absolute w-full"
               style={{ 
                 top: '62%',
                 bottom: '15%',
@@ -295,7 +277,7 @@ export default function BookWidget({
 
             {/* MXWLL Logo */}
             <div
-              className="absolute w-full px-[1em]"
+              className="absolute w-full"
               style={{ bottom: '5%' }}
             >
               <svg 
@@ -346,7 +328,7 @@ export default function BookWidget({
             className="font-sans mb-[1em]"
             style={{ 
               fontSize: '0.9em',
-              color: '#666666',
+              opacity: 0.5,
             }}
           >
             {author}{authorDates ? `, ${authorDates}` : ''}
@@ -356,10 +338,7 @@ export default function BookWidget({
           {description && (
             <p 
               className="font-sans leading-relaxed flex-1 overflow-hidden"
-              style={{ 
-                fontSize: '0.85em',
-                color: '#333333',
-              }}
+              style={{ fontSize: '0.85em' }}
             >
               {description}
             </p>
@@ -367,17 +346,26 @@ export default function BookWidget({
 
           {/* Meta info */}
           <div 
-            className="mt-[0.8em] pt-[0.8em] border-t border-gray-200"
-            style={{ fontSize: '0.75em' }}
+            className="mt-[0.8em] pt-[0.8em]"
+            style={{ 
+              fontSize: '0.75em',
+              borderTop: '1px solid #e5e5e5',
+            }}
           >
-            <div className="flex flex-wrap gap-x-[1em] gap-y-[0.3em] text-gray-500">
+            <div 
+              className="flex flex-wrap gap-x-[1em] gap-y-[0.3em]"
+              style={{ opacity: 0.5 }}
+            >
               <span>{yearDisplay}</span>
               {pageCount && <span>{pageCount} pages</span>}
               {readingTime && <span>{readingTime}</span>}
             </div>
             <p 
               className="mt-[0.5em]"
-              style={{ color: style.accent !== '#ffffff' ? style.accent : '#666666' }}
+              style={{ 
+                color: style.accent !== '#ffffff' ? style.accent : 'inherit', 
+                opacity: style.accent === '#ffffff' ? 0.5 : 1,
+              }}
             >
               {style.label}
             </p>
