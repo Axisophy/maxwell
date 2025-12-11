@@ -2,6 +2,29 @@
 // EARTH CLIMATE DATA CENTRE - TYPE DEFINITIONS
 // ===========================================
 
+export type CategoryType = 
+  | 'atmospheric' 
+  | 'temperature' 
+  | 'cryosphere' 
+  | 'oceans'
+  | 'biosphere'
+  | 'biological'
+  | 'forcings'
+  | 'emissions'
+  | 'uk-data'
+  | 'energy-transition'
+  | 'extreme-events'
+
+export type DirectionType = 
+  | 'up-bad'      // Increasing is concerning (CO2, temperature)
+  | 'down-bad'    // Decreasing is concerning (ice, pH, coal use when positive!)
+  | 'neutral'     // No inherent good/bad (ENSO, solar, rainfall)
+  | 'down-early'  // Lower = earlier, which is concerning (cherry blossoms, wine harvest)
+  | 'up-earlier'  // Higher = earlier arrival (bird migration)
+  | 'up-mixed'    // Increasing is mixed (growing season - good for some, bad for others)
+  | 'up-good'     // Increasing is good (renewable capacity, EV sales)
+  | 'down-good'   // Decreasing is good (emissions intensity, cost of renewables)
+
 export interface DataPoint {
   year: number
   month?: number // 1-12, optional for annual data
@@ -13,7 +36,7 @@ export interface ClimateDataset {
   id: string
   name: string
   shortName: string
-  category: 'atmospheric' | 'temperature' | 'cryosphere' | 'oceans'
+  category: CategoryType
   unit: string
   unitShort: string
   description: string
@@ -22,8 +45,8 @@ export interface ClimateDataset {
   baseline?: string // e.g., "1951-1980 average"
   startYear: number
   endYear: number
-  resolution: 'daily' | 'weekly' | 'monthly' | 'annual'
-  direction: 'up-bad' | 'down-bad' | 'neutral' // For color coding trends
+  resolution: 'daily' | 'weekly' | 'monthly' | 'annual' | 'event-based' | '5-year average'
+  direction: DirectionType
   thresholds?: {
     safe?: number
     warning?: number
@@ -36,14 +59,14 @@ export interface DatasetMetadata {
   id: string
   name: string
   shortName: string
-  category: 'atmospheric' | 'temperature' | 'cryosphere' | 'oceans'
+  category: CategoryType
   unit: string
   unitShort: string
   description: string
   source: string
   sourceUrl: string
   baseline?: string
-  direction: 'up-bad' | 'down-bad' | 'neutral'
+  direction: DirectionType
   color: string
   currentValue?: number
   changePerDecade?: number
@@ -85,7 +108,7 @@ export interface TooltipData {
   }[]
 }
 
-export type ViewMode = 'overview' | 'deep-time' | 'human-factors' | 'personal'
+export type ViewMode = 'overview' | 'deep-time' | 'extreme-events' | 'human-factors' | 'personal'
 
 export interface ClimateDataCentreState {
   currentView: ViewMode

@@ -4,7 +4,7 @@
 // Consistent color palette designed for overlaying multiple datasets
 // Colors chosen for clarity, distinction, and aesthetic harmony
 
-import { DatasetMetadata } from './types'
+import { DatasetMetadata, CategoryType, DirectionType } from './types'
 
 // ===========================================
 // COLOR PALETTE
@@ -35,6 +35,43 @@ export const DATASET_COLORS = {
   'sea-level': '#0d9488',     // Teal 600
   'ocean-heat': '#e11d48',    // Rose 600
   'ocean-ph': '#16a34a',      // Green 600
+  
+  // Biosphere - Greens and earthy tones
+  'forest-cover': '#15803d',  // Green 700
+  'coral-bleaching': '#f97316', // Orange 500
+  'wildfire-area': '#b91c1c', // Red 700
+  'permafrost': '#78716c',    // Stone 500
+  
+  // Biological Indicators - Warm natural tones
+  'cherry-blossoms': '#ec4899', // Pink 500
+  'wine-harvest': '#7c2d12',    // Orange 950
+  'growing-season': '#65a30d',  // Lime 600
+  'bird-migration': '#0ea5e9',  // Sky 500
+  
+  // Natural Forcings - Earthy spectrum
+  'enso': '#eab308',          // Yellow 500
+  'solar-irradiance': '#fbbf24', // Amber 400
+  'volcanic-aerosols': '#6b7280', // Gray 500
+  
+  // Emissions - Industrial tones
+  'emissions-global': '#374151', // Gray 700
+  'emissions-capita': '#4b5563', // Gray 600
+  
+  // UK Data - British blues and greens
+  'temp-cet': '#1e3a8a',        // Blue 900
+  'uk-rainfall': '#0f766e',     // Teal 700
+  'uk-coal-share': '#171717',   // Neutral 900 (coal!)
+  'uk-renewable-share': '#22c55e', // Green 500
+  
+  // Energy Transition - Optimistic greens and yellows
+  'renewable-capacity': '#059669', // Emerald 600
+  'solar-capacity': '#facc15',     // Yellow 400
+  'wind-capacity': '#38bdf8',      // Sky 400
+  'ev-sales': '#a3e635',           // Lime 400
+  
+  // Extreme Events - Warning colors
+  'heat-records': '#b91c1c',       // Red 700
+  'fossil-subsidies': '#78716c',   // Stone 500
 } as const
 
 // ===========================================
@@ -42,14 +79,14 @@ export const DATASET_COLORS = {
 // ===========================================
 
 export const CATEGORIES = {
-  atmospheric: {
-    name: 'Atmospheric',
-    description: 'Greenhouse gas concentrations in the atmosphere',
-    order: 1,
-  },
   temperature: {
     name: 'Temperature',
     description: 'Global and regional temperature anomalies',
+    order: 1,
+  },
+  atmospheric: {
+    name: 'Atmospheric',
+    description: 'Greenhouse gas concentrations in the atmosphere',
     order: 2,
   },
   cryosphere: {
@@ -61,6 +98,41 @@ export const CATEGORIES = {
     name: 'Oceans',
     description: 'Sea level, heat content, and chemistry',
     order: 4,
+  },
+  biosphere: {
+    name: 'Biosphere',
+    description: 'Forests, coral reefs, wildfires, and permafrost',
+    order: 5,
+  },
+  biological: {
+    name: 'Biological Indicators',
+    description: 'Nature\'s calendar — how plants and animals respond to warming',
+    order: 6,
+  },
+  forcings: {
+    name: 'Natural Influences',
+    description: 'Natural factors that influence climate year-to-year — but don\'t explain the long-term trend',
+        order: 7,
+  },
+  emissions: {
+    name: 'Emissions',
+    description: 'Human carbon dioxide emissions',
+    order: 8,
+  },
+  'uk-data': {
+    name: 'UK Records',
+    description: 'Long-running UK climate records — the birthplace of climate science',
+    order: 9,
+  },
+  'energy-transition': {
+    name: 'Energy Transition',
+    description: 'The shift from fossil fuels to clean energy',
+    order: 10,
+  },
+  'extreme-events': {
+    name: 'Extreme Events',
+    description: 'Heat records, extreme weather, and climate impacts',
+    order: 11,
   },
 } as const
 
@@ -364,6 +436,457 @@ export const DATASETS: Record<string, DatasetMetadata> = {
     startYear: 1988,
     endYear: 2024,
   },
+  
+  // ─────────────────────────────────────────
+  // BIOSPHERE
+  // ─────────────────────────────────────────
+  'forest-cover': {
+    id: 'forest-cover',
+    name: 'Global Tree Cover Loss',
+    shortName: 'Tree Loss',
+    category: 'biosphere',
+    unit: 'million hectares per year',
+    unitShort: 'Mha/yr',
+    description: 'Annual global tree cover loss. Includes deforestation and natural disturbance.',
+    source: 'Global Forest Watch',
+    sourceUrl: 'https://www.globalforestwatch.org/',
+    baseline: '2001',
+    direction: 'up-bad',
+    color: DATASET_COLORS['forest-cover'],
+    currentValue: 28.3,
+    changePerDecade: 5.2,
+    startYear: 2001,
+    endYear: 2023,
+  },
+  
+  'coral-bleaching': {
+    id: 'coral-bleaching',
+    name: 'Coral Bleaching Events',
+    shortName: 'Coral Stress',
+    category: 'biosphere',
+    unit: 'global stress events',
+    unitShort: 'events',
+    description: 'Global coral bleaching events. Occur when ocean temperatures exceed coral tolerance.',
+    source: 'NOAA Coral Reef Watch',
+    sourceUrl: 'https://coralreefwatch.noaa.gov/',
+    baseline: '1985',
+    direction: 'up-bad',
+    color: DATASET_COLORS['coral-bleaching'],
+    currentValue: 4,
+    startYear: 1985,
+    endYear: 2024,
+  },
+  
+  'wildfire-area': {
+    id: 'wildfire-area',
+    name: 'Global Wildfire Area',
+    shortName: 'Wildfires',
+    category: 'biosphere',
+    unit: 'million hectares',
+    unitShort: 'Mha',
+    description: 'Annual global area burned by wildfires. Trend varies by region.',
+    source: 'GFED (Global Fire Emissions Database)',
+    sourceUrl: 'https://globalfiredata.org/',
+    baseline: '1997',
+    direction: 'up-bad',
+    color: DATASET_COLORS['wildfire-area'],
+    currentValue: 500,
+    startYear: 1997,
+    endYear: 2023,
+  },
+  
+  'permafrost': {
+    id: 'permafrost',
+    name: 'Permafrost Temperature',
+    shortName: 'Permafrost',
+    category: 'biosphere',
+    unit: 'degrees Celsius',
+    unitShort: '°C',
+    description: 'Ground temperature at depth of zero annual amplitude. Warming threatens to release stored carbon.',
+    source: 'GTN-P (Global Terrestrial Network for Permafrost)',
+    sourceUrl: 'https://gtnp.arcticportal.org/',
+    baseline: '1980s',
+    direction: 'up-bad',
+    color: DATASET_COLORS['permafrost'],
+    currentValue: -2.5,
+    changePerDecade: 0.4,
+    startYear: 1980,
+    endYear: 2023,
+  },
+  
+  // ─────────────────────────────────────────
+  // BIOLOGICAL INDICATORS
+  // ─────────────────────────────────────────
+  'cherry-blossoms': {
+    id: 'cherry-blossoms',
+    name: 'Kyoto Cherry Blossom Date',
+    shortName: 'Cherry Blossoms',
+    category: 'biological',
+    unit: 'day of year',
+    unitShort: 'day',
+    description: 'First bloom date of cherry blossoms in Kyoto, Japan. 1,200+ years of records — the longest phenological record in the world.',
+    source: 'Osaka Prefecture University / Historical Records',
+    sourceUrl: 'http://atmenv.envi.osakafu-u.ac.jp/aono/kyophenotemp4/',
+    baseline: 'April 17 (historical average)',
+    direction: 'down-early',
+    color: DATASET_COLORS['cherry-blossoms'],
+    currentValue: 95,
+    changePerDecade: -1.2,
+    startYear: 812,
+    endYear: 2024,
+  },
+  
+  'wine-harvest': {
+    id: 'wine-harvest',
+    name: 'Burgundy Wine Harvest Date',
+    shortName: 'Wine Harvest',
+    category: 'biological',
+    unit: 'days from September 1',
+    unitShort: 'days',
+    description: 'Wine harvest date in Burgundy, France. Earlier harvests indicate warmer growing seasons. 660+ years of records.',
+    source: 'Historical Records / University Research',
+    sourceUrl: 'https://www.clim-past.net/15/1485/2019/',
+    baseline: 'September 28 (historical average)',
+    direction: 'down-early',
+    color: DATASET_COLORS['wine-harvest'],
+    currentValue: 12,
+    changePerDecade: -2.5,
+    startYear: 1354,
+    endYear: 2023,
+  },
+  
+  'growing-season': {
+    id: 'growing-season',
+    name: 'Northern Hemisphere Growing Season',
+    shortName: 'Growing Season',
+    category: 'biological',
+    unit: 'days',
+    unitShort: 'days',
+    description: 'Length of the growing season in the Northern Hemisphere. Extended by ~2 weeks since 1900.',
+    source: 'NASA / NOAA',
+    sourceUrl: 'https://www.ncei.noaa.gov/monitoring-content/sotc/synoptic/2024/03/ghcn-seasonal-phen.pdf',
+    baseline: '1900 average',
+    direction: 'up-mixed',
+    color: DATASET_COLORS['growing-season'],
+    currentValue: 15,
+    changePerDecade: 2.5,
+    startYear: 1900,
+    endYear: 2023,
+  },
+  
+  'bird-migration': {
+    id: 'bird-migration',
+    name: 'Bird Spring Arrival',
+    shortName: 'Bird Arrival',
+    category: 'biological',
+    unit: 'days earlier',
+    unitShort: 'days',
+    description: 'Average shift in spring arrival of migratory birds. Birds are arriving earlier as temperatures rise.',
+    source: 'eBird / Various Studies',
+    sourceUrl: 'https://ebird.org/',
+    baseline: '1960s average',
+    direction: 'up-earlier',
+    color: DATASET_COLORS['bird-migration'],
+    currentValue: 8,
+    changePerDecade: 1.5,
+    startYear: 1960,
+    endYear: 2023,
+  },
+  
+  // ─────────────────────────────────────────
+  // NATURAL FORCINGS
+  // ─────────────────────────────────────────
+  'enso': {
+    id: 'enso',
+    name: 'ENSO Index (ONI)',
+    shortName: 'ENSO',
+    category: 'forcings',
+    unit: 'index',
+    unitShort: 'ONI',
+    description: 'Oceanic Niño Index — 3-month sea surface temperature anomaly in Niño 3.4 region. El Niño (>0.5) warms climate, La Niña (<-0.5) cools it.',
+    source: 'NOAA Climate Prediction Center',
+    sourceUrl: 'https://origin.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php',
+    baseline: '1991-2020 average',
+    direction: 'neutral',
+    color: DATASET_COLORS['enso'],
+    currentValue: 0.8,
+    startYear: 1950,
+    endYear: 2024,
+  },
+  
+  'solar-irradiance': {
+    id: 'solar-irradiance',
+    name: 'Solar Irradiance (TSI)',
+    shortName: 'Solar',
+    category: 'forcings',
+    unit: 'watts per square metre',
+    unitShort: 'W/m²',
+    description: 'Total Solar Irradiance — energy output of the Sun. Varies by ~0.1% over 11-year solar cycle. Cannot explain warming trend.',
+    source: 'SORCE/TSIS / NASA',
+    sourceUrl: 'https://lasp.colorado.edu/home/sorce/data/',
+    baseline: '1361 W/m² average',
+    direction: 'neutral',
+    color: DATASET_COLORS['solar-irradiance'],
+    currentValue: 1361.2,
+    startYear: 1978,
+    endYear: 2024,
+  },
+  
+  'volcanic-aerosols': {
+    id: 'volcanic-aerosols',
+    name: 'Volcanic Aerosol Optical Depth',
+    shortName: 'Volcanic',
+    category: 'forcings',
+    unit: 'optical depth',
+    unitShort: 'AOD',
+    description: 'Stratospheric aerosols from volcanic eruptions. Major eruptions (Pinatubo 1991, El Chichón 1982) cause temporary cooling.',
+    source: 'NASA GISS',
+    sourceUrl: 'https://data.giss.nasa.gov/modelforce/strataer/',
+    baseline: '0 (no volcanic activity)',
+    direction: 'neutral',
+    color: DATASET_COLORS['volcanic-aerosols'],
+    currentValue: 0.002,
+    startYear: 1850,
+    endYear: 2024,
+  },
+  
+  // ─────────────────────────────────────────
+  // EMISSIONS
+  // ─────────────────────────────────────────
+  'emissions-global': {
+    id: 'emissions-global',
+    name: 'Global CO₂ Emissions',
+    shortName: 'Emissions',
+    category: 'emissions',
+    unit: 'billion tonnes CO₂',
+    unitShort: 'Gt CO₂',
+    description: 'Annual global CO₂ emissions from fossil fuels and industry. Does not include land use change.',
+    source: 'Global Carbon Project',
+    sourceUrl: 'https://globalcarbonproject.org/carbonbudget/',
+    baseline: '1751',
+    direction: 'up-bad',
+    color: DATASET_COLORS['emissions-global'],
+    currentValue: 37.4,
+    changePerDecade: 4.2,
+    startYear: 1751,
+    endYear: 2023,
+  },
+  
+  'emissions-capita': {
+    id: 'emissions-capita',
+    name: 'Global Per Capita Emissions',
+    shortName: 'Per Capita',
+    category: 'emissions',
+    unit: 'tonnes CO₂ per person',
+    unitShort: 't/person',
+    description: 'Average CO₂ emissions per person globally. Varies enormously by country.',
+    source: 'Global Carbon Project / Our World in Data',
+    sourceUrl: 'https://ourworldindata.org/co2-emissions',
+    baseline: '1751',
+    direction: 'up-bad',
+    color: DATASET_COLORS['emissions-capita'],
+    currentValue: 4.7,
+    changePerDecade: 0.2,
+    startYear: 1751,
+    endYear: 2023,
+  },
+  
+  // ─────────────────────────────────────────
+  // UK DATA
+  // ─────────────────────────────────────────
+  'temp-cet': {
+    id: 'temp-cet',
+    name: 'Central England Temperature',
+    shortName: 'CET',
+    category: 'uk-data',
+    unit: 'degrees Celsius',
+    unitShort: '°C',
+    description: 'The longest continuous instrumental temperature record in the world, maintained since 1659. Covers a triangular region from Lancashire to London to Bristol.',
+    source: 'UK Met Office Hadley Centre',
+    sourceUrl: 'https://www.metoffice.gov.uk/hadobs/hadcet/',
+    baseline: '9.0°C (1659-1900 average)',
+    direction: 'up-bad',
+    color: DATASET_COLORS['temp-cet'],
+    currentValue: 10.9,
+    changePerDecade: 0.18,
+    startYear: 1659,
+    endYear: 2024,
+  },
+  
+  'uk-rainfall': {
+    id: 'uk-rainfall',
+    name: 'England & Wales Rainfall',
+    shortName: 'UK Rain',
+    category: 'uk-data',
+    unit: 'millimetres',
+    unitShort: 'mm',
+    description: 'England and Wales precipitation record since 1766. One of the longest continuous rainfall records in the world.',
+    source: 'UK Met Office Hadley Centre',
+    sourceUrl: 'https://www.metoffice.gov.uk/hadobs/hadukp/',
+    baseline: '~900 mm annual average',
+    direction: 'neutral',
+    color: DATASET_COLORS['uk-rainfall'],
+    currentValue: 1089,
+    startYear: 1766,
+    endYear: 2024,
+  },
+  
+  'uk-coal-share': {
+    id: 'uk-coal-share',
+    name: 'UK Coal Electricity Share',
+    shortName: 'UK Coal',
+    category: 'uk-data',
+    unit: 'percent',
+    unitShort: '%',
+    description: 'Percentage of UK electricity from coal. One of the fastest coal phase-outs of any major economy. The last coal power station closed September 2024.',
+    source: 'UK DESNZ',
+    sourceUrl: 'https://www.gov.uk/government/statistics/electricity-section-5-energy-trends',
+    baseline: '65% in 1990',
+    direction: 'down-bad',
+    color: DATASET_COLORS['uk-coal-share'],
+    currentValue: 0,
+    changePerDecade: -20,
+    startYear: 1990,
+    endYear: 2024,
+  },
+  
+  'uk-renewable-share': {
+    id: 'uk-renewable-share',
+    name: 'UK Renewable Electricity Share',
+    shortName: 'UK Renewables',
+    category: 'uk-data',
+    unit: 'percent',
+    unitShort: '%',
+    description: 'Percentage of UK electricity from renewables (wind, solar, hydro, biomass). The UK has transformed its electricity system in two decades.',
+    source: 'UK DESNZ',
+    sourceUrl: 'https://www.gov.uk/government/statistics/electricity-section-5-energy-trends',
+    baseline: '2% in 1990',
+    direction: 'up-good',
+    color: DATASET_COLORS['uk-renewable-share'],
+    currentValue: 50,
+    changePerDecade: 15,
+    startYear: 1990,
+    endYear: 2024,
+  },
+  
+  // ─────────────────────────────────────────
+  // ENERGY TRANSITION
+  // ─────────────────────────────────────────
+  'renewable-capacity': {
+    id: 'renewable-capacity',
+    name: 'Global Renewable Capacity',
+    shortName: 'Renewables',
+    category: 'energy-transition',
+    unit: 'gigawatts',
+    unitShort: 'GW',
+    description: 'Total installed renewable electricity capacity worldwide (solar, wind, hydro, other).',
+    source: 'IRENA',
+    sourceUrl: 'https://www.irena.org/Statistics',
+    baseline: '754 GW in 2000',
+    direction: 'up-good',
+    color: DATASET_COLORS['renewable-capacity'],
+    currentValue: 4200,
+    changePerDecade: 1000,
+    startYear: 2000,
+    endYear: 2024,
+  },
+  
+  'solar-capacity': {
+    id: 'solar-capacity',
+    name: 'Global Solar PV Capacity',
+    shortName: 'Solar',
+    category: 'energy-transition',
+    unit: 'gigawatts',
+    unitShort: 'GW',
+    description: 'Total installed solar photovoltaic capacity. One of the most dramatic growth curves in energy history.',
+    source: 'IRENA / IEA',
+    sourceUrl: 'https://www.irena.org/Statistics',
+    baseline: '1.3 GW in 2000',
+    direction: 'up-good',
+    color: DATASET_COLORS['solar-capacity'],
+    currentValue: 2020,
+    changePerDecade: 500,
+    startYear: 2000,
+    endYear: 2024,
+  },
+  
+  'wind-capacity': {
+    id: 'wind-capacity',
+    name: 'Global Wind Capacity',
+    shortName: 'Wind',
+    category: 'energy-transition',
+    unit: 'gigawatts',
+    unitShort: 'GW',
+    description: 'Total installed wind power capacity worldwide (onshore and offshore combined).',
+    source: 'IRENA / GWEC',
+    sourceUrl: 'https://www.irena.org/Statistics',
+    baseline: '17 GW in 2000',
+    direction: 'up-good',
+    color: DATASET_COLORS['wind-capacity'],
+    currentValue: 1130,
+    changePerDecade: 300,
+    startYear: 2000,
+    endYear: 2024,
+  },
+  
+  'ev-sales': {
+    id: 'ev-sales',
+    name: 'Global EV Sales',
+    shortName: 'EV Sales',
+    category: 'energy-transition',
+    unit: 'million vehicles',
+    unitShort: 'M',
+    description: 'Annual global sales of battery electric and plug-in hybrid vehicles. One of the fastest technology adoption curves.',
+    source: 'IEA',
+    sourceUrl: 'https://www.iea.org/data-and-statistics/data-tools/global-ev-data-explorer',
+    baseline: '0.02 million in 2010',
+    direction: 'up-good',
+    color: DATASET_COLORS['ev-sales'],
+    currentValue: 17.5,
+    changePerDecade: 10,
+    startYear: 2010,
+    endYear: 2024,
+  },
+  
+  // ─────────────────────────────────────────
+  // EXTREME EVENTS
+  // ─────────────────────────────────────────
+  'heat-records': {
+    id: 'heat-records',
+    name: 'National Heat Records Broken',
+    shortName: 'Heat Records',
+    category: 'extreme-events',
+    unit: 'countries',
+    unitShort: 'countries',
+    description: 'Number of countries setting or tying their all-time national high temperature record each year.',
+    source: 'WMO / World Weather Attribution',
+    sourceUrl: 'https://wmo.int/',
+    baseline: '~0-1 per year historically',
+    direction: 'up-bad',
+    color: DATASET_COLORS['heat-records'],
+    currentValue: 11,
+    startYear: 1980,
+    endYear: 2024,
+  },
+  
+  'fossil-subsidies': {
+    id: 'fossil-subsidies',
+    name: 'Global Fossil Fuel Subsidies',
+    shortName: 'Fossil Subsidies',
+    category: 'extreme-events',
+    unit: 'trillion US dollars',
+    unitShort: 'T$',
+    description: 'Total global government subsidies for fossil fuels (oil, gas, coal). Includes direct subsidies and tax breaks.',
+    source: 'IMF',
+    sourceUrl: 'https://www.imf.org/en/Topics/climate-change/energy-subsidies',
+    baseline: '2015',
+    direction: 'up-bad',
+    color: DATASET_COLORS['fossil-subsidies'],
+    currentValue: 7.3,
+    changePerDecade: 2.5,
+    startYear: 2015,
+    endYear: 2023,
+  },
 }
 
 // ===========================================
@@ -405,6 +928,42 @@ export function formatValue(value: number, unitShort: string): string {
   }
   if (unitShort === 'm w.e.') {
     return value.toFixed(1)
+  }
+  // New formats
+  if (unitShort === 'Mha/yr' || unitShort === 'Mha') {
+    return value.toFixed(1)
+  }
+  if (unitShort === 'events' || unitShort === 'day' || unitShort === 'days') {
+    return Math.round(value).toString()
+  }
+  if (unitShort === 'ONI' || unitShort === 'AOD') {
+    const sign = value >= 0 ? '+' : ''
+    return `${sign}${value.toFixed(2)}`
+  }
+  if (unitShort === 'W/m²') {
+    return value.toFixed(1)
+  }
+  if (unitShort === 'Gt CO₂') {
+    return value.toFixed(1)
+  }
+  if (unitShort === 't/person') {
+    return value.toFixed(1)
+  }
+  // Energy transition units
+  if (unitShort === '%') {
+    return value.toFixed(0)
+  }
+  if (unitShort === 'GW') {
+    return value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value.toFixed(0)
+  }
+  if (unitShort === 'M') {
+    return value.toFixed(1)
+  }
+  if (unitShort === 'T$') {
+    return `$${value.toFixed(1)}T`
+  }
+  if (unitShort === 'countries') {
+    return Math.round(value).toString()
   }
   return value.toString()
 }

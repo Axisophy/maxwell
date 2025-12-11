@@ -24,6 +24,12 @@ const VIEW_TABS: { id: ViewMode; label: string; description: string; ready: bool
     ready: false,
   },
   { 
+    id: 'extreme-events', 
+    label: 'Extreme Events', 
+    description: 'Hurricanes, wildfires, floods, heatwaves',
+    ready: false,
+  },
+  { 
     id: 'human-factors', 
     label: 'Human Factors', 
     description: 'Industrial, policy, and technology timeline',
@@ -111,6 +117,13 @@ export default function ClimateDataCentre() {
             <ComingSoonView 
               title="Human Factors"
               description="Timeline of industrial development, policy responses, and technological shifts — overlaid on climate data."
+            />
+          )}
+          
+          {currentView === 'extreme-events' && (
+            <ComingSoonView 
+              title="Extreme Events"
+              description="Track hurricanes, wildfires, floods, and heatwaves. See how frequency and intensity are changing over time."
             />
           )}
           

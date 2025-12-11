@@ -1,0 +1,20 @@
+{
+  "id": "fossil-subsidies",
+  "name": "Global Fossil Fuel Subsidies",
+  "description": "Total global government subsidies for fossil fuels (oil, gas, coal). Includes direct subsidies and tax breaks. Shows the scale of policy support for fossil fuels.",
+  "unit": "trillion $",
+  "resolution": "annual",
+  "source": "IMF",
+  "sourceUrl": "https://www.imf.org/en/Topics/climate-change/energy-subsidies",
+  "data": [
+    { "year": 2015, "value": 4.7 },
+    { "year": 2016, "value": 4.8 },
+    { "year": 2017, "value": 5.2 },
+    { "year": 2018, "value": 5.4 },
+    { "year": 2019, "value": 5.9 },
+    { "year": 2020, "value": 5.9 },
+    { "year": 2021, "value": 6.2 },
+    { "year": 2022, "value": 7.0 },
+    { "year": 2023, "value": 7.3 }
+  ]
+}

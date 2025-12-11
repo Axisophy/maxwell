@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { Download, Share2, RotateCcw } from 'lucide-react'
+import { useState, useMemo, useCallback } from 'react'
+import { Download, Share2, Maximize2, Minimize2 } from 'lucide-react'
 import ClimateChart from '../chart/ClimateChart'
 import MetricCategory from '../metrics/MetricCategory'
 import ActiveDatasetsBar from '../metrics/ActiveDatasetsBar'
@@ -12,35 +12,135 @@ import {
   getDatasetColor,
   DEFAULT_ACTIVE_DATASETS 
 } from '../../lib/datasets'
-import { DataPoint, ActiveDataset } from '../../lib/types'
+import { DataPoint } from '../../lib/types'
 
 // ===========================================
 // OVERVIEW VIEW
 // ===========================================
-// Main climate data exploration view with:
-// - Multi-axis chart showing selected datasets
-// - Category panels with metric cards
-// - Active datasets bar
-// - Chart controls
 
-// Import data files
+// Import data files - Original
 import co2Data from '../../data/co2.json'
 import tempGlobalData from '../../data/temp-global.json'
+import tempArcticData from '../../data/temp-arctic.json'
 import seaLevelData from '../../data/sea-level.json'
 import arcticIceData from '../../data/arctic-ice.json'
+import methaneData from '../../data/methane.json'
+import oceanHeatData from '../../data/ocean-heat.json'
+import greenlandIceData from '../../data/greenland-ice.json'
+import oceanPhData from '../../data/ocean-ph.json'
+
+// Import data files - Newly added (originally defined)
+import n2oData from '../../data/n2o.json'
+import tempOceanData from '../../data/temp-ocean.json'
+import tempLandData from '../../data/temp-land.json'
+import antarcticIceData from '../../data/antarctic-ice.json'
+import glaciersData from '../../data/glaciers.json'
+
+// Import data files - Biosphere
+import forestCoverData from '../../data/forest-cover.json'
+import coralBleachingData from '../../data/coral-bleaching.json'
+import wildfireAreaData from '../../data/wildfire-area.json'
+import permafrostData from '../../data/permafrost.json'
+
+// Import data files - Biological Indicators
+import cherryBlossomsData from '../../data/cherry-blossoms.json'
+import wineHarvestData from '../../data/wine-harvest.json'
+import growingSeasonData from '../../data/growing-season.json'
+import birdMigrationData from '../../data/bird-migration.json'
+
+// Import data files - Natural Forcings
+import ensoData from '../../data/enso.json'
+import solarIrradianceData from '../../data/solar-irradiance.json'
+import volcanicAerosolsData from '../../data/volcanic-aerosols.json'
+
+// Import data files - Emissions
+import emissionsGlobalData from '../../data/emissions-global.json'
+import emissionsCapitaData from '../../data/emissions-capita.json'
+
+// Import data files - UK Data
+import tempCetData from '../../data/temp-cet.json'
+import ukRainfallData from '../../data/uk-rainfall.json'
+import ukCoalShareData from '../../data/uk-coal-share.json'
+import ukRenewableShareData from '../../data/uk-renewable-share.json'
+
+// Import data files - Energy Transition
+import renewableCapacityData from '../../data/renewable-capacity.json'
+import solarCapacityData from '../../data/solar-capacity.json'
+import windCapacityData from '../../data/wind-capacity.json'
+import evSalesData from '../../data/ev-sales.json'
+
+// Import data files - Extreme Events
+import heatRecordsData from '../../data/heat-records.json'
+import fossilSubsidiesData from '../../data/fossil-subsidies.json'
 
 // Map data files to dataset IDs
 const DATA_FILES: Record<string, { data: DataPoint[] }> = {
+  // Atmospheric
   'co2': co2Data,
+  'methane': methaneData,
+  'n2o': n2oData,
+  // Temperature
   'temp-global': tempGlobalData,
-  'sea-level': seaLevelData,
+  'temp-arctic': tempArcticData,
+  'temp-ocean': tempOceanData,
+  'temp-land': tempLandData,
+  // Cryosphere
   'arctic-ice': arcticIceData,
+  'greenland-ice': greenlandIceData,
+  'antarctic-ice': antarcticIceData,
+  'glaciers': glaciersData,
+  // Oceans
+  'sea-level': seaLevelData,
+  'ocean-heat': oceanHeatData,
+  'ocean-ph': oceanPhData,
+  // Biosphere
+  'forest-cover': forestCoverData,
+  'coral-bleaching': coralBleachingData,
+  'wildfire-area': wildfireAreaData,
+  'permafrost': permafrostData,
+  // Biological Indicators
+  'cherry-blossoms': cherryBlossomsData,
+  'wine-harvest': wineHarvestData,
+  'growing-season': growingSeasonData,
+  'bird-migration': birdMigrationData,
+  // Natural Forcings
+  'enso': ensoData,
+  'solar-irradiance': solarIrradianceData,
+  'volcanic-aerosols': volcanicAerosolsData,
+  // Emissions
+  'emissions-global': emissionsGlobalData,
+  'emissions-capita': emissionsCapitaData,
+  // UK Data
+  'temp-cet': tempCetData,
+  'uk-rainfall': ukRainfallData,
+  'uk-coal-share': ukCoalShareData,
+  'uk-renewable-share': ukRenewableShareData,
+  // Energy Transition
+  'renewable-capacity': renewableCapacityData,
+  'solar-capacity': solarCapacityData,
+  'wind-capacity': windCapacityData,
+  'ev-sales': evSalesData,
+  // Extreme Events
+  'heat-records': heatRecordsData,
+  'fossil-subsidies': fossilSubsidiesData,
 }
+
+// Height presets
+const HEIGHT_PRESETS = {
+  compact: { label: 'Compact', height: 300 },
+  default: { label: 'Default', height: 450 },
+  tall: { label: 'Tall', height: 600 },
+  full: { label: 'Full', height: 800 },
+} as const
+
+type HeightPreset = keyof typeof HEIGHT_PRESETS
 
 export default function OverviewView() {
   const [activeDatasetIds, setActiveDatasetIds] = useState<string[]>(DEFAULT_ACTIVE_DATASETS)
-  const [chartXDomain, setChartXDomain] = useState<[number, number] | null>(null)
-  const [hoveredData, setHoveredData] = useState<{ year: number; values: { id: string; value: number }[] } | null>(null)
+  const [heightPreset, setHeightPreset] = useState<HeightPreset>('default')
+
+  // Get current height
+  const chartHeight = HEIGHT_PRESETS[heightPreset].height
 
   // Prepare chart datasets from active selections
   const chartDatasets = useMemo(() => {
@@ -88,56 +188,62 @@ export default function OverviewView() {
     setActiveDatasetIds([])
   }, [])
 
-  // Reset zoom
-  const handleResetZoom = useCallback(() => {
-    setChartXDomain(null)
-  }, [])
-
-  // Handle chart hover
-  const handleChartHover = useCallback((year: number | null, values: { id: string; value: number }[]) => {
-    if (year) {
-      setHoveredData({ year, values })
-    } else {
-      setHoveredData(null)
-    }
-  }, [])
-
-  // Handle zoom change
-  const handleZoom = useCallback((domain: [number, number]) => {
-    setChartXDomain(domain)
-  }, [])
+  // Cycle through height presets
+  const cycleHeight = useCallback(() => {
+    const presets: HeightPreset[] = ['compact', 'default', 'tall', 'full']
+    const currentIndex = presets.indexOf(heightPreset)
+    const nextIndex = (currentIndex + 1) % presets.length
+    setHeightPreset(presets[nextIndex])
+  }, [heightPreset])
 
   // Get datasets by category
-  const atmosphericDatasets = getDatasetsByCategory('atmospheric')
   const temperatureDatasets = getDatasetsByCategory('temperature')
+  const atmosphericDatasets = getDatasetsByCategory('atmospheric')
   const cryosphereDatasets = getDatasetsByCategory('cryosphere')
   const oceansDatasets = getDatasetsByCategory('oceans')
+  const biosphereDatasets = getDatasetsByCategory('biosphere')
+  const biologicalDatasets = getDatasetsByCategory('biological')
+  const forcingsDatasets = getDatasetsByCategory('forcings')
+  const emissionsDatasets = getDatasetsByCategory('emissions')
+  const ukDataDatasets = getDatasetsByCategory('uk-data')
+  const energyTransitionDatasets = getDatasetsByCategory('energy-transition')
+  const extremeEventsDatasets = getDatasetsByCategory('extreme-events')
 
   return (
     <div className="space-y-6">
       {/* Chart Section */}
       <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
         {/* Chart Header */}
-        <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between flex-wrap gap-4">
           <div>
             <h2 className="text-lg font-medium text-neutral-900">
               Climate Data Overview
             </h2>
             <p className="text-sm text-neutral-500 mt-0.5">
-              Select datasets below to overlay on the chart. Scroll to zoom, drag to pan.
+              Scroll to zoom, drag to pan, double-click to reset.
             </p>
           </div>
           
           {/* Chart Controls */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleResetZoom}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-colors"
-              title="Reset zoom"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span className="hidden sm:inline">Reset</span>
-            </button>
+          <div className="flex items-center gap-1">
+            {/* Height selector */}
+            <div className="flex items-center border border-neutral-200 rounded-lg overflow-hidden mr-2">
+              {(Object.keys(HEIGHT_PRESETS) as HeightPreset[]).map((preset) => (
+                <button
+                  key={preset}
+                  onClick={() => setHeightPreset(preset)}
+                  className={`
+                    px-3 py-1.5 text-xs font-medium transition-colors
+                    ${heightPreset === preset 
+                      ? 'bg-neutral-900 text-white' 
+                      : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'
+                    }
+                  `}
+                >
+                  {HEIGHT_PRESETS[preset].label}
+                </button>
+              ))}
+            </div>
             
             <button
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-colors"
@@ -162,15 +268,15 @@ export default function OverviewView() {
           {chartDatasets.length > 0 ? (
             <ClimateChart
               datasets={chartDatasets}
-              xDomain={chartXDomain || undefined}
-              onHover={handleChartHover}
-              onZoom={handleZoom}
-              height={450}
+              height={chartHeight}
               showGrid={true}
               animate={true}
             />
           ) : (
-            <div className="h-[450px] flex items-center justify-center bg-neutral-50 rounded-xl">
+            <div 
+              className="flex items-center justify-center bg-neutral-50 rounded-xl"
+              style={{ height: chartHeight }}
+            >
               <div className="text-center">
                 <p className="text-neutral-500 mb-2">No datasets selected</p>
                 <p className="text-sm text-neutral-400">
@@ -222,6 +328,69 @@ export default function OverviewView() {
           name={CATEGORIES.oceans.name}
           description={CATEGORIES.oceans.description}
           datasets={oceansDatasets}
+          activeDatasets={activeDatasetIds}
+          onToggleDataset={handleToggleDataset}
+          defaultExpanded={false}
+        />
+
+        <MetricCategory
+          name={CATEGORIES.biosphere.name}
+          description={CATEGORIES.biosphere.description}
+          datasets={biosphereDatasets}
+          activeDatasets={activeDatasetIds}
+          onToggleDataset={handleToggleDataset}
+          defaultExpanded={false}
+        />
+
+        <MetricCategory
+          name={CATEGORIES.biological.name}
+          description={CATEGORIES.biological.description}
+          datasets={biologicalDatasets}
+          activeDatasets={activeDatasetIds}
+          onToggleDataset={handleToggleDataset}
+          defaultExpanded={false}
+        />
+
+        <MetricCategory
+          name={CATEGORIES.forcings.name}
+          description={CATEGORIES.forcings.description}
+          datasets={forcingsDatasets}
+          activeDatasets={activeDatasetIds}
+          onToggleDataset={handleToggleDataset}
+          defaultExpanded={false}
+        />
+
+        <MetricCategory
+          name={CATEGORIES.emissions.name}
+          description={CATEGORIES.emissions.description}
+          datasets={emissionsDatasets}
+          activeDatasets={activeDatasetIds}
+          onToggleDataset={handleToggleDataset}
+          defaultExpanded={false}
+        />
+
+        <MetricCategory
+          name={CATEGORIES['uk-data'].name}
+          description={CATEGORIES['uk-data'].description}
+          datasets={ukDataDatasets}
+          activeDatasets={activeDatasetIds}
+          onToggleDataset={handleToggleDataset}
+          defaultExpanded={false}
+        />
+
+        <MetricCategory
+          name={CATEGORIES['energy-transition'].name}
+          description={CATEGORIES['energy-transition'].description}
+          datasets={energyTransitionDatasets}
+          activeDatasets={activeDatasetIds}
+          onToggleDataset={handleToggleDataset}
+          defaultExpanded={false}
+        />
+
+        <MetricCategory
+          name={CATEGORIES['extreme-events'].name}
+          description={CATEGORIES['extreme-events'].description}
+          datasets={extremeEventsDatasets}
           activeDatasets={activeDatasetIds}
           onToggleDataset={handleToggleDataset}
           defaultExpanded={false}
