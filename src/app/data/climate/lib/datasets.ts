@@ -4,6 +4,7 @@
 // Consistent color palette designed for overlaying multiple datasets
 // Colors chosen for clarity, distinction, and aesthetic harmony
 
+import type { DatasetMetadata, CategoryType, DirectionType } from './types'
 export type { DatasetMetadata, CategoryType, DirectionType } from './types'
 
 // ===========================================
