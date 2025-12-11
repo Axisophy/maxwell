@@ -39,6 +39,7 @@ const toolsSubmenu = [
 ]
 
 const dataSubmenu = [
+  { href: '/data/climate', label: 'Climate Data Centre', active: true },
   { href: '#', label: 'Elements & Atoms', active: false },
   { href: '#', label: 'Life', active: false },
   { href: '#', label: 'Earth & Time', active: false },

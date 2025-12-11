@@ -36,7 +36,9 @@ const navItems = [
     label: 'Data', 
     icon: Database, 
     matchPaths: ['/data'],
-    submenu: []
+    submenu: [
+      { href: '/data/climate', label: 'Climate Data Centre' },
+    ]
   },
   { 
     href: '/vault', 
