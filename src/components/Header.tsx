@@ -149,7 +149,13 @@ export default function Header() {
           </SignedOut>
           
           <SignedIn>
-            <UserButton 
+            <Link
+              href="/account"
+              className="text-sm text-black/60 hover:text-black transition-colors"
+            >
+              Account
+            </Link>
+            <UserButton
               afterSignOutUrl="/"
               appearance={{
                 elements: {

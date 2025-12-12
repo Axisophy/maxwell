@@ -131,16 +131,25 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </SignedOut>
           
           <SignedIn>
-            <div className="flex items-center gap-3">
-              <UserButton 
-                afterSignOutUrl="/"
-                appearance={{
-                  elements: {
-                    avatarBox: 'w-10 h-10',
-                  },
-                }}
-              />
-              <span className="text-sm text-white">Your Account</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <UserButton
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      avatarBox: 'w-10 h-10',
+                    },
+                  }}
+                />
+                <span className="text-sm text-white">Your Account</span>
+              </div>
+              <Link
+                href="/account"
+                onClick={onClose}
+                className="text-sm text-white/60 hover:text-white transition-colors"
+              >
+                Settings
+              </Link>
             </div>
           </SignedIn>
         </div>
