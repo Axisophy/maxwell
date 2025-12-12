@@ -650,14 +650,18 @@ export default function ExtractionMapStunning({ accessToken }: ExtractionMapProp
         center: [20, 20],
         zoom: 1.5,
         projection: isGlobe ? 'globe' : 'mercator',
-        fog: isGlobe ? {
+      });
+
+      // Set fog after map creation (can't be in constructor options)
+      if (isGlobe) {
+        map.current.setFog({
           color: isDark ? '#08080c' : '#f8f8f8',
           'high-color': isDark ? '#1a1a2e' : '#ffffff',
           'horizon-blend': 0.02,
           'space-color': isDark ? '#000000' : '#f0f0f0',
           'star-intensity': isDark ? 0.6 : 0,
-        } : undefined,
-      });
+        });
+      }
 
       map.current.on('load', () => setIsLoaded(true));
       map.current.on('click', () => setSelectedSite(null));

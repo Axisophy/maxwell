@@ -39,7 +39,7 @@ const dataCategories = [
         title: 'Extraction Map',
         description: 'Where we mine each element — from lithium to rare earths.',
         icon: Pickaxe,
-        ready: false,
+        ready: true,
       },
     ]
   },
