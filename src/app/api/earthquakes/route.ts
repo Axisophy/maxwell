@@ -36,12 +36,23 @@ interface EarthquakeResponse {
 const cache: Record<string, CacheEntry> = {}
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
+const ALLOWED_PERIODS = ['day', 'week'] as const
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const period = searchParams.get('period') || 'day' // 'day' or 'week'
-  
+  const periodParam = searchParams.get('period') || 'day'
+
+  // Validate period parameter
+  if (!ALLOWED_PERIODS.includes(periodParam as typeof ALLOWED_PERIODS[number])) {
+    return NextResponse.json(
+      { error: `Invalid period. Must be one of: ${ALLOWED_PERIODS.join(', ')}` },
+      { status: 400 }
+    )
+  }
+  const period = periodParam as 'day' | 'week'
+
   const cacheKey = period
-  
+
   // Check cache
   if (cache[cacheKey] && Date.now() - cache[cacheKey].timestamp < CACHE_TTL) {
     return NextResponse.json(cache[cacheKey].data, {

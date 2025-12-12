@@ -43,14 +43,17 @@ function getMillisUntilMidnightUTC(): number {
 // For past dates, cache for 7 days (they never change)
 const PAST_DATE_TTL = 7 * 24 * 60 * 60 * 1000
 
+// APOD started on June 16, 1995
+const APOD_START_DATE = '1995-06-16'
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  
+
   // Get date parameter - default to today
   const dateParam = searchParams.get('date')
   const today = new Date().toISOString().split('T')[0]
   const requestedDate = dateParam || today
-  
+
   // Validate date format
   if (!/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
     return NextResponse.json(
@@ -58,7 +61,30 @@ export async function GET(request: Request) {
       { status: 400 }
     )
   }
-  
+
+  // Validate date is a real date and within valid range
+  const parsedDate = new Date(requestedDate + 'T00:00:00Z')
+  if (isNaN(parsedDate.getTime())) {
+    return NextResponse.json(
+      { error: 'Invalid date' },
+      { status: 400 }
+    )
+  }
+
+  if (requestedDate < APOD_START_DATE) {
+    return NextResponse.json(
+      { error: `Date must be ${APOD_START_DATE} or later (when APOD started)` },
+      { status: 400 }
+    )
+  }
+
+  if (requestedDate > today) {
+    return NextResponse.json(
+      { error: 'Date cannot be in the future' },
+      { status: 400 }
+    )
+  }
+
   // Check cache
   const cached = cache.get(requestedDate)
   if (cached && Date.now() < cached.expiresAt) {

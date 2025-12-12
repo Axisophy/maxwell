@@ -89,11 +89,25 @@ function cleanCache() {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  
+
   // Get coordinates - default to London if not provided
   const lat = parseFloat(searchParams.get('lat') || '51.5074')
   const lon = parseFloat(searchParams.get('lon') || '-0.1278')
-  
+
+  // Validate coordinate bounds
+  if (isNaN(lat) || lat < -90 || lat > 90) {
+    return NextResponse.json(
+      { error: 'Invalid latitude. Must be between -90 and 90.' },
+      { status: 400 }
+    )
+  }
+  if (isNaN(lon) || lon < -180 || lon > 180) {
+    return NextResponse.json(
+      { error: 'Invalid longitude. Must be between -180 and 180.' },
+      { status: 400 }
+    )
+  }
+
   // Check cache first
   const cacheKey = getCacheKey(lat, lon)
   const cached = cache.get(cacheKey)

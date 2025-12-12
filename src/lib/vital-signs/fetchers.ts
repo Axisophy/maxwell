@@ -432,43 +432,47 @@ export async function fetchFires(): Promise<FiresData> {
 export async function fetchNEO(): Promise<NEOData> {
   const today = new Date().toISOString().split('T')[0]
   const weekAhead = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  
-  // NASA NeoWs API (requires API key, using DEMO_KEY for now)
-  const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${today}&end_date=${weekAhead}&api_key=DEMO_KEY`
-  
+
+  // Use NASA API key from environment, fall back to DEMO_KEY (rate limited)
+  const apiKey = process.env.NASA_API_KEY || 'DEMO_KEY'
+  const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${today}&end_date=${weekAhead}&api_key=${apiKey}`
+
   try {
     const response = await fetch(url, { next: { revalidate: 43200 } })
-    if (response.ok) {
-      const data = await response.json()
-      const count = data.element_count || 0
-      
-      // Find closest approach
-      let closest: NEOData['closest'] = null
-      let minDistance = Infinity
-      
-      Object.values(data.near_earth_objects || {}).forEach((dayObjects: any) => {
-        dayObjects.forEach((neo: any) => {
-          const approach = neo.close_approach_data?.[0]
-          if (approach) {
-            const distance = parseFloat(approach.miss_distance?.kilometers || Infinity)
-            if (distance < minDistance) {
-              minDistance = distance
-              closest = {
-                name: neo.name,
-                distance: Math.round(distance),
-                date: approach.close_approach_date
-              }
+    if (!response.ok) {
+      console.error(`NASA NEO fetch failed: ${response.status} ${response.statusText}`)
+      throw new Error(`HTTP ${response.status}`)
+    }
+
+    const data = await response.json()
+    const count = data.element_count || 0
+
+    // Find closest approach
+    let closest: NEOData['closest'] = null
+    let minDistance = Infinity
+
+    Object.values(data.near_earth_objects || {}).forEach((dayObjects: any) => {
+      dayObjects.forEach((neo: any) => {
+        const approach = neo.close_approach_data?.[0]
+        if (approach) {
+          const distance = parseFloat(approach.miss_distance?.kilometers || Infinity)
+          if (distance < minDistance) {
+            minDistance = distance
+            closest = {
+              name: neo.name,
+              distance: Math.round(distance),
+              date: approach.close_approach_date
             }
           }
-        })
+        }
       })
-      
-      return { count, closest }
-    }
+    })
+
+    return { count, closest }
   } catch (e) {
-    console.error('NASA NEO fetch failed')
+    console.error('NASA NEO fetch failed:', e)
   }
-  
+
   // Fallback
   return {
     count: 15,
