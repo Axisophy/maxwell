@@ -650,7 +650,7 @@ function ForceCard({
   )
 }
 
-function formatCharge(charge: ParticleCharge): string {
+function formatCharge(charge: number | string): string {
   if (charge === 0) return '0'
   if (charge === 1) return '+1'
   if (charge === -1) return '−1'
