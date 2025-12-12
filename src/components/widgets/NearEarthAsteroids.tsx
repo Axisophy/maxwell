@@ -22,22 +22,6 @@ interface Asteroid {
   isPotentiallyHazardous: boolean
 }
 
-// Parse JPL date format: "2024-Dec-07 14:23"
-function parseJPLDate(dateStr: string): Date {
-  const months: Record<string, string> = {
-    Jan: '01', Feb: '02', Mar: '03', Apr: '04',
-    May: '05', Jun: '06', Jul: '07', Aug: '08',
-    Sep: '09', Oct: '10', Nov: '11', Dec: '12',
-  }
-  const parts = dateStr.match(/(\d{4})-(\w{3})-(\d{2})\s+(\d{2}):(\d{2})/)
-  if (parts) {
-    const [, year, mon, day, hour, min] = parts
-    const month = months[mon] || '01'
-    return new Date(`${year}-${month}-${day}T${hour}:${min}:00Z`)
-  }
-  return new Date()
-}
-
 // Size comparisons
 function getSizeComparison(diameterM: number): string {
   if (diameterM < 10) return 'car-sized'
@@ -315,47 +299,51 @@ export default function NearEarthAsteroids() {
     }
   }, [timeRange])
 
-  // Fetch data
+  // Fetch data from local API proxy (avoids CORS issues with JPL API)
   const fetchAsteroids = useCallback(async () => {
     setLoading(true)
     setError(null)
 
     try {
-      const url = new URL('https://ssd-api.jpl.nasa.gov/cad.api')
+      const url = new URL('/api/asteroids', window.location.origin)
       url.searchParams.set('date-min', dateRange.start)
       url.searchParams.set('date-max', dateRange.end)
       url.searchParams.set('dist-max', '0.05') // ~20 lunar distances
-      url.searchParams.set('sort', 'date')
 
       const response = await fetch(url.toString())
       if (!response.ok) throw new Error('Failed to fetch asteroid data')
 
       const data = await response.json()
 
-      if (!data.data) {
+      if (!data.asteroids || data.asteroids.length === 0) {
         setAsteroids([])
         setLoading(false)
         return
       }
 
-      const parsed: Asteroid[] = data.data.map((row: string[]) => {
-        const distanceAU = parseFloat(row[4])
-        const distanceKm = distanceAU * 149597870.7
-        const distanceLunar = distanceKm / 384400
-
-        const H = parseFloat(row[10]) || 25
+      const parsed: Asteroid[] = data.asteroids.map((ast: {
+        id: string
+        name: string
+        closeApproachDate: string
+        distanceKm: number
+        distanceLunar: number
+        velocityKmS: number
+        absoluteMagnitude: number
+        distanceAU: number
+      }) => {
+        const H = ast.absoluteMagnitude
         const diameter = (1329 / Math.sqrt(0.14)) * Math.pow(10, -H / 5) * 1000
 
         return {
-          id: row[0],
-          name: row[0],
-          closeApproachDate: parseJPLDate(row[3]),
-          distanceKm,
-          distanceLunar,
-          velocityKmS: parseFloat(row[7]),
+          id: ast.id,
+          name: ast.name,
+          closeApproachDate: new Date(ast.closeApproachDate),
+          distanceKm: ast.distanceKm,
+          distanceLunar: ast.distanceLunar,
+          velocityKmS: ast.velocityKmS,
           diameterMin: diameter * 0.5,
           diameterMax: diameter * 2,
-          isPotentiallyHazardous: H < 22 && distanceAU < 0.05,
+          isPotentiallyHazardous: H < 22 && ast.distanceAU < 0.05,
         }
       })
 
