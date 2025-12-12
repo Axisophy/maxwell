@@ -1,21 +1,14 @@
 import { NextResponse } from 'next/server'
 import { fetchWithTimeout } from '@/lib/fetch-utils'
+import { cachedFetch, TTL } from '@/lib/cache'
 
 // ===========================================
 // LAUNCHES API ROUTE
 // ===========================================
 // Proxies requests to The Space Devs Launch Library
-// with server-side caching to respect rate limits
-//
-// Rate limit: 15 requests/hour (free tier)
-// Cache duration: 10 minutes (launches don't change often)
+// with Vercel KV caching to respect rate limits
+// Cache TTL: 15 minutes
 // ===========================================
-
-interface CachedData {
-  data: LaunchResponse | null
-  timestamp: number
-  error: string | null
-}
 
 interface Launch {
   id: string
@@ -54,34 +47,20 @@ interface Launch {
 }
 
 interface LaunchResponse {
-  count: number
-  results: Launch[]
+  launches: Launch[]
+  cached: boolean
+  cacheAge?: number
+  stale?: boolean
+  error?: string
 }
 
-// In-memory cache
-const cache: CachedData = {
-  data: null,
-  timestamp: 0,
-  error: null,
-}
-
-// Cache duration: 10 minutes (600,000 ms)
-// Launch schedules don't change moment-to-moment
-const CACHE_DURATION = 10 * 60 * 1000
-
-// Stale cache duration: 1 hour
-// If API fails, serve stale data for up to an hour
-const STALE_DURATION = 60 * 60 * 1000
-
-async function fetchLaunches(): Promise<LaunchResponse> {
+async function fetchLaunches(): Promise<Launch[]> {
   const response = await fetchWithTimeout(
     'https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=10&mode=detailed',
     {
       headers: {
         'Accept': 'application/json',
       },
-      // Next.js fetch cache - revalidate every 10 minutes
-      next: { revalidate: 600 },
     }
   )
 
@@ -92,55 +71,39 @@ async function fetchLaunches(): Promise<LaunchResponse> {
     throw new Error(`API error: ${response.status}`)
   }
 
-  return response.json()
+  const data = await response.json()
+  return data.results
 }
 
 export async function GET() {
-  const now = Date.now()
-  const cacheAge = now - cache.timestamp
-
-  // Return fresh cached data if available
-  if (cache.data && cacheAge < CACHE_DURATION) {
-    return NextResponse.json({
-      launches: cache.data.results,
-      cached: true,
-      cacheAge: Math.round(cacheAge / 1000),
-    })
-  }
-
-  // Try to fetch fresh data
   try {
-    const data = await fetchLaunches()
-
-    // Update cache
-    cache.data = data
-    cache.timestamp = now
-    cache.error = null
-
-    return NextResponse.json({
-      launches: data.results,
-      cached: false,
+    const { data, cacheStatus, cacheAge } = await cachedFetch({
+      key: 'launches',
+      ttl: TTL.SLOW, // 15 minutes
+      fetcher: fetchLaunches,
     })
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
 
-    // If we have stale data and it's not too old, return it
-    if (cache.data && cacheAge < STALE_DURATION) {
-      console.warn(`Launch API error (${errorMessage}), serving stale cache`)
-      return NextResponse.json({
-        launches: cache.data.results,
-        cached: true,
-        stale: true,
-        cacheAge: Math.round(cacheAge / 1000),
-        error: errorMessage,
-      })
+    const response: LaunchResponse = {
+      launches: data,
+      cached: cacheStatus === 'HIT',
+      stale: cacheStatus === 'STALE',
+    }
+    if (cacheAge !== undefined) {
+      response.cacheAge = cacheAge
     }
 
-    // No usable cache, return error
-    console.error('Launch API error with no cache:', errorMessage)
+    return NextResponse.json(response, {
+      headers: { 'X-Cache': cacheStatus },
+    })
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Launch API error:', errorMessage)
+
     return NextResponse.json(
       {
         launches: [],
+        cached: false,
         error: errorMessage === 'RATE_LIMITED'
           ? 'Rate limit exceeded. Please try again later.'
           : 'Unable to fetch launch data',

@@ -1,17 +1,13 @@
 import { NextResponse } from 'next/server'
 import { fetchWithTimeout } from '@/lib/fetch-utils'
+import { cachedFetch, TTL } from '@/lib/cache'
 
 // ===========================================
 // AIR QUALITY API ROUTE
 // ===========================================
-// Proxies OpenAQ v3 API with server-side caching
-// Cache TTL: 15 minutes (air quality doesn't change rapidly)
+// Proxies OpenAQ v3 API with Vercel KV caching
+// Cache TTL: 5 minutes (air quality doesn't change rapidly)
 // ===========================================
-
-interface CacheEntry {
-  data: AirQualityResponse
-  timestamp: number
-}
 
 interface AirQualityResponse {
   location: {
@@ -36,11 +32,6 @@ interface AirQualityResponse {
   }[]
   lastUpdated: string
 }
-
-// Simple in-memory cache
-// Key format: "lat,lon" rounded to 2 decimal places (roughly 1km precision)
-const cache = new Map<string, CacheEntry>()
-const CACHE_TTL = 15 * 60 * 1000 // 15 minutes
 
 // Pollutant info with WHO guidelines (2021)
 const POLLUTANT_INFO: Record<string, { displayName: string; whoGuideline: number }> = {
@@ -72,19 +63,95 @@ function getAQICategory(pm25: number): { level: string; color: string } {
   return { level: 'Hazardous', color: '#7f1d1d' }
 }
 
-// Generate cache key from coordinates
+// Generate cache key from coordinates (rounded to 2 decimal places ~1km precision)
 function getCacheKey(lat: number, lon: number): string {
-  return `${lat.toFixed(2)},${lon.toFixed(2)}`
+  return `air-quality:${lat.toFixed(2)},${lon.toFixed(2)}`
 }
 
-// Clean expired cache entries periodically
-function cleanCache() {
-  const now = Date.now()
-  cache.forEach((entry, key) => {
-    if (now - entry.timestamp > CACHE_TTL) {
-      cache.delete(key)
-    }
+async function fetchAirQuality(lat: number, lon: number): Promise<AirQualityResponse> {
+  // OpenAQ v3 API - find nearest location with recent data
+  const url = new URL('https://api.openaq.org/v3/locations')
+  url.searchParams.set('coordinates', `${lat},${lon}`)
+  url.searchParams.set('radius', '25000') // 25km radius
+  url.searchParams.set('limit', '1')
+  url.searchParams.set('order_by', 'distance')
+
+  const response = await fetchWithTimeout(url.toString(), {
+    headers: {
+      'Accept': 'application/json',
+      'X-API-Key': process.env.OPENAQ_API_KEY || '',
+    },
   })
+
+  if (!response.ok) {
+    throw new Error(`OpenAQ API error: ${response.status}`)
+  }
+
+  const data = await response.json()
+
+  if (!data.results || data.results.length === 0) {
+    throw new Error('No air quality stations found nearby')
+  }
+
+  const location = data.results[0]
+
+  // Fetch latest measurements for this location
+  const latestUrl = `https://api.openaq.org/v3/locations/${location.id}/latest`
+  const latestResponse = await fetchWithTimeout(latestUrl, {
+    headers: {
+      'Accept': 'application/json',
+      'X-API-Key': process.env.OPENAQ_API_KEY || '',
+    },
+  })
+
+  if (!latestResponse.ok) {
+    throw new Error(`OpenAQ latest API error: ${latestResponse.status}`)
+  }
+
+  const latestData = await latestResponse.json()
+  const measurements = latestData.results || []
+
+  // Find PM2.5 for AQI calculation
+  const pm25Reading = measurements.find(
+    (m: any) => m.parameter?.name?.toLowerCase() === 'pm25' || m.parameter?.id === 2
+  )
+  const pm25Value = pm25Reading?.value || 0
+
+  // Build pollutants array
+  const pollutants = measurements
+    .filter((m: any) => {
+      const param = m.parameter?.name?.toLowerCase() || ''
+      return ['pm25', 'pm10', 'no2', 'o3', 'so2', 'co'].includes(param)
+    })
+    .map((m: any) => {
+      const param = m.parameter?.name?.toLowerCase() || ''
+      const info = POLLUTANT_INFO[param] || { displayName: param, whoGuideline: 100 }
+      return {
+        parameter: param,
+        displayName: info.displayName,
+        value: m.value,
+        unit: m.unit?.name || 'μg/m³',
+        whoGuideline: info.whoGuideline,
+        exceedsWho: m.value > info.whoGuideline,
+      }
+    })
+
+  return {
+    location: {
+      name: location.name,
+      city: location.locality || location.name,
+      country: location.country?.code || 'GB',
+      coordinates: {
+        latitude: location.coordinates?.latitude || lat,
+        longitude: location.coordinates?.longitude || lon,
+      },
+    },
+    aqi: pm25ToAQI(pm25Value),
+    pm25: pm25Value,
+    category: getAQICategory(pm25Value),
+    pollutants,
+    lastUpdated: pm25Reading?.datetime?.utc || new Date().toISOString(),
+  }
 }
 
 export async function GET(request: Request) {
@@ -108,122 +175,31 @@ export async function GET(request: Request) {
     )
   }
 
-  // Check cache first
-  const cacheKey = getCacheKey(lat, lon)
-  const cached = cache.get(cacheKey)
-  
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return NextResponse.json(cached.data, {
-      headers: {
-        'X-Cache': 'HIT',
-        'X-Cache-Age': String(Math.round((Date.now() - cached.timestamp) / 1000)),
-      },
-    })
-  }
-  
   try {
-    // OpenAQ v3 API - find nearest location with recent data
-    const url = new URL('https://api.openaq.org/v3/locations')
-    url.searchParams.set('coordinates', `${lat},${lon}`)
-    url.searchParams.set('radius', '25000') // 25km radius
-    url.searchParams.set('limit', '1')
-    url.searchParams.set('order_by', 'distance')
-    
-    const response = await fetchWithTimeout(url.toString(), {
-      headers: {
-        'Accept': 'application/json',
-        'X-API-Key': process.env.OPENAQ_API_KEY || '',
-      },
+    const { data, cacheStatus, cacheAge } = await cachedFetch({
+      key: getCacheKey(lat, lon),
+      ttl: TTL.MODERATE, // 5 minutes
+      fetcher: () => fetchAirQuality(lat, lon),
     })
-    
-    if (!response.ok) {
-      throw new Error(`OpenAQ API error: ${response.status}`)
+
+    const headers: Record<string, string> = { 'X-Cache': cacheStatus }
+    if (cacheAge !== undefined) {
+      headers['X-Cache-Age'] = String(cacheAge)
     }
-    
-    const data = await response.json()
-    
-    if (!data.results || data.results.length === 0) {
-      // No nearby stations - return a meaningful error
+
+    return NextResponse.json(data, { headers })
+
+  } catch (error) {
+    console.error('Air quality API error:', error)
+
+    // Check if it's a "no stations" error
+    if (error instanceof Error && error.message.includes('No air quality stations')) {
       return NextResponse.json(
         { error: 'No air quality stations found nearby' },
         { status: 404 }
       )
     }
-    
-    const location = data.results[0]
-    
-    // Fetch latest measurements for this location
-    const latestUrl = `https://api.openaq.org/v3/locations/${location.id}/latest`
-    const latestResponse = await fetchWithTimeout(latestUrl, {
-      headers: {
-        'Accept': 'application/json',
-        'X-API-Key': process.env.OPENAQ_API_KEY || '',
-      },
-    })
-    
-    if (!latestResponse.ok) {
-      throw new Error(`OpenAQ latest API error: ${latestResponse.status}`)
-    }
-    
-    const latestData = await latestResponse.json()
-    const measurements = latestData.results || []
-    
-    // Find PM2.5 for AQI calculation
-    const pm25Reading = measurements.find(
-      (m: any) => m.parameter?.name?.toLowerCase() === 'pm25' || m.parameter?.id === 2
-    )
-    const pm25Value = pm25Reading?.value || 0
-    
-    // Build pollutants array
-    const pollutants = measurements
-      .filter((m: any) => {
-        const param = m.parameter?.name?.toLowerCase() || ''
-        return ['pm25', 'pm10', 'no2', 'o3', 'so2', 'co'].includes(param)
-      })
-      .map((m: any) => {
-        const param = m.parameter?.name?.toLowerCase() || ''
-        const info = POLLUTANT_INFO[param] || { displayName: param, whoGuideline: 100 }
-        return {
-          parameter: param,
-          displayName: info.displayName,
-          value: m.value,
-          unit: m.unit?.name || 'μg/m³',
-          whoGuideline: info.whoGuideline,
-          exceedsWho: m.value > info.whoGuideline,
-        }
-      })
-    
-    // Build response
-    const result: AirQualityResponse = {
-      location: {
-        name: location.name,
-        city: location.locality || location.name,
-        country: location.country?.code || 'GB',
-        coordinates: {
-          latitude: location.coordinates?.latitude || lat,
-          longitude: location.coordinates?.longitude || lon,
-        },
-      },
-      aqi: pm25ToAQI(pm25Value),
-      pm25: pm25Value,
-      category: getAQICategory(pm25Value),
-      pollutants,
-      lastUpdated: pm25Reading?.datetime?.utc || new Date().toISOString(),
-    }
-    
-    // Cache the result
-    cache.set(cacheKey, { data: result, timestamp: Date.now() })
-    
-    // Periodically clean old cache entries
-    if (Math.random() < 0.1) cleanCache()
-    
-    return NextResponse.json(result, {
-      headers: { 'X-Cache': 'MISS' },
-    })
-    
-  } catch (error) {
-    console.error('Air quality API error:', error)
-    
+
     // Return fallback data for demo purposes
     const fallback: AirQualityResponse = {
       location: {
@@ -243,7 +219,7 @@ export async function GET(request: Request) {
       ],
       lastUpdated: new Date().toISOString(),
     }
-    
+
     return NextResponse.json(fallback, {
       headers: { 'X-Cache': 'FALLBACK' },
     })

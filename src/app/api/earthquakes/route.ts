@@ -1,17 +1,13 @@
 import { NextResponse } from 'next/server'
 import { fetchWithTimeout } from '@/lib/fetch-utils'
+import { cachedFetch, TTL } from '@/lib/cache'
 
 // ===========================================
 // EARTHQUAKES API ROUTE
 // ===========================================
-// Proxies USGS earthquake data with caching
-// Cache TTL: 5 minutes
+// Proxies USGS earthquake data with Vercel KV caching
+// Cache TTL: 1 minute (earthquakes are real-time)
 // ===========================================
-
-interface CacheEntry {
-  data: EarthquakeResponse
-  timestamp: number
-}
 
 interface Earthquake {
   id: string
@@ -32,11 +28,46 @@ interface EarthquakeResponse {
   timestamp: string
 }
 
-// Separate caches for each time period
-const cache: Record<string, CacheEntry> = {}
-const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
-
 const ALLOWED_PERIODS = ['day', 'week'] as const
+
+async function fetchEarthquakeData(period: 'day' | 'week'): Promise<EarthquakeResponse> {
+  // Use USGS pre-built feeds - M4.5+ for the specified period
+  const feed = period === 'week' ? '4.5_week' : '4.5_day'
+  const url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${feed}.geojson`
+
+  const response = await fetchWithTimeout(url, { cache: 'no-store' })
+
+  if (!response.ok) {
+    throw new Error(`USGS API returned ${response.status}`)
+  }
+
+  const data = await response.json()
+
+  const earthquakes: Earthquake[] = data.features
+    .map((f: any) => ({
+      id: f.id,
+      magnitude: f.properties.mag,
+      place: f.properties.place || 'Unknown location',
+      time: f.properties.time,
+      latitude: f.geometry.coordinates[1],
+      longitude: f.geometry.coordinates[0],
+      depth: f.geometry.coordinates[2],
+      url: f.properties.url,
+      tsunami: f.properties.tsunami === 1,
+    }))
+    .sort((a: Earthquake, b: Earthquake) => b.time - a.time)
+
+  const maxMagnitude = earthquakes.length > 0
+    ? Math.max(...earthquakes.map(eq => eq.magnitude))
+    : 0
+
+  return {
+    earthquakes,
+    count: earthquakes.length,
+    maxMagnitude,
+    timestamp: new Date().toISOString(),
+  }
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -51,77 +82,22 @@ export async function GET(request: Request) {
   }
   const period = periodParam as 'day' | 'week'
 
-  const cacheKey = period
-
-  // Check cache
-  if (cache[cacheKey] && Date.now() - cache[cacheKey].timestamp < CACHE_TTL) {
-    return NextResponse.json(cache[cacheKey].data, {
-      headers: {
-        'X-Cache': 'HIT',
-        'X-Cache-Age': String(Math.round((Date.now() - cache[cacheKey].timestamp) / 1000)),
-      },
-    })
-  }
-
   try {
-    // Use USGS pre-built feeds - M4.5+ for the specified period
-    const feed = period === 'week' ? '4.5_week' : '4.5_day'
-    const url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${feed}.geojson`
-    
-    const response = await fetchWithTimeout(url, { cache: 'no-store' })
-    
-    if (!response.ok) {
-      throw new Error(`USGS API returned ${response.status}`)
-    }
-    
-    const data = await response.json()
-    
-    const earthquakes: Earthquake[] = data.features
-      .map((f: any) => ({
-        id: f.id,
-        magnitude: f.properties.mag,
-        place: f.properties.place || 'Unknown location',
-        time: f.properties.time,
-        latitude: f.geometry.coordinates[1],
-        longitude: f.geometry.coordinates[0],
-        depth: f.geometry.coordinates[2],
-        url: f.properties.url,
-        tsunami: f.properties.tsunami === 1,
-      }))
-      .sort((a: Earthquake, b: Earthquake) => b.time - a.time)
-    
-    const maxMagnitude = earthquakes.length > 0 
-      ? Math.max(...earthquakes.map(eq => eq.magnitude))
-      : 0
-
-    const result: EarthquakeResponse = {
-      earthquakes,
-      count: earthquakes.length,
-      maxMagnitude,
-      timestamp: new Date().toISOString(),
-    }
-
-    // Update cache
-    cache[cacheKey] = {
-      data: result,
-      timestamp: Date.now(),
-    }
-
-    return NextResponse.json(result, {
-      headers: { 'X-Cache': 'MISS' },
+    const { data, cacheStatus, cacheAge } = await cachedFetch({
+      key: `earthquakes:${period}`,
+      ttl: TTL.FAST, // 1 minute
+      fetcher: () => fetchEarthquakeData(period),
     })
+
+    const headers: Record<string, string> = { 'X-Cache': cacheStatus }
+    if (cacheAge !== undefined) {
+      headers['X-Cache-Age'] = String(cacheAge)
+    }
+
+    return NextResponse.json(data, { headers })
+
   } catch (error) {
     console.error('Earthquakes API error:', error)
-    
-    // Return stale cache if available
-    if (cache[cacheKey]) {
-      return NextResponse.json(cache[cacheKey].data, {
-        headers: {
-          'X-Cache': 'STALE',
-          'X-Cache-Age': String(Math.round((Date.now() - cache[cacheKey].timestamp) / 1000)),
-        },
-      })
-    }
 
     return NextResponse.json(
       { error: 'Failed to fetch earthquake data' },

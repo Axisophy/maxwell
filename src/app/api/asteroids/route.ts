@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { fetchWithTimeout } from '@/lib/fetch-utils'
+import { cachedFetch, TTL } from '@/lib/cache'
 
 // ===========================================
 // ASTEROIDS API ROUTE
@@ -7,11 +8,6 @@ import { fetchWithTimeout } from '@/lib/fetch-utils'
 // Proxies NASA JPL CAD (Close Approach Data) API
 // Cache TTL: 1 hour (data updates infrequently)
 // ===========================================
-
-interface CacheEntry {
-  data: AsteroidsResponse
-  timestamp: number
-}
 
 interface Asteroid {
   id: string
@@ -31,10 +27,6 @@ interface AsteroidsResponse {
   timestamp: string
 }
 
-// Cache keyed by date range
-const cache = new Map<string, CacheEntry>()
-const CACHE_TTL = 60 * 60 * 1000 // 1 hour
-
 // Parse JPL date format: "2024-Dec-07 14:23" -> ISO string
 function parseJPLDate(dateStr: string): string {
   const months: Record<string, string> = {
@@ -51,6 +43,49 @@ function parseJPLDate(dateStr: string): string {
   return new Date().toISOString()
 }
 
+async function fetchAsteroidData(dateMin: string, dateMax: string, distMax: string): Promise<AsteroidsResponse> {
+  // NASA JPL Close Approach Data API
+  const url = new URL('https://ssd-api.jpl.nasa.gov/cad.api')
+  url.searchParams.set('date-min', dateMin)
+  url.searchParams.set('date-max', dateMax)
+  url.searchParams.set('dist-max', distMax)
+  url.searchParams.set('sort', 'date')
+
+  const response = await fetchWithTimeout(url.toString())
+
+  if (!response.ok) {
+    throw new Error(`JPL API returned ${response.status}`)
+  }
+
+  const data = await response.json()
+
+  // Parse the response - JPL returns arrays, not objects
+  // Fields: des, orbit_id, jd, cd, dist, dist_min, dist_max, v_rel, v_inf, t_sigma_f, h
+  const asteroids: Asteroid[] = (data.data || []).map((row: string[]) => {
+    const distanceAU = parseFloat(row[4])
+    const distanceKm = distanceAU * 149597870.7
+    const distanceLunar = distanceKm / 384400
+
+    return {
+      id: row[0],
+      name: row[0],
+      closeApproachDate: parseJPLDate(row[3]),
+      distanceAU,
+      distanceKm,
+      distanceLunar,
+      velocityKmS: parseFloat(row[7]),
+      absoluteMagnitude: parseFloat(row[10]) || 25,
+    }
+  })
+
+  return {
+    asteroids,
+    count: asteroids.length,
+    dateRange: { start: dateMin, end: dateMax },
+    timestamp: new Date().toISOString(),
+  }
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
 
@@ -61,7 +96,7 @@ export async function GET(request: Request) {
 
   const dateMin = searchParams.get('date-min') || today.toISOString().split('T')[0]
   const dateMax = searchParams.get('date-max') || defaultEnd.toISOString().split('T')[0]
-  const distMax = searchParams.get('dist-max') || '0.05' // ~20 lunar distances
+  const distMax = searchParams.get('dist-max') || '0.05'
 
   // Validate date format
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/
@@ -81,87 +116,22 @@ export async function GET(request: Request) {
     )
   }
 
-  // Check cache
-  const cacheKey = `${dateMin}-${dateMax}-${distMax}`
-  const cached = cache.get(cacheKey)
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return NextResponse.json(cached.data, {
-      headers: {
-        'X-Cache': 'HIT',
-        'X-Cache-Age': String(Math.round((Date.now() - cached.timestamp) / 1000)),
-      },
-    })
-  }
-
   try {
-    // NASA JPL Close Approach Data API
-    const url = new URL('https://ssd-api.jpl.nasa.gov/cad.api')
-    url.searchParams.set('date-min', dateMin)
-    url.searchParams.set('date-max', dateMax)
-    url.searchParams.set('dist-max', distMax)
-    url.searchParams.set('sort', 'date')
-
-    const response = await fetchWithTimeout(url.toString())
-
-    if (!response.ok) {
-      throw new Error(`JPL API returned ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    // Parse the response - JPL returns arrays, not objects
-    // Fields: des, orbit_id, jd, cd, dist, dist_min, dist_max, v_rel, v_inf, t_sigma_f, h
-    const asteroids: Asteroid[] = (data.data || []).map((row: string[]) => {
-      const distanceAU = parseFloat(row[4])
-      const distanceKm = distanceAU * 149597870.7 // AU to km
-      const distanceLunar = distanceKm / 384400 // km to lunar distances
-
-      return {
-        id: row[0],
-        name: row[0],
-        closeApproachDate: parseJPLDate(row[3]),
-        distanceAU,
-        distanceKm,
-        distanceLunar,
-        velocityKmS: parseFloat(row[7]),
-        absoluteMagnitude: parseFloat(row[10]) || 25,
-      }
+    const { data, cacheStatus, cacheAge } = await cachedFetch({
+      key: `asteroids:${dateMin}:${dateMax}:${distMax}`,
+      ttl: TTL.HOURLY, // 1 hour
+      fetcher: () => fetchAsteroidData(dateMin, dateMax, distMax),
     })
 
-    const result: AsteroidsResponse = {
-      asteroids,
-      count: asteroids.length,
-      dateRange: { start: dateMin, end: dateMax },
-      timestamp: new Date().toISOString(),
+    const headers: Record<string, string> = { 'X-Cache': cacheStatus }
+    if (cacheAge !== undefined) {
+      headers['X-Cache-Age'] = String(cacheAge)
     }
 
-    // Update cache
-    cache.set(cacheKey, {
-      data: result,
-      timestamp: Date.now(),
-    })
+    return NextResponse.json(data, { headers })
 
-    // Clean old cache entries
-    if (cache.size > 10) {
-      const oldestKey = cache.keys().next().value
-      if (oldestKey) cache.delete(oldestKey)
-    }
-
-    return NextResponse.json(result, {
-      headers: { 'X-Cache': 'MISS' },
-    })
   } catch (error) {
     console.error('Asteroids API error:', error)
-
-    // Return stale cache if available
-    if (cached) {
-      return NextResponse.json(cached.data, {
-        headers: {
-          'X-Cache': 'STALE',
-          'X-Cache-Age': String(Math.round((Date.now() - cached.timestamp) / 1000)),
-        },
-      })
-    }
 
     return NextResponse.json(
       { error: 'Failed to fetch asteroid data' },

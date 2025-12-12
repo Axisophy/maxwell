@@ -1,18 +1,13 @@
 import { NextResponse } from 'next/server'
 import { fetchWithTimeout } from '@/lib/fetch-utils'
+import { cachedFetch, TTL } from '@/lib/cache'
 
 // ===========================================
 // APOD API ROUTE
 // ===========================================
-// Proxies NASA APOD API with server-side caching
-// Cache TTL: Until midnight UTC (APOD updates daily)
+// Proxies NASA APOD API with Vercel KV caching
+// Cache TTL: 1 hour for today, 6 hours for past dates
 // ===========================================
-
-interface CacheEntry {
-  data: APODResponse
-  timestamp: number
-  expiresAt: number
-}
 
 interface APODResponse {
   date: string
@@ -25,26 +20,38 @@ interface APODResponse {
   nasaUrl: string
 }
 
-// Cache keyed by date string (YYYY-MM-DD)
-const cache = new Map<string, CacheEntry>()
-
-// Calculate milliseconds until next midnight UTC
-function getMillisUntilMidnightUTC(): number {
-  const now = new Date()
-  const tomorrow = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() + 1,
-    0, 0, 0, 0
-  ))
-  return tomorrow.getTime() - now.getTime()
-}
-
-// For past dates, cache for 7 days (they never change)
-const PAST_DATE_TTL = 7 * 24 * 60 * 60 * 1000
-
 // APOD started on June 16, 1995
 const APOD_START_DATE = '1995-06-16'
+
+async function fetchAPOD(requestedDate: string): Promise<APODResponse> {
+  // Use NASA API key from environment, fall back to DEMO_KEY
+  const apiKey = process.env.NASA_API_KEY || 'DEMO_KEY'
+
+  const response = await fetchWithTimeout(
+    `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${requestedDate}`,
+    { cache: 'no-store' }
+  )
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('NOT_FOUND')
+    }
+    throw new Error(`NASA API error: ${response.status}`)
+  }
+
+  const data = await response.json()
+
+  return {
+    date: data.date,
+    title: data.title,
+    explanation: data.explanation,
+    url: data.url,
+    hdurl: data.hdurl,
+    mediaType: data.media_type === 'video' ? 'video' : 'image',
+    copyright: data.copyright?.trim(),
+    nasaUrl: `https://apod.nasa.gov/apod/ap${data.date.replace(/-/g, '').slice(2)}.html`,
+  }
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -85,80 +92,34 @@ export async function GET(request: Request) {
     )
   }
 
-  // Check cache
-  const cached = cache.get(requestedDate)
-  if (cached && Date.now() < cached.expiresAt) {
-    return NextResponse.json(cached.data, {
-      headers: {
-        'X-Cache': 'HIT',
-        'X-Cache-Expires': new Date(cached.expiresAt).toISOString(),
-      },
-    })
-  }
-  
+  // Use shorter TTL for today's APOD, longer for historical
+  const isToday = requestedDate === today
+  const ttl = isToday ? TTL.HOURLY : TTL.DAILY
+
   try {
-    // Use NASA API key from environment, fall back to DEMO_KEY
-    const apiKey = process.env.NASA_API_KEY || 'DEMO_KEY'
-    
-    const response = await fetchWithTimeout(
-      `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${requestedDate}`,
-      { next: { revalidate: 3600 } } // Next.js cache hint
-    )
-    
-    if (!response.ok) {
-      if (response.status === 404) {
-        return NextResponse.json(
-          { error: 'No APOD available for this date' },
-          { status: 404 }
-        )
-      }
-      throw new Error(`NASA API error: ${response.status}`)
-    }
-    
-    const data = await response.json()
-    
-    // Build clean response
-    const result: APODResponse = {
-      date: data.date,
-      title: data.title,
-      explanation: data.explanation,
-      url: data.url,
-      hdurl: data.hdurl,
-      mediaType: data.media_type === 'video' ? 'video' : 'image',
-      copyright: data.copyright?.trim(),
-      nasaUrl: `https://apod.nasa.gov/apod/ap${data.date.replace(/-/g, '').slice(2)}.html`,
-    }
-    
-    // Calculate cache expiry
-    const isToday = requestedDate === today
-    const expiresAt = isToday 
-      ? Date.now() + getMillisUntilMidnightUTC()
-      : Date.now() + PAST_DATE_TTL
-    
-    // Store in cache
-    cache.set(requestedDate, {
-      data: result,
-      timestamp: Date.now(),
-      expiresAt,
+    const { data, cacheStatus, cacheAge } = await cachedFetch({
+      key: `apod:${requestedDate}`,
+      ttl,
+      fetcher: () => fetchAPOD(requestedDate),
     })
-    
-    // Clean old cache entries (keep last 30 days)
-    if (cache.size > 30) {
-      const sortedKeys = Array.from(cache.keys()).sort()
-      const toDelete = sortedKeys.slice(0, cache.size - 30)
-      toDelete.forEach(key => cache.delete(key))
+
+    const headers: Record<string, string> = { 'X-Cache': cacheStatus }
+    if (cacheAge !== undefined) {
+      headers['X-Cache-Age'] = String(cacheAge)
     }
-    
-    return NextResponse.json(result, {
-      headers: {
-        'X-Cache': 'MISS',
-        'X-Cache-Expires': new Date(expiresAt).toISOString(),
-      },
-    })
-    
+
+    return NextResponse.json(data, { headers })
+
   } catch (error) {
     console.error('APOD API error:', error)
-    
+
+    if (error instanceof Error && error.message === 'NOT_FOUND') {
+      return NextResponse.json(
+        { error: 'No APOD available for this date' },
+        { status: 404 }
+      )
+    }
+
     return NextResponse.json(
       { error: 'Failed to fetch APOD' },
       { status: 500 }

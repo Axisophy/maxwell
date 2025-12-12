@@ -1,17 +1,13 @@
 import { NextResponse } from 'next/server'
 import { fetchWithTimeout } from '@/lib/fetch-utils'
+import { cachedFetch, TTL } from '@/lib/cache'
 
 // ===========================================
 // AURORA FORECAST API ROUTE
 // ===========================================
 // Fetches Kp index data from NOAA SWPC
-// Cache TTL: 15 minutes
+// Cache TTL: 5 minutes
 // ===========================================
-
-interface CacheEntry {
-  data: AuroraResponse
-  timestamp: number
-}
 
 interface AuroraResponse {
   current: {
@@ -19,15 +15,11 @@ interface AuroraResponse {
     status: string
   }
   forecast: {
-    tonight: number  // Max Kp expected tonight
-    tomorrow: number // Max Kp expected tomorrow
+    tonight: number
+    tomorrow: number
   }
   timestamp: string
 }
-
-// Server-side cache
-let cache: CacheEntry | null = null
-const CACHE_TTL = 15 * 60 * 1000 // 15 minutes
 
 const NOAA_KP_FORECAST_URL = 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json'
 
@@ -39,92 +31,76 @@ function getKpStatus(kp: number): string {
   return 'Quiet'
 }
 
-export async function GET() {
-  // Check cache first
-  if (cache && Date.now() - cache.timestamp < CACHE_TTL) {
-    return NextResponse.json(cache.data, {
-      headers: {
-        'X-Cache': 'HIT',
-        'X-Cache-Age': String(Math.round((Date.now() - cache.timestamp) / 1000)),
-      },
-    })
+async function fetchAuroraData(): Promise<AuroraResponse> {
+  const response = await fetchWithTimeout(NOAA_KP_FORECAST_URL, { cache: 'no-store' })
+
+  if (!response.ok) {
+    throw new Error(`NOAA API error: ${response.status}`)
   }
 
+  const rawData = await response.json()
+
+  // Parse Kp data - format: [["time_tag", "Kp", "observed/predicted"], ...]
+  // Skip header row
+  const rows = rawData.slice(1)
+
+  // Find current (most recent observed)
+  let currentKp = 0
+  const observed = rows.filter((row: string[]) => row[2] === 'observed')
+  if (observed.length > 0) {
+    currentKp = parseFloat(observed[observed.length - 1][1]) || 0
+  }
+
+  // Get forecast (predicted values)
+  const predicted = rows.filter((row: string[]) => row[2] === 'predicted')
+
+  // Calculate "tonight" and "tomorrow" max Kp
+  const now = new Date()
+  let tonightMax = currentKp
+  let tomorrowMax = 0
+
+  predicted.forEach((row: string[]) => {
+    const forecastTime = new Date(row[0])
+    const hoursAhead = (forecastTime.getTime() - now.getTime()) / (1000 * 60 * 60)
+    const kp = parseFloat(row[1]) || 0
+
+    if (hoursAhead >= 0 && hoursAhead < 12) {
+      tonightMax = Math.max(tonightMax, kp)
+    } else if (hoursAhead >= 12 && hoursAhead < 36) {
+      tomorrowMax = Math.max(tomorrowMax, kp)
+    }
+  })
+
+  return {
+    current: {
+      kp: currentKp,
+      status: getKpStatus(currentKp),
+    },
+    forecast: {
+      tonight: tonightMax,
+      tomorrow: tomorrowMax,
+    },
+    timestamp: new Date().toISOString(),
+  }
+}
+
+export async function GET() {
   try {
-    const response = await fetchWithTimeout(NOAA_KP_FORECAST_URL, { cache: 'no-store' })
-    
-    if (!response.ok) {
-      throw new Error(`NOAA API error: ${response.status}`)
-    }
-
-    const rawData = await response.json()
-    
-    // Parse Kp data - format: [["time_tag", "Kp", "observed/predicted"], ...]
-    // Skip header row
-    const rows = rawData.slice(1)
-    
-    // Find current (most recent observed)
-    let currentKp = 0
-    const observed = rows.filter((row: string[]) => row[2] === 'observed')
-    if (observed.length > 0) {
-      currentKp = parseFloat(observed[observed.length - 1][1]) || 0
-    }
-    
-    // Get forecast (predicted values)
-    const predicted = rows.filter((row: string[]) => row[2] === 'predicted')
-    
-    // Calculate "tonight" and "tomorrow" max Kp
-    // Tonight = next 12 hours, Tomorrow = 12-36 hours
-    const now = new Date()
-    let tonightMax = currentKp
-    let tomorrowMax = 0
-    
-    predicted.forEach((row: string[]) => {
-      const forecastTime = new Date(row[0])
-      const hoursAhead = (forecastTime.getTime() - now.getTime()) / (1000 * 60 * 60)
-      const kp = parseFloat(row[1]) || 0
-      
-      if (hoursAhead >= 0 && hoursAhead < 12) {
-        tonightMax = Math.max(tonightMax, kp)
-      } else if (hoursAhead >= 12 && hoursAhead < 36) {
-        tomorrowMax = Math.max(tomorrowMax, kp)
-      }
+    const { data, cacheStatus, cacheAge } = await cachedFetch({
+      key: 'aurora',
+      ttl: TTL.MODERATE, // 5 minutes
+      fetcher: fetchAuroraData,
     })
 
-    const data: AuroraResponse = {
-      current: {
-        kp: currentKp,
-        status: getKpStatus(currentKp),
-      },
-      forecast: {
-        tonight: tonightMax,
-        tomorrow: tomorrowMax,
-      },
-      timestamp: new Date().toISOString(),
+    const headers: Record<string, string> = { 'X-Cache': cacheStatus }
+    if (cacheAge !== undefined) {
+      headers['X-Cache-Age'] = String(cacheAge)
     }
 
-    // Update cache
-    cache = {
-      data,
-      timestamp: Date.now(),
-    }
-
-    return NextResponse.json(data, {
-      headers: { 'X-Cache': 'MISS' },
-    })
+    return NextResponse.json(data, { headers })
 
   } catch (error) {
     console.error('Aurora API error:', error)
-    
-    // Return stale cache if available
-    if (cache) {
-      return NextResponse.json(cache.data, {
-        headers: {
-          'X-Cache': 'STALE',
-          'X-Cache-Age': String(Math.round((Date.now() - cache.timestamp) / 1000)),
-        },
-      })
-    }
 
     return NextResponse.json(
       { error: 'Failed to fetch aurora data' },
