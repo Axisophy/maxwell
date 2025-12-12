@@ -118,7 +118,7 @@ async function fetchUKData(previousUK?: LiveNuclearData['uk']): Promise<LiveNucl
 async function fetchFranceData(previousFrance?: LiveNuclearData['france']): Promise<LiveNuclearData['france']> {
   try {
     const response = await fetchWithTimeout(
-      'https://odre.opendatasoft.com/api/records/1.0/search/?dataset=eco2mix-national-tr&rows=1&sort=date_heure',
+      'https://odre.opendatasoft.com/api/records/1.0/search/?dataset=eco2mix-national-tr&rows=1&sort=-date_heure',
       { next: { revalidate: 600 } }
     )
     
