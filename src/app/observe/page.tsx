@@ -9,8 +9,8 @@ const observePages = [
     icon: Activity,
   },
   {
-    href: '/observe/your-dashboard',
-    title: 'Your Dashboard',
+    href: '/observe/dashboard',
+    title: 'Dashboard',
     description: 'Beautiful live widgets showing the Sun, Earth, space weather, and other real-time data.',
     icon: LayoutDashboard,
   },
