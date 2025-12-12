@@ -23,8 +23,8 @@ export default function NuclidesPage() {
         </div>
       </div>
 
-      {/* The chart - takes remaining height */}
-      <div className="flex-1 min-h-[500px] md:min-h-[600px]">
+      {/* The chart - explicit height for canvas rendering */}
+      <div className="h-[500px] md:h-[600px] lg:h-[700px]">
         <NuclideChart className="h-full" />
       </div>
 

@@ -395,11 +395,11 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
         </div>
       </div>
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex min-h-0">
         {/* Chart */}
-        <div 
+        <div
           ref={containerRef}
-          className="flex-1 relative overflow-hidden cursor-grab active:cursor-grabbing"
+          className="flex-1 relative overflow-hidden cursor-grab active:cursor-grabbing min-h-0"
         >
           <canvas
             ref={canvasRef}
