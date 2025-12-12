@@ -158,15 +158,27 @@ export async function GET(request: Request) {
 // =============================================================================
 
 // Allow on-demand revalidation
+// Usage: POST /api/vital-signs with header "Authorization: Bearer <REVALIDATE_SECRET>"
 export async function POST(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const secret = searchParams.get('secret')
-  
-  // Simple secret check (in production, use proper auth)
-  if (secret !== process.env.REVALIDATE_SECRET) {
+  const authHeader = request.headers.get('authorization')
+  const expectedSecret = process.env.REVALIDATE_SECRET
+
+  // Ensure secret is configured
+  if (!expectedSecret) {
+    console.error('REVALIDATE_SECRET environment variable is not set')
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
+  }
+
+  // Validate Authorization header format: "Bearer <secret>"
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Missing or invalid Authorization header' }, { status: 401 })
+  }
+
+  const providedSecret = authHeader.slice(7) // Remove "Bearer " prefix
+  if (providedSecret !== expectedSecret) {
     return NextResponse.json({ error: 'Invalid secret' }, { status: 401 })
   }
-  
+
   // Force fresh fetch by calling GET
   return GET(request)
 }
