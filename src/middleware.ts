@@ -22,6 +22,7 @@ const PUBLIC_ROUTES = [
 // Route prefixes that should be publicly accessible
 const PUBLIC_PREFIXES = [
   '/access/',       // Magic access links
+  '/api/admin/',    // Admin API (has its own key auth)
 ]
 
 // Check if a path matches any public route
