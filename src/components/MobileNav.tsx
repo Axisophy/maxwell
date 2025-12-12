@@ -14,7 +14,7 @@ const navItems = [
     matchPaths: ['/observe'],
     submenu: [
       { href: '/observe/vital-signs', label: 'Vital Signs' },
-      { href: '/observe/your-dashboard', label: 'Your Dashboard' },
+      { href: '/observe/dashboard', label: 'Dashboard' },
     ]
   },
   { 
