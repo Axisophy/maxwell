@@ -14,6 +14,15 @@ import {
   type DecayMode,
 } from './nuclideData';
 
+function isColorDark(hex: string): boolean {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance < 0.5;
+}
+
 // Chart configuration
 const CELL_SIZE = 12; // Base cell size in pixels
 const MIN_ZOOM = 0.3;
@@ -212,7 +221,8 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
 
       // Draw symbol if zoomed in enough
       if (zoom >= 1.5 && cellSize >= 18) {
-        ctx.fillStyle = nuc.isStable ? '#fff' : '#000';
+        const cellColor = getNuclideColor(nuc);
+        ctx.fillStyle = isColorDark(cellColor) ? '#fff' : '#000';        
         ctx.font = `${Math.max(8, cellSize * 0.4)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';

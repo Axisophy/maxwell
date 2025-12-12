@@ -9,7 +9,8 @@ import {
   Sparkles,
   CircleDot,
   Mountain,
-  Pickaxe
+  Pickaxe,
+  Layers
 } from 'lucide-react'
 
 // Category definitions with pages
@@ -44,8 +45,8 @@ const dataCategories = [
   },
   {
     id: 'matter',
-    title: 'Matter',
-    description: 'The building blocks — from fundamental particles to every isotope of every element.',
+    title: 'Matter & Materials',
+    description: 'From fundamental particles to the materials we build with — what everything is made of.',
     pages: [
       {
         href: '/data/elements',
@@ -67,6 +68,13 @@ const dataCategories = [
         description: 'Quarks, leptons, and bosons — the fundamental particles of physics.',
         icon: Sparkles,
         ready: true,
+      },
+      {
+        href: '/data/materials',
+        title: 'Materials Explorer',
+        description: 'Metals, polymers, ceramics, composites — what things are made of and why.',
+        icon: Layers,
+        ready: false,
       },
     ]
   },
