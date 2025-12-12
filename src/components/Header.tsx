@@ -23,7 +23,7 @@ const navItems = [
 // Submenus
 const observeSubmenu = [
   { href: '/observe/vital-signs', label: 'Vital Signs', active: true },
-  { href: '/observe/your-dashboard', label: 'Your Dashboard', active: true },
+  { href: '/observe/dashboard', label: 'Dashboard', active: true },
 ]
 
 const pulseSubmenu = [
