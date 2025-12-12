@@ -5,3 +5,7 @@ node_modules
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Pre-launch data files (contain emails and access tokens)
+data/subscribers.json
+data/access-tokens.json
