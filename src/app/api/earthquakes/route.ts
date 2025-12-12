@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // EARTHQUAKES API ROUTE
@@ -56,7 +57,7 @@ export async function GET(request: Request) {
     const feed = period === 'week' ? '4.5_week' : '4.5_day'
     const url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${feed}.geojson`
     
-    const response = await fetch(url, { cache: 'no-store' })
+    const response = await fetchWithTimeout(url, { cache: 'no-store' })
     
     if (!response.ok) {
       throw new Error(`USGS API returned ${response.status}`)

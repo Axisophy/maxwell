@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // AURORA FORECAST API ROUTE
@@ -50,7 +51,7 @@ export async function GET() {
   }
 
   try {
-    const response = await fetch(NOAA_KP_FORECAST_URL, { cache: 'no-store' })
+    const response = await fetchWithTimeout(NOAA_KP_FORECAST_URL, { cache: 'no-store' })
     
     if (!response.ok) {
       throw new Error(`NOAA API error: ${response.status}`)

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // SPACE WEATHER API ROUTE
@@ -66,9 +67,9 @@ export async function GET() {
   try {
     // Fetch all data in parallel
     const [kpResponse, solarWindResponse, plasmaResponse] = await Promise.all([
-      fetch(NOAA_KP_URL, { cache: 'no-store' }),
-      fetch(NOAA_SOLAR_WIND_URL, { cache: 'no-store' }),
-      fetch(NOAA_PLASMA_URL, { cache: 'no-store' }),
+      fetchWithTimeout(NOAA_KP_URL, { cache: 'no-store' }),
+      fetchWithTimeout(NOAA_SOLAR_WIND_URL, { cache: 'no-store' }),
+      fetchWithTimeout(NOAA_PLASMA_URL, { cache: 'no-store' }),
     ])
 
     // Parse Kp data
@@ -118,7 +119,7 @@ export async function GET() {
     let xrayClass = 'Quiet'
 
     try {
-      const xrayResponse = await fetch(NOAA_XRAY_URL, { cache: 'no-store' })
+      const xrayResponse = await fetchWithTimeout(NOAA_XRAY_URL, { cache: 'no-store' })
       if (xrayResponse.ok) {
         const xrayData = await xrayResponse.json()
         if (xrayData && xrayData.length > 0) {
@@ -134,7 +135,7 @@ export async function GET() {
     // Try to get alerts
     let alerts: string[] = []
     try {
-      const alertsResponse = await fetch(NOAA_ALERTS_URL, { cache: 'no-store' })
+      const alertsResponse = await fetchWithTimeout(NOAA_ALERTS_URL, { cache: 'no-store' })
       if (alertsResponse.ok) {
         const alertsData = await alertsResponse.json()
         // Get last 3 alerts

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // UK ENERGY API ROUTE
@@ -54,10 +55,10 @@ export async function GET() {
 
     // Fetch intensity and generation in parallel
     const [intensityRes, generationRes] = await Promise.all([
-      fetch('https://api.carbonintensity.org.uk/intensity', {
+      fetchWithTimeout('https://api.carbonintensity.org.uk/intensity', {
         next: { revalidate: 300 }, // 5 min cache
       }),
-      fetch('https://api.carbonintensity.org.uk/generation', {
+      fetchWithTimeout('https://api.carbonintensity.org.uk/generation', {
         next: { revalidate: 300 },
       }),
     ])

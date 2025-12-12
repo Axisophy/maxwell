@@ -8,6 +8,7 @@
 // ===========================================
 
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // API ENDPOINTS
@@ -68,8 +69,8 @@ async function fetchUKData(previousUK?: LiveNuclearData['uk']): Promise<LiveNucl
   try {
     // Fetch generation mix and demand in parallel
     const [genResponse, demandResponse] = await Promise.all([
-      fetch(UK_GENERATION_URL, { next: { revalidate: 300 } }),
-      fetch(UK_DEMAND_URL, { next: { revalidate: 300 } })
+      fetchWithTimeout(UK_GENERATION_URL, { next: { revalidate: 300 } }),
+      fetchWithTimeout(UK_DEMAND_URL, { next: { revalidate: 300 } })
     ])
 
     if (!genResponse.ok) throw new Error('UK generation API failed')
@@ -116,7 +117,7 @@ async function fetchUKData(previousUK?: LiveNuclearData['uk']): Promise<LiveNucl
 
 async function fetchFranceData(previousFrance?: LiveNuclearData['france']): Promise<LiveNuclearData['france']> {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       'https://odre.opendatasoft.com/api/records/1.0/search/?dataset=eco2mix-national-tr&rows=1&sort=date_heure',
       { next: { revalidate: 600 } }
     )
@@ -156,7 +157,7 @@ async function fetchFranceData(previousFrance?: LiveNuclearData['france']): Prom
 
 async function fetchUSData(previousUS?: LiveNuclearData['us']): Promise<LiveNuclearData['us']> {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       'https://www.nrc.gov/reading-rm/doc-collections/event-status/reactor-status/powerreactorstatusforlast365days.txt',
       { next: { revalidate: 3600 } } // Cache for 1 hour (updates daily)
     )

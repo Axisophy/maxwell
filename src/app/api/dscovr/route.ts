@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // DSCOVR EPIC API ROUTE
@@ -69,7 +70,7 @@ export async function GET() {
 
   try {
     // First, get the list of available dates
-    const datesResponse = await fetch(
+    const datesResponse = await fetchWithTimeout(
       'https://epic.gsfc.nasa.gov/api/natural/all',
       { cache: 'no-store' }
     )
@@ -89,7 +90,7 @@ export async function GET() {
     const latestDate = latestDateObj.date.split(' ')[0] // Just the YYYY-MM-DD part
 
     // Fetch images for that date
-    const imagesResponse = await fetch(
+    const imagesResponse = await fetchWithTimeout(
       `https://epic.gsfc.nasa.gov/api/natural/date/${latestDate}`,
       { cache: 'no-store' }
     )

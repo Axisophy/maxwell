@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // LAUNCHES API ROUTE
@@ -73,7 +74,7 @@ const CACHE_DURATION = 10 * 60 * 1000
 const STALE_DURATION = 60 * 60 * 1000
 
 async function fetchLaunches(): Promise<LaunchResponse> {
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     'https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=10&mode=detailed',
     {
       headers: {

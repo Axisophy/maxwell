@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // CO2 NOW API ROUTE
@@ -77,7 +78,7 @@ export async function GET() {
   }
 
   try {
-    const response = await fetch(NOAA_MONTHLY_URL, { cache: 'no-store' })
+    const response = await fetchWithTimeout(NOAA_MONTHLY_URL, { cache: 'no-store' })
     
     if (!response.ok) {
       throw new Error(`NOAA API error: ${response.status}`)

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // ISS TRACKER API ROUTE
@@ -89,7 +90,7 @@ async function fetchISSPosition(): Promise<ISSData> {
 
   try {
     // Primary: wheretheiss.at (more reliable)
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       'https://api.wheretheiss.at/v1/satellites/25544',
       { cache: 'no-store' }
     )
@@ -114,7 +115,7 @@ async function fetchISSPosition(): Promise<ISSData> {
 
   // Fallback: Open Notify
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       'http://api.open-notify.org/iss-now.json',
       { cache: 'no-store' }
     )
@@ -155,7 +156,7 @@ async function fetchAstronauts(): Promise<AstronautData> {
   }
 
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       'http://api.open-notify.org/astros.json',
       { cache: 'no-store' }
     )

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // AIR QUALITY API ROUTE
@@ -114,7 +115,7 @@ export async function GET(request: Request) {
     url.searchParams.set('limit', '1')
     url.searchParams.set('order_by', 'distance')
     
-    const response = await fetch(url.toString(), {
+    const response = await fetchWithTimeout(url.toString(), {
       headers: {
         'Accept': 'application/json',
         'X-API-Key': process.env.OPENAQ_API_KEY || '',
@@ -139,7 +140,7 @@ export async function GET(request: Request) {
     
     // Fetch latest measurements for this location
     const latestUrl = `https://api.openaq.org/v3/locations/${location.id}/latest`
-    const latestResponse = await fetch(latestUrl, {
+    const latestResponse = await fetchWithTimeout(latestUrl, {
       headers: {
         'Accept': 'application/json',
         'X-API-Key': process.env.OPENAQ_API_KEY || '',

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { fetchWithTimeout } from '@/lib/fetch-utils'
 
 // ===========================================
 // APOD API ROUTE
@@ -73,7 +74,7 @@ export async function GET(request: Request) {
     // Use NASA API key from environment, fall back to DEMO_KEY
     const apiKey = process.env.NASA_API_KEY || 'DEMO_KEY'
     
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${requestedDate}`,
       { next: { revalidate: 3600 } } // Next.js cache hint
     )
