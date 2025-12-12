@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Thermometer, Atom, Waves, Scale, Calculator } from 'lucide-react'
+import { Thermometer, Atom, Waves, Scale, Calculator, Hash, Sparkles } from 'lucide-react'
 
 const dataPages = [
   {
@@ -17,11 +17,25 @@ const dataPages = [
     ready: false,
   },
   {
+    href: '/data/particles',
+    title: 'Standard Model',
+    description: 'The fundamental particles of physics — quarks, leptons, and bosons. The building blocks of everything.',
+    icon: Sparkles,
+    ready: true,
+  },
+  {
     href: '/data/spectrum',
     title: 'Electromagnetic Spectrum',
     description: 'From radio waves to gamma rays — explore the full spectrum of light.',
     icon: Waves,
-    ready: false,
+    ready: true,
+  },
+  {
+    href: '/data/constants',
+    title: 'Constants',
+    description: 'The numbers the universe is built on — speed of light, Planck constant, pi, and more.',
+    icon: Hash,
+    ready: true,
   },
   {
     href: '/data/scale',

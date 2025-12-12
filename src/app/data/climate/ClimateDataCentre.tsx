@@ -3,6 +3,10 @@
 import { useState } from 'react'
 import SourcesPanel from './components/SourcesPanel'
 import OverviewView from './components/views/OverviewView'
+import DeepTimeView from './components/views/DeepTimeView'
+import ExtremeEventsView from './components/views/ExtremeEventsView'
+import HumanFactorsView from './components/views/HumanFactorsView'
+import PersonalScaleView from './components/views/PersonalScaleView'
 import { ViewMode } from './lib/types'
 
 // ===========================================
@@ -21,25 +25,25 @@ const VIEW_TABS: { id: ViewMode; label: string; description: string; ready: bool
     id: 'deep-time', 
     label: 'Deep Time', 
     description: '800,000 years of climate history',
-    ready: false,
+    ready: true,
   },
   { 
     id: 'extreme-events', 
     label: 'Extreme Events', 
     description: 'Hurricanes, wildfires, floods, heatwaves',
-    ready: false,
+    ready: true,
   },
   { 
     id: 'human-factors', 
     label: 'Human Factors', 
     description: 'Industrial, policy, and technology timeline',
-    ready: false,
+    ready: true,
   },
   { 
     id: 'personal', 
     label: 'Personal Scale', 
     description: 'Your carbon footprint',
-    ready: false,
+    ready: true,
   },
 ]
 
@@ -105,59 +109,12 @@ export default function ClimateDataCentre() {
         {/* View Content */}
         <div>
           {currentView === 'overview' && <OverviewView />}
-          
-          {currentView === 'deep-time' && (
-            <ComingSoonView 
-              title="Deep Time View"
-              description="Explore 800,000 years of climate history from Antarctic ice cores. See natural cycles and the unprecedented industrial spike."
-            />
-          )}
-          
-          {currentView === 'human-factors' && (
-            <ComingSoonView 
-              title="Human Factors"
-              description="Timeline of industrial development, policy responses, and technological shifts — overlaid on climate data."
-            />
-          )}
-          
-          {currentView === 'extreme-events' && (
-            <ComingSoonView 
-              title="Extreme Events"
-              description="Track hurricanes, wildfires, floods, and heatwaves. See how frequency and intensity are changing over time."
-            />
-          )}
-          
-          {currentView === 'personal' && (
-            <ComingSoonView 
-              title="Personal Scale"
-              description="Understand your carbon footprint. Compare activities. See how individual choices connect to global trends."
-            />
-          )}
+          {currentView === 'deep-time' && <DeepTimeView />}
+          {currentView === 'extreme-events' && <ExtremeEventsView />}
+          {currentView === 'human-factors' && <HumanFactorsView />}
+          {currentView === 'personal' && <PersonalScaleView />}
         </div>
       </div>
     </main>
-  )
-}
-
-// ===========================================
-// COMING SOON PLACEHOLDER
-// ===========================================
-
-function ComingSoonView({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="bg-white rounded-2xl border border-neutral-200 p-12 text-center">
-      <div className="max-w-md mx-auto">
-        <h2 className="text-xl font-medium text-neutral-900 mb-3">
-          {title}
-        </h2>
-        <p className="text-neutral-500 mb-6">
-          {description}
-        </p>
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-600 rounded-lg text-sm">
-          <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-          Coming soon
-        </div>
-      </div>
-    </div>
   )
 }
