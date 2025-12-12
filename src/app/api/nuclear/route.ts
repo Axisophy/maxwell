@@ -10,6 +10,14 @@
 import { NextResponse } from 'next/server'
 
 // ===========================================
+// API ENDPOINTS
+// ===========================================
+
+const UK_GENERATION_URL = 'https://api.carbonintensity.org.uk/generation'
+const UK_DEMAND_URL = 'https://data.elexon.co.uk/bmrs/api/v1/demand/outturn?format=json'
+const FALLBACK_UK_DEMAND_GW = 32 // Conservative estimate if Elexon API fails
+
+// ===========================================
 // TYPES
 // ===========================================
 
@@ -58,22 +66,32 @@ const STALE_DURATION = 60 * 60 * 1000 // 1 hour fallback
 
 async function fetchUKData(previousUK?: LiveNuclearData['uk']): Promise<LiveNuclearData['uk']> {
   try {
-    // Fetch generation mix
-    const genResponse = await fetch('https://api.carbonintensity.org.uk/generation', {
-      next: { revalidate: 300 }
-    })
-    
+    // Fetch generation mix and demand in parallel
+    const [genResponse, demandResponse] = await Promise.all([
+      fetch(UK_GENERATION_URL, { next: { revalidate: 300 } }),
+      fetch(UK_DEMAND_URL, { next: { revalidate: 300 } })
+    ])
+
     if (!genResponse.ok) throw new Error('UK generation API failed')
-    
+
     const genData = await genResponse.json()
     const nuclearPercent = genData.data?.generationmix?.find(
       (f: { fuel: string; perc: number }) => f.fuel === 'nuclear'
     )?.perc || 0
 
-    // UK typical demand is ~30-35 GW, let's use a reasonable estimate
-    // For accuracy, we'd need a separate demand endpoint
-    const estimatedDemandGW = 32 // Conservative mid-range estimate
-    const outputGW = (nuclearPercent / 100) * estimatedDemandGW
+    // Get real demand from Elexon API, fall back to estimate if unavailable
+    let demandGW = FALLBACK_UK_DEMAND_GW
+    if (demandResponse.ok) {
+      const demandData = await demandResponse.json()
+      // Get the most recent settlement period's demand (last item in array)
+      const latestDemand = demandData.data?.[demandData.data.length - 1]
+      if (latestDemand?.initialTransmissionSystemDemandOutturn) {
+        // Convert MW to GW
+        demandGW = latestDemand.initialTransmissionSystemDemandOutturn / 1000
+      }
+    }
+
+    const outputGW = (nuclearPercent / 100) * demandGW
 
     // Determine trend
     let trend: 'up' | 'down' | 'stable' = 'stable'
@@ -86,7 +104,7 @@ async function fetchUKData(previousUK?: LiveNuclearData['uk']): Promise<LiveNucl
     return {
       outputGW: Math.round(outputGW * 10) / 10,
       percentOfGrid: Math.round(nuclearPercent * 10) / 10,
-      demandGW: estimatedDemandGW,
+      demandGW: Math.round(demandGW * 10) / 10,
       trend,
       updatedAt: genData.data?.to || new Date().toISOString()
     }
