@@ -20,7 +20,7 @@ const navItems = [
   { href: '/play', label: 'play' },
 ]
 
-// Submenus
+// Submenus - using category names for DATA
 const observeSubmenu = [
   { href: '/observe/vital-signs', label: 'Vital Signs', active: true },
   { href: '/observe/dashboard', label: 'Dashboard', active: true },
@@ -38,13 +38,13 @@ const toolsSubmenu = [
   { href: '#', label: 'Explore', active: false },
 ]
 
+// Data submenu - organized by category with key pages
 const dataSubmenu = [
-  { href: '/data/climate', label: 'Climate Data Centre', active: true },
-  { href: '#', label: 'Elements & Atoms', active: false },
-  { href: '#', label: 'Life', active: false },
-  { href: '#', label: 'Earth & Time', active: false },
-  { href: '#', label: 'Space', active: false },
-  { href: '#', label: 'Visualizations', active: false },
+  { href: '/data/climate', label: 'Climate', active: true },
+  { href: '/data/nuclides', label: 'Nuclides', active: true },
+  { href: '/data/particles', label: 'Particles', active: true },
+  { href: '/data/constants', label: 'Constants', active: true },
+  { href: '/data/spectrum', label: 'Spectrum', active: true },
 ]
 
 const vaultSubmenu = [

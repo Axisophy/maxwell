@@ -37,7 +37,11 @@ const navItems = [
     icon: Database, 
     matchPaths: ['/data'],
     submenu: [
-      { href: '/data/climate', label: 'Climate Data Centre' },
+      { href: '/data/climate', label: 'Climate' },
+      { href: '/data/nuclides', label: 'Nuclides' },
+      { href: '/data/particles', label: 'Particles' },
+      { href: '/data/constants', label: 'Constants' },
+      { href: '/data/spectrum', label: 'Spectrum' },
     ]
   },
   { 
