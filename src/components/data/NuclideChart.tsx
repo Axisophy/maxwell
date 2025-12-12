@@ -140,8 +140,11 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
     // Calculate visible range
     const minVisibleN = Math.floor(-offset.x / cellSize) - 1;
     const maxVisibleN = Math.ceil((dimensions.width - offset.x) / cellSize) + 1;
-    const minVisibleZ = Math.floor((offset.y - dimensions.height) / cellSize) - 1;
-    const maxVisibleZ = Math.ceil(offset.y / cellSize) + 1;
+    // For Z: y = dimensions.height - (z+1)*cellSize + offset.y
+    // At y=height (bottom): z = offset.y/cellSize - 1 (min Z)
+    // At y=0 (top): z = (dimensions.height + offset.y)/cellSize - 1 (max Z)
+    const minVisibleZ = Math.floor(offset.y / cellSize) - 2;
+    const maxVisibleZ = Math.ceil((dimensions.height + offset.y) / cellSize) + 1;
 
     // Draw magic number lines if enabled
     if (showMagicNumbers && zoom > 0.5) {
@@ -160,7 +163,8 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
         
         // Proton magic number (horizontal line)
         if (magic >= minVisibleZ && magic <= maxVisibleZ) {
-          const y = dimensions.height - (magic * cellSize - offset.y);
+          // Draw line at bottom edge of row Z=magic (same formula as nuclide y)
+          const y = dimensions.height - magic * cellSize + offset.y;
           ctx.beginPath();
           ctx.moveTo(0, y);
           ctx.lineTo(dimensions.width, y);
