@@ -148,24 +148,40 @@ export async function fetchEarthquakes(): Promise<EarthquakeData> {
 // =============================================================================
 
 export async function fetchCO2(): Promise<CO2Data> {
-  // NOAA Global Monitoring Laboratory - Mauna Loa
-  const url = 'https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_weekly_mlo.json'
-  
+  // NOAA Global Monitoring Laboratory - Mauna Loa (text format)
+  // JSON endpoint was removed, using text file instead
+  const url = 'https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_weekly_mlo.txt'
+
   const response = await fetch(url, { next: { revalidate: 21600 } })
   if (!response.ok) throw new Error('NOAA CO2 API failed')
-  
-  const data = await response.json()
-  const values = data.data || []
-  
+
+  const text = await response.text()
+  const lines = text.trim().split('\n')
+
+  // Parse data lines (skip comments starting with #)
+  // Format: year month day decimal_year co2_value ndays ...
+  const values: number[] = []
+  for (const line of lines) {
+    if (line.startsWith('#') || !line.trim()) continue
+    const parts = line.trim().split(/\s+/)
+    if (parts.length >= 5) {
+      const co2 = parseFloat(parts[4])
+      // Skip missing values (-999.99)
+      if (!isNaN(co2) && co2 > 0) {
+        values.push(co2)
+      }
+    }
+  }
+
   // Get last 30 readings for trend
   const recent = values.slice(-30)
-  const trend = recent.map((v: any) => v.value || v[1] || 0)
+  const trend = recent
   const current = trend[trend.length - 1] || 426
-  
+
   // Year ago comparison (approximately 52 weeks back)
   const yearAgoIndex = Math.max(0, values.length - 52)
-  const yearAgo = values[yearAgoIndex]?.value || values[yearAgoIndex]?.[1] || current - 2.5
-  
+  const yearAgo = values[yearAgoIndex] || current - 2.5
+
   return {
     current,
     trend,
