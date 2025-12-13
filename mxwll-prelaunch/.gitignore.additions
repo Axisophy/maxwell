@@ -1,0 +1,11 @@
+# Add these to your existing .gitignore
+
+# Subscriber data (contains emails)
+data/subscribers.json
+
+# Access tokens (contains access links)
+data/access-tokens.json
+
+# Environment files
+.env.local
+.env*.local
