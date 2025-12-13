@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Logo from '@/components/Logo'
 
 export default function PreLaunchLanding() {
   const [email, setEmail] = useState('')
@@ -42,7 +43,7 @@ export default function PreLaunchLanding() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f5f5f5] flex flex-col items-center justify-center px-6">
+    <main className="fixed inset-0 z-50 bg-[#f5f5f5] flex flex-col items-center justify-center px-6">
       <div
         className={`max-w-lg w-full transition-all duration-700 ease-out ${
           mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
@@ -50,9 +51,7 @@ export default function PreLaunchLanding() {
       >
         {/* Logo */}
         <div className="mb-12">
-          <span className="text-2xl font-bold tracking-[-0.03em] text-black">
-            MXWLL
-          </span>
+          <Logo className="h-6 text-black" />
         </div>
 
         {/* Headline */}
