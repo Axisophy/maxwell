@@ -269,10 +269,10 @@ function CategoryRow({ title, icon: Icon, isExpanded, onToggle, children, summar
 export default function VitalSigns() {
   const [isExpanded, setIsExpanded] = useState(false)
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
-    earth: false,
-    climate: false,
-    space: false,
-    sky: false,
+    earth: true,
+    climate: true,
+    space: true,
+    sky: true,
   })
   const [data, setData] = useState<VitalSignsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
