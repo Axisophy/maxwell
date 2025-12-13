@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { Redis } from '@upstash/redis'
 import crypto from 'crypto'
 
-const ACCESS_TOKENS_FILE = path.join(process.cwd(), 'data', 'access-tokens.json')
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL!,
+  token: process.env.KV_REST_API_TOKEN!,
+})
+
+const TOKENS_KEY = 'mxwll:access-tokens'
 
 interface AccessToken {
   token: string
   name: string
+  email?: string
   createdAt: string
   usedAt?: string
   usedCount: number
@@ -17,22 +22,12 @@ interface AccessToken {
 }
 
 async function getTokens(): Promise<AccessToken[]> {
-  try {
-    const data = await fs.readFile(ACCESS_TOKENS_FILE, 'utf-8')
-    return JSON.parse(data)
-  } catch {
-    return []
-  }
+  const tokens = await redis.get<AccessToken[]>(TOKENS_KEY)
+  return tokens || []
 }
 
 async function saveTokens(tokens: AccessToken[]): Promise<void> {
-  const dir = path.dirname(ACCESS_TOKENS_FILE)
-  try {
-    await fs.mkdir(dir, { recursive: true })
-  } catch {
-    // Directory exists
-  }
-  await fs.writeFile(ACCESS_TOKENS_FILE, JSON.stringify(tokens, null, 2))
+  await redis.set(TOKENS_KEY, tokens)
 }
 
 function generateToken(): string {
@@ -68,7 +63,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { name, maxUses, expiresInDays } = body
+    const { name, email, maxUses, expiresInDays } = body
 
     if (!name) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
@@ -84,6 +79,7 @@ export async function POST(request: Request) {
       active: true,
     }
 
+    if (email) newToken.email = email
     if (maxUses) newToken.maxUses = maxUses
 
     if (expiresInDays) {
