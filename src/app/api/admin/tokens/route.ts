@@ -3,8 +3,8 @@ import { Redis } from '@upstash/redis'
 import crypto from 'crypto'
 
 const redis = new Redis({
-  url: process.env.KV_REST_API_URL!,
-  token: process.env.KV_REST_API_TOKEN!,
+  url: (process.env.KV_REST_API_URL || '').trim(),
+  token: (process.env.KV_REST_API_TOKEN || '').trim(),
 })
 
 const TOKENS_KEY = 'mxwll:access-tokens'
