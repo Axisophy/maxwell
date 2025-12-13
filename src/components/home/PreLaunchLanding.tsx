@@ -43,7 +43,7 @@ export default function PreLaunchLanding() {
   }
 
   return (
-    <main className="fixed inset-0 z-50 bg-[#f5f5f5] flex flex-col items-center justify-center px-6">
+    <main className="fixed inset-0 z-[100] bg-[#f5f5f5] flex flex-col items-center justify-center px-6">
       <div
         className={`max-w-lg w-full transition-all duration-700 ease-out ${
           mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
