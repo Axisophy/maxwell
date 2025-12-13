@@ -2381,5 +2381,5 @@ export const SITE_STATS = {
     medium: SITES.filter(s => s.scale === 'medium').length,
     small: SITES.filter(s => s.scale === 'small').length,
   },
-  countries: [...new Set(SITES.map(s => s.country))].length,
+  countries: Array.from(new Set(SITES.map(s => s.country))).length,
 };
