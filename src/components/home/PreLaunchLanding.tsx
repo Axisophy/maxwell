@@ -51,7 +51,7 @@ export default function PreLaunchLanding() {
       >
         {/* Logo */}
         <div className="mb-12">
-          <Logo className="h-6 text-black" />
+          <Logo className="h-8 text-black" />
         </div>
 
         {/* Headline */}

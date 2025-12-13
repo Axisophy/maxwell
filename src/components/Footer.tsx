@@ -54,7 +54,7 @@ export default function Footer() {
         <div className="grid grid-cols-12 gap-8">
           {/* Brand - cols 1-4 */}
           <div className="col-span-4">
-            <Logo className="h-8 w-auto mb-6 text-white" />
+            <Logo className="h-11 w-auto mb-6 text-white" />
             <p className="text-lg font-light text-white/80 leading-relaxed mb-6 max-w-sm">
               A digital laboratory for looking at science.
             </p>
