@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { X, Search } from 'lucide-react'
+import Logo from './Logo'
 import { useState } from 'react'
 import {
   SignInButton,
@@ -52,7 +53,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 h-14 border-b border-white/10">
-        <span className="text-sm font-medium text-white">Menu</span>
+        <Logo className="h-8 w-auto text-white" />
         <button 
           onClick={onClose}
           className="p-2 -m-2"
@@ -89,18 +90,15 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         {/* Main Navigation - THE STARS */}
         <div className="px-4 py-8 border-b border-white/10">
           <div className="flex flex-col gap-1">
-            {mainSections.map((section, index) => (
+            {mainSections.map((section) => (
               <Link
                 key={section.href}
                 href={section.href}
                 onClick={onClose}
-                className="group flex items-baseline justify-between py-2"
+                className="group py-2"
               >
                 <span className="text-4xl font-light text-white group-hover:text-[#e6007e] transition-colors">
                   {section.label}
-                </span>
-                <span className="text-sm font-mono text-white/30">
-                  0{index + 1}
                 </span>
               </Link>
             ))}
