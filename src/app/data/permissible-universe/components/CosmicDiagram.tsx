@@ -61,7 +61,7 @@ export function CosmicDiagram({
     const height = dimensions.height - margin.top - margin.bottom
 
     const xScale = d3.scaleLinear().domain([-45, 65]).range([0, width])
-    const yScale = d3.scaleLinear().domain([-40, 30]).range([height, 0])
+    const yScale = d3.scaleLinear().domain([-40, 35]).range([height, 0])
 
     const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`)
 
@@ -180,24 +180,20 @@ export function CosmicDiagram({
 
     // Handle overlapping objects
     const OVERLAP_OFFSETS: Record<string, { x: number; y: number }> = {
-      'proton': { x: -10, y: -10 },
-      'neutron': { x: 10, y: 10 },
+      'proton': { x: -8, y: -8 },
+      'neutron': { x: 8, y: 8 },
     }
 
-    // Base sizes (at zoom level 1)
-    const BASE_RADIUS_NOTABLE = 6
-    const BASE_RADIUS_NORMAL = 4
-    const BASE_FONT_SIZE = 10
-    const BASE_STROKE_WIDTH = 1.5
+    // Uniform dot size for all objects
+    const DOT_RADIUS = 5
 
     for (const obj of objects) {
       const offset = OVERLAP_OFFSETS[obj.id] || { x: 0, y: 0 }
       const x = xScale(obj.logMass) + offset.x
       const y = yScale(obj.logRadius) + offset.y
       const color = CATEGORIES[obj.category].color
-      const isNotable = obj.notable
 
-      if (x < -50 || x > width + 50 || y < -50 || y > height + 50) continue
+      if (x < -20 || x > width + 20 || y < -20 || y > height + 20) continue
 
       const group = objectsGroup.append('g')
         .attr('class', 'object-group')
@@ -214,34 +210,28 @@ export function CosmicDiagram({
           setTooltip(prev => ({ ...prev, visible: false }))
         })
 
-      if (isNotable) {
-        group.append('circle')
-          .attr('class', 'glow')
-          .attr('r', BASE_RADIUS_NOTABLE + 3)
-          .attr('fill', color)
-          .attr('opacity', 0.2)
-      }
-
+      // Single uniform dot for all objects
       group.append('circle')
         .attr('class', 'dot')
-        .attr('r', isNotable ? BASE_RADIUS_NOTABLE : BASE_RADIUS_NORMAL)
+        .attr('r', DOT_RADIUS)
         .attr('fill', color)
         .attr('stroke', 'white')
-        .attr('stroke-width', isNotable ? BASE_STROKE_WIDTH : 0.5)
+        .attr('stroke-width', 0.5)
         .attr('stroke-opacity', 0.5)
 
-      if (isNotable) {
-        const labelOffset = obj.labelOffset || { x: 8, y: 3 }
-        group.append('text')
-          .attr('class', 'label')
-          .attr('x', labelOffset.x)
-          .attr('y', labelOffset.y)
-          .attr('fill', 'white')
-          .attr('font-size', `${BASE_FONT_SIZE}px`)
-          .attr('font-weight', '500')
-          .attr('opacity', 0.9)
-          .text(obj.name)
-      }
+      // Hover effect - subtle glow
+      group.on('mouseenter.glow', function() {
+        d3.select(this).select('circle')
+          .transition()
+          .duration(100)
+          .attr('r', DOT_RADIUS + 2)
+      })
+      .on('mouseleave.glow', function() {
+        d3.select(this).select('circle')
+          .transition()
+          .duration(100)
+          .attr('r', DOT_RADIUS)
+      })
     }
 
     const xAxis = d3.axisBottom(xScale)
@@ -254,7 +244,7 @@ export function CosmicDiagram({
       .text('Mass (grams)')
 
     const yAxis = d3.axisLeft(yScale)
-      .tickValues([-30, -20, -10, 0, 10, 20])
+      .tickValues([-30, -20, -10, 0, 10, 20, 30])
       .tickFormat(d => `10${formatSuperscript(d as number)}`)
 
     g.append('g').call(yAxis).attr('color', 'white').attr('opacity', 0.6)
@@ -271,27 +261,13 @@ export function CosmicDiagram({
 
         chartArea.attr('transform', transform)
 
-        // Inverse scale for dots and labels to keep them constant screen size
+        // Inverse scale for dots to keep them constant screen size
         objectsGroup.selectAll('.object-group').each(function() {
           const group = d3.select(this)
 
           group.selectAll('.dot')
-            .attr('r', function() {
-              const isNotable = group.select('.glow').size() > 0
-              const baseR = isNotable ? BASE_RADIUS_NOTABLE : BASE_RADIUS_NORMAL
-              return baseR / k
-            })
-            .attr('stroke-width', function() {
-              const isNotable = group.select('.glow').size() > 0
-              return (isNotable ? BASE_STROKE_WIDTH : 0.5) / k
-            })
-
-          group.selectAll('.glow')
-            .attr('r', (BASE_RADIUS_NOTABLE + 3) / k)
-
-          group.selectAll('.label')
-            .attr('font-size', `${BASE_FONT_SIZE / k}px`)
-            .attr('x', 8 / k)
+            .attr('r', DOT_RADIUS / k)
+            .attr('stroke-width', 0.5 / k)
         })
 
         boundaryGroup.selectAll('text')
