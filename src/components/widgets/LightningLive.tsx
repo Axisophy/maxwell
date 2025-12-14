@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import WidgetFrame from '@/components/WidgetFrame';
 import { LightningData, LightningStrike } from '@/lib/unrest/types';
 
 interface LightningLiveProps {
@@ -186,52 +185,41 @@ export default function LightningLive({ className = '' }: LightningLiveProps) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const status = error ? 'error' : loading ? 'loading' : 'live';
-
   return (
-    <WidgetFrame
-      title="Lightning Live"
-      status={status}
-      description="Real-time lightning strikes detected across the Americas via satellite observation. Strikes fade over 5 minutes."
-      source="GOES-R GLM (Geostationary Lightning Mapper)"
-      sourceUrl="https://www.goes-r.gov/spacesegment/glm.html"
-      className={className}
-    >
-      <div style={{ aspectRatio: '4/3' }}>
-        {loading && !data ? (
-          <div className="w-full h-full flex items-center justify-center bg-[#0f172a]">
-            <span className="text-white/50 text-sm">Loading...</span>
-          </div>
-        ) : error ? (
-          <div className="w-full h-full flex items-center justify-center bg-[#0f172a]">
-            <span className="text-red-400 text-sm">{error}</span>
-          </div>
-        ) : (
-          <div ref={containerRef} className="w-full h-full relative">
-            <canvas ref={canvasRef} className="absolute inset-0" />
-            
-            {/* Stats overlay */}
-            {data && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                <div className="flex items-center justify-between text-white">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <span className="font-mono text-xl font-bold">{data.stats.strikesPerMinute.toLocaleString()}</span>
-                      <span className="text-xs text-white/60 ml-1">/min</span>
-                    </div>
-                    <div className="text-xs text-white/60">
-                      {data.stats.activeCells} cells
-                    </div>
+    <div style={{ aspectRatio: '4/3' }} className={className}>
+      {loading && !data ? (
+        <div className="w-full h-full flex items-center justify-center bg-[#0f172a]">
+          <span className="text-white/50 text-sm">Loading...</span>
+        </div>
+      ) : error ? (
+        <div className="w-full h-full flex items-center justify-center bg-[#0f172a]">
+          <span className="text-red-400 text-sm">{error}</span>
+        </div>
+      ) : (
+        <div ref={containerRef} className="w-full h-full relative">
+          <canvas ref={canvasRef} className="absolute inset-0" />
+
+          {/* Stats overlay */}
+          {data && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+              <div className="flex items-center justify-between text-white">
+                <div className="flex items-center gap-4">
+                  <div>
+                    <span className="font-mono text-xl font-bold">{data.stats.strikesPerMinute.toLocaleString()}</span>
+                    <span className="text-xs text-white/60 ml-1">/min</span>
                   </div>
                   <div className="text-xs text-white/60">
-                    {data.stats.mostActiveRegion}
+                    {data.stats.activeCells} cells
                   </div>
                 </div>
+                <div className="text-xs text-white/60">
+                  {data.stats.mostActiveRegion}
+                </div>
               </div>
-            )}
-          </div>
-        )}
-      </div>
-    </WidgetFrame>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

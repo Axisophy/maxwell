@@ -27,7 +27,7 @@ export const PHYSICS = {
 }
 
 export const SCHWARZSCHILD_INTERCEPT = -27.83
-export const COMPTON_INTERCEPT = -36.65
+export const COMPTON_INTERCEPT = -37.45
 
 export const CHART_CONFIG: ChartConfig = {
   logRadiusRange: [-40, 50],

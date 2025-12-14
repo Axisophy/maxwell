@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import WidgetFrame from '@/components/WidgetFrame';
 import { SeismicData, SeismicStation } from '@/lib/unrest/types';
 
 interface SeismicPulseProps {
@@ -123,56 +122,46 @@ export default function SeismicPulse({ className = '' }: SeismicPulseProps) {
   }, []);
 
   const displayStations = data?.stations.slice(0, 9) || [];
-  const status = error ? 'error' : loading ? 'loading' : 'live';
 
   return (
-    <WidgetFrame
-      title="Seismic Pulse"
-      status={status}
-      description="Live seismograph traces from stations around the world. The Earth breathing — continuous ground motion from microseisms, distant earthquakes, and local vibrations."
-      source="IRIS/FDSN Global Seismic Network"
-      sourceUrl="https://www.iris.edu/"
-      className={className}
-    >
-      <div ref={containerRef} className="p-3">
-        {loading && !data ? (
-          <div className="h-[180px] flex items-center justify-center">
-            <span className="text-black/40 text-sm">Loading stations...</span>
+    <div ref={containerRef} className={`p-3 ${className}`}>
+      {loading && !data ? (
+        <div className="h-[180px] flex items-center justify-center">
+          <span className="text-black/40 text-sm">Loading stations...</span>
+        </div>
+      ) : error ? (
+        <div className="h-[180px] flex items-center justify-center">
+          <span className="text-red-500 text-sm">{error}</span>
+        </div>
+      ) : (
+        <>
+          {/* Station grid */}
+          <div className="grid grid-cols-3 gap-1.5">
+            {displayStations.map(station => (
+              <StationTrace
+                key={station.code}
+                station={station}
+                width={traceSize.width}
+                height={traceSize.height}
+              />
+            ))}
           </div>
-        ) : error ? (
-          <div className="h-[180px] flex items-center justify-center">
-            <span className="text-red-500 text-sm">{error}</span>
-          </div>
-        ) : (
-          <>
-            {/* Station grid */}
-            <div className="grid grid-cols-3 gap-1.5">
-              {displayStations.map(station => (
-                <StationTrace
-                  key={station.code}
-                  station={station}
-                  width={traceSize.width}
-                  height={traceSize.height}
-                />
-              ))}
-            </div>
 
-            {/* Stats bar */}
-            {data && (
-              <div className="mt-3 pt-2 border-t border-black/10 flex items-center justify-between">
-                <div className="text-xs text-black/50">
-                  <span className="font-mono font-medium text-black">{data.stats.eventsLast24h}</span>
-                  {' '}M4.5+ (24h)
-                </div>
-                <div className="text-xs text-black/50">
-                  Largest: <span className="font-mono font-medium text-black">M{data.stats.largestMagnitude}</span>
-                  {' '}{data.stats.largestLocation}
-                </div>
+          {/* Stats bar */}
+          {data && (
+            <div className="mt-3 pt-2 border-t border-black/10 flex items-center justify-between">
+              <div className="text-xs text-black/50">
+                <span className="font-mono font-medium text-black">{data.stats.eventsLast24h}</span>
+                {' '}M4.5+ (24h)
               </div>
-            )}
-          </>
-        )}
-      </div>
-    </WidgetFrame>
+              <div className="text-xs text-black/50">
+                Largest: <span className="font-mono font-medium text-black">M{data.stats.largestMagnitude}</span>
+                {' '}{data.stats.largestLocation}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 }
