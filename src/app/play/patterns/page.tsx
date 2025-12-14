@@ -19,27 +19,20 @@ export default function PatternsPage() {
             Patterns
           </h1>
           <p className="text-base md:text-lg text-black max-w-2xl">
-            Watch order emerge from chaos. These simulations show how simple rules 
-            create complex, beautiful patterns — the same mathematics that shapes 
+            Watch order emerge from chaos. These simulations show how simple rules
+            create complex, beautiful patterns — the same mathematics that shapes
             snowflakes, zebra stripes, and galaxy spirals.
           </p>
         </div>
 
         {/* Widget grid: 1 col mobile, 2 col desktop */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          
+
           {/* Pendulum Wave */}
           <WidgetFrame
             title="Pendulum Wave"
-            info={{
-              description:
-                'Fifteen pendulums, each with a slightly different period. They start in phase, drift apart creating mesmerising wave patterns, then eventually realign. The full cycle takes about 6 seconds.',
-              source: 'Simple harmonic motion simulation',
-              controls: [
-                { name: 'Trails', description: 'Show motion trails for visual effect' },
-                { name: 'Speed', description: 'Adjust simulation speed from 0.25× to 3×' },
-              ],
-            }}
+            description="Fifteen pendulums, each with a slightly different period. They start in phase, drift apart creating mesmerising wave patterns, then eventually realign. The full cycle takes about 6 seconds."
+            source="Simple harmonic motion simulation"
             status="ok"
           >
             <PendulumWave />
@@ -48,10 +41,8 @@ export default function PatternsPage() {
           {/* Placeholder: Cellular Automata */}
           <WidgetFrame
             title="Cellular Automata"
-            info={{
-              description: 'Coming soon. Elementary cellular automata — simple rules creating complex patterns.',
-              source: 'Rule-based simulation',
-            }}
+            description="Coming soon. Elementary cellular automata — simple rules creating complex patterns."
+            source="Rule-based simulation"
             status="loading"
           >
             <div className="p-8 text-center text-black/30">
@@ -63,10 +54,8 @@ export default function PatternsPage() {
           {/* Placeholder: Reaction-Diffusion */}
           <WidgetFrame
             title="Reaction-Diffusion"
-            info={{
-              description: 'Coming soon. The Gray-Scott model — chemistry that creates leopard spots and fingerprints.',
-              source: 'Turing pattern simulation',
-            }}
+            description="Coming soon. The Gray-Scott model — chemistry that creates leopard spots and fingerprints."
+            source="Turing pattern simulation"
             status="loading"
           >
             <div className="p-8 text-center text-black/30">

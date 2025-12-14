@@ -41,6 +41,7 @@ const toolsSubmenu = [
 // Data submenu - key live pages across categories
 const dataSubmenu = [
   { href: '/data/permissible-universe', label: 'Permissible Universe', active: true },
+  { href: '/data/unrest', label: 'Unrest', active: true },
   { href: '/data/particles', label: 'Standard Model', active: true },
   { href: '/data/nuclides', label: 'Nuclides', active: true },
   { href: '/data/climate', label: 'Climate', active: true },

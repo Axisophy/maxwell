@@ -19,28 +19,20 @@ export default function AttractorsPage() {
             Strange Attractors
           </h1>
           <p className="text-base md:text-lg text-black max-w-2xl">
-            Chaotic systems that never repeat, yet always stay bounded. These mathematical 
-            objects were discovered in the 1960s and 70s — shapes that emerge from simple 
+            Chaotic systems that never repeat, yet always stay bounded. These mathematical
+            objects were discovered in the 1960s and 70s — shapes that emerge from simple
             equations but contain infinite complexity.
           </p>
         </div>
 
         {/* Widget grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          
+
           {/* Rössler Attractor */}
           <WidgetFrame
             title="Rössler Attractor"
-            info={{
-              description:
-                'Discovered by Otto Rössler in 1976 while studying chemical reactions. The simplest strange attractor — just three equations create this endlessly spiralling, never-repeating shape. Adjust parameters a, b, and c to see how small changes create dramatically different patterns.',
-              source: 'Mathematical simulation',
-              controls: [
-                { name: 'View', description: 'Switch between 3D rotation and 2D projections (XY, XZ, YZ)' },
-                { name: 'Parameters', description: 'a, b, c control the shape of the attractor' },
-                { name: 'Zoom/Speed', description: 'Adjust view distance and rotation speed' },
-              ],
-            }}
+            description="Discovered by Otto Rössler in 1976 while studying chemical reactions. The simplest strange attractor — just three equations create this endlessly spiralling, never-repeating shape. Adjust parameters a, b, and c to see how small changes create dramatically different patterns."
+            source="Mathematical simulation"
             status="ok"
           >
             <RosslerAttractor />
@@ -49,10 +41,8 @@ export default function AttractorsPage() {
           {/* Placeholder: Lorenz Attractor */}
           <WidgetFrame
             title="Lorenz Attractor"
-            info={{
-              description: 'Coming soon. The butterfly effect, visualised — Edward Lorenz discovered this in 1963 while modelling weather.',
-              source: 'Mathematical simulation',
-            }}
+            description="Coming soon. The butterfly effect, visualised — Edward Lorenz discovered this in 1963 while modelling weather."
+            source="Mathematical simulation"
             status="loading"
           >
             <div className="aspect-square flex items-center justify-center bg-[#1a1a1a] rounded-lg m-4">
@@ -66,10 +56,8 @@ export default function AttractorsPage() {
           {/* Placeholder: Thomas Attractor */}
           <WidgetFrame
             title="Thomas Attractor"
-            info={{
-              description: 'Coming soon. A cyclically symmetric attractor discovered by René Thomas.',
-              source: 'Mathematical simulation',
-            }}
+            description="Coming soon. A cyclically symmetric attractor discovered by René Thomas."
+            source="Mathematical simulation"
             status="loading"
           >
             <div className="aspect-square flex items-center justify-center bg-[#1a1a1a] rounded-lg m-4">
@@ -83,10 +71,8 @@ export default function AttractorsPage() {
           {/* Placeholder: Aizawa Attractor */}
           <WidgetFrame
             title="Aizawa Attractor"
-            info={{
-              description: 'Coming soon. A beautiful torus-shaped strange attractor.',
-              source: 'Mathematical simulation',
-            }}
+            description="Coming soon. A beautiful torus-shaped strange attractor."
+            source="Mathematical simulation"
             status="loading"
           >
             <div className="aspect-square flex items-center justify-center bg-[#1a1a1a] rounded-lg m-4">
@@ -106,17 +92,17 @@ export default function AttractorsPage() {
           </h2>
           <div className="space-y-4 text-base text-black/70">
             <p>
-              An attractor is where a system naturally tends to end up. Drop a marble in a bowl 
+              An attractor is where a system naturally tends to end up. Drop a marble in a bowl
               and it settles at the bottom — that's a simple attractor, a single point.
             </p>
             <p>
-              A <em>strange</em> attractor is different. The system never settles. It keeps 
-              moving forever, tracing out an intricate shape, never exactly repeating its path 
+              A <em>strange</em> attractor is different. The system never settles. It keeps
+              moving forever, tracing out an intricate shape, never exactly repeating its path
               but never leaving the attractor either. It's bounded chaos.
             </p>
             <p>
-              These shapes are fractal — zoom in and you find infinite detail. They appear in 
-              weather systems, fluid turbulence, population dynamics, and the beating of the 
+              These shapes are fractal — zoom in and you find infinite detail. They appear in
+              weather systems, fluid turbulence, population dynamics, and the beating of the
               human heart.
             </p>
           </div>

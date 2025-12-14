@@ -4,8 +4,8 @@ export interface LightningStrike {
   id: string;
   lat: number;
   lng: number;
-  timestamp: number; // Unix ms
-  intensity: number; // 0-1
+  timestamp: number;
+  intensity: number;
   type: 'cloud-ground' | 'cloud-cloud';
 }
 
@@ -15,7 +15,7 @@ export interface LightningData {
     strikesPerMinute: number;
     activeCells: number;
     mostActiveRegion: string;
-    coverage: string; // e.g., "Americas"
+    coverage: string;
   };
   lastUpdated: string;
 }
@@ -24,10 +24,10 @@ export interface Earthquake {
   id: string;
   lat: number;
   lng: number;
-  depth: number; // km
+  depth: number;
   magnitude: number;
   place: string;
-  time: number; // Unix ms
+  time: number;
   url: string;
 }
 
@@ -37,7 +37,7 @@ export interface SeismicStation {
   location: string;
   lat: number;
   lng: number;
-  waveform: number[]; // Normalized values -1 to 1
+  waveform: number[];
   lastUpdate: number;
 }
 
@@ -59,20 +59,9 @@ export interface Storm {
   category: number | null;
   lat: number;
   lng: number;
-  windSpeed: number; // mph
-  pressure: number; // mb
+  windSpeed: number;
+  pressure: number;
   movement: string;
-  forecast: { lat: number; lng: number; time: number }[];
-}
-
-export interface StormData {
-  active: Storm[];
-  stats: {
-    activeCount: number;
-    strongestName: string;
-    strongestCategory: number | null;
-  };
-  lastUpdated: string;
 }
 
 export interface Volcano {
@@ -81,36 +70,15 @@ export interface Volcano {
   lat: number;
   lng: number;
   alertLevel: 'green' | 'yellow' | 'orange' | 'red';
-  lastEruption: string | null;
   country: string;
 }
 
-export interface VolcanicData {
-  active: Volcano[];
-  stats: {
-    alertCount: number;
-    redAlerts: number;
-  };
+export interface UnrestMapData {
+  lightning: LightningStrike[];
+  earthquakes: Earthquake[];
+  storms: Storm[];
+  volcanoes: Volcano[];
   lastUpdated: string;
 }
 
-export interface UnrestSummary {
-  lightning: {
-    strikesPerMinute: number;
-    activeCells: number;
-  };
-  seismic: {
-    eventsLast24h: number;
-    largestMagnitude: number;
-    largestLocation: string;
-  };
-  storms: {
-    activeCount: number;
-  };
-  volcanic: {
-    alertCount: number;
-  };
-  lastUpdated: string;
-}
-
-export type UnrestView = 'all' | 'lightning' | 'seismic' | 'storms' | 'volcanic' | 'extremes';
+export type UnrestLayer = 'lightning' | 'seismic' | 'storms' | 'volcanic';

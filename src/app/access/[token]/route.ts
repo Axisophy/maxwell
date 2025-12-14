@@ -93,5 +93,6 @@ export async function GET(
   })
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mxwll.io'
-  return NextResponse.redirect(new URL('/observe', baseUrl))
+  return NextResponse.redirect(new URL('/', baseUrl))
+
 }

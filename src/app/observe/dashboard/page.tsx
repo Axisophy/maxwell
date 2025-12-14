@@ -19,6 +19,8 @@ import NuclearReactors from '@/components/widgets/NuclearReactors'
 import UKEnergy from '@/components/widgets/UKEnergy'
 import WorldPopulation from '@/components/widgets/WorldPopulation'
 import UKTides from '@/components/widgets/UKTides'
+import LightningLive from '@/components/widgets/LightningLive'
+import SeismicPulse from '@/components/widgets/SeismicPulse'
 
 
 
@@ -40,33 +42,26 @@ export default function DashboardPage() {
           {/* Solar Live */}
           <WidgetFrame
             title="Solar Live"
-            info={{
-              description:
-                "Real-time imagery of the Sun from NASA's Solar Dynamics Observatory. Switch between wavelengths to see different layers of the solar atmosphere.",
-              source: 'NASA Solar Dynamics Observatory',
-            }}
+            description="Real-time imagery of the Sun from NASA's Solar Dynamics Observatory. Switch between wavelengths to see different layers of the solar atmosphere."
+            source="NASA Solar Dynamics Observatory"
             status="live"
           >
             <SolarLive />
           </WidgetFrame>
 
           <WidgetFrame
-          title="Nuclear Reactors"
-          info={{
-            description: "Live nuclear power output from UK, France, and US. Global statistics show all 440 operating reactors worldwide and 62 under construction.",
-            source: "Carbon Intensity API (UK), RTE éCO2mix (France), NRC (US), IAEA PRIS (Global)"
-          }}
-          status="live"
+            title="Nuclear Reactors"
+            description="Live nuclear power output from UK, France, and US. Global statistics show all 440 operating reactors worldwide and 62 under construction."
+            source="Carbon Intensity API (UK), RTE éCO2mix (France), NRC (US), IAEA PRIS (Global)"
+            status="live"
           >
             <NuclearReactors />
           </WidgetFrame>
 
           <WidgetFrame
             title="UK Energy"
-            info={{
-              description: "Live carbon intensity and generation mix for Great Britain's electricity grid. Shows how clean the grid is right now and what's generating the power.",
-              source: "National Grid ESO via Carbon Intensity API"
-            }}
+            description="Live carbon intensity and generation mix for Great Britain's electricity grid. Shows how clean the grid is right now and what's generating the power."
+            source="National Grid ESO via Carbon Intensity API"
             status="live"
           >
             <UKEnergy />
@@ -74,10 +69,8 @@ export default function DashboardPage() {
 
           <WidgetFrame
             title="Tides"
-            info={{
-              description: "Tide predictions for coastal locations worldwide, calculated using simplified harmonic analysis. Shows high and low tide times, current water level, and a 24-hour tide curve. Times shown are local to the selected station.",
-              source: "Harmonic calculation from tidal constants. Approximate predictions only — not for navigation. Check official sources (UKHO Admiralty, NOAA) for critical decisions."
-            }}
+            description="Tide predictions for coastal locations worldwide, calculated using simplified harmonic analysis. Shows high and low tide times, current water level, and a 24-hour tide curve. Times shown are local to the selected station."
+            source="Harmonic calculation from tidal constants. Approximate predictions only — not for navigation. Check official sources (UKHO Admiralty, NOAA) for critical decisions."
             status="ok"
           >
             <UKTides />
@@ -85,10 +78,8 @@ export default function DashboardPage() {
 
           <WidgetFrame
             title="World Population"
-            info={{
-              description: "Live estimate of Earth's human population, calculated from UN World Population Prospects 2024 data. The counter shows births and deaths happening in real time based on global averages.",
-              source: "UN World Population Prospects 2024"
-            }}
+            description="Live estimate of Earth's human population, calculated from UN World Population Prospects 2024 data. The counter shows births and deaths happening in real time based on global averages."
+            source="UN World Population Prospects 2024"
             status="ok"
           >
             <WorldPopulation />
@@ -97,11 +88,8 @@ export default function DashboardPage() {
           {/* Launch Countdown */}
           <WidgetFrame
             title="Next Launch"
-            info={{
-              description:
-                'Countdown to the next rocket launch worldwide. Shows mission details, launch provider, and location. Tap upcoming launches to see their countdown.',
-              source: 'The Space Devs Launch Library',
-            }}
+            description="Countdown to the next rocket launch worldwide. Shows mission details, launch provider, and location. Tap upcoming launches to see their countdown."
+            source="The Space Devs Launch Library"
             status="live"
           >
             <LaunchCountdown />
@@ -110,11 +98,8 @@ export default function DashboardPage() {
           {/* Light Travel */}
           <WidgetFrame
             title="Light Travel"
-            info={{
-              description:
-                'How far has light traveled since you opened this widget? A real-time counter showing the distance light covers at 299,792,458 metres per second.',
-              source: 'Calculation based on the speed of light in vacuum',
-            }}
+            description="How far has light traveled since you opened this widget? A real-time counter showing the distance light covers at 299,792,458 metres per second."
+            source="Calculation based on the speed of light in vacuum"
             status="live"
           >
             <LightTravel />
@@ -123,35 +108,27 @@ export default function DashboardPage() {
           {/* Moon Phase */}
           <WidgetFrame
             title="Moon Phase"
-            info={{
-              description:
-                'Current lunar phase with illumination percentage. The Moon completes a full cycle every 29.5 days, from new moon through full moon and back.',
-              source: 'Calculated using SunCalc library',
-            }}
+            description="Current lunar phase with illumination percentage. The Moon completes a full cycle every 29.5 days, from new moon through full moon and back."
+            source="Calculated using SunCalc library"
             status="ok"
           >
             <MoonPhase />
           </WidgetFrame>
 
           <WidgetFrame
-          title="Near-Earth Asteroids"
-          info={{
-            description: "Upcoming asteroid close approaches to Earth. Distance shown in lunar distances (LD) — 1 LD equals the Moon's distance from Earth (~384,400 km). PHA = Potentially Hazardous Asteroid.",
-            source: "NASA JPL Small-Body Database"
-          }}
-          status="live"
-        >
-          <NearEarthAsteroids />
-        </WidgetFrame>
+            title="Near-Earth Asteroids"
+            description="Upcoming asteroid close approaches to Earth. Distance shown in lunar distances (LD) — 1 LD equals the Moon's distance from Earth (~384,400 km). PHA = Potentially Hazardous Asteroid."
+            source="NASA JPL Small-Body Database"
+            status="live"
+          >
+            <NearEarthAsteroids />
+          </WidgetFrame>
 
           {/* Himawari Pacific Disc */}
           <WidgetFrame
             title="Pacific Disc"
-            info={{
-              description:
-                'Full-disc Earth imagery from the Himawari-9 satellite, showing the Pacific Ocean and Asia-Pacific region. Updated every 10 minutes.',
-              source: 'NICT Japan / Himawari-9',
-            }}
+            description="Full-disc Earth imagery from the Himawari-9 satellite, showing the Pacific Ocean and Asia-Pacific region. Updated every 10 minutes."
+            source="NICT Japan / Himawari-9"
             status="live"
           >
             <HimawariLive />
@@ -160,11 +137,8 @@ export default function DashboardPage() {
           {/* Space Weather */}
           <WidgetFrame
             title="Space Weather"
-            info={{
-              description:
-                'Current space weather conditions including geomagnetic activity (Kp index), solar wind speed, and X-ray flux levels.',
-              source: 'NOAA Space Weather Prediction Center',
-            }}
+            description="Current space weather conditions including geomagnetic activity (Kp index), solar wind speed, and X-ray flux levels."
+            source="NOAA Space Weather Prediction Center"
             status="live"
           >
             <SpaceWeather />
@@ -173,11 +147,8 @@ export default function DashboardPage() {
           {/* ISS Tracker */}
           <WidgetFrame
             title="ISS Tracker"
-            info={{
-              description:
-                'Real-time position of the International Space Station, orbiting at approximately 420 km altitude and 27,600 km/h. Updates every 30 seconds.',
-              source: 'Where The ISS At / Open Notify',
-            }}
+            description="Real-time position of the International Space Station, orbiting at approximately 420 km altitude and 27,600 km/h. Updates every 30 seconds."
+            source="Where The ISS At / Open Notify"
             status="live"
           >
             <ISSTracker />
@@ -186,24 +157,38 @@ export default function DashboardPage() {
           {/* Earthquakes Live */}
           <WidgetFrame
             title="Earthquakes"
-            info={{
-              description:
-                'Real-time seismic activity showing earthquakes magnitude 4.5 and above. Colour indicates severity: yellow (M4-5), orange (M5-6), red (M6-7), dark red (M7+).',
-              source: 'USGS Earthquake Hazards Program',
-            }}
+            description="Real-time seismic activity showing earthquakes magnitude 4.5 and above. Colour indicates severity: yellow (M4-5), orange (M5-6), red (M6-7), dark red (M7+)."
+            source="USGS Earthquake Hazards Program"
             status="live"
           >
             <EarthquakesLive />
           </WidgetFrame>
 
+          {/* Lightning Live */}
+          <WidgetFrame
+            title="Lightning Live"
+            description="Real-time lightning activity across the Americas. Yellow dots show recent strikes, with brightness indicating intensity. Updated continuously."
+            source="GOES-R GLM Lightning Data"
+            status="live"
+          >
+            <LightningLive />
+          </WidgetFrame>
+
+          {/* Seismic Pulse */}
+          <WidgetFrame
+            title="Seismic Pulse"
+            description="Live seismograph traces from monitoring stations worldwide. Green waveforms show ground motion in real time. Stations selected for global coverage."
+            source="IRIS/FDSN Seismic Network"
+            status="live"
+          >
+            <SeismicPulse />
+          </WidgetFrame>
+
           {/* Air Quality */}
           <WidgetFrame
             title="Air Quality"
-            info={{
-              description:
-                'Current air quality index based on your location. Shows PM2.5 levels and comparison to WHO guidelines. Expand to see individual pollutant readings.',
-              source: 'OpenAQ',
-            }}
+            description="Current air quality index based on your location. Shows PM2.5 levels and comparison to WHO guidelines. Expand to see individual pollutant readings."
+            source="OpenAQ"
             status="live"
           >
             <AirQuality />
@@ -212,11 +197,8 @@ export default function DashboardPage() {
           {/* Aurora Forecast */}
           <WidgetFrame
             title="Aurora Forecast"
-            info={{
-              description:
-                'Will you see aurora tonight? Based on geomagnetic activity forecasts and your latitude. Best viewing is on clear nights, away from city lights, between 10pm and 2am.',
-              source: 'NOAA Space Weather Prediction Center',
-            }}
+            description="Will you see aurora tonight? Based on geomagnetic activity forecasts and your latitude. Best viewing is on clear nights, away from city lights, between 10pm and 2am."
+            source="NOAA Space Weather Prediction Center"
             status="live"
           >
             <AuroraForecast />
@@ -225,11 +207,8 @@ export default function DashboardPage() {
           {/* Astronomy Picture of the Day */}
           <WidgetFrame
             title="Picture of the Day"
-            info={{
-              description:
-                "NASA's Astronomy Picture of the Day. Each day a different image or photograph of our universe is featured, along with a brief explanation written by a professional astronomer.",
-              source: 'NASA APOD',
-            }}
+            description="NASA's Astronomy Picture of the Day. Each day a different image or photograph of our universe is featured, along with a brief explanation written by a professional astronomer."
+            source="NASA APOD"
             status="ok"
           >
             <APOD />
@@ -238,11 +217,8 @@ export default function DashboardPage() {
           {/* CO2 Now */}
           <WidgetFrame
             title="CO₂ Now"
-            info={{
-              description:
-                'Current atmospheric carbon dioxide concentration measured at Mauna Loa Observatory, Hawaii. The Keeling Curve measurements began in 1958 and represent the longest continuous record of atmospheric CO₂.',
-              source: 'NOAA Global Monitoring Laboratory',
-            }}
+            description="Current atmospheric carbon dioxide concentration measured at Mauna Loa Observatory, Hawaii. The Keeling Curve measurements began in 1958 and represent the longest continuous record of atmospheric CO₂."
+            source="NOAA Global Monitoring Laboratory"
             status="ok"
           >
             <CO2Now />
@@ -251,11 +227,8 @@ export default function DashboardPage() {
           {/* DSCOVR EPIC */}
           <WidgetFrame
             title="Earth from L1"
-            info={{
-              description:
-                'DSCOVR orbits the L1 Lagrange point, 1.5 million km from Earth, where the gravity of the Sun and Earth balance. From there it always sees the sunlit side of our planet — Earth as a distant traveller would see it.',
-              source: 'NASA DSCOVR EPIC Camera',
-            }}
+            description="DSCOVR orbits the L1 Lagrange point, 1.5 million km from Earth, where the gravity of the Sun and Earth balance. From there it always sees the sunlit side of our planet — Earth as a distant traveller would see it."
+            source="NASA DSCOVR EPIC Camera"
             status="live"
           >
             <DSCOVREpic />
