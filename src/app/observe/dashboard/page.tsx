@@ -21,8 +21,13 @@ import WorldPopulation from '@/components/widgets/WorldPopulation'
 import UKTides from '@/components/widgets/UKTides'
 import LightningLive from '@/components/widgets/LightningLive'
 import SeismicPulse from '@/components/widgets/SeismicPulse'
-
-
+import DeepSpaceNetwork from '@/components/widgets/DeepSpaceNetwork'
+import LHCStatus from '@/components/widgets/LHCStatus'
+import NeutrinoWatch from '@/components/widgets/NeutrinoWatch'
+import SatellitesAbove from '@/components/widgets/SatellitesAbove'
+import SOHOCoronagraph from '@/components/widgets/SOHOCoronagraph'
+import CosmicRayMonitor from '@/components/widgets/CosmicRayMonitor'
+import GravitationalWaves from '@/components/widgets/GravitationalWaves'
 
 export default function DashboardPage() {
   return (
@@ -232,6 +237,76 @@ export default function DashboardPage() {
             status="live"
           >
             <DSCOVREpic />
+          </WidgetFrame>
+
+          {/* Deep Space Network */}
+          <WidgetFrame
+            title="Deep Space Network"
+            description="NASA's global array of giant radio antennas communicating with spacecraft across the solar system. Three stations in California, Spain, and Australia maintain contact with missions from Mars rovers to Voyager at the edge of interstellar space."
+            source="NASA Jet Propulsion Laboratory"
+            status="live"
+          >
+            <DeepSpaceNetwork />
+          </WidgetFrame>
+
+          {/* LHC Status */}
+          <WidgetFrame
+            title="LHC Status"
+            description="The Large Hadron Collider is a 27km ring beneath Geneva that accelerates protons to 99.9999991% the speed of light. When beams collide, they recreate conditions a trillionth of a second after the Big Bang."
+            source="CERN"
+            status="live"
+          >
+            <LHCStatus />
+          </WidgetFrame>
+
+          {/* Neutrino Watch */}
+          <WidgetFrame
+            title="Neutrino Watch"
+            description="IceCube is a cubic kilometer of Antarctic ice instrumented with 5,160 optical sensors. It detects neutrinos—particles so weakly interacting that trillions pass through you every second without touching anything."
+            source="IceCube Neutrino Observatory"
+            status="live"
+          >
+            <NeutrinoWatch />
+          </WidgetFrame>
+
+          {/* Satellites Above */}
+          <WidgetFrame
+            title="Satellites Above"
+            description="Every tracked satellite currently overhead—GPS, Starlink, weather satellites, the ISS. At any moment, hundreds of satellites pass above your location."
+            source="N2YO Satellite Database"
+            status="live"
+          >
+            <SatellitesAbove />
+          </WidgetFrame>
+
+          {/* SOHO Coronagraph */}
+          <WidgetFrame
+            title="Solar Corona"
+            description="SOHO's coronagraph creates an artificial eclipse—blocking the solar disk—to reveal the sun's ghostly outer atmosphere. Watch for coronal mass ejections blasting into space."
+            source="SOHO/LASCO, ESA & NASA"
+            status="live"
+          >
+            <SOHOCoronagraph />
+          </WidgetFrame>
+
+          {/* Cosmic Ray Monitor */}
+          <WidgetFrame
+            title="Cosmic Rays"
+            description="Cosmic rays from supernovae constantly bombard Earth. Their flux varies inversely with solar activity—when the sun is quiet, more cosmic rays reach us. Neutron monitors worldwide track this invisible shower."
+            source="Neutron Monitor Database (NMDB)"
+            status="live"
+          >
+            <CosmicRayMonitor />
+          </WidgetFrame>
+
+          {/* Gravitational Waves */}
+          <WidgetFrame
+            title="Gravitational Waves"
+            description="LIGO's twin 4km laser interferometers detect spacetime ripples from colliding black holes and neutron stars billions of light years away. The distortion measured is smaller than 1/10,000th the width of a proton."
+            source="LIGO Scientific Collaboration"
+            status="live"
+          >
+            <GravitationalWaves />
           </WidgetFrame>
 
         </div>
