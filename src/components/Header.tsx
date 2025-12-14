@@ -38,16 +38,16 @@ const toolsSubmenu = [
   { href: '#', label: 'Explore', active: false },
 ]
 
-// Data submenu - key live pages across categories
+// Data submenu - category sections
 const dataSubmenu = [
-  { href: '/data/permissible-universe', label: 'Permissible Universe', active: true },
-  { href: '/data/unrest', label: 'Unrest', active: true },
-  { href: '/data/particles', label: 'Standard Model', active: true },
-  { href: '/data/nuclides', label: 'Nuclides', active: true },
-  { href: '/data/climate', label: 'Climate', active: true },
-  { href: '/data/extraction', label: 'Extraction', active: true },
-  { href: '/data/constants', label: 'Constants', active: true },
-  { href: '/data/spectrum', label: 'Spectrum', active: true },
+  { href: '/data#universe', label: 'The Universe', active: true },
+  { href: '/data#matter', label: 'Matter', active: true },
+  { href: '/data#chemistry', label: 'Chemistry', active: true },
+  { href: '/data#life', label: 'Life', active: true },
+  { href: '/data#earth', label: 'Earth', active: true },
+  { href: '/data#mathematics', label: 'Mathematics', active: true },
+  { href: '/data#astronomy', label: 'Astronomy', active: true },
+  { href: '/data#engineering', label: 'Engineering', active: true },
 ]
 
 const vaultSubmenu = [

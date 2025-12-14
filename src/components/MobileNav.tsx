@@ -31,17 +31,20 @@ const navItems = [
     matchPaths: ['/tools'],
     submenu: []
   },
-  { 
-    href: '/data', 
-    label: 'Data', 
-    icon: Database, 
+  {
+    href: '/data',
+    label: 'Data',
+    icon: Database,
     matchPaths: ['/data'],
     submenu: [
-      { href: '/data/climate', label: 'Climate' },
-      { href: '/data/nuclides', label: 'Nuclides' },
-      { href: '/data/particles', label: 'Particles' },
-      { href: '/data/constants', label: 'Constants' },
-      { href: '/data/spectrum', label: 'Spectrum' },
+      { href: '/data#universe', label: 'The Universe' },
+      { href: '/data#matter', label: 'Matter' },
+      { href: '/data#chemistry', label: 'Chemistry' },
+      { href: '/data#life', label: 'Life' },
+      { href: '/data#earth', label: 'Earth' },
+      { href: '/data#mathematics', label: 'Mathematics' },
+      { href: '/data#astronomy', label: 'Astronomy' },
+      { href: '/data#engineering', label: 'Engineering' },
     ]
   },
   { 

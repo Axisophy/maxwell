@@ -501,7 +501,7 @@ export default function DataPage() {
             if (pages.length === 0) return null
 
             return (
-              <section key={category.id}>
+              <section key={category.id} id={category.id}>
                 {/* Category header */}
                 <div className="mb-4 md:mb-6">
                   <h2 className="text-xl md:text-2xl font-light text-black mb-1">
