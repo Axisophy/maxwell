@@ -38,11 +38,13 @@ const toolsSubmenu = [
   { href: '#', label: 'Explore', active: false },
 ]
 
-// Data submenu - organized by category with key pages
+// Data submenu - key live pages across categories
 const dataSubmenu = [
-  { href: '/data/climate', label: 'Climate', active: true },
+  { href: '/data/permissible-universe', label: 'Permissible Universe', active: true },
+  { href: '/data/particles', label: 'Standard Model', active: true },
   { href: '/data/nuclides', label: 'Nuclides', active: true },
-  { href: '/data/particles', label: 'Particles', active: true },
+  { href: '/data/climate', label: 'Climate', active: true },
+  { href: '/data/extraction', label: 'Extraction', active: true },
   { href: '/data/constants', label: 'Constants', active: true },
   { href: '/data/spectrum', label: 'Spectrum', active: true },
 ]

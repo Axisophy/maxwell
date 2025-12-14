@@ -9,3 +9,4 @@ node_modules
 # Pre-launch data files (contain emails and access tokens)
 data/subscribers.json
 data/access-tokens.json
+.vercel
