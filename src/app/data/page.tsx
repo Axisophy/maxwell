@@ -38,6 +38,7 @@ import {
   Map,
   Wind,
   Droplets,
+  Zap,
 
   // Mathematics
   Pi,
@@ -277,6 +278,13 @@ const dataCategories = [
         title: 'Climate Data Centre',
         description: 'Temperature, CO₂, ice extent, sea level — 38 datasets from leading institutions.',
         icon: Thermometer,
+        ready: true,
+      },
+      {
+        href: '/data/unrest',
+        title: 'Unrest',
+        description: 'Live earthquakes, lightning strikes, volcanic activity, and storms — the planet in motion.',
+        icon: Zap,
         ready: true,
       },
       {
