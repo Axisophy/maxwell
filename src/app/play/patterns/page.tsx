@@ -2,9 +2,8 @@
 
 import WidgetFrame from '@/components/WidgetFrame'
 import PendulumWave from '@/components/widgets/PendulumWave'
-// Future imports:
-// import CellularAutomata from '@/components/widgets/CellularAutomata'
-// import ReactionDiffusion from '@/components/widgets/ReactionDiffusion'
+import CellularAutomata from '@/components/widgets/CellularAutomata'
+import ReactionDiffusion from '@/components/widgets/ReactionDiffusion'
 
 export default function PatternsPage() {
   return (
@@ -38,30 +37,24 @@ export default function PatternsPage() {
             <PendulumWave />
           </WidgetFrame>
 
-          {/* Placeholder: Cellular Automata */}
+          {/* Cellular Automata */}
           <WidgetFrame
             title="Cellular Automata"
-            description="Coming soon. Elementary cellular automata — simple rules creating complex patterns."
+            description="Elementary cellular automata and Conway's Game of Life — simple rules creating complex, emergent patterns from nothing but local interactions."
             source="Rule-based simulation"
-            status="loading"
+            status="ok"
           >
-            <div className="p-8 text-center text-black/30">
-              <div className="text-4xl mb-4">🔲</div>
-              <div className="text-sm">Coming soon</div>
-            </div>
+            <CellularAutomata />
           </WidgetFrame>
 
-          {/* Placeholder: Reaction-Diffusion */}
+          {/* Reaction-Diffusion */}
           <WidgetFrame
             title="Reaction-Diffusion"
-            description="Coming soon. The Gray-Scott model — chemistry that creates leopard spots and fingerprints."
+            description="The Gray-Scott model — the mathematics behind leopard spots, zebra stripes, and fingerprints. Watch Turing patterns emerge from chemical chaos."
             source="Turing pattern simulation"
-            status="loading"
+            status="ok"
           >
-            <div className="p-8 text-center text-black/30">
-              <div className="text-4xl mb-4">🌊</div>
-              <div className="text-sm">Coming soon</div>
-            </div>
+            <ReactionDiffusion />
           </WidgetFrame>
 
         </div>

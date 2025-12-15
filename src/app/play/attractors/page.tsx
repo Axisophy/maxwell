@@ -2,8 +2,8 @@
 
 import WidgetFrame from '@/components/WidgetFrame'
 import RosslerAttractor from '@/components/widgets/RosslerAttractor'
+import LorenzAttractor from '@/components/widgets/LorenzAttractor'
 // Future imports:
-// import LorenzAttractor from '@/components/widgets/LorenzAttractor'
 // import ThomasAttractor from '@/components/widgets/ThomasAttractor'
 
 export default function AttractorsPage() {
@@ -38,19 +38,14 @@ export default function AttractorsPage() {
             <RosslerAttractor />
           </WidgetFrame>
 
-          {/* Placeholder: Lorenz Attractor */}
+          {/* Lorenz Attractor */}
           <WidgetFrame
             title="Lorenz Attractor"
-            description="Coming soon. The butterfly effect, visualised — Edward Lorenz discovered this in 1963 while modelling weather."
+            description="The butterfly effect, visualised — Edward Lorenz discovered this in 1963 while modelling weather. Small changes in initial conditions lead to vastly different outcomes."
             source="Mathematical simulation"
-            status="loading"
+            status="ok"
           >
-            <div className="aspect-square flex items-center justify-center bg-[#1a1a1a] rounded-lg m-4">
-              <div className="text-center text-white/30">
-                <div className="text-4xl mb-4">🦋</div>
-                <div className="text-sm">Coming soon</div>
-              </div>
-            </div>
+            <LorenzAttractor />
           </WidgetFrame>
 
           {/* Placeholder: Thomas Attractor */}

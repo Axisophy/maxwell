@@ -1,4 +1,6 @@
 import Calculator from '@/components/widgets/Calculator'
+import WidgetFrame from '@/components/WidgetFrame'
+import StopwatchTimer from '@/components/widgets/StopwatchTimer'
 
 export default function ToolsPage() {
   return (
@@ -15,6 +17,15 @@ export default function ToolsPage() {
         {/* Tools Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Calculator />
+
+          <WidgetFrame
+            title="Stopwatch & Timer"
+            description="Precision timing instrument with lap tracking and countdown functionality."
+            source="MXWLL"
+            status="ok"
+          >
+            <StopwatchTimer />
+          </WidgetFrame>
         </div>
       </div>
 
