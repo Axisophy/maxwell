@@ -110,7 +110,7 @@ export default function ISSTracker() {
   }
 
   // Group astronauts by craft
-  const astronautsByCraft = data?.astronauts.people.reduce((acc, person) => {
+  const astronautsByCraft = data?.astronauts?.people?.reduce((acc, person) => {
     if (!acc[person.craft]) acc[person.craft] = []
     acc[person.craft].push(person.name)
     return acc

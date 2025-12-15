@@ -225,10 +225,17 @@ export default function StarMap() {
       const pos = altAzToCanvas(star.altitude, star.azimuth, cx, cy, radius)
       if (!pos) return
       
-      // Star glow
+      // Star glow - expand short hex colors for alpha append
+      const expandHex = (hex: string) => {
+        if (hex.length === 4) {
+          return '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3]
+        }
+        return hex
+      }
+      const fullColor = expandHex(star.color)
       const glow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, star.size * 3)
-      glow.addColorStop(0, star.color)
-      glow.addColorStop(0.5, star.color + '40')
+      glow.addColorStop(0, fullColor)
+      glow.addColorStop(0.5, fullColor + '40')
       glow.addColorStop(1, 'transparent')
       
       ctx.fillStyle = glow
@@ -298,7 +305,7 @@ export default function StarMap() {
         <span className="text-[0.5625em] text-white/40">
           {bodies[0] ? `Brightest: ${bodies[0].name} (mag ${bodies[0].magnitude.toFixed(1)})` : 'Calculating...'}
         </span>
-        <span className="text-[0.5625em] font-mono text-white/40">
+        <span className="text-[0.5625em] font-mono text-white/40" suppressHydrationWarning>
           {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
       </div>
