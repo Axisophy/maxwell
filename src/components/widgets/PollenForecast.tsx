@@ -298,8 +298,8 @@ export default function PollenForecast() {
               <span className={`text-[0.625em] ${i === 0 ? 'font-bold text-green-800' : 'text-green-600'}`}>
                 {day.day}
               </span>
-              <div 
-                className={`mt-[0.25em] w-[2.5em] h-[2.5em] rounded-full flex items-center justify-center ${levelColors[day.level].bg}`}
+              <div
+                className={`mt-[0.25em] w-[2.5em] h-[2.5em] rounded-full flex items-center justify-center ${levelColors[day.level]?.bg || 'bg-gray-100'}`}
               >
                 <span className="text-[1em]">
                   {day.level === 'very high' ? '😷' :
@@ -307,7 +307,7 @@ export default function PollenForecast() {
                    day.level === 'moderate' ? '😐' : '😊'}
                 </span>
               </div>
-              <span className={`text-[0.5em] mt-[0.25em] font-medium uppercase ${levelColors[day.level].text}`}>
+              <span className={`text-[0.5em] mt-[0.25em] font-medium uppercase ${levelColors[day.level]?.text || 'text-gray-500'}`}>
                 {day.level === 'very high' ? 'V.High' : day.level}
               </span>
             </div>
