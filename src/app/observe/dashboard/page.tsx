@@ -28,6 +28,25 @@ import SatellitesAbove from '@/components/widgets/SatellitesAbove'
 import SOHOCoronagraph from '@/components/widgets/SOHOCoronagraph'
 import CosmicRayMonitor from '@/components/widgets/CosmicRayMonitor'
 import GravitationalWaves from '@/components/widgets/GravitationalWaves'
+import ActiveFires from '@/components/widgets/ActiveFires'
+import CosmicRaysThrough from '@/components/widgets/CosmicRaysThrough'
+import EBirdLive from '@/components/widgets/eBirdLive'
+import EuropeanRadiationMap from '@/components/widgets/EuropeanRadiationMap'
+import GlacierWatch from '@/components/widgets/GlacierWatch'
+import INaturalistLive from '@/components/widgets/iNaturalistLive'
+import ISSLivePosition from '@/components/widgets/ISSLivePosition'
+import JWSTLatest from '@/components/widgets/JWSTLatest'
+import MagneticField from '@/components/widgets/MagneticField'
+import MagneticFieldStrength from '@/components/widgets/MagneticFieldStrength'
+import MarsRoverImages from '@/components/widgets/MarsRoverImages'
+import OceanHydrophones from '@/components/widgets/OceanHydrophones'
+import PollenForecast from '@/components/widgets/PollenForecast'
+import SeismographGrid from '@/components/widgets/SeismographGrid'
+import StarMap from '@/components/widgets/StarMap'
+import WhatsBelowYou from '@/components/widgets/WhatsBelowYou'
+import YourAirJourney from '@/components/widgets/YourAirJourney'
+import YourBackgroundDose from '@/components/widgets/YourBackgroundDose'
+import YourSkyWhenBorn from '@/components/widgets/YourSkyWhenBorn'
 
 export default function DashboardPage() {
   return (
@@ -307,6 +326,196 @@ export default function DashboardPage() {
             status="live"
           >
             <GravitationalWaves />
+          </WidgetFrame>
+
+          {/* Active Fires */}
+          <WidgetFrame
+            title="Active Fires"
+            description="Real-time global wildfire monitoring from NASA's Fire Information for Resource Management System. Thermal anomalies detected by MODIS and VIIRS satellites in the last 24 hours."
+            source="NASA FIRMS"
+            status="live"
+          >
+            <ActiveFires />
+          </WidgetFrame>
+
+          {/* JWST Latest */}
+          <WidgetFrame
+            title="JWST Latest"
+            description="The latest publicly released images from the James Webb Space Telescope — humanity's most powerful eye on the cosmos, orbiting 1.5 million km from Earth."
+            source="Space Telescope Science Institute"
+            status="live"
+          >
+            <JWSTLatest />
+          </WidgetFrame>
+
+          {/* Mars Rover Images */}
+          <WidgetFrame
+            title="Mars Rover Images"
+            description="The latest photographs from NASA's Mars rovers — Curiosity and Perseverance — exploring the Martian surface right now."
+            source="NASA Mars Exploration Program"
+            status="live"
+          >
+            <MarsRoverImages />
+          </WidgetFrame>
+
+          {/* ISS Live Position */}
+          <WidgetFrame
+            title="ISS Live Position"
+            description="The International Space Station orbits 420 km above Earth at 28,000 km/h, completing one orbit every 90 minutes. Track its position in real time."
+            source="Open Notify"
+            status="live"
+          >
+            <ISSLivePosition />
+          </WidgetFrame>
+
+          {/* European Radiation Map */}
+          <WidgetFrame
+            title="European Radiation"
+            description="Real-time gamma dose rates from the European Radiological Data Exchange Platform — over 5,500 monitoring stations across Europe measuring background radiation."
+            source="EURDEP"
+            status="live"
+          >
+            <EuropeanRadiationMap />
+          </WidgetFrame>
+
+          {/* Glacier Watch */}
+          <WidgetFrame
+            title="Glacier Watch"
+            description="Global glacier monitoring from the World Glacier Monitoring Service — tracking mass balance changes as Earth's ice responds to climate."
+            source="WGMS"
+            status="live"
+          >
+            <GlacierWatch />
+          </WidgetFrame>
+
+          {/* eBird Live */}
+          <WidgetFrame
+            title="eBird Live"
+            description="Recent bird observations from the world's largest biodiversity citizen science project. What birds are being spotted near you right now?"
+            source="Cornell Lab of Ornithology"
+            status="live"
+          >
+            <EBirdLive />
+          </WidgetFrame>
+
+          {/* iNaturalist Live */}
+          <WidgetFrame
+            title="iNaturalist Live"
+            description="Real-time nature observations from citizen scientists worldwide — every plant, insect, and animal being identified and recorded."
+            source="iNaturalist"
+            status="live"
+          >
+            <INaturalistLive />
+          </WidgetFrame>
+
+          {/* Ocean Hydrophones */}
+          <WidgetFrame
+            title="Ocean Hydrophones"
+            description="Listen to the deep ocean — underwater microphones capturing whale songs, earthquakes, ship traffic, and the mysterious sounds of the abyss."
+            source="Ocean Networks Canada / MBARI"
+            status="live"
+          >
+            <OceanHydrophones />
+          </WidgetFrame>
+
+          {/* Seismograph Grid */}
+          <WidgetFrame
+            title="Seismograph Grid"
+            description="Live seismic waveforms from monitoring stations worldwide. Watch the Earth breathe — continuous ground motion from microseisms, earthquakes, and human activity."
+            source="IRIS Seismic Network"
+            status="live"
+          >
+            <SeismographGrid />
+          </WidgetFrame>
+
+          {/* Magnetic Field */}
+          <WidgetFrame
+            title="Magnetic Field"
+            description="Earth's magnetic field protects us from solar wind. Visualise real-time geomagnetic data showing field strength and disturbances."
+            source="NOAA NCEI"
+            status="live"
+          >
+            <MagneticField />
+          </WidgetFrame>
+
+          {/* Magnetic Field Strength */}
+          <WidgetFrame
+            title="Magnetic Field Strength"
+            description="The magnetic field strength at your location — calculated from the World Magnetic Model. The field varies from ~25μT at the equator to ~65μT at the poles."
+            source="NOAA WMM"
+            status="ok"
+          >
+            <MagneticFieldStrength />
+          </WidgetFrame>
+
+          {/* Pollen Forecast */}
+          <WidgetFrame
+            title="Pollen Forecast"
+            description="Current pollen levels at your location — tree, grass, and weed pollen counts affecting allergy sufferers."
+            source="Pollen API"
+            status="live"
+          >
+            <PollenForecast />
+          </WidgetFrame>
+
+          {/* Star Map */}
+          <WidgetFrame
+            title="Star Map"
+            description="The night sky above you right now — stars, planets, and constellations visible from your location at this moment."
+            source="Astronomical Calculation"
+            status="ok"
+          >
+            <StarMap />
+          </WidgetFrame>
+
+          {/* Your Sky When Born */}
+          <WidgetFrame
+            title="Your Sky When Born"
+            description="Enter your birth date and location to see exactly what stars and planets were overhead at the moment you arrived on Earth."
+            source="Astronomical Calculation"
+            status="ok"
+          >
+            <YourSkyWhenBorn />
+          </WidgetFrame>
+
+          {/* What's Below You */}
+          <WidgetFrame
+            title="What's Below You"
+            description="Journey to the centre of the Earth — see the geological layers beneath your feet, from topsoil to the inner core 6,371 km down."
+            source="Geological Data"
+            status="ok"
+          >
+            <WhatsBelowYou />
+          </WidgetFrame>
+
+          {/* Your Air's Journey */}
+          <WidgetFrame
+            title="Your Air's Journey"
+            description="Where has the air you're breathing been? Back-trajectory analysis shows the path of air masses arriving at your location over the past days."
+            source="NOAA HYSPLIT Model"
+            status="ok"
+          >
+            <YourAirJourney />
+          </WidgetFrame>
+
+          {/* Your Background Dose */}
+          <WidgetFrame
+            title="Your Background Dose"
+            description="Calculate your personal annual radiation exposure — from cosmic rays, radon, medical scans, and the natural environment around you."
+            source="Calculation based on UNSCEAR data"
+            status="ok"
+          >
+            <YourBackgroundDose />
+          </WidgetFrame>
+
+          {/* Cosmic Rays Through You */}
+          <WidgetFrame
+            title="Cosmic Rays Through You"
+            description="Right now, cosmic ray muons are passing through your body. Calculate how many based on your location, altitude, and the current solar activity."
+            source="NMDB + Calculation"
+            status="ok"
+          >
+            <CosmicRaysThrough />
           </WidgetFrame>
 
         </div>
