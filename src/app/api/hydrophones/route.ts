@@ -1,62 +1,65 @@
 import { NextResponse } from 'next/server'
 
-// Ocean hydrophone network data (ONC/MBARI)
+// Ocean hydrophone network data - matching OceanHydrophones widget expected format
 export async function GET() {
   try {
-    // Generate synthetic audio waveform
-    const generateWaveform = () => {
-      const points: number[] = []
-      for (let i = 0; i < 200; i++) {
-        const ambient = Math.sin(i * 0.05) * 0.2
-        const whale = i > 80 && i < 120 ? Math.sin((i - 80) * 0.3) * Math.exp(-Math.pow(i - 100, 2) / 200) : 0
-        const noise = (Math.random() - 0.5) * 0.1
-        points.push(ambient + whale * 0.8 + noise)
+    const now = new Date()
+
+    // Generate recent sound events
+    const recentEvents = [
+      {
+        id: 'evt-1',
+        type: 'whale' as const,
+        frequency: '15-25 Hz',
+        timestamp: new Date(now.getTime() - 2 * 60 * 1000).toISOString(),
+        duration: 8,
+        intensity: 72,
+        source: 'Blue whale (B. musculus)'
+      },
+      {
+        id: 'evt-2',
+        type: 'ship' as const,
+        frequency: '50-150 Hz',
+        timestamp: new Date(now.getTime() - 8 * 60 * 1000).toISOString(),
+        duration: 120,
+        intensity: 45,
+        source: 'Container vessel'
+      },
+      {
+        id: 'evt-3',
+        type: 'whale' as const,
+        frequency: '100-400 Hz',
+        timestamp: new Date(now.getTime() - 15 * 60 * 1000).toISOString(),
+        duration: 4,
+        intensity: 58,
+        source: 'Humpback song'
+      },
+      {
+        id: 'evt-4',
+        type: 'rain' as const,
+        frequency: '1-10 kHz',
+        timestamp: new Date(now.getTime() - 30 * 60 * 1000).toISOString(),
+        duration: 300,
+        intensity: 25,
+        source: 'Surface precipitation'
       }
-      return points
-    }
+    ]
 
     const mockData = {
-      timestamp: new Date().toISOString(),
-      stations: [
-        {
-          id: 'MBARI-1',
-          name: 'Monterey Canyon',
-          location: 'California, USA',
-          depth: 890,
-          lat: 36.7,
-          lng: -122.1,
-          status: 'online',
-          waveform: generateWaveform(),
-          recentDetections: ['Blue whale call', 'Ship noise'],
-          temperature: 4.2
-        },
-        {
-          id: 'ONC-NEP',
-          name: 'Neptune Observatory',
-          location: 'Vancouver Island',
-          depth: 2660,
-          lat: 48.3,
-          lng: -126.1,
-          status: 'online',
-          waveform: generateWaveform(),
-          recentDetections: ['Orca vocalizations'],
-          temperature: 1.8
-        },
-        {
-          id: 'ALOHA',
-          name: 'Station ALOHA',
-          location: 'Hawaii',
-          depth: 4750,
-          lat: 22.75,
-          lng: -158.0,
-          status: 'online',
-          waveform: generateWaveform(),
-          recentDetections: ['Humpback songs'],
-          temperature: 1.5
-        }
-      ],
-      totalDetectionsToday: 47,
-      source: 'ONC/MBARI'
+      timestamp: now.toISOString(),
+      station: {
+        id: 'MBARI-1',
+        name: 'Monterey Canyon',
+        location: 'California, USA',
+        depth: 890,
+        lat: 36.7,
+        lon: -122.1,
+        status: 'recording' as const
+      },
+      recentEvents,
+      currentAmplitude: 0.42,
+      dominantFrequency: 45,
+      noiseFloor: 0.15
     }
 
     return NextResponse.json(mockData)
