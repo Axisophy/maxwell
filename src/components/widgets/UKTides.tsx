@@ -589,7 +589,7 @@ export default function UKTides() {
         </div>
         
         <div className="text-right">
-          <div className="text-[0.75em] text-black/40 uppercase tracking-wider">
+          <div className="text-[0.75em] text-black/40 uppercase tracking-wider" suppressHydrationWarning>
             {now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
           </div>
         </div>
