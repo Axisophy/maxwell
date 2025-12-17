@@ -107,7 +107,8 @@ export function CosmicDiagram({
         const y1 = yScale(-45 + (boundary.intercept ?? 0))
         const x2 = xScale(65)
         const y2 = yScale(65 + (boundary.intercept ?? 0))
-        const polygon = [[x1, Math.max(0, y1)], [x2, Math.max(0, y2)], [x2, 0], [x1, 0]]
+        // Fill from line to top of chart - clipPath handles overflow
+        const polygon = [[x1, y1], [x2, y2], [x2, 0], [x1, 0]]
         boundaryGroup.append('polygon')
           .attr('points', polygon.map(p => p.join(',')).join(' '))
           .attr('fill', boundary.fillColor)
@@ -126,7 +127,8 @@ export function CosmicDiagram({
         const y1 = yScale(45 + (boundary.intercept ?? 0))
         const x2 = xScale(65)
         const y2 = yScale(-65 + (boundary.intercept ?? 0))
-        const polygon = [[x1, Math.min(height, y1)], [x2, Math.min(height, y2)], [x2, height], [x1, height]]
+        // Fill from line to bottom of chart - clipPath handles overflow
+        const polygon = [[x1, y1], [x2, y2], [x2, height], [x1, height]]
         boundaryGroup.append('polygon')
           .attr('points', polygon.map(p => p.join(',')).join(' '))
           .attr('fill', boundary.fillColor)
