@@ -196,20 +196,21 @@ export default function PermissibleUniversePage() {
             </div>
 
             {/* Diagram */}
-            <div className="relative" style={{ height: 'calc(100vh - 220px)', minHeight: '500px' }}>
-              <CosmicDiagram
-                objects={visibleObjects}
-                boundaries={BOUNDARY_LIST}
-                showEpochs={showEpochs}
-                showDomination={showDomination}
-                onObjectClick={handleObjectClick}
-                onObjectHover={setHoveredObject}
-                onBoundaryClick={handleBoundaryClick}
-                initialView={INITIAL_VIEW}
-              />
+            <div className="px-4 md:px-8 lg:px-12 py-4">
+              <div className="relative rounded-xl overflow-hidden" style={{ height: 'calc(100vh - 260px)', minHeight: '500px' }}>
+                <CosmicDiagram
+                  objects={visibleObjects}
+                  boundaries={BOUNDARY_LIST}
+                  showEpochs={showEpochs}
+                  showDomination={showDomination}
+                  onObjectClick={handleObjectClick}
+                  onObjectHover={setHoveredObject}
+                  onBoundaryClick={handleBoundaryClick}
+                  initialView={INITIAL_VIEW}
+                />
 
-              {/* Legend */}
-              <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-3 text-xs max-w-xs">
+                {/* Legend */}
+                <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-3 text-xs max-w-xs">
                 <div className="font-medium text-white/80 mb-2">Forbidden Zones</div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
@@ -231,9 +232,10 @@ export default function PermissibleUniversePage() {
                 </div>
               </div>
 
-              {/* Object count */}
-              <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg px-3 py-2 text-xs text-white/40 font-mono">
-                {visibleObjects.length} objects
+                {/* Object count */}
+                <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg px-3 py-2 text-xs text-white/40 font-mono">
+                  {visibleObjects.length} objects
+                </div>
               </div>
             </div>
           </>

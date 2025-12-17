@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useCallback } from 'react'
 import * as d3 from 'd3'
 import { CosmicObject, Boundary } from '../lib/types'
 import { CATEGORIES, formatSuperscript } from '../lib/constants'
@@ -28,6 +28,7 @@ export function CosmicDiagram({
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
+  const zoomScaleRef = useRef(1)
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
   const [tooltip, setTooltip] = useState<{
     visible: boolean
@@ -200,7 +201,14 @@ export function CosmicDiagram({
         .attr('data-id', obj.id)
         .attr('transform', `translate(${x},${y})`)
         .style('cursor', 'pointer')
-        .on('click', () => onObjectClick(obj.id))
+        .on('click', function() {
+          // Reset dot size before opening modal
+          d3.select(this).select('.dot')
+            .transition()
+            .duration(100)
+            .attr('r', DOT_RADIUS / zoomScaleRef.current)
+          onObjectClick(obj.id)
+        })
         .on('mouseenter', (event) => {
           onObjectHover(obj.id)
           setTooltip({ visible: true, x: event.pageX, y: event.pageY, object: obj })
@@ -219,18 +227,18 @@ export function CosmicDiagram({
         .attr('stroke-width', 0.5)
         .attr('stroke-opacity', 0.5)
 
-      // Hover effect - subtle glow
+      // Hover effect - subtle glow (adjusted for zoom level)
       group.on('mouseenter.glow', function() {
-        d3.select(this).select('circle')
+        d3.select(this).select('.dot')
           .transition()
           .duration(100)
-          .attr('r', DOT_RADIUS + 2)
+          .attr('r', (DOT_RADIUS + 2) / zoomScaleRef.current)
       })
       .on('mouseleave.glow', function() {
-        d3.select(this).select('circle')
+        d3.select(this).select('.dot')
           .transition()
           .duration(100)
-          .attr('r', DOT_RADIUS)
+          .attr('r', DOT_RADIUS / zoomScaleRef.current)
       })
     }
 
@@ -258,6 +266,7 @@ export function CosmicDiagram({
       .on('zoom', (event) => {
         const { transform } = event
         const k = transform.k
+        zoomScaleRef.current = k  // Track current scale
 
         chartArea.attr('transform', transform)
 
