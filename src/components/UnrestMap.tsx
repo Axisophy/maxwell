@@ -117,14 +117,23 @@ export default function UnrestMap({ className = '', onEarthquakeSelect }: Unrest
       style: 'mapbox://styles/mapbox/dark-v11',
       center: [0, 20],
       zoom: 1.5,
+      minZoom: 1,
+      maxZoom: 12,
       projection: 'mercator',
       attributionControl: false,
+      renderWorldCopies: false,
+      maxBounds: [[-180, -85], [180, 85]],
     });
 
     map.current.addControl(
       new mapboxgl.NavigationControl({ showCompass: false }),
       'bottom-right'
     );
+
+    // Disable scroll zoom on touch devices to prevent hijacking page scroll
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      map.current.scrollZoom.disable();
+    }
 
     // Create popup
     popup.current = new mapboxgl.Popup({
