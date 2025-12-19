@@ -1,0 +1,148 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "apollo-11-site",
+      "properties": {
+        "name": "Apollo 11",
+        "type": "landing-site",
+        "category": "apollo",
+        "mission": "Apollo 11",
+        "location": "Sea of Tranquility",
+        "date": "1969-07-20",
+        "crew": ["Neil Armstrong", "Buzz Aldrin"],
+        "cmpilot": "Michael Collins",
+        "surfaceDuration": "21 hours 36 minutes",
+        "evaDuration": "2 hours 31 minutes",
+        "samples": 21.5,
+        "description": "First crewed Moon landing. Armstrong and Aldrin spent just over two hours outside, collecting samples, taking photographs, and deploying experiments. The descent stage, flag, and experiment packages remain on the surface.",
+        "artifacts": ["Descent stage", "Flag", "EASEP experiments", "Laser retroreflector", "Seismometer"],
+        "firstWords": "Houston, Tranquility Base here. The Eagle has landed."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [23.4731, 0.6744]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "apollo-12-site",
+      "properties": {
+        "name": "Apollo 12",
+        "type": "landing-site",
+        "category": "apollo",
+        "mission": "Apollo 12",
+        "location": "Ocean of Storms",
+        "date": "1969-11-19",
+        "crew": ["Pete Conrad", "Alan Bean"],
+        "cmpilot": "Richard Gordon",
+        "surfaceDuration": "31 hours 31 minutes",
+        "evaDuration": "7 hours 45 minutes",
+        "samples": 34.3,
+        "description": "Precision landing within walking distance of Surveyor 3, which had landed in 1967. Conrad and Bean retrieved parts from Surveyor to study the effects of 2.5 years on the lunar surface.",
+        "artifacts": ["Descent stage", "ALSEP experiments", "Parts of Surveyor 3 retrieved"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-23.4219, -3.0128]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "apollo-14-site",
+      "properties": {
+        "name": "Apollo 14",
+        "type": "landing-site",
+        "category": "apollo",
+        "mission": "Apollo 14",
+        "location": "Fra Mauro",
+        "date": "1971-02-05",
+        "crew": ["Alan Shepard", "Edgar Mitchell"],
+        "cmpilot": "Stuart Roosa",
+        "surfaceDuration": "33 hours 31 minutes",
+        "evaDuration": "9 hours 23 minutes",
+        "samples": 42.3,
+        "description": "Landing at the site originally intended for Apollo 13. Shepard, the first American in space, became the oldest person to walk on the Moon at 47. He famously hit two golf balls. They came within 20 meters of Cone Crater's rim.",
+        "artifacts": ["Descent stage", "ALSEP experiments", "MET (hand cart)", "Golf balls"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-17.4714, -3.6453]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "apollo-15-site",
+      "properties": {
+        "name": "Apollo 15",
+        "type": "landing-site",
+        "category": "apollo",
+        "mission": "Apollo 15",
+        "location": "Hadley-Apennine",
+        "date": "1971-07-30",
+        "crew": ["David Scott", "James Irwin"],
+        "cmpilot": "Alfred Worden",
+        "surfaceDuration": "66 hours 55 minutes",
+        "evaDuration": "18 hours 35 minutes",
+        "samples": 77.3,
+        "roverDistance": 27.8,
+        "description": "First 'J-mission' with extended surface stay and the Lunar Roving Vehicle. Explored Hadley Rille, a sinuous channel 1.5km wide and 300m deep. Found the 'Genesis Rock' (sample 15415), one of the oldest lunar samples. Scott performed the famous hammer-feather drop.",
+        "artifacts": ["Descent stage", "ALSEP experiments", "Lunar Rover (LRV-1)", "Fallen Astronaut sculpture"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [3.6339, 26.1322]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "apollo-16-site",
+      "properties": {
+        "name": "Apollo 16",
+        "type": "landing-site",
+        "category": "apollo",
+        "mission": "Apollo 16",
+        "location": "Descartes Highlands",
+        "date": "1972-04-21",
+        "crew": ["John Young", "Charles Duke"],
+        "cmpilot": "Ken Mattingly",
+        "surfaceDuration": "71 hours 2 minutes",
+        "evaDuration": "20 hours 14 minutes",
+        "samples": 95.7,
+        "roverDistance": 26.7,
+        "description": "Only mission to land in the lunar highlands. Scientists expected volcanic rocks but found impact breccias. Young set the lunar speed record at 18 km/h. Duke left a family photo on the surface.",
+        "artifacts": ["Descent stage", "ALSEP experiments", "Lunar Rover (LRV-2)", "UV camera/spectrograph"]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [15.5011, -8.9734]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "apollo-17-site",
+      "properties": {
+        "name": "Apollo 17",
+        "type": "landing-site",
+        "category": "apollo",
+        "mission": "Apollo 17",
+        "location": "Taurus-Littrow",
+        "date": "1972-12-11",
+        "crew": ["Eugene Cernan", "Harrison Schmitt"],
+        "cmpilot": "Ronald Evans",
+        "surfaceDuration": "74 hours 59 minutes",
+        "evaDuration": "22 hours 4 minutes",
+        "samples": 110.5,
+        "roverDistance": 35.7,
+        "description": "Final Apollo mission and last time humans walked on the Moon. Schmitt was the only professional geologist to visit. Discovered orange soil (volcanic glass beads). Cernan's last words on the surface: 'We leave as we came and, God willing, as we shall return.'",
+        "artifacts": ["Descent stage", "ALSEP experiments", "Lunar Rover (LRV-3)"],
+        "lastWords": "We leave as we came and, God willing, as we shall return."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [30.7717, 20.1908]
+      }
+    }
+  ]
+}

@@ -373,6 +373,13 @@ const dataCategories = [
     description: 'The sky and beyond — constellations, stars, and distant galaxies.',
     pages: [
       {
+        href: '/data/moon',
+        title: 'The Moon',
+        description: 'Earth\'s only natural satellite. Key facts, formation, and human exploration.',
+        icon: Moon,
+        ready: true,
+      },
+      {
         href: '/data/constellations',
         title: 'Constellations',
         description: '88 official constellations with stories, stars, and seasonal visibility.',

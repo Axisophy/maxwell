@@ -24,6 +24,7 @@ const navItems = [
 const observeSubmenu = [
   { href: '/observe/vital-signs', label: 'Vital Signs', active: true },
   { href: '/observe/dashboard', label: 'Dashboard', active: true },
+  { href: '/observe/moon', label: 'Lunar Atlas', active: true },
 ]
 
 const pulseSubmenu = [

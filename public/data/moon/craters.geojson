@@ -1,0 +1,275 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "tycho",
+      "properties": {
+        "name": "Tycho",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 85,
+        "depth": 4800,
+        "description": "One of the most prominent craters, with a ray system extending over 1,500 km. Named after astronomer Tycho Brahe. Relatively young at 108 million years old.",
+        "age": "108 million years",
+        "centralPeak": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-11.2, -43.3]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "copernicus",
+      "properties": {
+        "name": "Copernicus",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 93,
+        "depth": 3760,
+        "description": "Called the 'Monarch of the Moon' by early observers. Prominent ray system, terraced walls, and complex central peaks. Defines the 'Copernican' geological period.",
+        "age": "800 million years",
+        "centralPeak": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-20.1, 9.6]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "aristarchus",
+      "properties": {
+        "name": "Aristarchus",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 40,
+        "depth": 3700,
+        "description": "The brightest feature on the lunar surface. So bright it can be seen with the naked eye. Located on the Aristarchus Plateau with numerous volcanic features.",
+        "age": "450 million years",
+        "centralPeak": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-47.5, 23.7]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "kepler",
+      "properties": {
+        "name": "Kepler",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 32,
+        "depth": 2600,
+        "description": "Young, bright ray crater in Oceanus Procellarum. Named after Johannes Kepler. Ray system overlaps with Copernicus rays.",
+        "age": "Young (Copernican period)",
+        "centralPeak": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.0, 8.1]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "plato",
+      "properties": {
+        "name": "Plato",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 101,
+        "depth": 1000,
+        "description": "Large, dark-floored crater on the northern shore of Mare Imbrium. The floor was flooded with lava, making it unusually flat and dark.",
+        "age": "Ancient, but lava-flooded ~3.8 billion years ago",
+        "centralPeak": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-9.3, 51.6]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "clavius",
+      "properties": {
+        "name": "Clavius",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 231,
+        "depth": 3500,
+        "description": "One of the largest craters visible from Earth. Contains a distinctive arc of smaller craters on its floor, decreasing in size.",
+        "age": "~4 billion years (Nectarian)",
+        "centralPeak": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-14.4, -58.4]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ptolemaeus",
+      "properties": {
+        "name": "Ptolemaeus",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 154,
+        "depth": 2400,
+        "description": "Large ancient crater near the center of the near side. Part of a prominent chain with Alphonsus and Arzachel. Floor is remarkably flat, filled with lava.",
+        "age": "Pre-Nectarian (~4 billion years)",
+        "centralPeak": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-1.8, -9.2]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "alphonsus",
+      "properties": {
+        "name": "Alphonsus",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 119,
+        "depth": 2730,
+        "description": "Site of possible transient lunar phenomena (outgassing). Ranger 9 crash-landed here in 1965, sending back live TV footage.",
+        "age": "Pre-Nectarian",
+        "centralPeak": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-2.8, -13.4]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "archimedes",
+      "properties": {
+        "name": "Archimedes",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 83,
+        "depth": 2100,
+        "description": "Large, flooded crater in Mare Imbrium. The lava that filled the mare also flooded this crater, giving it an unusually smooth floor.",
+        "age": "Pre-Imbrian, flooded ~3.8 billion years ago",
+        "centralPeak": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-4.0, 29.7]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "eratosthenes",
+      "properties": {
+        "name": "Eratosthenes",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 58,
+        "depth": 3570,
+        "description": "Located at the end of the Apennine Mountains. Defines the 'Eratosthenian' geological period (between 3.2 and 1.1 billion years ago). No ray system.",
+        "age": "~3.2 billion years",
+        "centralPeak": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-11.3, 14.5]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "theophilus",
+      "properties": {
+        "name": "Theophilus",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 100,
+        "depth": 4400,
+        "description": "Impressive crater with a large central peak (1400m high) and terraced walls. Overlaps the older crater Cyrillus, demonstrating its younger age.",
+        "age": "Eratosthenian",
+        "centralPeak": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [26.4, -11.4]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "gassendi",
+      "properties": {
+        "name": "Gassendi",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 110,
+        "depth": 1900,
+        "description": "Located on the north rim of Mare Humorum. Floor contains a complex system of rilles and a central peak group. Site of reported transient phenomena.",
+        "age": "Upper Imbrian",
+        "centralPeak": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-39.9, -17.6]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "schickard",
+      "properties": {
+        "name": "Schickard",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 227,
+        "depth": 1500,
+        "description": "One of the largest craters on the near side. Floor has distinctive light and dark patches – partially flooded with lava.",
+        "age": "Pre-Nectarian",
+        "centralPeak": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-54.6, -44.3]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "grimaldi",
+      "properties": {
+        "name": "Grimaldi",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 173,
+        "depth": 1900,
+        "description": "Near the western limb. One of the darkest features on the Moon. Floor is very dark, flooded with basalt.",
+        "age": "Pre-Nectarian, lava-flooded later",
+        "centralPeak": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-68.6, -5.2]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "langrenus",
+      "properties": {
+        "name": "Langrenus",
+        "type": "crater",
+        "category": "geography",
+        "diameter": 132,
+        "depth": 4500,
+        "description": "Large crater near the eastern limb. Has terraced walls and a complex central peak. Bright ray system visible at high sun angles.",
+        "age": "Eratosthenian",
+        "centralPeak": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [61.1, -8.9]
+      }
+    }
+  ]
+}

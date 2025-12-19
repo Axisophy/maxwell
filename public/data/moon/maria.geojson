@@ -1,0 +1,192 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "mare-tranquillitatis",
+      "properties": {
+        "name": "Mare Tranquillitatis",
+        "englishName": "Sea of Tranquility",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 873,
+        "description": "Site of the first Moon landing (Apollo 11). Formed by ancient volcanic eruptions that flooded an impact basin with basaltic lava.",
+        "formed": "3.9-3.6 billion years ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [23.4, 8.5]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mare-serenitatis",
+      "properties": {
+        "name": "Mare Serenitatis",
+        "englishName": "Sea of Serenity",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 674,
+        "description": "One of the most circular maria. Connected to Mare Tranquillitatis. Contains mascons (mass concentrations) beneath its surface.",
+        "formed": "3.9-3.8 billion years ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [17.5, 28.0]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mare-imbrium",
+      "properties": {
+        "name": "Mare Imbrium",
+        "englishName": "Sea of Rains",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 1145,
+        "description": "Second largest mare on the Moon. Formed by a massive impact that created a basin later filled with lava. Surrounded by mountain ranges.",
+        "formed": "3.85 billion years ago (impact), filled with lava until 3.3 billion years ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-15.6, 32.8]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "oceanus-procellarum",
+      "properties": {
+        "name": "Oceanus Procellarum",
+        "englishName": "Ocean of Storms",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 2500,
+        "description": "The largest mare on the Moon and the only one called 'oceanus'. Site of Apollo 12 landing. Unlike other maria, may not have formed from a single impact.",
+        "formed": "3.9-1.2 billion years ago (multiple eruptions)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-23.0, 18.4]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mare-nubium",
+      "properties": {
+        "name": "Mare Nubium",
+        "englishName": "Sea of Clouds",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 715,
+        "description": "Located in the southwestern part of the near side. Contains several ghost craters – craters nearly buried by lava.",
+        "formed": "3.9-3.4 billion years ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-16.6, -21.3]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mare-fecunditatis",
+      "properties": {
+        "name": "Mare Fecunditatis",
+        "englishName": "Sea of Fertility",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 840,
+        "description": "Located on the eastern edge of the near side. Site of Luna 16, the first robotic sample return mission.",
+        "formed": "3.9-3.6 billion years ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [51.3, -7.8]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mare-crisium",
+      "properties": {
+        "name": "Mare Crisium",
+        "englishName": "Sea of Crises",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 555,
+        "description": "Isolated mare near the Moon's eastern limb. Very distinct, one of the first features visible as the Moon waxes. Site of Luna 24.",
+        "formed": "3.9 billion years ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [59.1, 17.0]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mare-humorum",
+      "properties": {
+        "name": "Mare Humorum",
+        "englishName": "Sea of Moisture",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 389,
+        "description": "Small, nearly circular mare in the southwest. Contains the prominent crater Gassendi on its northern rim.",
+        "formed": "3.9-3.5 billion years ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-38.6, -24.4]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mare-nectaris",
+      "properties": {
+        "name": "Mare Nectaris",
+        "englishName": "Sea of Nectar",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 333,
+        "description": "Small, well-defined mare. The Nectaris basin is one of the oldest dated lunar basins and defines the 'Nectarian' geological period.",
+        "formed": "3.92 billion years ago (defines Nectarian period)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [35.5, -15.2]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mare-frigoris",
+      "properties": {
+        "name": "Mare Frigoris",
+        "englishName": "Sea of Cold",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 1596,
+        "description": "Long, irregular mare stretching across the northern part of the near side. Not formed from a single basin.",
+        "formed": "Multiple episodes, 3.9-3.0 billion years ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [1.4, 56.0]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "mare-vaporum",
+      "properties": {
+        "name": "Mare Vaporum",
+        "englishName": "Sea of Vapors",
+        "type": "mare",
+        "category": "geography",
+        "diameter": 245,
+        "description": "Small mare near the center of the near side. Contains several rilles including Rima Hyginus.",
+        "formed": "3.7-3.3 billion years ago"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [3.6, 13.3]
+      }
+    }
+  ]
+}

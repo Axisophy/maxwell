@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Activity, LayoutDashboard } from 'lucide-react'
+import { Activity, LayoutDashboard, Moon } from 'lucide-react'
 
 const observePages = [
   {
@@ -13,6 +13,12 @@ const observePages = [
     title: 'Dashboard',
     description: 'Beautiful live widgets showing the Sun, Earth, space weather, and other real-time data.',
     icon: LayoutDashboard,
+  },
+  {
+    href: '/observe/moon',
+    title: 'Lunar Atlas',
+    description: 'Explore the Moon\'s surface. Maria, craters, and Apollo landing sites.',
+    icon: Moon,
   },
 ]
 
