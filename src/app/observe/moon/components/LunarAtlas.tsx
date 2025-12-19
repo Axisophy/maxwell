@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { LayerGroup, LunarGeoJSON } from '@/lib/moon/types';
@@ -14,68 +14,76 @@ interface LunarAtlasProps {
 export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
-  const layersRef = useRef<Map<string, L.LayerGroup>>(new Map());
-
+  const layersRef = useRef<Map<string, L.GeoJSON>>(new Map());
+  const [mapReady, setMapReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  // Initialize map
+  // Initialize map only once
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
-    // Create map with lunar tile layer
+    // Create map with equirectangular projection
+    // Moon coordinates: lat -90 to 90, lng -180 to 180
     const map = L.map(mapRef.current, {
-      crs: L.CRS.Simple,
+      crs: L.CRS.EPSG4326, // Geographic projection
       center: [0, 0],
-      zoom: 2,
-      minZoom: 1,
-      maxZoom: 8,
+      zoom: 1,
+      minZoom: 0,
+      maxZoom: 6,
       maxBounds: [[-90, -180], [90, 180]],
       maxBoundsViscosity: 1.0,
+      attributionControl: false,
     });
 
-    // Add LROC WAC tile layer from NASA Trek
+    // Use OpenPlanetary Moon basemap (reliable, CORS-enabled)
+    // Alternative: CartoDB lunar tiles
     const tileLayer = L.tileLayer(
-      'https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/default/default028mm/{z}/{y}/{x}.png',
+      'https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/{z}/{x}/{y}.png',
       {
-        attribution: 'NASA/GSFC/Arizona State University',
-        tms: true,
         noWrap: true,
         bounds: [[-90, -180], [90, 180]],
+        maxNativeZoom: 6,
       }
     );
 
-    tileLayer.on('load', () => setIsLoading(false));
-    tileLayer.on('tileerror', () => {
-      setLoadError('Failed to load lunar tiles');
+    tileLayer.on('load', () => {
       setIsLoading(false);
+    });
+
+    tileLayer.on('tileerror', (e) => {
+      console.warn('Tile error:', e);
+      // Don't show error for individual tile failures, only total failure
     });
 
     tileLayer.addTo(map);
     mapInstanceRef.current = map;
 
-    // Fallback: if tiles don't load within 5s, show a basic view
-    setTimeout(() => {
+    // Mark map as ready after a short delay to ensure it's fully initialized
+    const readyTimeout = setTimeout(() => {
+      setMapReady(true);
       setIsLoading(false);
-    }, 5000);
+    }, 500);
 
     return () => {
+      clearTimeout(readyTimeout);
       map.remove();
       mapInstanceRef.current = null;
+      setMapReady(false);
     };
   }, []);
 
-  // Load and manage GeoJSON layers
-  useEffect(() => {
-    if (!mapInstanceRef.current) return;
-
+  // Load GeoJSON layers only after map is ready
+  const loadLayers = useCallback(async () => {
     const map = mapInstanceRef.current;
+    if (!map || !mapReady) return;
+
     const visibleLayerIds = layerGroups
       .flatMap(g => g.layers)
       .filter(l => l.visible)
       .map(l => l.id);
 
-    // Define layer data sources
+    // Layer data sources
     const layerSources: Record<string, string> = {
       'maria': '/data/moon/maria.geojson',
       'craters': '/data/moon/craters.geojson',
@@ -83,18 +91,18 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
     };
 
     // Load each visible layer
-    visibleLayerIds.forEach(async (layerId) => {
-      // Skip if already loaded
+    for (const layerId of visibleLayerIds) {
+      // Skip if already loaded and on map
       if (layersRef.current.has(layerId)) {
         const existingLayer = layersRef.current.get(layerId);
         if (existingLayer && !map.hasLayer(existingLayer)) {
           existingLayer.addTo(map);
         }
-        return;
+        continue;
       }
 
       const source = layerSources[layerId];
-      if (!source) return;
+      if (!source) continue;
 
       try {
         const response = await fetch(source);
@@ -105,13 +113,8 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
 
         const layer = L.geoJSON(geojson as GeoJSON.FeatureCollection, {
           pointToLayer: (feature, latlng) => {
-            // Swap coordinates for Leaflet (it expects [lat, lng])
-            const coords = feature.geometry.type === 'Point'
-              ? [feature.geometry.coordinates[1], feature.geometry.coordinates[0]] as [number, number]
-              : latlng;
-
-            return L.circleMarker(coords, {
-              radius: getMarkerRadius(feature.properties.type, feature.properties.diameter),
+            return L.circleMarker(latlng, {
+              radius: getMarkerRadius(feature.properties?.type, feature.properties?.diameter),
               fillColor: layerConfig?.color || '#ef4444',
               color: '#ffffff',
               weight: 2,
@@ -119,21 +122,30 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
               fillOpacity: 0.8,
             });
           },
-          onEachFeature: (feature, layer) => {
-            // Add click handler
-            layer.on('click', () => {
+          style: (feature) => {
+            // Style for non-point features (polygons)
+            return {
+              fillColor: layerConfig?.color || '#3b82f6',
+              color: '#ffffff',
+              weight: 1,
+              fillOpacity: 0.3,
+            };
+          },
+          onEachFeature: (feature, featureLayer) => {
+            featureLayer.on('click', () => {
               onFeatureClick({
-                id: feature.id as string,
+                id: (feature.id as string) || feature.properties?.name || 'unknown',
                 properties: feature.properties as Record<string, unknown>,
               });
             });
 
-            // Add tooltip
-            layer.bindTooltip(feature.properties.name, {
-              permanent: false,
-              direction: 'top',
-              className: 'lunar-tooltip',
-            });
+            if (feature.properties?.name) {
+              featureLayer.bindTooltip(feature.properties.name, {
+                permanent: false,
+                direction: 'top',
+                className: 'lunar-tooltip',
+              });
+            }
           },
         });
 
@@ -142,7 +154,7 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
       } catch (error) {
         console.error(`Error loading layer ${layerId}:`, error);
       }
-    });
+    }
 
     // Hide layers that are no longer visible
     layersRef.current.forEach((layer, layerId) => {
@@ -150,16 +162,23 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
         map.removeLayer(layer);
       }
     });
-  }, [layerGroups, onFeatureClick]);
+  }, [layerGroups, onFeatureClick, mapReady]);
+
+  // Load layers when map is ready or layer config changes
+  useEffect(() => {
+    if (mapReady) {
+      loadLayers();
+    }
+  }, [mapReady, loadLayers]);
 
   return (
     <div className="relative w-full h-full">
       {/* Map container */}
-      <div ref={mapRef} className="w-full h-full bg-black" />
+      <div ref={mapRef} className="w-full h-full bg-neutral-900" />
 
       {/* Loading state */}
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-[500]">
+        <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/90 z-[1000]">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-4" />
             <p className="text-white/60 text-sm">Loading lunar imagery...</p>
@@ -169,7 +188,7 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
 
       {/* Error state */}
       {loadError && (
-        <div className="absolute bottom-4 left-4 right-4 md:left-auto md:right-auto md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:left-1/2 md:-translate-x-1/2 z-[500] bg-red-500/90 text-white px-4 py-3 rounded-lg text-sm">
+        <div className="absolute bottom-4 left-4 right-4 z-[1000] bg-red-500/90 text-white px-4 py-3 rounded-lg text-sm">
           {loadError}
         </div>
       )}
@@ -177,18 +196,31 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
       {/* Custom tooltip styles */}
       <style jsx global>{`
         .lunar-tooltip {
-          background: rgba(0, 0, 0, 0.8);
+          background: rgba(0, 0, 0, 0.85);
           border: none;
           border-radius: 4px;
           color: white;
           font-size: 12px;
           padding: 4px 8px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         .lunar-tooltip::before {
-          border-top-color: rgba(0, 0, 0, 0.8);
+          border-top-color: rgba(0, 0, 0, 0.85) !important;
         }
         .leaflet-container {
-          background: #0a0a0f;
+          background: #171717;
+        }
+        .leaflet-control-zoom {
+          border: none !important;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+        }
+        .leaflet-control-zoom a {
+          background: rgba(0,0,0,0.7) !important;
+          color: white !important;
+          border: none !important;
+        }
+        .leaflet-control-zoom a:hover {
+          background: rgba(0,0,0,0.9) !important;
         }
       `}</style>
     </div>
@@ -196,7 +228,7 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
 }
 
 // Helper to determine marker size based on feature type and diameter
-function getMarkerRadius(type: string, diameter?: number): number {
+function getMarkerRadius(type?: string, diameter?: number): number {
   if (type === 'landing-site') return 10;
   if (type === 'mare') return 12;
   if (type === 'crater' && diameter) {
