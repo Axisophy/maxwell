@@ -60,7 +60,7 @@ export default function InfoPanel({ feature, onClose }: InfoPanelProps) {
   const isCrater = type === 'crater';
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 md:bottom-auto md:top-4 md:left-4 md:right-auto md:w-96 z-[1000] bg-white rounded-t-xl md:rounded-xl shadow-xl max-h-[70vh] overflow-hidden flex flex-col">
+    <div className="absolute bottom-0 left-0 right-0 md:bottom-4 md:top-auto md:left-4 md:right-auto md:w-80 z-[1000] bg-white rounded-t-xl md:rounded-xl shadow-xl max-h-[60%] overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex items-start justify-between p-4 border-b border-neutral-100">
         <div>

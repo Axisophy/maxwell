@@ -174,7 +174,7 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
   return (
     <div className="relative w-full h-full">
       {/* Map container */}
-      <div ref={mapRef} className="w-full h-full bg-neutral-900" />
+      <div ref={mapRef} className="w-full h-full bg-neutral-900 rounded-xl" />
 
       {/* Loading state */}
       {isLoading && (

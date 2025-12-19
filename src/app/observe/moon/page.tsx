@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ArrowLeft, Globe, ZoomIn, Moon } from 'lucide-react';
+import { Moon } from 'lucide-react';
 import LayerControls from './components/LayerControls';
 import InfoPanel from './components/InfoPanel';
 import { LayerGroup } from '@/lib/moon/types';
@@ -15,10 +15,10 @@ const LunarAtlas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-full bg-black flex items-center justify-center">
+      <div className="w-full h-[500px] bg-neutral-900 rounded-xl flex items-center justify-center">
         <div className="text-center">
-          <Moon className="w-12 h-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/40 text-sm">Initializing lunar atlas...</p>
+          <Moon className="w-8 h-8 text-white/20 mx-auto mb-3" />
+          <span className="text-white/50 text-sm">Loading lunar atlas...</span>
         </div>
       </div>
     ),
@@ -55,65 +55,108 @@ export default function MoonPage() {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] md:h-[calc(100vh-80px)] flex flex-col bg-[#f5f5f5] -mt-14 md:mt-0 -mb-16 md:mb-0">
-      {/* Header bar */}
-      <header className="flex-shrink-0 bg-white border-b border-neutral-200 relative z-10">
-        <div className="px-4 md:px-8 lg:px-12 py-3 md:py-4 flex items-center justify-between">
-          {/* Left: Back and title */}
-          <div className="flex items-center gap-3 md:gap-4">
-            <Link
-              href="/observe"
-              className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
-              aria-label="Back to Observe"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <h1 className="text-lg md:text-xl font-light text-black">Lunar Atlas</h1>
-              <p className="text-xs md:text-sm text-black/50 hidden md:block">
-                Explore the Moon&apos;s surface
-              </p>
+    <main className="min-h-screen bg-[#f5f5f5]">
+      <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
+        {/* Header */}
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
+            Lunar Atlas
+          </h1>
+          <p className="text-base md:text-lg text-black/60 max-w-2xl">
+            Explore the Moon&apos;s surface. Toggle layers to view maria, major craters,
+            and Apollo landing sites with mission details.
+          </p>
+        </div>
+
+        {/* Map Container */}
+        <div className="relative mb-6">
+          <div className="h-[50vh] min-h-[400px] max-h-[600px] rounded-xl overflow-hidden">
+            <LunarAtlas
+              layerGroups={layerGroups}
+              onFeatureClick={handleFeatureClick}
+            />
+          </div>
+
+          {/* Layer controls - positioned inside map area */}
+          <LayerControls
+            groups={layerGroups}
+            onToggleLayer={handleToggleLayer}
+            onToggleGroup={handleToggleGroup}
+          />
+
+          {/* Info panel - positioned inside map area */}
+          <InfoPanel
+            feature={selectedFeature}
+            onClose={handleCloseInfo}
+          />
+        </div>
+
+        {/* Info sections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Apollo Missions */}
+          <div className="bg-white rounded-xl p-5">
+            <h3 className="text-sm font-medium text-black/50 uppercase tracking-wider mb-3">
+              Apollo Missions
+            </h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-black/50">Total missions</span>
+                <span className="text-black">6 landings</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-black/50">Astronauts on surface</span>
+                <span className="text-black">12</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-black/50">Samples returned</span>
+                <span className="text-black">382 kg</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-black/50">Total EVA time</span>
+                <span className="text-black">80+ hours</span>
+              </div>
             </div>
           </div>
 
-          {/* Right: Links */}
-          <div className="flex items-center gap-2">
+          {/* Data Sources */}
+          <div className="bg-white rounded-xl p-5">
+            <h3 className="text-sm font-medium text-black/50 uppercase tracking-wider mb-3">
+              Data Sources
+            </h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-black/50">Basemap</span>
+                <span className="text-black">OpenPlanetary</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-black/50">Feature data</span>
+                <span className="text-black">IAU / USGS</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-black/50">Mission data</span>
+                <span className="text-black">NASA</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="bg-[#e5e5e5] rounded-xl p-5">
+            <h3 className="text-sm font-medium text-black/50 uppercase tracking-wider mb-3">
+              Related
+            </h3>
+            <p className="text-sm text-black/50 mb-4">
+              Learn more about the Moon including key facts, formation theory,
+              and the history of human exploration.
+            </p>
             <Link
               href="/data/moon"
-              className="flex items-center gap-2 px-3 py-2 text-sm bg-black text-white rounded-lg hover:bg-black/80 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-[#e6007e] transition-colors"
             >
-              <span className="hidden md:inline">Moon Data</span>
-              <span className="md:hidden">Data</span>
+              View Moon data page →
             </Link>
           </div>
         </div>
-      </header>
-
-      {/* Map container */}
-      <div className="flex-1 relative">
-        <LunarAtlas
-          layerGroups={layerGroups}
-          onFeatureClick={handleFeatureClick}
-        />
-
-        {/* Layer controls */}
-        <LayerControls
-          groups={layerGroups}
-          onToggleLayer={handleToggleLayer}
-          onToggleGroup={handleToggleGroup}
-        />
-
-        {/* Info panel */}
-        <InfoPanel
-          feature={selectedFeature}
-          onClose={handleCloseInfo}
-        />
-
-        {/* Attribution */}
-        <div className="absolute bottom-2 right-2 z-[400] text-xs text-white/40 bg-black/40 px-2 py-1 rounded">
-          Imagery: NASA/GSFC/Arizona State University
-        </div>
       </div>
-    </div>
+    </main>
   );
 }
