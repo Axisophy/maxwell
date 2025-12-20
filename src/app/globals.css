@@ -107,3 +107,8 @@ body {
   Widget data: font-mono text-2xl
   Reading:     font-serif text-lg
 */
+
+/* Ptolemy game button press effect */
+.active\:scale-98:active {
+  transform: scale(0.98);
+}

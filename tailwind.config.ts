@@ -80,6 +80,21 @@ const config: Config = {
       borderRadius: {
         'widget': '12px',
       },
+      animation: {
+        'shake': 'shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both',
+        'fade-in': 'fade-in 0.3s ease-out both',
+      },
+      keyframes: {
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
+          '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' },
+        },
+        'fade-in': {
+          from: { opacity: '0', transform: 'scale(0.9)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
+      },
     },
   },
   plugins: [],
