@@ -39,58 +39,58 @@ export default function NuclidesPage() {
         </div>
       </div>
 
-      {/* Educational footer */}
-      <div className="bg-white border-t border-black/10">
-        <div className="px-4 md:px-8 lg:px-12 py-6">
-          <div className="max-w-4xl">
-            <h2 className="text-lg font-medium text-black mb-4">Understanding the Chart</h2>
-            
-            <div className="grid md:grid-cols-2 gap-6 text-sm text-black/70">
-              <div>
-                <h3 className="font-medium text-black mb-2">What is a nuclide?</h3>
-                <p>
-                  A nuclide is a specific combination of protons (Z) and neutrons (N) in an atomic nucleus. 
-                  While the periodic table groups atoms by proton count alone (elements), nuclides distinguish 
-                  between isotopes - atoms with the same proton count but different neutron counts.
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium text-black mb-2">The Valley of Stability</h3>
-                <p>
-                  Stable nuclides cluster along a diagonal "valley" where the balance of protons and neutrons 
-                  creates a stable nuclear configuration. Light elements prefer equal numbers (N ≈ Z), 
-                  while heavy elements need more neutrons to remain stable.
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium text-black mb-2">Magic Numbers</h3>
-                <p>
-                  Nuclei with "magic" numbers of protons or neutrons (2, 8, 20, 28, 50, 82, 126) are 
-                  exceptionally stable. These correspond to filled nuclear shells, similar to electron 
-                  shells in atoms. Lead-208 is "doubly magic" with 82 protons and 126 neutrons.
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-medium text-black mb-2">Decay Modes</h3>
-                <p>
-                  Unstable nuclides decay toward stability. Neutron-rich nuclei undergo β⁻ decay 
-                  (neutron → proton), while proton-rich nuclei undergo β⁺ decay or electron capture. 
-                  Very heavy nuclei often undergo α decay, emitting helium-4 nuclei.
-                </p>
-              </div>
+      {/* Understanding the Chart */}
+      <div className="px-4 md:px-8 lg:px-12 pb-8 md:pb-12">
+        <h2 className="text-xl md:text-2xl font-light text-black mb-4">Understanding the Chart</h2>
+        <div className="bg-white rounded-xl p-5 md:p-6">
+          <div className="grid md:grid-cols-2 gap-6 text-sm text-black/70">
+            <div>
+              <h3 className="font-medium text-black mb-2">What is a nuclide?</h3>
+              <p>
+                A nuclide is a specific combination of protons (Z) and neutrons (N) in an atomic nucleus.
+                While the periodic table groups atoms by proton count alone (elements), nuclides distinguish
+                between isotopes - atoms with the same proton count but different neutron counts.
+              </p>
             </div>
 
-            <div className="mt-6 pt-6 border-t border-black/10">
-              <h3 className="font-medium text-black mb-2">Data Sources</h3>
-              <p className="text-sm text-black/50">
-                Nuclear data compiled from the IAEA Nuclear Data Services, National Nuclear Data Center (NNDC), 
-                and Atomic Mass Evaluation (AME2020). This visualization includes approximately 3,300 known nuclides.
+            <div>
+              <h3 className="font-medium text-black mb-2">The Valley of Stability</h3>
+              <p>
+                Stable nuclides cluster along a diagonal "valley" where the balance of protons and neutrons
+                creates a stable nuclear configuration. Light elements prefer equal numbers (N ≈ Z),
+                while heavy elements need more neutrons to remain stable.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-medium text-black mb-2">Magic Numbers</h3>
+              <p>
+                Nuclei with "magic" numbers of protons or neutrons (2, 8, 20, 28, 50, 82, 126) are
+                exceptionally stable. These correspond to filled nuclear shells, similar to electron
+                shells in atoms. Lead-208 is "doubly magic" with 82 protons and 126 neutrons.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-medium text-black mb-2">Decay Modes</h3>
+              <p>
+                Unstable nuclides decay toward stability. Neutron-rich nuclei undergo β⁻ decay
+                (neutron → proton), while proton-rich nuclei undergo β⁺ decay or electron capture.
+                Very heavy nuclei often undergo α decay, emitting helium-4 nuclei.
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Data Sources */}
+      <div className="px-4 md:px-8 lg:px-12 pb-16 md:pb-20">
+        <div className="bg-white rounded-xl p-5 md:p-6">
+          <h3 className="text-sm font-medium text-black/50 uppercase tracking-wider mb-3">Data Sources</h3>
+          <p className="text-sm text-black/60">
+            Nuclear data compiled from the IAEA Nuclear Data Services, National Nuclear Data Center (NNDC),
+            and Atomic Mass Evaluation (AME2020). This visualization includes approximately 3,300 known nuclides.
+          </p>
         </div>
       </div>
     </main>
