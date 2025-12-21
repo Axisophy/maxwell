@@ -3,15 +3,14 @@
 import Link from 'next/link'
 
 // ============================================================================
-// DATA SECTION - 7 CATEGORIES
+// DATA SECTION - 6 CATEGORIES
 // ============================================================================
 // 1. THE COSMOS - Universe at every scale (merged Universe + Astronomy basics)
 // 2. MATTER - Elements, isotopes, molecules, materials
 // 3. LIFE - Biology, genetics, species
 // 4. EARTH - Our planet's systems
 // 5. MATHEMATICS - Pure math
-// 6. TOOLS - Reference utilities
-// 7. DEEP SKY - Beyond the Solar System
+// 6. DEEP SKY - Beyond the Solar System
 // ============================================================================
 
 interface DataItem {
@@ -39,7 +38,7 @@ const categories: Category[] = [
       { title: 'EM Spectrum', href: '/data/spectrum', status: 'ready', description: 'Radio waves to gamma rays' },
       { title: 'Permissible Universe', href: '/data/permissible-universe', status: 'ready', description: 'Mass-radius diagram of everything' },
       { title: 'Standard Model', href: '/data/particles', status: 'ready', description: 'The particles of matter' },
-      { title: 'Solar System', href: '/data/solar-system', status: 'coming-soon', description: 'Sun, planets, moons, and more' },
+      { title: 'The Sun', href: '/data/solar-system/sun', status: 'ready', description: 'Our star - live SDO imagery and data' },
     ],
   },
   {
@@ -92,15 +91,6 @@ const categories: Category[] = [
       { title: 'Geometry', href: '/data/geometry', status: 'coming-soon', description: 'Platonic solids and tessellations' },
       { title: 'Famous Equations', href: '/data/equations', status: 'coming-soon', description: 'The equations that changed everything' },
       { title: 'Topology', href: '/data/topology', status: 'coming-soon', description: 'Surfaces, manifolds, and knots' },
-    ],
-  },
-  {
-    id: 'tools',
-    title: 'Tools',
-    description: 'Reference utilities - converters and calculators.',
-    items: [
-      { title: 'Unit Converter', href: '/data/converter', status: 'coming-soon', description: 'Convert anything to anything' },
-      { title: 'Scientific Calculator', href: '/data/calculator', status: 'coming-soon', description: 'Full scientific calculator' },
     ],
   },
   {

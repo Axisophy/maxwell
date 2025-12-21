@@ -26,6 +26,17 @@ export default function ToolsPage() {
           >
             <StopwatchTimer />
           </WidgetFrame>
+
+          {/* Coming Soon: Unit Converter */}
+          <div className="bg-[#e5e5e5] rounded-xl p-5">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <h3 className="text-base font-medium text-black/40">Unit Converter</h3>
+              <span className="flex-shrink-0 text-xs text-black/30">Soon</span>
+            </div>
+            <p className="text-sm text-black/30">
+              Convert between units of length, mass, temperature, pressure, energy, and more.
+            </p>
+          </div>
         </div>
       </div>
 

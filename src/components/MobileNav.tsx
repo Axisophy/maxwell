@@ -37,14 +37,13 @@ const navItems = [
     label: 'Data',
     icon: Database,
     matchPaths: ['/data'],
-    // NEW 7 CATEGORY STRUCTURE
+    // 6 CATEGORY STRUCTURE
     submenu: [
       { href: '/data#cosmos', label: 'The Cosmos' },
       { href: '/data#matter', label: 'Matter' },
       { href: '/data#life', label: 'Life' },
       { href: '/data#earth', label: 'Earth' },
       { href: '/data#mathematics', label: 'Mathematics' },
-      { href: '/data#tools', label: 'Tools' },
       { href: '/data#deep-sky', label: 'Deep Sky' },
     ]
   },

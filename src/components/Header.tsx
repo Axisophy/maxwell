@@ -39,14 +39,13 @@ const toolsSubmenu = [
   { href: '#', label: 'Explore', active: false },
 ]
 
-// Data submenu - NEW 7 CATEGORY STRUCTURE
+// Data submenu - 6 CATEGORY STRUCTURE
 const dataSubmenu = [
   { href: '/data#cosmos', label: 'The Cosmos', active: true },
   { href: '/data#matter', label: 'Matter', active: true },
   { href: '/data#life', label: 'Life', active: true },
   { href: '/data#earth', label: 'Earth', active: true },
   { href: '/data#mathematics', label: 'Mathematics', active: true },
-  { href: '/data#tools', label: 'Tools', active: true },
   { href: '/data#deep-sky', label: 'Deep Sky', active: true },
 ]
 
