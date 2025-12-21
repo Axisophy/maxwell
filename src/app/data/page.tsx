@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Breadcrumb from '@/components/ui/Breadcrumb'
 
 // ============================================================================
 // DATA SECTION - 6 CATEGORIES
@@ -122,13 +123,18 @@ const stats = categories.reduce(
 export default function DataPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
-      {/* Mobile top padding */}
-      <div className="h-14 md:hidden" />
-
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
         {/* Header */}
-        <div className="mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-4">
+        <div className="mb-6 md:mb-8">
+          <Breadcrumb
+            items={[
+              { label: 'MXWLL', href: '/' },
+              { label: 'Data' },
+            ]}
+            theme="light"
+            className="mb-2"
+          />
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
             Data
           </h1>
           <p className="text-base md:text-lg text-black/60 max-w-2xl">

@@ -23,6 +23,8 @@ const navItems = [
 // Submenus - using category names for DATA
 const observeSubmenu = [
   { href: '/observe/vital-signs', label: 'Vital Signs', active: true },
+  { href: '/observe/solar-observatory', label: 'Solar Observatory', active: true },
+  { href: '/observe/wildlife', label: 'Wildlife Tracking', active: true },
   { href: '/observe/dashboard', label: 'Dashboard', active: true },
   { href: '/observe/moon', label: 'Lunar Atlas', active: true },
 ]

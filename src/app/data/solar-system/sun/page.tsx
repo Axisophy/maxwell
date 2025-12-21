@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import Breadcrumb from '@/components/ui/Breadcrumb'
 import SunHeroSlideshow from '@/components/data/sun/SunHeroSlideshow'
 import KeyFactsGrid from '@/components/data/sun/KeyFactsGrid'
 
@@ -21,22 +22,27 @@ export default function SunDataPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Breadcrumb */}
-        <p className="text-xs font-mono text-black/40 uppercase tracking-widest mb-2">
-          MXWLL / Data / Solar System / Sun
-        </p>
-
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
+          <Breadcrumb
+            items={[
+              { label: 'MXWLL', href: '/' },
+              { label: 'Data', href: '/data' },
+              { label: 'Solar System' },
+              { label: 'Sun' },
+            ]}
+            theme="light"
+            className="mb-2"
+          />
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
             The Sun
           </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl mb-4">
+          <p className="text-base md:text-lg text-black/60 max-w-2xl">
             Our star - a G-type main-sequence yellow dwarf
           </p>
           <Link
             href="/observe/solar-observatory"
-            className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-[#e6007e] transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-[#e6007e] transition-colors mt-3"
           >
             See it live →
           </Link>

@@ -14,6 +14,8 @@ const navItems = [
     matchPaths: ['/observe'],
     submenu: [
       { href: '/observe/vital-signs', label: 'Vital Signs' },
+      { href: '/observe/solar-observatory', label: 'Solar Observatory' },
+      { href: '/observe/wildlife', label: 'Wildlife Tracking' },
       { href: '/observe/dashboard', label: 'Dashboard' },
       { href: '/observe/moon', label: 'Lunar Atlas' },
     ]

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import dynamic from 'next/dynamic'
+import Breadcrumb from '@/components/ui/Breadcrumb'
 import { TrackedAnimal, AnimalCategory, RightNowEvent } from '@/lib/wildlife/types'
 import {
   demoAnimals,
@@ -78,17 +79,21 @@ export default function WildlifePage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Breadcrumb */}
-        <p className="text-xs font-mono text-black/40 uppercase tracking-widest mb-2">
-          MXWLL / Observe / Wildlife
-        </p>
-
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-2">
+        <div className="mb-6 md:mb-8">
+          <Breadcrumb
+            items={[
+              { label: 'MXWLL', href: '/' },
+              { label: 'Observe', href: '/observe' },
+              { label: 'Wildlife' },
+            ]}
+            theme="light"
+            className="mb-2"
+          />
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
             Where Are They Now?
           </h1>
-          <p className="text-base md:text-lg text-black/60">
+          <p className="text-base md:text-lg text-black/60 max-w-2xl">
             {demoAnimals.length} animals tracked right now
           </p>
         </div>

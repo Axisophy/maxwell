@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import Breadcrumb from '@/components/ui/Breadcrumb'
 import StatusBar from '@/components/observe/solar-observatory/StatusBar'
 import SDOViewer from '@/components/observe/solar-observatory/SDOViewer'
 import SOHOViewer from '@/components/observe/solar-observatory/SOHOViewer'
@@ -14,17 +15,21 @@ export default function SolarObservatoryPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Breadcrumb */}
-        <p className="text-xs font-mono text-white/40 uppercase tracking-widest mb-2">
-          MXWLL / Observe / Solar Observatory
-        </p>
-
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight mb-2">
+        <div className="mb-6 md:mb-8">
+          <Breadcrumb
+            items={[
+              { label: 'MXWLL', href: '/' },
+              { label: 'Observe', href: '/observe' },
+              { label: 'Solar Observatory' },
+            ]}
+            theme="dark"
+            className="mb-2"
+          />
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light mb-3">
             Solar Observatory
           </h1>
-          <p className="text-white/60 text-base md:text-lg">
+          <p className="text-base md:text-lg text-white/60 max-w-2xl">
             Live observation of our star
           </p>
         </div>
