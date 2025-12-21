@@ -38,8 +38,8 @@ export default function SDOViewer({
 
   return (
     <div className="bg-[#1a1a1e] rounded-xl overflow-hidden">
-      {/* Image container */}
-      <div className={`relative ${size === 'large' ? 'aspect-square md:aspect-[4/3]' : 'aspect-square'} bg-black`}>
+      {/* Image container - always square to match SDO imagery */}
+      <div className="relative aspect-square bg-black">
         {/* Loading state */}
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
