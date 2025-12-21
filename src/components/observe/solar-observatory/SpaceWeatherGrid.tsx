@@ -21,11 +21,12 @@ interface SpaceWeatherData {
   timestamp: string
 }
 
-function getKpColor(kp: number): string {
-  if (kp >= 7) return '#ef4444' // red-500
-  if (kp >= 5) return '#f59e0b' // amber-500
-  if (kp >= 4) return '#eab308' // yellow-500
-  return '#22c55e' // green-500
+function getXrayColor(xrayClass: string): string {
+  if (xrayClass.startsWith('X')) return '#ef4444'
+  if (xrayClass.startsWith('M')) return '#f97316'
+  if (xrayClass.startsWith('C')) return '#f59e0b'
+  if (xrayClass.startsWith('B')) return '#22c55e'
+  return '#22c55e'
 }
 
 function getSolarWindColor(speed: number): string {
@@ -34,10 +35,10 @@ function getSolarWindColor(speed: number): string {
   return '#22c55e'
 }
 
-function getXrayColor(xrayClass: string): string {
-  if (xrayClass.startsWith('X')) return '#ef4444'
-  if (xrayClass.startsWith('M')) return '#f59e0b'
-  if (xrayClass.startsWith('C')) return '#eab308'
+function getKpColor(kp: number): string {
+  if (kp >= 7) return '#ef4444'
+  if (kp >= 5) return '#f59e0b'
+  if (kp >= 4) return '#eab308'
   return '#22c55e'
 }
 
@@ -50,7 +51,15 @@ function getKpScale(kp: number): string {
   return 'G0'
 }
 
-export default function SpaceWeatherDashboard() {
+function getXrayLevel(xrayClass: string): string {
+  if (xrayClass.startsWith('X')) return 'Major flare'
+  if (xrayClass.startsWith('M')) return 'Medium flare'
+  if (xrayClass.startsWith('C')) return 'Small flare'
+  if (xrayClass.startsWith('B')) return 'Minor'
+  return 'Background'
+}
+
+export default function SpaceWeatherGrid() {
   const [data, setData] = useState<SpaceWeatherData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -73,25 +82,24 @@ export default function SpaceWeatherDashboard() {
 
   useEffect(() => {
     fetchData()
-    // Refresh every 5 minutes
     const interval = setInterval(fetchData, 5 * 60 * 1000)
     return () => clearInterval(interval)
   }, [])
 
   if (loading && !data) {
     return (
-      <div className="bg-white rounded-xl p-6">
+      <div className="bg-white/5 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-medium text-black/50 uppercase tracking-wider">
-            Space Weather Now
+          <h3 className="text-sm font-mono text-white/40 uppercase tracking-wider">
+            Space Weather Data
           </h3>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="animate-pulse">
-              <div className="h-4 bg-[#e5e5e5] rounded w-20 mb-2" />
-              <div className="h-8 bg-[#e5e5e5] rounded w-16 mb-1" />
-              <div className="h-3 bg-[#e5e5e5] rounded w-24" />
+              <div className="h-4 bg-white/10 rounded w-20 mb-2" />
+              <div className="h-8 bg-white/10 rounded w-16 mb-1" />
+              <div className="h-3 bg-white/10 rounded w-24" />
             </div>
           ))}
         </div>
@@ -101,48 +109,48 @@ export default function SpaceWeatherDashboard() {
 
   if (error && !data) {
     return (
-      <div className="bg-white rounded-xl p-6">
+      <div className="bg-white/5 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-medium text-black/50 uppercase tracking-wider">
-            Space Weather Now
+          <h3 className="text-sm font-mono text-white/40 uppercase tracking-wider">
+            Space Weather Data
           </h3>
           <button
             onClick={fetchData}
-            className="p-2 hover:bg-[#f5f5f5] rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
           >
-            <RefreshCw className="w-4 h-4 text-black/40" />
+            <RefreshCw className="w-4 h-4 text-white/40" />
           </button>
         </div>
-        <p className="text-black/50 text-sm">{error}</p>
+        <p className="text-white/50 text-sm">{error}</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-xl p-5 md:p-6">
+    <div className="bg-white/5 rounded-xl p-5 md:p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-medium text-black/50 uppercase tracking-wider">
-            Space Weather Now
+          <h3 className="text-sm font-mono text-white/40 uppercase tracking-wider">
+            Space Weather Data
           </h3>
-          <p className="text-xs text-black/30 mt-0.5">
-            Data from NOAA SWPC
+          <p className="text-xs text-white/20 mt-0.5">
+            NOAA SWPC
           </p>
         </div>
         <button
           onClick={fetchData}
           disabled={loading}
-          className="p-2 hover:bg-[#f5f5f5] rounded-lg transition-colors"
+          className="p-2 hover:bg-white/10 rounded-lg transition-colors"
           title="Refresh data"
         >
-          <RefreshCw className={`w-4 h-4 text-black/40 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-4 h-4 text-white/40 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         {/* X-ray Flux */}
         <div>
-          <p className="text-xs font-medium text-black/40 uppercase tracking-wider mb-1">
+          <p className="text-xs font-mono text-white/40 uppercase tracking-wider mb-1">
             X-ray Flux
           </p>
           <div className="flex items-baseline gap-2">
@@ -153,20 +161,14 @@ export default function SpaceWeatherDashboard() {
               {data?.xray.class || 'A'}
             </span>
           </div>
-          <p className="text-xs text-black/50 mt-1">
-            {data?.xray.class?.startsWith('X')
-              ? 'Major flare'
-              : data?.xray.class?.startsWith('M')
-              ? 'Medium flare'
-              : data?.xray.class?.startsWith('C')
-              ? 'Small flare'
-              : 'Quiet'}
+          <p className="text-xs text-white/40 mt-1">
+            {getXrayLevel(data?.xray.class || 'A')}
           </p>
         </div>
 
         {/* Solar Wind Speed */}
         <div>
-          <p className="text-xs font-medium text-black/40 uppercase tracking-wider mb-1">
+          <p className="text-xs font-mono text-white/40 uppercase tracking-wider mb-1">
             Solar Wind
           </p>
           <div className="flex items-baseline gap-1">
@@ -176,9 +178,9 @@ export default function SpaceWeatherDashboard() {
             >
               {data?.solarWind.speed || 0}
             </span>
-            <span className="text-xs text-black/40">km/s</span>
+            <span className="text-xs text-white/30">km/s</span>
           </div>
-          <p className="text-xs text-black/50 mt-1">
+          <p className="text-xs text-white/40 mt-1">
             {(data?.solarWind.speed || 0) >= 700
               ? 'High'
               : (data?.solarWind.speed || 0) >= 500
@@ -189,7 +191,7 @@ export default function SpaceWeatherDashboard() {
 
         {/* Kp Index */}
         <div>
-          <p className="text-xs font-medium text-black/40 uppercase tracking-wider mb-1">
+          <p className="text-xs font-mono text-white/40 uppercase tracking-wider mb-1">
             Kp Index
           </p>
           <div className="flex items-baseline gap-2">
@@ -199,27 +201,27 @@ export default function SpaceWeatherDashboard() {
             >
               {data?.kp.current || 0}
             </span>
-            <span className="text-sm font-mono text-black/40">
+            <span className="text-sm font-mono text-white/30">
               {getKpScale(data?.kp.current || 0)}
             </span>
           </div>
-          <p className="text-xs text-black/50 mt-1">
+          <p className="text-xs text-white/40 mt-1">
             {data?.kp.status || 'Quiet'}
           </p>
         </div>
 
         {/* Plasma Density */}
         <div>
-          <p className="text-xs font-medium text-black/40 uppercase tracking-wider mb-1">
+          <p className="text-xs font-mono text-white/40 uppercase tracking-wider mb-1">
             Plasma Density
           </p>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl md:text-3xl font-mono font-medium text-black">
+            <span className="text-2xl md:text-3xl font-mono font-medium text-white">
               {data?.solarWind.density?.toFixed(1) || '0'}
             </span>
-            <span className="text-xs text-black/40">p/cm³</span>
+            <span className="text-xs text-white/30">p/cm³</span>
           </div>
-          <p className="text-xs text-black/50 mt-1">
+          <p className="text-xs text-white/40 mt-1">
             Particles per cm³
           </p>
         </div>
@@ -227,8 +229,8 @@ export default function SpaceWeatherDashboard() {
 
       {/* Kp Sparkline */}
       {data?.kp.recent && data.kp.recent.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-[#e5e5e5]">
-          <p className="text-xs text-black/40 mb-2">24-hour Kp trend</p>
+        <div className="mt-4 pt-4 border-t border-white/10">
+          <p className="text-xs text-white/30 mb-2">24-hour Kp trend</p>
           <div className="flex items-end gap-0.5 h-8">
             {data.kp.recent.map((kp, i) => (
               <div
@@ -247,11 +249,11 @@ export default function SpaceWeatherDashboard() {
 
       {/* Alerts */}
       {data?.alerts && data.alerts.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-[#e5e5e5]">
-          <p className="text-xs text-black/40 mb-2">Active Alerts</p>
+        <div className="mt-4 pt-4 border-t border-white/10">
+          <p className="text-xs text-white/30 mb-2">Active Alerts</p>
           <div className="space-y-1">
             {data.alerts.map((alert, i) => (
-              <p key={i} className="text-xs text-black/70">
+              <p key={i} className="text-xs text-white/60">
                 {alert}
               </p>
             ))}
