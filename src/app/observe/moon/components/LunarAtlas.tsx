@@ -119,22 +119,22 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
 
     const map = L.map(mapRef.current, {
       crs: L.CRS.Simple,
-      center: [128, 128], // Center of the 256x256 tile
-      zoom: 1,
       minZoom: 0,
       maxZoom: 6,
       attributionControl: false,
       zoomControl: true,
     });
 
-    // Calculate proper bounds for CRS.Simple
+    // Calculate proper bounds for CRS.Simple using unproject
     // At zoom 0, the tile is 256x256 pixels
-    const southWest = L.latLng(0, 0);      // Top-left in image space
-    const northEast = L.latLng(256, 256);  // Bottom-right in image space
+    // unproject converts pixel coordinates to LatLng in CRS.Simple space
+    const southWest = map.unproject([0, 256], 0);
+    const northEast = map.unproject([256, 0], 0);
     const bounds = L.latLngBounds(southWest, northEast);
 
-    map.setMaxBounds(bounds.pad(0.05)); // Small padding to prevent edge issues
+    map.setMaxBounds(bounds.pad(0.1));
     map.fitBounds(bounds);
+    map.setView(bounds.getCenter(), 1);
 
     // ========================================================================
     // Tile Layer
@@ -145,7 +145,6 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
         minZoom: 0,
         maxZoom: 6,
         noWrap: true,
-        bounds: bounds,
         errorTileUrl: '', // Suppress error tile display
       }
     );
