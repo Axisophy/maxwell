@@ -1,118 +1,120 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 
-// NASA SDO wavelength options
+// ===========================================
+// SOLAR LIVE WIDGET
+// ===========================================
+// Shows live imagery from NASA Solar Dynamics Observatory
+// Data: NASA SDO (direct image URLs - CORS allowed)
+// Design: Square format showing full solar disk
+// ===========================================
+
 const WAVELENGTHS = {
-  '0193': { label: 'AIA 193Å', description: 'Corona (1.2M K)' },
-  '0171': { label: 'AIA 171Å', description: 'Corona (600K K)' },
-  '0304': { label: 'AIA 304Å', description: 'Chromosphere (50K K)' },
-  '0131': { label: 'AIA 131Å', description: 'Flare plasma (10M K)' },
-  'HMIIC': { label: 'HMI', description: 'Visible surface' },
+  '0193': { label: 'AIA 193Å', description: 'Corona at 1.2 million K' },
+  '0171': { label: 'AIA 171Å', description: 'Corona at 600,000 K' },
+  '0304': { label: 'AIA 304Å', description: 'Chromosphere at 50,000 K' },
+  '0131': { label: 'AIA 131Å', description: 'Flare plasma at 10 million K' },
+  'HMIIC': { label: 'HMI', description: 'Visible light surface' },
 } as const
 
 type WavelengthKey = keyof typeof WAVELENGTHS
 
 interface SolarLiveProps {
   defaultWavelength?: WavelengthKey
-  size?: number
+  size?: 512 | 1024 | 2048
 }
 
 export default function SolarLive({ 
   defaultWavelength = '0193',
-  size = 512 
+  size = 1024 
 }: SolarLiveProps) {
   const [wavelength, setWavelength] = useState<WavelengthKey>(defaultWavelength)
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
+  const [isLoading, setIsLoading] = useState(true)
   const [imageKey, setImageKey] = useState(0)
 
+  // NASA SDO direct URL - images update every ~15 minutes
   const imageUrl = `https://sdo.gsfc.nasa.gov/assets/img/latest/latest_${size}_${wavelength}.jpg`
 
+  // Auto-refresh every 5 minutes
   useEffect(() => {
     const interval = setInterval(() => {
       setImageKey(prev => prev + 1)
-      setLastUpdate(new Date())
+      setIsLoading(true)
     }, 5 * 60 * 1000)
     return () => clearInterval(interval)
   }, [])
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-  }
-
   return (
-    <div className="w-full">
-      {/* Image container - circular viewport */}
-      <div className="relative w-full" style={{ paddingBottom: '100%' }}>
-        <div className="absolute inset-0 bg-black rounded-lg overflow-hidden">
-          {/* Outer ring - telescope eyepiece effect */}
-          <div className="absolute inset-0 flex items-center justify-center p-[4%]">
-            <div className="relative w-full h-full">
-              <div className="absolute inset-0 rounded-full border-2 border-neutral-700 shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
-              
-              {/* Inner vignette overlay */}
-              <div 
-                className="absolute inset-0 rounded-full pointer-events-none z-10"
-                style={{
-                  background: 'radial-gradient(circle, transparent 50%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0.9) 100%)'
-                }}
-              />
-
-              {/* Sun image */}
-              <div className="absolute inset-[3%] rounded-full overflow-hidden bg-black">
-                <Image
-                  key={imageKey}
-                  src={imageUrl}
-                  alt={`Sun in ${WAVELENGTHS[wavelength].label}`}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                  priority
-                />
-              </div>
-
-              {/* Subtle crosshairs */}
-              <div className="absolute inset-0 pointer-events-none z-20">
-                <div className="absolute top-1/2 left-[5%] right-[5%] h-px bg-white/10" />
-                <div className="absolute left-1/2 top-[5%] bottom-[5%] w-px bg-white/10" />
-              </div>
-            </div>
+    <div className="p-[1em]">
+      {/* Image container - square format, full solar disk visible */}
+      <div className="relative aspect-square bg-black rounded-[0.5em] overflow-hidden">
+        {/* Loading state */}
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="text-white/50 text-[0.875em] font-mono">Loading...</div>
           </div>
+        )}
+
+        {/* Solar image - object-contain ensures full disk is visible */}
+        <img
+          key={imageKey}
+          src={`${imageUrl}?t=${imageKey}`}
+          alt={`Sun at ${WAVELENGTHS[wavelength].label}`}
+          className={`w-full h-full object-contain transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+          onLoad={() => setIsLoading(false)}
+          onError={() => setIsLoading(false)}
+        />
+
+        {/* Wavelength indicator overlay */}
+        <div className="absolute bottom-[0.5em] left-[0.5em] bg-black/70 backdrop-blur-sm rounded-[0.25em] px-[0.5em] py-[0.25em]">
+          <span className="text-[0.6875em] font-mono text-white/80">{WAVELENGTHS[wavelength].label}</span>
+        </div>
+
+        {/* Live indicator */}
+        <div className="absolute top-[0.5em] right-[0.5em] flex items-center gap-[0.375em] bg-black/70 backdrop-blur-sm rounded-[0.25em] px-[0.5em] py-[0.25em]">
+          <span className="relative flex h-[0.5em] w-[0.5em]">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-full w-full bg-green-500"></span>
+          </span>
+          <span className="text-[0.5625em] font-mono text-white/60">LIVE</span>
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="mt-4">
-        {/* Wavelength selector - segmented control style */}
-        <div 
-          className="flex p-1 rounded-lg"
-          style={{ backgroundColor: '#e5e5e5' }}
-        >
-          {Object.entries(WAVELENGTHS).map(([key, { label }]) => (
+      {/* Wavelength selector */}
+      <div className="mt-[0.75em]">
+        <div className="flex bg-[#e5e5e5] rounded-[0.5em] p-[0.25em]">
+          {(Object.keys(WAVELENGTHS) as WavelengthKey[]).map((key) => (
             <button
               key={key}
-              onClick={() => setWavelength(key as WavelengthKey)}
-              className="flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors"
-              style={{
-                backgroundColor: wavelength === key ? '#ffffff' : 'transparent',
-                color: wavelength === key ? '#000000' : 'rgba(0,0,0,0.5)',
-              }}
+              onClick={() => { setWavelength(key); setIsLoading(true) }}
+              className={`
+                flex-1 px-[0.5em] py-[0.375em] text-[0.6875em] font-medium rounded-[0.375em] transition-colors
+                ${wavelength === key 
+                  ? 'bg-white text-black shadow-sm' 
+                  : 'text-black/50 hover:text-black'
+                }
+              `}
             >
-              {label}
+              {WAVELENGTHS[key].label}
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Timestamp and source */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#e5e5e5]">
-          <span className="text-xs text-text-muted">
-            {WAVELENGTHS[wavelength].description}
-          </span>
-          <span className="text-xs font-mono text-text-muted">
-            {formatTime(lastUpdate)}
-          </span>
-        </div>
+      {/* Description */}
+      <div className="mt-[0.5em] text-center">
+        <p className="text-[0.6875em] text-black/50">
+          {WAVELENGTHS[wavelength].description}
+        </p>
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-[#e5e5e5] my-[0.75em]" />
+
+      {/* Info text */}
+      <div className="text-[0.6875em] text-black/40 text-center">
+        Images update every ~15 minutes from NASA SDO
       </div>
     </div>
   )
