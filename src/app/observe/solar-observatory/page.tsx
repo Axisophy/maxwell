@@ -57,7 +57,7 @@ export default function SolarObservatoryPage() {
         <footer className="pt-8 border-t border-white/10">
           <div className="flex flex-wrap gap-6">
             <Link
-              href="/data/sun"
+              href="/data/solar-system/sun"
               className="text-white/60 hover:text-white transition-colors text-sm"
             >
               Learn more about the Sun →

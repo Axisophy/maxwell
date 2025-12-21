@@ -23,7 +23,7 @@ export default function SunDataPage() {
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
         {/* Breadcrumb */}
         <p className="text-xs font-mono text-black/40 uppercase tracking-widest mb-2">
-          MXWLL / Data / Sun
+          MXWLL / Data / Solar System / Sun
         </p>
 
         {/* Header */}
