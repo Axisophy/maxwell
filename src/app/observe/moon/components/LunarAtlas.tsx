@@ -43,6 +43,7 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
       {
         minZoom: 1,
         maxZoom: 7,
+        noWrap: true,
         attribution: 'OpenPlanetary',
       }
     );

@@ -80,7 +80,7 @@ export default function MoonPage() {
 
         {/* Map Container */}
         <div className="relative mb-6">
-          <div className="h-[50vh] min-h-[400px] max-h-[600px] rounded-xl overflow-hidden">
+          <div className="aspect-[4/3] max-h-[700px] rounded-xl overflow-hidden">
             <LunarAtlas
               layerGroups={layerGroups}
               onFeatureClick={handleFeatureClick}
