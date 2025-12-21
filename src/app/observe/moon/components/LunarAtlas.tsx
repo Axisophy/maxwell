@@ -27,26 +27,23 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
     if (!mapRef.current || mapInstanceRef.current) return;
 
     const map = L.map(mapRef.current, {
-      crs: L.CRS.EPSG4326,
       center: [0, 0],
-      zoom: 1,
-      minZoom: 0,
-      maxZoom: 6,
-      maxBounds: [[-90, -180], [90, 180]],
-      maxBoundsViscosity: 1.0,
+      zoom: 2,
+      minZoom: 1,
+      maxZoom: 7,
       attributionControl: false,
       zoomControl: true,
     });
 
     // ========================================================================
-    // Tile Layer - Using USGS Astrogeology WMS (proper lunar projection)
+    // Tile Layer - OpenPlanetary Moon basemap (standard Web Mercator XYZ)
     // ========================================================================
-    const tileLayer = L.tileLayer.wms(
-      'https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/earth/moon_simp_cyl.map',
+    const tileLayer = L.tileLayer(
+      'https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/{z}/{x}/{y}.png',
       {
-        layers: 'LROC_WAC_GLOBAL',
-        format: 'image/png',
-        transparent: false,
+        minZoom: 1,
+        maxZoom: 7,
+        attribution: 'OpenPlanetary',
       }
     );
 
