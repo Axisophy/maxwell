@@ -6,6 +6,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'sdo.gsfc.nasa.gov',
       },
+      {
+        protocol: 'https',
+        hostname: 'images-assets.nasa.gov',
+      },
+      {
+        protocol: 'https',
+        hostname: 'soho.nascom.nasa.gov',
+      },
     ],
   },
 }
