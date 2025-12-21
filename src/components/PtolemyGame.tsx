@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { GameState, Question, LocalPtolemyData, TIER_NAMES, TIER_TIMES, STREAK_MILESTONES } from '@/lib/ptolemy/types';
 import { getRandomQuestions, shuffleAnswers } from '@/lib/ptolemy/questions';
@@ -66,11 +66,30 @@ export default function PtolemyGame() {
   const [characterMood, setCharacterMood] = useState<CharacterMood>('happy');
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // Track asked questions to prevent repetition
+  const [askedQuestionIds, setAskedQuestionIds] = useState<Set<string>>(new Set());
+
+  // Track selected answer and whether to show correct answer (for wrong answer feedback)
+  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+  const [isProcessingAnswer, setIsProcessingAnswer] = useState(false);
+
   // Load local data on mount
   useEffect(() => {
     const data = loadLocalData();
     setLocalData(data);
   }, []);
+
+  // Clear selected answer and focus when question changes
+  useEffect(() => {
+    setSelectedAnswerIndex(null);
+    setShowCorrectAnswer(false);
+    setIsProcessingAnswer(false);
+    // Clear any stuck focus/hover states
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  }, [gameState.currentQuestionIndex, gameState.currentQuestion?.id]);
 
   // Timer effect
   useEffect(() => {
@@ -144,16 +163,23 @@ export default function PtolemyGame() {
 
   // Start game
   const startGame = useCallback((tier: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => {
+    // Reset asked questions for new game
+    const newAskedIds = new Set<string>();
+
     const questions = getRandomQuestions(tier, 20);
     const firstQuestion = questions[0];
-    
+
+    // Track all questions we're about to use
+    questions.forEach(q => newAskedIds.add(q.id));
+    setAskedQuestionIds(newAskedIds);
+
     setCharacterMood('excited');
     setIsAnimating(true);
     setTimeout(() => {
       setIsAnimating(false);
       setCharacterMood('thinking');
     }, 800);
-    
+
     setGameState({
       ...initialGameState,
       mode: 'playing',
@@ -167,10 +193,14 @@ export default function PtolemyGame() {
 
   // Select answer
   const selectAnswer = useCallback((answerIndex: number) => {
-    if (!gameState.currentQuestion) return;
+    if (!gameState.currentQuestion || isProcessingAnswer) return;
+
+    // Prevent double-clicks
+    setIsProcessingAnswer(true);
+    setSelectedAnswerIndex(answerIndex);
 
     const isCorrect = answerIndex === gameState.currentQuestion.correctIndex;
-    
+
     setLocalData(prev => {
       const updated = {
         ...prev,
@@ -188,73 +218,97 @@ export default function PtolemyGame() {
       const basePoints = gameState.tier * 10;
       const streakBonus = Math.floor(newStreak / 5) * 5;
       const pointsEarned = basePoints + streakBonus;
-      
+
       // Check for milestone
       const milestone = STREAK_MILESTONES.find(m => m.streak === newStreak);
       const earnedHeart = milestone && gameState.hearts < 3;
-      
+
       // Set excited mood
       setCharacterMood('excited');
       setIsAnimating(true);
+
+      // Short delay to show correct highlight, then move to next question
       setTimeout(() => {
         setIsAnimating(false);
         setCharacterMood('thinking');
+
+        // Move to next question
+        const nextIndex = gameState.currentQuestionIndex + 1;
+
+        if (nextIndex >= gameState.questionsThisGame.length) {
+          // No more questions - get more, excluding already asked ones
+          const excludeIds = Array.from(askedQuestionIds);
+          let moreQuestions = getRandomQuestions(gameState.tier, 20, excludeIds);
+
+          // If we've exhausted the pool, reset
+          if (moreQuestions.length === 0) {
+            setAskedQuestionIds(new Set());
+            moreQuestions = getRandomQuestions(gameState.tier, 20);
+          }
+
+          // Track new questions
+          moreQuestions.forEach(q => askedQuestionIds.add(q.id));
+          setAskedQuestionIds(new Set(askedQuestionIds));
+
+          const nextQuestion = moreQuestions[0];
+
+          setGameState(prev => ({
+            ...prev,
+            streak: newStreak,
+            points: prev.points + pointsEarned,
+            hearts: earnedHeart ? Math.min(3, prev.hearts + 1) : prev.hearts,
+            questionsThisGame: moreQuestions,
+            currentQuestion: shuffleAnswers(nextQuestion),
+            currentQuestionIndex: 0,
+            timeRemaining: TIER_TIMES[prev.tier],
+            lastAnswerCorrect: true,
+            showingMilestone: !!milestone,
+            milestoneMessage: milestone?.message || '',
+          }));
+        } else {
+          const nextQuestion = gameState.questionsThisGame[nextIndex];
+
+          setGameState(prev => ({
+            ...prev,
+            streak: newStreak,
+            points: prev.points + pointsEarned,
+            hearts: earnedHeart ? Math.min(3, prev.hearts + 1) : prev.hearts,
+            currentQuestion: shuffleAnswers(nextQuestion),
+            currentQuestionIndex: nextIndex,
+            timeRemaining: TIER_TIMES[prev.tier],
+            lastAnswerCorrect: true,
+            showingMilestone: !!milestone,
+            milestoneMessage: milestone?.message || '',
+          }));
+        }
+
+        // Clear milestone message after delay
+        if (milestone) {
+          setTimeout(() => {
+            setGameState(prev => ({ ...prev, showingMilestone: false }));
+          }, 2000);
+        }
       }, 600);
-
-      // Move to next question
-      const nextIndex = gameState.currentQuestionIndex + 1;
-      
-      if (nextIndex >= gameState.questionsThisGame.length) {
-        // No more questions - get more
-        const moreQuestions = getRandomQuestions(gameState.tier, 20);
-        const nextQuestion = moreQuestions[0];
-        
-        setGameState(prev => ({
-          ...prev,
-          streak: newStreak,
-          points: prev.points + pointsEarned,
-          hearts: earnedHeart ? Math.min(3, prev.hearts + 1) : prev.hearts,
-          questionsThisGame: moreQuestions,
-          currentQuestion: shuffleAnswers(nextQuestion),
-          currentQuestionIndex: 0,
-          timeRemaining: TIER_TIMES[prev.tier],
-          lastAnswerCorrect: true,
-          showingMilestone: !!milestone,
-          milestoneMessage: milestone?.message || '',
-        }));
-      } else {
-        const nextQuestion = gameState.questionsThisGame[nextIndex];
-        
-        setGameState(prev => ({
-          ...prev,
-          streak: newStreak,
-          points: prev.points + pointsEarned,
-          hearts: earnedHeart ? Math.min(3, prev.hearts + 1) : prev.hearts,
-          currentQuestion: shuffleAnswers(nextQuestion),
-          currentQuestionIndex: nextIndex,
-          timeRemaining: TIER_TIMES[prev.tier],
-          lastAnswerCorrect: true,
-          showingMilestone: !!milestone,
-          milestoneMessage: milestone?.message || '',
-        }));
-      }
-
-      // Clear milestone message after delay
-      if (milestone) {
-        setTimeout(() => {
-          setGameState(prev => ({ ...prev, showingMilestone: false }));
-        }, 2000);
-      }
     } else {
-      // Wrong answer
-      setGameState(prev => handleWrongAnswer(prev));
-    }
+      // WRONG ANSWER - Show clear feedback
+      setShowCorrectAnswer(true);
+      setCharacterMood('sad');
+      setIsAnimating(true);
 
-    // Clear heart loss animation
-    setTimeout(() => {
-      setGameState(prev => ({ ...prev, showingHeartLoss: false }));
-    }, 800);
-  }, [gameState, handleWrongAnswer]);
+      // Longer delay to show the correct answer
+      setTimeout(() => {
+        setIsAnimating(false);
+        setShowCorrectAnswer(false);
+        setCharacterMood('thinking');
+        setGameState(prev => handleWrongAnswer(prev));
+
+        // Clear heart loss animation
+        setTimeout(() => {
+          setGameState(prev => ({ ...prev, showingHeartLoss: false }));
+        }, 800);
+      }, 1500);
+    }
+  }, [gameState, handleWrongAnswer, isProcessingAnswer, askedQuestionIds]);
 
   // Get timer bar color based on time remaining
   const getTimerColor = () => {
@@ -287,28 +341,35 @@ export default function PtolemyGame() {
       {/* Menu Screen */}
       {gameState.mode === 'menu' && (
         <div className="w-full max-w-md text-center">
-          {/* Character */}
-          <div className="mb-6">
-            <div className="w-32 h-32 mx-auto relative">
+          {/* Title - Strelka Ultra - ABOVE character */}
+          <h1
+            className="text-5xl md:text-7xl mb-8 text-amber-900"
+            style={{
+              fontFamily: '"strelka", sans-serif',
+              fontWeight: 800,
+              textShadow: '2px 2px 0 #fbbf24'
+            }}
+          >
+            PTOLEMY
+          </h1>
+
+          {/* Character - BELOW title with clear spacing */}
+          <div className="flex justify-center mb-6">
+            <div
+              className="relative transition-all duration-300"
+              style={getCharacterStyle()}
+            >
               <Image
                 src="/images/ptolemy-character.png"
                 alt="Ptolemy"
                 width={128}
                 height={128}
-                className="rounded-full"
-                style={getCharacterStyle()}
+                className="drop-shadow-lg"
                 priority
               />
             </div>
           </div>
 
-          {/* Title - Strelka Ultra */}
-          <h1 
-            className="text-5xl mb-2 text-amber-900"
-            style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
-          >
-            PTOLEMY
-          </h1>
           <p className="text-amber-700/70 mb-8">The Science Quiz</p>
 
           {/* Tier Selection */}
@@ -489,15 +550,54 @@ export default function PtolemyGame() {
 
           {/* Answer Buttons */}
           <div className="grid grid-cols-1 gap-3">
-            {gameState.currentQuestion.answers.map((answer, index) => (
-              <button
-                key={index}
-                onClick={() => selectAnswer(index)}
-                className="w-full p-4 bg-white/90 border-2 border-amber-200 rounded-xl text-left hover:border-orange-400 hover:bg-orange-50 active:scale-[0.98] transition-all"
-              >
-                <span className="font-medium text-amber-800">{answer}</span>
-              </button>
-            ))}
+            {gameState.currentQuestion.answers.map((answer, index) => {
+              const isCorrectAnswer = index === gameState.currentQuestion!.correctIndex;
+              const isSelectedAnswer = selectedAnswerIndex === index;
+              const showAsCorrect = showCorrectAnswer && isCorrectAnswer;
+              const showAsWrong = showCorrectAnswer && isSelectedAnswer && !isCorrectAnswer;
+
+              return (
+                <button
+                  key={`${gameState.currentQuestion!.id}-${index}`}
+                  onClick={() => selectAnswer(index)}
+                  disabled={isProcessingAnswer}
+                  onTouchEnd={(e) => {
+                    // Blur on touch end to clear stuck hover states
+                    e.currentTarget.blur();
+                  }}
+                  className={`
+                    ptolemy-answer-btn
+                    w-full p-4 border-2 rounded-xl text-left transition-all duration-200
+                    disabled:cursor-not-allowed
+                    focus:outline-none focus:ring-2 focus:ring-amber-400
+                    ${showAsCorrect
+                      ? 'bg-emerald-100 border-emerald-500'
+                      : showAsWrong
+                        ? 'bg-red-100 border-red-500'
+                        : 'bg-white/90 border-amber-200'
+                    }
+                  `}
+                >
+                  <span
+                    className={`font-medium ${
+                      showAsCorrect
+                        ? 'text-emerald-800'
+                        : showAsWrong
+                          ? 'text-red-800'
+                          : 'text-amber-800'
+                    }`}
+                  >
+                    {answer}
+                  </span>
+                  {showAsCorrect && (
+                    <span className="ml-2 text-emerald-600">✓</span>
+                  )}
+                  {showAsWrong && (
+                    <span className="ml-2 text-red-600">✗</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Points */}

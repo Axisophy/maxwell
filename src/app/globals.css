@@ -112,3 +112,21 @@ body {
 .active\:scale-98:active {
   transform: scale(0.98);
 }
+
+/* Ptolemy answer button hover states - only on devices that support hover */
+@media (hover: hover) {
+  .ptolemy-answer-btn:hover:not(:disabled) {
+    border-color: #f59e0b;
+    background-color: #fffbeb;
+    transform: scale(1.02);
+  }
+}
+
+/* For touch devices, use active state instead */
+@media (hover: none) {
+  .ptolemy-answer-btn:active:not(:disabled) {
+    border-color: #f59e0b;
+    background-color: #fffbeb;
+    transform: scale(0.98);
+  }
+}

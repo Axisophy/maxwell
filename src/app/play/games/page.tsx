@@ -27,30 +27,68 @@ export default function GamesPage() {
         {/* Widget grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 
-          {/* Ptolemy - Science Quiz */}
+          {/* Ptolemy - Science Quiz - Special styling to match game */}
           <WidgetFrame
             title="Ptolemy"
-            description="A science quiz game that takes you from curious child to world expert. Five difficulty tiers spanning 13 categories of scientific knowledge. Answer quickly, build streaks, and climb the ranks from Ptolemy to Planck."
+            description="A science quiz game that takes you from curious child to world expert. Ten difficulty tiers spanning scientific knowledge. Answer quickly, build streaks, and climb to mastery."
             source="MXWLL Original"
             status="ok"
           >
             <Link
               href="/play/games/ptolemy"
-              className="aspect-square flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100 p-8 group hover:from-amber-100 hover:to-orange-200 transition-colors"
+              className="aspect-square flex flex-col items-center justify-center p-8 group transition-all hover:scale-[1.01]"
+              style={{
+                background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%)',
+              }}
             >
-              <div className="text-6xl mb-4">🦉</div>
-              <h3 className="text-xl font-medium text-black mb-2 group-hover:underline">
-                Ptolemy
+              {/* Title in Strelka Ultra */}
+              <h3
+                className="text-3xl md:text-4xl mb-2 text-center"
+                style={{
+                  fontFamily: '"strelka", sans-serif',
+                  fontWeight: 800,
+                  color: '#78350f',
+                  textShadow: '1px 1px 0 #fbbf24'
+                }}
+              >
+                PTOLEMY
               </h3>
-              <p className="text-sm text-black/60 text-center mb-4">
+
+              {/* Subtitle */}
+              <p
+                className="text-sm mb-4"
+                style={{
+                  fontFamily: '"strelka", sans-serif',
+                  fontWeight: 800,
+                  color: '#92400e'
+                }}
+              >
                 The Science Quiz
               </p>
-              <div className="flex flex-wrap justify-center gap-2 text-xs">
-                <span className="bg-white/60 px-2 py-1 rounded">5 tiers</span>
-                <span className="bg-white/60 px-2 py-1 rounded">13 categories</span>
-                <span className="bg-white/60 px-2 py-1 rounded">1000+ questions</span>
+
+              {/* Description */}
+              <p className="text-amber-800 text-sm text-center mb-4 max-w-xs">
+                Test your knowledge of the cosmos, life, and everything in between.
+              </p>
+
+              {/* Stats in Input Mono */}
+              <div
+                className="flex flex-wrap justify-center gap-3 text-xs mb-6"
+                style={{ fontFamily: '"Input Mono", monospace' }}
+              >
+                <span className="bg-white/60 px-2 py-1 rounded text-amber-700">250 questions</span>
+                <span className="bg-white/60 px-2 py-1 rounded text-amber-700">10 tiers</span>
+                <span className="bg-white/60 px-2 py-1 rounded text-amber-700">∞ replayable</span>
               </div>
-              <p className="mt-6 text-sm font-medium text-black/70">
+
+              <p
+                className="text-sm font-medium group-hover:underline"
+                style={{
+                  fontFamily: '"strelka", sans-serif',
+                  fontWeight: 800,
+                  color: '#78350f'
+                }}
+              >
                 Play now →
               </p>
             </Link>
