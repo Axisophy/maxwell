@@ -39,14 +39,13 @@ const navItems = [
     label: 'Data',
     icon: Database,
     matchPaths: ['/data'],
-    // 6 CATEGORY STRUCTURE
     submenu: [
-      { href: '/data#cosmos', label: 'The Cosmos' },
-      { href: '/data#matter', label: 'Matter' },
-      { href: '/data#life', label: 'Life' },
-      { href: '/data#earth', label: 'Earth' },
-      { href: '/data#mathematics', label: 'Mathematics' },
-      { href: '/data#deep-sky', label: 'Deep Sky' },
+      { href: '/data/solar-system', label: 'Solar System' },
+      { href: '/data/unrest', label: 'Unrest' },
+      { href: '/data/climate', label: 'Climate' },
+      { href: '/data/nuclides', label: 'Nuclides' },
+      { href: '/data/spectrum', label: 'Spectrum' },
+      { href: '/data/constants', label: 'Constants' },
     ]
   },
   {

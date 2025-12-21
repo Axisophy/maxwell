@@ -41,14 +41,14 @@ const toolsSubmenu = [
   { href: '#', label: 'Explore', active: false },
 ]
 
-// Data submenu - 6 CATEGORY STRUCTURE
+// Data submenu
 const dataSubmenu = [
-  { href: '/data#cosmos', label: 'The Cosmos', active: true },
-  { href: '/data#matter', label: 'Matter', active: true },
-  { href: '/data#life', label: 'Life', active: true },
-  { href: '/data#earth', label: 'Earth', active: true },
-  { href: '/data#mathematics', label: 'Mathematics', active: true },
-  { href: '/data#deep-sky', label: 'Deep Sky', active: true },
+  { href: '/data/solar-system', label: 'Solar System', active: true },
+  { href: '/data/elements', label: 'Elements', active: false },
+  { href: '/data/unrest', label: 'Unrest', active: true },
+  { href: '/data/climate', label: 'Climate', active: true },
+  { href: '/data/nuclides', label: 'Nuclides', active: true },
+  { href: '/data/spectrum', label: 'Spectrum', active: true },
 ]
 
 const vaultSubmenu = [

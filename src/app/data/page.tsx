@@ -34,12 +34,12 @@ const categories: Category[] = [
     title: 'The Cosmos',
     description: 'The universe at every scale - from fundamental constants to the solar system.',
     items: [
+      { title: 'Solar System', href: '/data/solar-system', status: 'ready', description: 'The Sun, eight planets, and everything in between' },
       { title: 'Scale of the Universe', href: '/data/scale', status: 'coming-soon', description: 'Powers of 10, from quarks to cosmos' },
       { title: 'Fundamental Constants', href: '/data/constants', status: 'ready', description: 'The numbers the universe is built on' },
       { title: 'EM Spectrum', href: '/data/spectrum', status: 'ready', description: 'Radio waves to gamma rays' },
       { title: 'Permissible Universe', href: '/data/permissible-universe', status: 'ready', description: 'Mass-radius diagram of everything' },
       { title: 'Standard Model', href: '/data/particles', status: 'ready', description: 'The particles of matter' },
-      { title: 'The Sun', href: '/data/solar-system/sun', status: 'ready', description: 'Our star - live SDO imagery and data' },
     ],
   },
   {
