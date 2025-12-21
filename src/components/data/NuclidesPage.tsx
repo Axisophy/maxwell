@@ -33,8 +33,10 @@ export default function NuclidesPage() {
       </div>
 
       {/* The chart - explicit height for canvas rendering */}
-      <div className="h-[500px] md:h-[600px] lg:h-[700px]" style={{ maxHeight: '800px' }}>
-        <NuclideChart className="h-full" />
+      <div className="px-4 md:px-8 lg:px-12 py-6 md:py-8">
+        <div className="h-[500px] md:h-[600px] lg:h-[700px] bg-white rounded-xl border border-black/10 overflow-hidden">
+          <NuclideChart className="h-full" />
+        </div>
       </div>
 
       {/* Educational footer */}
