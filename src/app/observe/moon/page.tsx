@@ -87,13 +87,6 @@ export default function MoonPage() {
             />
           </div>
 
-          {/* Layer controls - positioned inside map area */}
-          <LayerControls
-            groups={layerGroups}
-            onToggleLayer={handleToggleLayer}
-            onToggleGroup={handleToggleGroup}
-          />
-
           {/* Info panel - positioned inside map area */}
           <InfoPanel
             feature={selectedFeature}
@@ -102,7 +95,13 @@ export default function MoonPage() {
         </div>
 
         {/* Info sections */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Layer controls */}
+          <LayerControls
+            groups={layerGroups}
+            onToggleLayer={handleToggleLayer}
+            onToggleGroup={handleToggleGroup}
+          />
           {/* Apollo Missions */}
           <div className="bg-white rounded-xl p-5">
             <h3 className="text-sm font-medium text-black/50 uppercase tracking-wider mb-3">
