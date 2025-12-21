@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 
 // Hero images from NASA archives (public domain)
 const heroImages = [
@@ -51,14 +50,12 @@ export default function SunHero() {
             <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
           </div>
         )}
-        <Image
+        <img
           src={currentImage.url}
           alt={currentImage.title}
-          fill
-          className="object-cover transition-opacity duration-1000"
-          priority
+          className="w-full h-full object-cover transition-opacity duration-1000"
           onLoad={() => setIsLoading(false)}
-          unoptimized
+          style={{ opacity: isLoading ? 0 : 1 }}
         />
       </div>
 
