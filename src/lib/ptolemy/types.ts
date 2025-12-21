@@ -3,7 +3,7 @@
 export interface Question {
   id: string;
   tier: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  category: 'biology' | 'physics' | 'chemistry' | 'maths' | 'earth' | 'space' | 'computing' | 'engineering' | 'history';
+  category: 'biology' | 'physics' | 'chemistry' | 'maths' | 'earth' | 'space' | 'computing' | 'engineering' | 'history' | 'general';
   question: string;
   answers: [string, string, string, string];
   correctIndex: 0 | 1 | 2 | 3;
@@ -56,7 +56,7 @@ export interface LocalPtolemyData {
 
 export const TIER_NAMES: Record<number, string> = {
   1: 'Spark',
-  2: 'Ember',
+  2: 'Ember', 
   3: 'Flame',
   4: 'Fire',
   5: 'Blaze',
@@ -93,14 +93,14 @@ export const TIER_DESCRIPTIONS: Record<number, string> = {
   10: 'World expert',
 };
 
-export const STREAK_MILESTONES: Record<number, string> = {
-  5: 'A fine beginning.',
-  10: "You're finding your rhythm.",
-  25: 'Few travel this far.',
-  50: 'I am... impressed.',
-  100: 'You walk among the stars now.',
-  250: 'Perhaps you should be asking the questions.',
-};
+export const STREAK_MILESTONES = [
+  { streak: 5, message: 'A fine beginning.' },
+  { streak: 10, message: "You're finding your rhythm." },
+  { streak: 25, message: 'Few travel this far.' },
+  { streak: 50, message: 'I am... impressed.' },
+  { streak: 100, message: 'You walk among the stars now.' },
+  { streak: 250, message: 'Perhaps you should be asking the questions.' },
+];
 
 export const RANKS = [
   { requirement: 'Just started', title: 'Wonderer', description: "You ask questions. That's where it all begins." },

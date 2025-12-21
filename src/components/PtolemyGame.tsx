@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { GameState, Question, LocalPtolemyData, TIER_NAMES, TIER_TIMES, STREAK_MILESTONES } from '@/lib/ptolemy/types';
 import { getRandomQuestions, shuffleAnswers } from '@/lib/ptolemy/questions';
 
@@ -56,20 +57,19 @@ function saveLocalData(data: LocalPtolemyData) {
   localStorage.setItem('ptolemy-data', JSON.stringify(data));
 }
 
+// Character mood type
+type CharacterMood = 'happy' | 'thinking' | 'excited' | 'sad';
+
 export default function PtolemyGame() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
   const [localData, setLocalData] = useState<LocalPtolemyData>(getDefaultLocalData());
-  const [characterAnimation, setCharacterAnimation] = useState<'idle' | 'bounce' | 'shake' | 'celebrate'>('idle');
+  const [characterMood, setCharacterMood] = useState<CharacterMood>('happy');
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Load local data on mount
   useEffect(() => {
     const data = loadLocalData();
     setLocalData(data);
-
-    // Check if there's an active cooldown
-    if (data.cooldownEndTime && data.cooldownEndTime > Date.now()) {
-      setGameState(prev => ({ ...prev, cooldownEndTime: data.cooldownEndTime }));
-    }
   }, []);
 
   // Timer effect
@@ -89,261 +89,258 @@ export default function PtolemyGame() {
     return () => clearInterval(timer);
   }, [gameState.mode, gameState.timeRemaining]);
 
-  // Cooldown timer effect
-  useEffect(() => {
-    if (!gameState.cooldownEndTime) return;
-
-    const checkCooldown = setInterval(() => {
-      if (Date.now() >= gameState.cooldownEndTime!) {
-        setGameState(prev => ({ ...prev, cooldownEndTime: null }));
-        setLocalData(prev => {
-          const updated = { ...prev, cooldownEndTime: null };
-          saveLocalData(updated);
-          return updated;
-        });
-      }
-    }, 1000);
-
-    return () => clearInterval(checkCooldown);
-  }, [gameState.cooldownEndTime]);
-
-  const handleWrongAnswer = (state: GameState): GameState => {
-    const newHearts = state.hearts - 1;
+  // Handle wrong answer
+  const handleWrongAnswer = useCallback((prev: GameState): GameState => {
+    const newHearts = prev.hearts - 1;
+    
+    // Trigger sad mood
+    setCharacterMood('sad');
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsAnimating(false);
+      setCharacterMood('thinking');
+    }, 1500);
 
     if (newHearts <= 0) {
-      // Game over - set cooldown
-      const cooldownEnd = Date.now() + (30 * 60 * 1000); // 30 minutes
-      setLocalData(prev => {
+      // Game over
+      const finalStreak = prev.streak;
+      
+      setLocalData(current => {
         const updated = {
-          ...prev,
-          cooldownEndTime: cooldownEnd,
-          gamesPlayed: prev.gamesPlayed + 1,
+          ...current,
+          gamesPlayed: current.gamesPlayed + 1,
+          totalPoints: current.totalPoints + prev.points,
+          bestStreakPerTier: {
+            ...current.bestStreakPerTier,
+            [prev.tier]: Math.max(current.bestStreakPerTier[prev.tier] || 0, finalStreak),
+          },
+          // Unlock tiers 6-10 if achieved streak 10+ on tier 5
+          tiersUnlocked: finalStreak >= 10 && prev.tier === 5 && !current.tiersUnlocked.includes(6)
+            ? [...current.tiersUnlocked, 6, 7, 8, 9, 10]
+            : current.tiersUnlocked,
         };
         saveLocalData(updated);
         return updated;
       });
 
       return {
-        ...state,
+        ...prev,
         mode: 'gameover',
         hearts: 0,
-        cooldownEndTime: cooldownEnd,
-        lastAnswerCorrect: false,
-        correctInARow: 0,
+        showingHeartLoss: true,
+        cooldownEndTime: null, // No cooldown
       };
     }
 
+    // Lost a heart but still alive
     return {
-      ...state,
+      ...prev,
       hearts: newHearts,
-      lastAnswerCorrect: false,
-      correctInARow: 0,
+      streak: 0,
       showingHeartLoss: true,
+      lastAnswerCorrect: false,
     };
-  };
+  }, []);
 
-  const startGame = (tier: number) => {
-    const questions = getRandomQuestions(tier, 50, localData.questionsSeenIds);
-    const shuffledQuestions = questions.map(q => shuffleAnswers(q));
-
-    if (shuffledQuestions.length === 0) {
-      alert('No questions available for this tier!');
-      return;
-    }
-
+  // Start game
+  const startGame = useCallback((tier: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => {
+    const questions = getRandomQuestions(tier, 20);
+    const firstQuestion = questions[0];
+    
+    setCharacterMood('excited');
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsAnimating(false);
+      setCharacterMood('thinking');
+    }, 800);
+    
     setGameState({
       ...initialGameState,
       mode: 'playing',
-      tier: tier as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10,
-      currentQuestion: shuffledQuestions[0],
-      questionsThisGame: shuffledQuestions,
+      tier,
+      questionsThisGame: questions,
+      currentQuestion: shuffleAnswers(firstQuestion),
+      currentQuestionIndex: 0,
       timeRemaining: TIER_TIMES[tier],
     });
-    setCharacterAnimation('idle');
-  };
+  }, []);
 
-  const selectAnswer = (answerIndex: number) => {
-    if (gameState.mode !== 'playing' || !gameState.currentQuestion) return;
+  // Select answer
+  const selectAnswer = useCallback((answerIndex: number) => {
+    if (!gameState.currentQuestion) return;
 
     const isCorrect = answerIndex === gameState.currentQuestion.correctIndex;
+    
+    setLocalData(prev => {
+      const updated = {
+        ...prev,
+        totalAnswered: prev.totalAnswered + 1,
+        totalCorrect: prev.totalCorrect + (isCorrect ? 1 : 0),
+        questionsSeenIds: [...prev.questionsSeenIds, gameState.currentQuestion!.id],
+      };
+      saveLocalData(updated);
+      return updated;
+    });
 
     if (isCorrect) {
-      // Correct answer
-      setCharacterAnimation('bounce');
-      setTimeout(() => setCharacterAnimation('idle'), 500);
-
+      // Correct answer!
       const newStreak = gameState.streak + 1;
-      const newPoints = gameState.points + 10;
-      const newCorrectInARow = gameState.correctInARow + 1;
-
-      // Check for heart recovery (3 correct after losing a heart)
-      let newHearts = gameState.hearts;
-      let resetCorrectInARow = newCorrectInARow;
-      if (newCorrectInARow >= 3 && gameState.hearts < 3) {
-        newHearts = Math.min(3, gameState.hearts + 1);
-        resetCorrectInARow = 0;
-      }
-
+      const basePoints = gameState.tier * 10;
+      const streakBonus = Math.floor(newStreak / 5) * 5;
+      const pointsEarned = basePoints + streakBonus;
+      
       // Check for milestone
-      let showMilestone = false;
-      let milestoneMsg = '';
-      if (STREAK_MILESTONES[newStreak]) {
-        showMilestone = true;
-        milestoneMsg = STREAK_MILESTONES[newStreak];
-        setCharacterAnimation('celebrate');
-        setTimeout(() => setCharacterAnimation('idle'), 1500);
-      }
-
-      // Update local data
-      setLocalData(prev => {
-        const bestStreak = prev.bestStreakPerTier[gameState.tier] || 0;
-        const updated = {
-          ...prev,
-          bestStreakPerTier: {
-            ...prev.bestStreakPerTier,
-            [gameState.tier]: Math.max(bestStreak, newStreak),
-          },
-          totalPoints: prev.totalPoints + 10,
-          totalCorrect: prev.totalCorrect + 1,
-          totalAnswered: prev.totalAnswered + 1,
-          questionsSeenIds: [...prev.questionsSeenIds, gameState.currentQuestion!.id],
-        };
-
-        // Check if tier 6+ should be unlocked
-        if (gameState.tier === 5 && newStreak >= 10 && !prev.tiersUnlocked.includes(6)) {
-          updated.tiersUnlocked = [...prev.tiersUnlocked, 6, 7, 8, 9, 10];
-        }
-
-        saveLocalData(updated);
-        return updated;
-      });
+      const milestone = STREAK_MILESTONES.find(m => m.streak === newStreak);
+      const earnedHeart = milestone && gameState.hearts < 3;
+      
+      // Set excited mood
+      setCharacterMood('excited');
+      setIsAnimating(true);
+      setTimeout(() => {
+        setIsAnimating(false);
+        setCharacterMood('thinking');
+      }, 600);
 
       // Move to next question
       const nextIndex = gameState.currentQuestionIndex + 1;
+      
       if (nextIndex >= gameState.questionsThisGame.length) {
-        // Ran out of questions - shouldn't happen with 50 questions
-        setGameState(prev => ({ ...prev, mode: 'gameover' }));
-        return;
+        // No more questions - get more
+        const moreQuestions = getRandomQuestions(gameState.tier, 20);
+        const nextQuestion = moreQuestions[0];
+        
+        setGameState(prev => ({
+          ...prev,
+          streak: newStreak,
+          points: prev.points + pointsEarned,
+          hearts: earnedHeart ? Math.min(3, prev.hearts + 1) : prev.hearts,
+          questionsThisGame: moreQuestions,
+          currentQuestion: shuffleAnswers(nextQuestion),
+          currentQuestionIndex: 0,
+          timeRemaining: TIER_TIMES[prev.tier],
+          lastAnswerCorrect: true,
+          showingMilestone: !!milestone,
+          milestoneMessage: milestone?.message || '',
+        }));
+      } else {
+        const nextQuestion = gameState.questionsThisGame[nextIndex];
+        
+        setGameState(prev => ({
+          ...prev,
+          streak: newStreak,
+          points: prev.points + pointsEarned,
+          hearts: earnedHeart ? Math.min(3, prev.hearts + 1) : prev.hearts,
+          currentQuestion: shuffleAnswers(nextQuestion),
+          currentQuestionIndex: nextIndex,
+          timeRemaining: TIER_TIMES[prev.tier],
+          lastAnswerCorrect: true,
+          showingMilestone: !!milestone,
+          milestoneMessage: milestone?.message || '',
+        }));
       }
 
-      setGameState(prev => ({
-        ...prev,
-        streak: newStreak,
-        points: newPoints,
-        hearts: newHearts,
-        correctInARow: resetCorrectInARow,
-        currentQuestionIndex: nextIndex,
-        currentQuestion: prev.questionsThisGame[nextIndex],
-        timeRemaining: TIER_TIMES[prev.tier],
-        lastAnswerCorrect: true,
-        showingMilestone: showMilestone,
-        milestoneMessage: milestoneMsg,
-      }));
-
-      if (showMilestone) {
+      // Clear milestone message after delay
+      if (milestone) {
         setTimeout(() => {
           setGameState(prev => ({ ...prev, showingMilestone: false }));
         }, 2000);
       }
-
     } else {
       // Wrong answer
-      setCharacterAnimation('shake');
-      setTimeout(() => setCharacterAnimation('idle'), 500);
+      setGameState(prev => handleWrongAnswer(prev));
+    }
 
-      setLocalData(prev => {
-        const updated = {
-          ...prev,
-          totalAnswered: prev.totalAnswered + 1,
-        };
-        saveLocalData(updated);
-        return updated;
-      });
+    // Clear heart loss animation
+    setTimeout(() => {
+      setGameState(prev => ({ ...prev, showingHeartLoss: false }));
+    }, 800);
+  }, [gameState, handleWrongAnswer]);
 
-      setGameState(prev => {
-        const newState = handleWrongAnswer(prev);
+  // Get timer bar color based on time remaining
+  const getTimerColor = () => {
+    const percentage = gameState.timeRemaining / TIER_TIMES[gameState.tier];
+    if (percentage > 0.5) return 'bg-emerald-500';
+    if (percentage > 0.25) return 'bg-amber-500';
+    return 'bg-red-500';
+  };
 
-        if (newState.mode === 'gameover') {
-          return newState;
-        }
-
-        // Show heart loss animation then continue
-        setTimeout(() => {
-          setGameState(p => ({ ...p, showingHeartLoss: false }));
-        }, 1500);
-
-        // Move to next question after wrong answer
-        const nextIndex = prev.currentQuestionIndex + 1;
-        return {
-          ...newState,
-          currentQuestionIndex: nextIndex,
-          currentQuestion: prev.questionsThisGame[nextIndex] || null,
-          timeRemaining: TIER_TIMES[prev.tier],
-        };
-      });
+  // Get character filter based on mood
+  const getCharacterStyle = () => {
+    const baseStyle = {
+      transition: 'all 0.3s ease',
+    };
+    
+    switch (characterMood) {
+      case 'excited':
+        return { ...baseStyle, filter: 'brightness(1.1)', transform: isAnimating ? 'scale(1.1)' : 'scale(1)' };
+      case 'sad':
+        return { ...baseStyle, filter: 'brightness(0.8) saturate(0.7)', transform: isAnimating ? 'scale(0.9)' : 'scale(1)' };
+      case 'thinking':
+        return { ...baseStyle, filter: 'brightness(1)', transform: 'scale(1)' };
+      default:
+        return baseStyle;
     }
   };
 
-  const formatCooldown = (endTime: number) => {
-    const remaining = Math.max(0, endTime - Date.now());
-    const minutes = Math.floor(remaining / 60000);
-    const seconds = Math.floor((remaining % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  // Check if in cooldown
-  const isInCooldown = gameState.cooldownEndTime && gameState.cooldownEndTime > Date.now();
-
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 font-sans">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col items-center justify-center p-4">
       {/* Menu Screen */}
       {gameState.mode === 'menu' && (
         <div className="w-full max-w-md text-center">
           {/* Character */}
-          <div className="mb-8">
-            <div className="w-32 h-32 mx-auto bg-gradient-to-b from-orange-400 to-yellow-500 rounded-full flex items-center justify-center text-6xl">
-              🔭
+          <div className="mb-6">
+            <div className="w-32 h-32 mx-auto relative">
+              <Image
+                src="/images/ptolemy-character.png"
+                alt="Ptolemy"
+                width={128}
+                height={128}
+                className="rounded-full"
+                style={getCharacterStyle()}
+                priority
+              />
             </div>
           </div>
 
-          {/* Title */}
-          <h1 className="text-5xl font-bold mb-2" style={{ fontFamily: 'Cooper Black, serif' }}>
+          {/* Title - Strelka Ultra */}
+          <h1 
+            className="text-5xl mb-2 text-amber-900"
+            style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
+          >
             PTOLEMY
           </h1>
-          <p className="text-gray-500 mb-8">The Science Quiz</p>
-
-          {/* Cooldown message */}
-          {isInCooldown && (
-            <div className="mb-6 p-4 bg-gray-100 rounded-xl">
-              <p className="text-gray-600 mb-2">Rest your mind...</p>
-              <p className="text-2xl font-mono font-bold">
-                {formatCooldown(gameState.cooldownEndTime!)}
-              </p>
-            </div>
-          )}
+          <p className="text-amber-700/70 mb-8">The Science Quiz</p>
 
           {/* Tier Selection */}
           <div className="space-y-3">
-            <p className="text-sm text-gray-500 mb-4">Select your tier:</p>
-
-            {[1, 2, 3, 4, 5].map(tier => (
+            <p className="text-sm text-amber-700/60 mb-4">Select your tier:</p>
+            
+            {([1, 2, 3, 4, 5] as const).map(tier => (
               <button
                 key={tier}
-                onClick={() => !isInCooldown && startGame(tier)}
-                disabled={isInCooldown as boolean}
-                className={`w-full p-4 rounded-xl text-left transition-all ${
-                  isInCooldown
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 hover:bg-gray-200 active:scale-98'
-                }`}
+                onClick={() => startGame(tier)}
+                className="w-full p-4 rounded-xl text-left transition-all bg-white/80 hover:bg-white border-2 border-amber-200 hover:border-amber-400 active:scale-[0.98]"
               >
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="font-bold">Tier {tier}</span>
-                    <span className="mx-2">·</span>
-                    <span className="text-orange-500">{TIER_NAMES[tier]}</span>
+                    <span 
+                      className="font-bold text-amber-900"
+                      style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
+                    >
+                      Tier {tier}
+                    </span>
+                    <span className="mx-2 text-amber-400">·</span>
+                    <span 
+                      className="text-orange-600"
+                      style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
+                    >
+                      {TIER_NAMES[tier]}
+                    </span>
                   </div>
-                  <div className="text-sm text-gray-400">
+                  <div 
+                    className="text-sm text-amber-600/60"
+                    style={{ fontFamily: '"Input Mono", monospace' }}
+                  >
                     Best: {localData.bestStreakPerTier[tier] || 0}
                   </div>
                 </div>
@@ -352,8 +349,8 @@ export default function PtolemyGame() {
 
             {/* Locked tiers */}
             {!localData.tiersUnlocked.includes(6) && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                <p className="text-gray-400 text-sm">
+              <div className="mt-6 p-4 bg-amber-100/50 rounded-xl border-2 border-dashed border-amber-300">
+                <p className="text-amber-600/70 text-sm">
                   🔒 Tiers 6-10 unlock after streak 10+ on Tier 5
                 </p>
               </div>
@@ -361,25 +358,33 @@ export default function PtolemyGame() {
 
             {localData.tiersUnlocked.includes(6) && (
               <>
-                <div className="h-px bg-gray-200 my-4" />
-                {[6, 7, 8, 9, 10].map(tier => (
+                <div className="h-px bg-amber-200 my-4" />
+                {([6, 7, 8, 9, 10] as const).map(tier => (
                   <button
                     key={tier}
-                    onClick={() => !isInCooldown && startGame(tier)}
-                    disabled={isInCooldown as boolean}
-                    className={`w-full p-4 rounded-xl text-left transition-all ${
-                      isInCooldown
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-orange-50 to-yellow-50 hover:from-orange-100 hover:to-yellow-100'
-                    }`}
+                    onClick={() => startGame(tier)}
+                    className="w-full p-4 rounded-xl text-left transition-all bg-gradient-to-r from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 border-2 border-orange-300 hover:border-orange-400"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <span className="font-bold">Tier {tier}</span>
-                        <span className="mx-2">·</span>
-                        <span className="text-orange-600">{TIER_NAMES[tier]}</span>
+                        <span 
+                          className="font-bold text-orange-800"
+                          style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
+                        >
+                          Tier {tier}
+                        </span>
+                        <span className="mx-2 text-orange-400">·</span>
+                        <span 
+                          className="text-orange-700"
+                          style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
+                        >
+                          {TIER_NAMES[tier]}
+                        </span>
                       </div>
-                      <div className="text-sm text-gray-400">
+                      <div 
+                        className="text-sm text-orange-500/60"
+                        style={{ fontFamily: '"Input Mono", monospace' }}
+                      >
                         Best: {localData.bestStreakPerTier[tier] || 0}
                       </div>
                     </div>
@@ -390,10 +395,13 @@ export default function PtolemyGame() {
           </div>
 
           {/* Stats */}
-          <div className="mt-8 text-sm text-gray-400">
-            Games played: {localData.gamesPlayed} ·
-            Accuracy: {localData.totalAnswered > 0
-              ? Math.round((localData.totalCorrect / localData.totalAnswered) * 100)
+          <div 
+            className="mt-8 text-sm text-amber-600/50"
+            style={{ fontFamily: '"Input Mono", monospace' }}
+          >
+            Games played: {localData.gamesPlayed} · 
+            Accuracy: {localData.totalAnswered > 0 
+              ? Math.round((localData.totalCorrect / localData.totalAnswered) * 100) 
               : 0}%
           </div>
         </div>
@@ -407,10 +415,10 @@ export default function PtolemyGame() {
             {/* Hearts */}
             <div className="flex gap-1">
               {[1, 2, 3].map(i => (
-                <span
-                  key={i}
+                <span 
+                  key={i} 
                   className={`text-2xl transition-all ${
-                    i <= gameState.hearts ? 'opacity-100' : 'opacity-20'
+                    i <= gameState.hearts ? 'opacity-100 scale-100' : 'opacity-20 scale-90'
                   }`}
                 >
                   ❤️
@@ -420,53 +428,61 @@ export default function PtolemyGame() {
 
             {/* Streak with fire */}
             <div className="flex items-center gap-2">
-              <span className={`text-2xl ${gameState.streak > 0 ? 'animate-pulse' : ''}`}>
+              <span className={`text-2xl ${gameState.streak > 0 ? 'animate-pulse' : 'opacity-50'}`}>
                 🔥
               </span>
-              <span className="text-2xl font-bold font-mono">
+              <span 
+                className="text-2xl font-bold text-amber-800"
+                style={{ fontFamily: '"Input Mono", monospace' }}
+              >
                 {gameState.streak}
               </span>
             </div>
 
             {/* Tier indicator */}
-            <div className="text-sm text-gray-400">
-              Tier {gameState.tier} · {TIER_NAMES[gameState.tier]}
+            <div 
+              className="text-sm text-amber-600/70"
+              style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
+            >
+              {TIER_NAMES[gameState.tier]}
             </div>
           </div>
 
           {/* Timer Bar */}
-          <div className="h-2 bg-gray-200 rounded-full mb-6 overflow-hidden">
-            <div
-              className={`h-full transition-all duration-1000 ease-linear rounded-full ${
-                gameState.timeRemaining <= 5 ? 'bg-red-500' : 'bg-orange-400'
-              }`}
-              style={{
-                width: `${(gameState.timeRemaining / TIER_TIMES[gameState.tier]) * 100}%`
+          <div className="h-3 bg-amber-200 rounded-full mb-6 overflow-hidden">
+            <div 
+              className={`h-full transition-all duration-1000 ease-linear rounded-full ${getTimerColor()}`}
+              style={{ 
+                width: `${(gameState.timeRemaining / TIER_TIMES[gameState.tier]) * 100}%` 
               }}
             />
           </div>
 
           {/* Character */}
-          <div className={`w-20 h-20 mx-auto mb-6 bg-gradient-to-b from-orange-400 to-yellow-500 rounded-full flex items-center justify-center text-4xl transition-transform ${
-            characterAnimation === 'bounce' ? 'animate-bounce' : ''
-          } ${
-            characterAnimation === 'shake' ? 'animate-shake' : ''
-          } ${
-            characterAnimation === 'celebrate' ? 'animate-spin' : ''
-          }`}>
-            🔭
+          <div className="w-24 h-24 mx-auto mb-4 relative">
+            <Image
+              src="/images/ptolemy-character.png"
+              alt="Ptolemy"
+              width={96}
+              height={96}
+              className="rounded-full"
+              style={getCharacterStyle()}
+            />
           </div>
 
           {/* Milestone message */}
           {gameState.showingMilestone && (
-            <div className="text-center mb-4 animate-fade-in">
-              <p className="text-orange-500 italic">&quot;{gameState.milestoneMessage}&quot;</p>
+            <div className="text-center mb-4 animate-bounce">
+              <p className="text-orange-600 italic font-medium">"{gameState.milestoneMessage}"</p>
+              {gameState.hearts < 3 && (
+                <p className="text-emerald-600 text-sm mt-1">+1 ❤️ restored!</p>
+              )}
             </div>
           )}
 
           {/* Question */}
-          <div className="bg-gray-50 rounded-2xl p-6 mb-6">
-            <p className="text-lg text-center font-medium">
+          <div className="bg-white/90 rounded-2xl p-6 mb-6 shadow-sm border border-amber-100">
+            <p className="text-lg text-center font-medium text-amber-900">
               {gameState.currentQuestion.question}
             </p>
           </div>
@@ -477,15 +493,18 @@ export default function PtolemyGame() {
               <button
                 key={index}
                 onClick={() => selectAnswer(index)}
-                className="w-full p-4 bg-white border-2 border-gray-200 rounded-xl text-left hover:border-orange-400 hover:bg-orange-50 active:scale-98 transition-all"
+                className="w-full p-4 bg-white/90 border-2 border-amber-200 rounded-xl text-left hover:border-orange-400 hover:bg-orange-50 active:scale-[0.98] transition-all"
               >
-                <span className="font-medium">{answer}</span>
+                <span className="font-medium text-amber-800">{answer}</span>
               </button>
             ))}
           </div>
 
           {/* Points */}
-          <div className="mt-6 text-center text-sm text-gray-400">
+          <div 
+            className="mt-6 text-center text-sm text-amber-600/50"
+            style={{ fontFamily: '"Input Mono", monospace' }}
+          >
             {gameState.points} points
           </div>
         </div>
@@ -493,54 +512,69 @@ export default function PtolemyGame() {
 
       {/* Heart Loss Overlay */}
       {gameState.showingHeartLoss && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
-          <div className="text-8xl animate-ping">💔</div>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-pulse">
+          <div className="text-8xl">💔</div>
         </div>
       )}
 
       {/* Game Over Screen */}
       {gameState.mode === 'gameover' && (
         <div className="w-full max-w-md text-center">
-          <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-b from-gray-300 to-gray-400 rounded-full flex items-center justify-center text-5xl">
-            😴
+          <div className="w-24 h-24 mx-auto mb-6 relative">
+            <Image
+              src="/images/ptolemy-character.png"
+              alt="Ptolemy"
+              width={96}
+              height={96}
+              className="rounded-full opacity-60"
+              style={{ filter: 'grayscale(50%)' }}
+            />
           </div>
 
-          <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: 'Cooper Black, serif' }}>
+          <h2 
+            className="text-3xl mb-2 text-amber-800"
+            style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
+          >
             Game Over
           </h2>
 
           <div className="my-8">
-            <p className="text-gray-500 mb-2">Final Streak</p>
-            <p className="text-5xl font-bold font-mono text-orange-500">
+            <p className="text-amber-600/60 mb-2">Final Streak</p>
+            <p 
+              className="text-5xl font-bold text-orange-600"
+              style={{ fontFamily: '"Input Mono", monospace' }}
+            >
               {gameState.streak}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-sm text-gray-400">Points</p>
-              <p className="text-xl font-bold">{gameState.points}</p>
+            <div className="bg-white/80 rounded-xl p-4 border border-amber-200">
+              <p className="text-sm text-amber-600/60">Points</p>
+              <p 
+                className="text-xl font-bold text-amber-800"
+                style={{ fontFamily: '"Input Mono", monospace' }}
+              >
+                {gameState.points}
+              </p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-sm text-gray-400">Tier</p>
-              <p className="text-xl font-bold">{TIER_NAMES[gameState.tier]}</p>
+            <div className="bg-white/80 rounded-xl p-4 border border-amber-200">
+              <p className="text-sm text-amber-600/60">Tier</p>
+              <p 
+                className="text-xl font-bold text-amber-800"
+                style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
+              >
+                {TIER_NAMES[gameState.tier]}
+              </p>
             </div>
           </div>
 
-          {gameState.cooldownEndTime && (
-            <div className="mb-6 p-4 bg-orange-50 rounded-xl">
-              <p className="text-gray-600 mb-2">Play again in:</p>
-              <p className="text-3xl font-mono font-bold text-orange-500">
-                {formatCooldown(gameState.cooldownEndTime)}
-              </p>
-            </div>
-          )}
-
           <button
-            onClick={() => setGameState({ ...initialGameState, cooldownEndTime: gameState.cooldownEndTime })}
-            className="w-full p-4 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition-all"
+            onClick={() => setGameState(initialGameState)}
+            className="w-full p-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-medium hover:from-amber-600 hover:to-orange-600 transition-all active:scale-[0.98]"
+            style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
           >
-            Back to Menu
+            Play Again
           </button>
         </div>
       )}
