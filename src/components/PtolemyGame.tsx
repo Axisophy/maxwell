@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { GameState, Question, LocalPtolemyData, TIER_NAMES, TIER_TIMES, STREAK_MILESTONES } from '@/lib/ptolemy/types';
 import { getRandomQuestions, shuffleAnswers } from '@/lib/ptolemy/questions';
@@ -69,9 +69,7 @@ export default function PtolemyGame() {
   // Track asked questions to prevent repetition
   const [askedQuestionIds, setAskedQuestionIds] = useState<Set<string>>(new Set());
 
-  // Track selected answer and whether to show correct answer (for wrong answer feedback)
-  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
-  const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
+  // Track if currently processing an answer (prevent double-clicks)
   const [isProcessingAnswer, setIsProcessingAnswer] = useState(false);
 
   // Load local data on mount
@@ -80,10 +78,8 @@ export default function PtolemyGame() {
     setLocalData(data);
   }, []);
 
-  // Clear selected answer and focus when question changes
+  // Clear focus when question changes
   useEffect(() => {
-    setSelectedAnswerIndex(null);
-    setShowCorrectAnswer(false);
     setIsProcessingAnswer(false);
     // Clear any stuck focus/hover states
     if (document.activeElement instanceof HTMLElement) {
@@ -111,19 +107,14 @@ export default function PtolemyGame() {
   // Handle wrong answer
   const handleWrongAnswer = useCallback((prev: GameState): GameState => {
     const newHearts = prev.hearts - 1;
-    
-    // Trigger sad mood
-    setCharacterMood('sad');
-    setIsAnimating(true);
-    setTimeout(() => {
-      setIsAnimating(false);
-      setCharacterMood('thinking');
-    }, 1500);
+
+    // Clear processing state BEFORE any state transition
+    setIsProcessingAnswer(false);
 
     if (newHearts <= 0) {
       // Game over
       const finalStreak = prev.streak;
-      
+
       setLocalData(current => {
         const updated = {
           ...current,
@@ -146,12 +137,12 @@ export default function PtolemyGame() {
         ...prev,
         mode: 'gameover',
         hearts: 0,
-        showingHeartLoss: true,
-        cooldownEndTime: null, // No cooldown
+        showingHeartLoss: false, // Don't show heart loss on game over screen
+        cooldownEndTime: null,
       };
     }
 
-    // Lost a heart but still alive
+    // Lost a heart but still alive - show heart loss briefly
     return {
       ...prev,
       hearts: newHearts,
@@ -191,13 +182,53 @@ export default function PtolemyGame() {
     });
   }, []);
 
+  // Move to next question helper
+  const moveToNextQuestion = useCallback(() => {
+    const nextIndex = gameState.currentQuestionIndex + 1;
+
+    if (nextIndex >= gameState.questionsThisGame.length) {
+      // No more questions - get more, excluding already asked ones
+      const excludeIds = Array.from(askedQuestionIds);
+      let moreQuestions = getRandomQuestions(gameState.tier, 20, excludeIds);
+
+      // If we've exhausted the pool, reset
+      if (moreQuestions.length === 0) {
+        setAskedQuestionIds(new Set());
+        moreQuestions = getRandomQuestions(gameState.tier, 20);
+      }
+
+      // Track new questions
+      const newAskedIds = new Set(askedQuestionIds);
+      moreQuestions.forEach(q => newAskedIds.add(q.id));
+      setAskedQuestionIds(newAskedIds);
+
+      const nextQuestion = moreQuestions[0];
+
+      setGameState(prev => ({
+        ...prev,
+        questionsThisGame: moreQuestions,
+        currentQuestion: shuffleAnswers(nextQuestion),
+        currentQuestionIndex: 0,
+        timeRemaining: TIER_TIMES[prev.tier],
+      }));
+    } else {
+      const nextQuestion = gameState.questionsThisGame[nextIndex];
+
+      setGameState(prev => ({
+        ...prev,
+        currentQuestion: shuffleAnswers(nextQuestion),
+        currentQuestionIndex: nextIndex,
+        timeRemaining: TIER_TIMES[prev.tier],
+      }));
+    }
+  }, [gameState.currentQuestionIndex, gameState.questionsThisGame, gameState.tier, askedQuestionIds]);
+
   // Select answer
   const selectAnswer = useCallback((answerIndex: number) => {
     if (!gameState.currentQuestion || isProcessingAnswer) return;
 
     // Prevent double-clicks
     setIsProcessingAnswer(true);
-    setSelectedAnswerIndex(answerIndex);
 
     const isCorrect = answerIndex === gameState.currentQuestion.correctIndex;
 
@@ -213,7 +244,7 @@ export default function PtolemyGame() {
     });
 
     if (isCorrect) {
-      // Correct answer!
+      // CORRECT ANSWER
       const newStreak = gameState.streak + 1;
       const basePoints = gameState.tier * 10;
       const streakBonus = Math.floor(newStreak / 5) * 5;
@@ -223,64 +254,25 @@ export default function PtolemyGame() {
       const milestone = STREAK_MILESTONES.find(m => m.streak === newStreak);
       const earnedHeart = milestone && gameState.hearts < 3;
 
-      // Set excited mood
       setCharacterMood('excited');
       setIsAnimating(true);
 
-      // Short delay to show correct highlight, then move to next question
+      // Update state with new streak/points
+      setGameState(prev => ({
+        ...prev,
+        streak: newStreak,
+        points: prev.points + pointsEarned,
+        hearts: earnedHeart ? Math.min(3, prev.hearts + 1) : prev.hearts,
+        lastAnswerCorrect: true,
+        showingMilestone: !!milestone,
+        milestoneMessage: milestone?.message || '',
+      }));
+
+      // Short delay then move to next question
       setTimeout(() => {
         setIsAnimating(false);
         setCharacterMood('thinking');
-
-        // Move to next question
-        const nextIndex = gameState.currentQuestionIndex + 1;
-
-        if (nextIndex >= gameState.questionsThisGame.length) {
-          // No more questions - get more, excluding already asked ones
-          const excludeIds = Array.from(askedQuestionIds);
-          let moreQuestions = getRandomQuestions(gameState.tier, 20, excludeIds);
-
-          // If we've exhausted the pool, reset
-          if (moreQuestions.length === 0) {
-            setAskedQuestionIds(new Set());
-            moreQuestions = getRandomQuestions(gameState.tier, 20);
-          }
-
-          // Track new questions
-          moreQuestions.forEach(q => askedQuestionIds.add(q.id));
-          setAskedQuestionIds(new Set(askedQuestionIds));
-
-          const nextQuestion = moreQuestions[0];
-
-          setGameState(prev => ({
-            ...prev,
-            streak: newStreak,
-            points: prev.points + pointsEarned,
-            hearts: earnedHeart ? Math.min(3, prev.hearts + 1) : prev.hearts,
-            questionsThisGame: moreQuestions,
-            currentQuestion: shuffleAnswers(nextQuestion),
-            currentQuestionIndex: 0,
-            timeRemaining: TIER_TIMES[prev.tier],
-            lastAnswerCorrect: true,
-            showingMilestone: !!milestone,
-            milestoneMessage: milestone?.message || '',
-          }));
-        } else {
-          const nextQuestion = gameState.questionsThisGame[nextIndex];
-
-          setGameState(prev => ({
-            ...prev,
-            streak: newStreak,
-            points: prev.points + pointsEarned,
-            hearts: earnedHeart ? Math.min(3, prev.hearts + 1) : prev.hearts,
-            currentQuestion: shuffleAnswers(nextQuestion),
-            currentQuestionIndex: nextIndex,
-            timeRemaining: TIER_TIMES[prev.tier],
-            lastAnswerCorrect: true,
-            showingMilestone: !!milestone,
-            milestoneMessage: milestone?.message || '',
-          }));
-        }
+        moveToNextQuestion();
 
         // Clear milestone message after delay
         if (milestone) {
@@ -289,26 +281,38 @@ export default function PtolemyGame() {
           }, 2000);
         }
       }, 600);
+
     } else {
-      // WRONG ANSWER - Show clear feedback
-      setShowCorrectAnswer(true);
+      // WRONG ANSWER - just lose heart and move on (no correct answer reveal)
       setCharacterMood('sad');
       setIsAnimating(true);
 
-      // Longer delay to show the correct answer
+      // Apply wrong answer immediately
+      setGameState(prev => handleWrongAnswer(prev));
+
+      // Brief delay then continue (if not game over)
       setTimeout(() => {
         setIsAnimating(false);
-        setShowCorrectAnswer(false);
-        setCharacterMood('thinking');
-        setGameState(prev => handleWrongAnswer(prev));
 
         // Clear heart loss animation
-        setTimeout(() => {
-          setGameState(prev => ({ ...prev, showingHeartLoss: false }));
-        }, 800);
-      }, 1500);
+        setGameState(prev => {
+          if (prev.mode === 'gameover') {
+            // Already game over, just clear the animation flag
+            return { ...prev, showingHeartLoss: false };
+          }
+
+          // Still alive - move to next question
+          setCharacterMood('thinking');
+          return { ...prev, showingHeartLoss: false };
+        });
+
+        // Move to next question if still playing
+        if (gameState.hearts > 1) {
+          moveToNextQuestion();
+        }
+      }, 800);
     }
-  }, [gameState, handleWrongAnswer, isProcessingAnswer, askedQuestionIds]);
+  }, [gameState, handleWrongAnswer, isProcessingAnswer, moveToNextQuestion]);
 
   // Get timer bar color based on time remaining
   const getTimerColor = () => {
@@ -550,54 +554,20 @@ export default function PtolemyGame() {
 
           {/* Answer Buttons */}
           <div className="grid grid-cols-1 gap-3">
-            {gameState.currentQuestion.answers.map((answer, index) => {
-              const isCorrectAnswer = index === gameState.currentQuestion!.correctIndex;
-              const isSelectedAnswer = selectedAnswerIndex === index;
-              const showAsCorrect = showCorrectAnswer && isCorrectAnswer;
-              const showAsWrong = showCorrectAnswer && isSelectedAnswer && !isCorrectAnswer;
-
-              return (
-                <button
-                  key={`${gameState.currentQuestion!.id}-${index}`}
-                  onClick={() => selectAnswer(index)}
-                  disabled={isProcessingAnswer}
-                  onTouchEnd={(e) => {
-                    // Blur on touch end to clear stuck hover states
-                    e.currentTarget.blur();
-                  }}
-                  className={`
-                    ptolemy-answer-btn
-                    w-full p-4 border-2 rounded-xl text-left transition-all duration-200
-                    disabled:cursor-not-allowed
-                    focus:outline-none focus:ring-2 focus:ring-amber-400
-                    ${showAsCorrect
-                      ? 'bg-emerald-100 border-emerald-500'
-                      : showAsWrong
-                        ? 'bg-red-100 border-red-500'
-                        : 'bg-white/90 border-amber-200'
-                    }
-                  `}
-                >
-                  <span
-                    className={`font-medium ${
-                      showAsCorrect
-                        ? 'text-emerald-800'
-                        : showAsWrong
-                          ? 'text-red-800'
-                          : 'text-amber-800'
-                    }`}
-                  >
-                    {answer}
-                  </span>
-                  {showAsCorrect && (
-                    <span className="ml-2 text-emerald-600">✓</span>
-                  )}
-                  {showAsWrong && (
-                    <span className="ml-2 text-red-600">✗</span>
-                  )}
-                </button>
-              );
-            })}
+            {gameState.currentQuestion.answers.map((answer, index) => (
+              <button
+                key={`${gameState.currentQuestion!.id}-${index}`}
+                onClick={() => selectAnswer(index)}
+                disabled={isProcessingAnswer}
+                onTouchEnd={(e) => {
+                  // Blur on touch end to clear stuck hover states
+                  e.currentTarget.blur();
+                }}
+                className="ptolemy-answer-btn w-full p-4 border-2 rounded-xl text-left transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white/90 border-amber-200"
+              >
+                <span className="font-medium text-amber-800">{answer}</span>
+              </button>
+            ))}
           </div>
 
           {/* Points */}
@@ -610,8 +580,8 @@ export default function PtolemyGame() {
         </div>
       )}
 
-      {/* Heart Loss Overlay */}
-      {gameState.showingHeartLoss && (
+      {/* Heart Loss Overlay - only during playing state */}
+      {gameState.mode === 'playing' && gameState.showingHeartLoss && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-pulse">
           <div className="text-8xl">💔</div>
         </div>
@@ -670,8 +640,15 @@ export default function PtolemyGame() {
           </div>
 
           <button
-            onClick={() => setGameState(initialGameState)}
-            className="w-full p-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-medium hover:from-amber-600 hover:to-orange-600 transition-all active:scale-[0.98]"
+            onClick={() => {
+              // Full state reset
+              setGameState(initialGameState);
+              setAskedQuestionIds(new Set());
+              setIsProcessingAnswer(false);
+              setCharacterMood('happy');
+              setIsAnimating(false);
+            }}
+            className="w-full p-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-medium hover:from-amber-600 hover:to-orange-600 transition-all active:scale-[0.98] cursor-pointer"
             style={{ fontFamily: '"strelka", sans-serif', fontWeight: 800 }}
           >
             Play Again
