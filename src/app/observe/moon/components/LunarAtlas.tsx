@@ -26,13 +26,22 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
+    // Define bounds to prevent tile repetition
+    const bounds = L.latLngBounds(
+      L.latLng(-90, -180),
+      L.latLng(90, 180)
+    );
+
     const map = L.map(mapRef.current, {
       center: [0, 0],
       zoom: 2,
       minZoom: 1,
       maxZoom: 7,
+      maxBounds: bounds,
+      maxBoundsViscosity: 1.0,
       attributionControl: false,
       zoomControl: true,
+      worldCopyJump: false,
     });
 
     // ========================================================================
@@ -44,6 +53,7 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
         minZoom: 1,
         maxZoom: 7,
         noWrap: true,
+        bounds: bounds,
         attribution: 'OpenPlanetary',
       }
     );
