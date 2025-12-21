@@ -262,9 +262,20 @@ export function CosmicDiagram({
       .attr('fill', 'white').attr('text-anchor', 'middle').attr('font-size', '12px').attr('opacity', 0.8)
       .text('Radius (cm)')
 
+    // Touch device detection - require two-finger gesture
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([1, 20])
       .translateExtent([[0, 0], [width, height]])
+      .filter((event) => {
+        // For touch events, require two fingers to prevent page scroll hijacking
+        if (event.type === 'touchstart' || event.type === 'touchmove') {
+          return event.touches?.length >= 2
+        }
+        // Allow all mouse events
+        return true
+      })
       .on('zoom', (event) => {
         const { transform } = event
         const k = transform.k

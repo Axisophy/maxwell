@@ -2,6 +2,7 @@
 
 import React from 'react';
 import NuclideChart from './NuclideChart';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 
 export default function NuclidesPage() {
   return (
@@ -10,7 +11,15 @@ export default function NuclidesPage() {
       <div className="bg-white border-b border-black/10">
         <div className="px-4 md:px-8 lg:px-12 py-6 md:py-8">
           <div className="max-w-4xl">
-            <p className="text-sm text-black/50 uppercase tracking-wider mb-2">DATA / ISOTOPES</p>
+            <Breadcrumb
+              items={[
+                { label: 'MXWLL', href: '/' },
+                { label: 'Data', href: '/data' },
+                { label: 'Chart of Nuclides' },
+              ]}
+              theme="light"
+              className="mb-2"
+            />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-4">
               Chart of Nuclides
             </h1>
@@ -24,7 +33,7 @@ export default function NuclidesPage() {
       </div>
 
       {/* The chart - explicit height for canvas rendering */}
-      <div className="h-[500px] md:h-[600px] lg:h-[700px]">
+      <div className="h-[500px] md:h-[600px] lg:h-[700px]" style={{ maxHeight: '800px' }}>
         <NuclideChart className="h-full" />
       </div>
 

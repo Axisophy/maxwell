@@ -7,6 +7,7 @@
 // that can exist in the universe
 
 import React, { useState, useCallback, useMemo } from 'react'
+import Breadcrumb from '@/components/ui/Breadcrumb'
 import { CosmicObject, ObjectCategory, ViewMode, ModalState } from './lib/types'
 import {
   ALL_OBJECTS,
@@ -119,9 +120,15 @@ export default function PermissibleUniversePage() {
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             {/* Title */}
             <div>
-              <p className="text-xs font-mono text-white/40 uppercase tracking-widest mb-2">
-                MXWLL / Data
-              </p>
+              <Breadcrumb
+                items={[
+                  { label: 'MXWLL', href: '/' },
+                  { label: 'Data', href: '/data' },
+                  { label: 'Permissible Universe' },
+                ]}
+                theme="dark"
+                className="mb-2"
+              />
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight">
                 The Permissible Universe
               </h1>
@@ -197,7 +204,7 @@ export default function PermissibleUniversePage() {
 
             {/* Diagram */}
             <div className="px-4 md:px-8 lg:px-12 py-4">
-              <div className="relative rounded-xl overflow-hidden" style={{ height: 'calc(100vh - 260px)', minHeight: '500px' }}>
+              <div className="relative rounded-xl overflow-hidden" style={{ height: 'calc(100vh - 260px)', minHeight: '500px', maxHeight: '800px' }}>
                 <CosmicDiagram
                   objects={visibleObjects}
                   boundaries={BOUNDARY_LIST}

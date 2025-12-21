@@ -301,47 +301,81 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
     const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
-    
+
     // Zoom toward mouse position
     const rect = canvasRef.current?.getBoundingClientRect();
     if (rect) {
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
-      
+
       const zoomRatio = newZoom / zoom;
       setOffset({
         x: mouseX - (mouseX - offset.x) * zoomRatio,
         y: mouseY - (mouseY - offset.y) * zoomRatio,
       });
     }
-    
+
     setZoom(newZoom);
   }, [zoom, offset]);
 
-  // Touch handlers for mobile
+  // Touch handlers for mobile - require two-finger gesture to prevent page scroll hijacking
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
-  
+  const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
+  const [initialPinchZoom, setInitialPinchZoom] = useState<number>(1);
+
+  const getTouchDistance = (touches: React.TouchList) => {
+    if (touches.length < 2) return 0;
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const getTouchCenter = (touches: React.TouchList) => {
+    if (touches.length < 2) return { x: touches[0].clientX, y: touches[0].clientY };
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2,
+    };
+  };
+
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
-      const touch = e.touches[0];
-      setTouchStart({ x: touch.clientX - offset.x, y: touch.clientY - offset.y });
+    // Require two fingers to interact (prevents page scroll hijacking)
+    if (e.touches.length >= 2) {
+      e.preventDefault();
+      const center = getTouchCenter(e.touches);
+      setTouchStart({ x: center.x - offset.x, y: center.y - offset.y });
+      setInitialPinchDistance(getTouchDistance(e.touches));
+      setInitialPinchZoom(zoom);
       setIsDragging(true);
     }
-  }, [offset]);
+  }, [offset, zoom]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (isDragging && touchStart && e.touches.length === 1) {
-      const touch = e.touches[0];
+    // Require two fingers
+    if (isDragging && touchStart && e.touches.length >= 2) {
+      e.preventDefault();
+      const center = getTouchCenter(e.touches);
+
+      // Handle panning
       setOffset({
-        x: touch.clientX - touchStart.x,
-        y: touch.clientY - touchStart.y,
+        x: center.x - touchStart.x,
+        y: center.y - touchStart.y,
       });
+
+      // Handle pinch-to-zoom
+      if (initialPinchDistance) {
+        const currentDistance = getTouchDistance(e.touches);
+        const scale = currentDistance / initialPinchDistance;
+        const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, initialPinchZoom * scale));
+        setZoom(newZoom);
+      }
     }
-  }, [isDragging, touchStart]);
+  }, [isDragging, touchStart, initialPinchDistance, initialPinchZoom]);
 
   const handleTouchEnd = useCallback(() => {
     setIsDragging(false);
     setTouchStart(null);
+    setInitialPinchDistance(null);
   }, []);
 
   // Zoom controls

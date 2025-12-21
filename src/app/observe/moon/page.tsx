@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Moon } from 'lucide-react';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 import LayerControls from './components/LayerControls';
 import InfoPanel from './components/InfoPanel';
 import { LayerGroup } from '@/lib/moon/types';
@@ -59,6 +60,15 @@ export default function MoonPage() {
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
         {/* Header */}
         <div className="mb-6 md:mb-8">
+          <Breadcrumb
+            items={[
+              { label: 'MXWLL', href: '/' },
+              { label: 'Observe', href: '/observe' },
+              { label: 'Lunar Atlas' },
+            ]}
+            theme="light"
+            className="mb-2"
+          />
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
             Lunar Atlas
           </h1>
