@@ -30,14 +30,25 @@ const heroImages = [
 export default function SunHero() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
 
   // Auto-advance slideshow every 10 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % heroImages.length)
+      setIsLoading(true)
+      setHasError(false)
     }, 10000)
     return () => clearInterval(timer)
   }, [])
+
+  // Fallback timeout - if image doesn't load in 5 seconds, show anyway
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIsLoading(false)
+    }, 5000)
+    return () => clearTimeout(timeout)
+  }, [currentIndex])
 
   const currentImage = heroImages[currentIndex]
 
@@ -45,7 +56,7 @@ export default function SunHero() {
     <section className="relative w-full h-[60vh] md:h-[70vh] bg-black overflow-hidden">
       {/* Hero Image */}
       <div className="absolute inset-0">
-        {isLoading && (
+        {isLoading && !hasError && (
           <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
             <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
           </div>
@@ -53,9 +64,12 @@ export default function SunHero() {
         <img
           src={currentImage.url}
           alt={currentImage.title}
-          className="w-full h-full object-cover transition-opacity duration-1000"
+          className="w-full h-full object-cover"
           onLoad={() => setIsLoading(false)}
-          style={{ opacity: isLoading ? 0 : 1 }}
+          onError={() => {
+            setIsLoading(false)
+            setHasError(true)
+          }}
         />
       </div>
 
