@@ -61,8 +61,8 @@ const vaultSubmenu = [
 
 const playSubmenu = [
   { href: '/play/attractors', label: 'Attractors', active: true },
-  { href: '/play/fractals', label: 'Fractals', active: false },
-  { href: '/play/patterns', label: 'Patterns', active: false },
+  { href: '/play/fractals', label: 'Fractals', active: true },
+  { href: '/play/patterns', label: 'Patterns', active: true },
   { href: '/play/games', label: 'Games', active: true },
 ]
 
