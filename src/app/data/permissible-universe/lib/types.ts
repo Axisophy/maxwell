@@ -152,3 +152,40 @@ export interface TooltipData {
   id: string
   position: { x: number; y: number }
 }
+
+export interface BigQuestion {
+  id: string
+  number: number
+  title: string
+  hook: string
+  content: string
+  relatedConcepts: string[]
+  diagramHighlight?: {
+    massMin: number
+    massMax: number
+    radiusMin: number
+    radiusMax: number
+  }
+}
+
+export interface DarkMatterCandidate {
+  id: string
+  name: string
+  massMin: number
+  massMax: number
+  radiusMin: number
+  radiusMax: number
+  line: 'compton' | 'schwarzschild'
+  motivation: string
+  status: 'searching' | 'constrained' | 'ruled_out_partially'
+  experiments: string[]
+  description: string
+}
+
+export interface EMSpectrumBand {
+  id: string
+  label: string
+  color: string
+  massMin: number
+  massMax: number
+}

@@ -2,8 +2,8 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 import * as d3 from 'd3'
-import { CosmicObject, Boundary } from '../lib/types'
-import { CATEGORIES, formatSuperscript } from '../lib/constants'
+import { CosmicObject, Boundary, DarkMatterCandidate, EMSpectrumBand } from '../lib/types'
+import { CATEGORIES, formatSuperscript, COMPTON_INTERCEPT } from '../lib/constants'
 import { EPOCH_LIST, DOMINATION_LIST } from '../lib/epochs'
 
 interface Props {
@@ -11,6 +11,11 @@ interface Props {
   boundaries: Boundary[]
   showEpochs: boolean
   showDomination: boolean
+  showTimeView?: boolean
+  showDarkMatter?: boolean
+  showEMSpectrum?: boolean
+  darkMatterCandidates?: DarkMatterCandidate[]
+  emSpectrum?: EMSpectrumBand[]
   onObjectClick: (id: string) => void
   onObjectHover: (id: string | null) => void
   onBoundaryClick: (id: string) => void
@@ -22,6 +27,11 @@ export function CosmicDiagram({
   boundaries,
   showEpochs,
   showDomination,
+  showTimeView = false,
+  showDarkMatter = false,
+  showEMSpectrum = false,
+  darkMatterCandidates = [],
+  emSpectrum = [],
   onObjectClick,
   onObjectHover,
   onBoundaryClick,
@@ -175,8 +185,63 @@ export function CosmicDiagram({
         epochGroup.append('text')
           .attr('x', 5).attr('y', y - 3)
           .attr('fill', epoch.color).attr('font-size', '9px').attr('opacity', 0.7)
-          .text(epoch.shortName)
+          .text(showTimeView ? epoch.timeAfterBigBang : epoch.shortName)
       }
+    }
+
+    // Dark Matter Candidates overlay
+    if (showDarkMatter && darkMatterCandidates.length > 0) {
+      const dmGroup = chartArea.append('g').attr('class', 'dark-matter')
+      for (const candidate of darkMatterCandidates) {
+        const cx = xScale((candidate.massMin + candidate.massMax) / 2)
+        const cy = yScale((candidate.radiusMin + candidate.radiusMax) / 2)
+        const rx = Math.abs(xScale(candidate.massMax) - xScale(candidate.massMin)) / 2
+        const ry = Math.abs(yScale(candidate.radiusMin) - yScale(candidate.radiusMax)) / 2
+
+        const color = candidate.status === 'searching' ? '#f59e0b' : '#6b7280'
+        const dashArray = candidate.status === 'searching' ? '8,4' : '2,2'
+
+        dmGroup.append('ellipse')
+          .attr('cx', cx).attr('cy', cy)
+          .attr('rx', Math.max(rx, 15)).attr('ry', Math.max(ry, 10))
+          .attr('fill', 'none')
+          .attr('stroke', color)
+          .attr('stroke-width', 1.5)
+          .attr('stroke-dasharray', dashArray)
+          .attr('opacity', 0.6)
+
+        dmGroup.append('text')
+          .attr('x', cx).attr('y', cy + Math.max(ry, 10) + 12)
+          .attr('fill', color).attr('font-size', '8px')
+          .attr('text-anchor', 'middle').attr('opacity', 0.8)
+          .text(candidate.name)
+      }
+    }
+
+    // EM Spectrum overlay (along Compton line)
+    if (showEMSpectrum && emSpectrum.length > 0) {
+      const emGroup = chartArea.append('g').attr('class', 'em-spectrum')
+      for (const band of emSpectrum) {
+        // Compton line: logR = -logM + COMPTON_INTERCEPT
+        const x1 = xScale(band.massMin)
+        const y1 = yScale(-band.massMin + COMPTON_INTERCEPT)
+        const x2 = xScale(band.massMax)
+        const y2 = yScale(-band.massMax + COMPTON_INTERCEPT)
+
+        emGroup.append('line')
+          .attr('x1', x1).attr('y1', y1)
+          .attr('x2', x2).attr('y2', y2)
+          .attr('stroke', band.color)
+          .attr('stroke-width', 6)
+          .attr('opacity', 0.4)
+          .attr('stroke-linecap', 'round')
+      }
+      // Add a label for the EM spectrum
+      emGroup.append('text')
+        .attr('x', xScale(-35)).attr('y', yScale(-(-35) + COMPTON_INTERCEPT) - 10)
+        .attr('fill', 'white').attr('font-size', '8px')
+        .attr('opacity', 0.6)
+        .text('EM Spectrum (E/c²)')
     }
 
     const objectsGroup = chartArea.append('g').attr('class', 'objects')
@@ -302,7 +367,7 @@ export function CosmicDiagram({
       })
     svg.call(zoom)
 
-  }, [dimensions, objects, boundaries, showEpochs, showDomination, onObjectClick, onObjectHover, onBoundaryClick])
+  }, [dimensions, objects, boundaries, showEpochs, showDomination, showTimeView, showDarkMatter, showEMSpectrum, darkMatterCandidates, emSpectrum, onObjectClick, onObjectHover, onBoundaryClick])
 
   return (
     <div ref={containerRef} className="w-full h-full relative">

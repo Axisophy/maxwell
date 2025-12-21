@@ -8,7 +8,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react'
 import Breadcrumb from '@/components/ui/Breadcrumb'
-import { CosmicObject, ObjectCategory, ViewMode, ModalState } from './lib/types'
+import { CosmicObject, ObjectCategory, ViewMode, ModalState, BigQuestion } from './lib/types'
 import {
   ALL_OBJECTS,
   getObject,
@@ -19,6 +19,7 @@ import {
   BOUNDARY_LIST,
   BOUNDARIES,
 } from './lib/index'
+import { BIG_QUESTIONS, DARK_MATTER_CANDIDATES, EM_SPECTRUM } from './lib/questions'
 import {
   CosmicDiagram,
   ObjectModal,
@@ -41,6 +42,10 @@ export default function PermissibleUniversePage() {
   )
   const [showEpochs, setShowEpochs] = useState(false)
   const [showDomination, setShowDomination] = useState(false)
+  const [showTimeView, setShowTimeView] = useState(false)
+  const [showDarkMatter, setShowDarkMatter] = useState(false)
+  const [showEMSpectrum, setShowEMSpectrum] = useState(false)
+  const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null)
 
   // Search
   const [searchQuery, setSearchQuery] = useState('')
@@ -178,7 +183,7 @@ export default function PermissibleUniversePage() {
                   </div>
 
                   {/* Overlay toggles */}
-                  <div className="flex items-center gap-3 text-xs">
+                  <div className="flex items-center gap-3 text-xs flex-wrap">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
@@ -188,6 +193,18 @@ export default function PermissibleUniversePage() {
                       />
                       <span className="text-white/60">Epochs</span>
                     </label>
+                    {showEpochs && (
+                      <div className="flex items-center gap-1 ml-1">
+                        <span className={`text-[10px] ${!showTimeView ? 'text-white/80' : 'text-white/40'}`}>Density</span>
+                        <button
+                          onClick={() => setShowTimeView(!showTimeView)}
+                          className={`w-8 h-4 rounded-full transition-colors relative ${showTimeView ? 'bg-blue-500' : 'bg-white/20'}`}
+                        >
+                          <div className={`w-3 h-3 rounded-full bg-white absolute top-0.5 transition-transform ${showTimeView ? 'left-4' : 'left-0.5'}`} />
+                        </button>
+                        <span className={`text-[10px] ${showTimeView ? 'text-white/80' : 'text-white/40'}`}>Time</span>
+                      </div>
+                    )}
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
@@ -196,6 +213,24 @@ export default function PermissibleUniversePage() {
                         className="w-3 h-3 rounded border-white/30 bg-transparent"
                       />
                       <span className="text-white/60">Ω Regions</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={showDarkMatter}
+                        onChange={(e) => setShowDarkMatter(e.target.checked)}
+                        className="w-3 h-3 rounded border-white/30 bg-transparent"
+                      />
+                      <span className="text-white/60">Dark Matter</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={showEMSpectrum}
+                        onChange={(e) => setShowEMSpectrum(e.target.checked)}
+                        className="w-3 h-3 rounded border-white/30 bg-transparent"
+                      />
+                      <span className="text-white/60">EM Spectrum</span>
                     </label>
                   </div>
                 </div>
@@ -210,6 +245,11 @@ export default function PermissibleUniversePage() {
                   boundaries={BOUNDARY_LIST}
                   showEpochs={showEpochs}
                   showDomination={showDomination}
+                  showTimeView={showTimeView}
+                  showDarkMatter={showDarkMatter}
+                  showEMSpectrum={showEMSpectrum}
+                  darkMatterCandidates={DARK_MATTER_CANDIDATES}
+                  emSpectrum={EM_SPECTRUM}
                   onObjectClick={handleObjectClick}
                   onObjectHover={setHoveredObject}
                   onBoundaryClick={handleBoundaryClick}
@@ -245,6 +285,50 @@ export default function PermissibleUniversePage() {
                 </div>
               </div>
             </div>
+
+            {/* Big Questions Panel */}
+            <section className="px-4 md:px-8 lg:px-12 py-8">
+              <h2 className="text-xl font-light text-white mb-4">The Big Questions</h2>
+              <p className="text-white/50 text-sm mb-6 max-w-2xl">
+                The Permissible Universe isn't just a map — it's a window into the deepest mysteries of physics.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {BIG_QUESTIONS.map(question => (
+                  <button
+                    key={question.id}
+                    onClick={() => setExpandedQuestion(expandedQuestion === question.id ? null : question.id)}
+                    className={`
+                      bg-white/5 rounded-xl p-5 text-left
+                      hover:bg-white/10 transition-colors
+                      border border-white/10
+                      ${expandedQuestion === question.id ? 'ring-1 ring-white/30' : ''}
+                    `}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-white/30 font-mono text-sm">{question.number}</span>
+                      <div className="flex-1">
+                        <h3 className="text-white font-medium mb-2">{question.title}</h3>
+                        <p className="text-white/60 text-sm">{question.hook}</p>
+                        {expandedQuestion === question.id && (
+                          <div className="mt-4 pt-4 border-t border-white/10">
+                            <p className="text-white/70 text-sm whitespace-pre-line">{question.content}</p>
+                            {question.relatedConcepts.length > 0 && (
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                {question.relatedConcepts.map(concept => (
+                                  <span key={concept} className="text-xs bg-white/10 text-white/60 px-2 py-1 rounded">
+                                    {concept}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
           </>
         ) : (
           /* Limits View */
