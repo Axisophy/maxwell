@@ -2,108 +2,202 @@
 
 import { useState, useEffect } from 'react'
 
-const WAVELENGTHS = {
-  '0193': { label: 'AIA 193Å', description: 'Corona at 1.2 million K' },
-  '0171': { label: 'AIA 171Å', description: 'Corona at 600,000 K' },
-  '0304': { label: 'AIA 304Å', description: 'Chromosphere at 50,000 K' },
-  '0131': { label: 'AIA 131Å', description: 'Flare plasma at 10 million K' },
-  'HMIIC': { label: 'HMI', description: 'Visible light surface' },
-} as const
-
-type WavelengthKey = keyof typeof WAVELENGTHS
-
 interface SDOViewerProps {
-  defaultWavelength?: WavelengthKey
-  size?: 'normal' | 'large'
+  size?: 'default' | 'large'
+  className?: string
 }
 
-export default function SDOViewer({
-  defaultWavelength = '0193',
-  size = 'normal'
-}: SDOViewerProps) {
-  const [wavelength, setWavelength] = useState<WavelengthKey>(defaultWavelength)
-  const [isLoading, setIsLoading] = useState(true)
-  const [imageKey, setImageKey] = useState(0)
+type SDOWavelength = '0193' | '0171' | '0304' | '0131' | '0211' | '0335' | '1600' | '1700' | 'HMIIC' | 'HMIB'
 
-  const imageSize = size === 'large' ? 2048 : 1024
-  const imageUrl = `https://sdo.gsfc.nasa.gov/assets/img/latest/latest_${imageSize}_${wavelength}.jpg`
+interface WavelengthConfig {
+  id: SDOWavelength
+  label: string
+  description: string
+  color: string
+  temperature?: string
+}
+
+const wavelengths: WavelengthConfig[] = [
+  { 
+    id: '0193', 
+    label: '193 Å', 
+    description: 'Corona and hot flare plasma',
+    color: '#FFD700',
+    temperature: '1.2 million °C'
+  },
+  { 
+    id: '0171', 
+    label: '171 Å', 
+    description: 'Quiet corona and upper transition region',
+    color: '#FFD700',
+    temperature: '1 million °C'
+  },
+  { 
+    id: '0304', 
+    label: '304 Å', 
+    description: 'Chromosphere and transition region',
+    color: '#FF4500',
+    temperature: '50,000 °C'
+  },
+  { 
+    id: '0131', 
+    label: '131 Å', 
+    description: 'Flaring regions',
+    color: '#00CED1',
+    temperature: '10 million °C'
+  },
+  { 
+    id: '0211', 
+    label: '211 Å', 
+    description: 'Active regions',
+    color: '#9370DB',
+    temperature: '2 million °C'
+  },
+  { 
+    id: '0335', 
+    label: '335 Å', 
+    description: 'Active regions',
+    color: '#1E90FF',
+    temperature: '2.5 million °C'
+  },
+  { 
+    id: 'HMIIC', 
+    label: 'HMI Continuum', 
+    description: 'Visible light (sunspots)',
+    color: '#FFFFFF',
+  },
+  { 
+    id: 'HMIB', 
+    label: 'HMI Magnetogram', 
+    description: 'Magnetic field polarity',
+    color: '#FFFFFF',
+  },
+]
+
+export default function SDOViewer({ size = 'default', className = '' }: SDOViewerProps) {
+  const [selectedWavelength, setSelectedWavelength] = useState<SDOWavelength>('0193')
+  const [imageUrl, setImageUrl] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
+
+  const currentWavelength = wavelengths.find(w => w.id === selectedWavelength)!
+  const imageSize = size === 'large' ? '1024' : '512'
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setImageKey(prev => prev + 1)
+    const loadImage = () => {
       setIsLoading(true)
-    }, 5 * 60 * 1000)
+      setError(null)
+      
+      // SDO image URL pattern
+      const url = `https://sdo.gsfc.nasa.gov/assets/img/latest/latest_${imageSize}_${selectedWavelength}.jpg?t=${Date.now()}`
+      setImageUrl(url)
+      setLastUpdate(new Date())
+    }
+
+    loadImage()
+
+    // Refresh every 5 minutes
+    const interval = setInterval(loadImage, 5 * 60 * 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [selectedWavelength, imageSize])
+
+  const handleImageLoad = () => {
+    setIsLoading(false)
+    setError(null)
+  }
+
+  const handleImageError = () => {
+    setIsLoading(false)
+    setError('Image temporarily unavailable')
+  }
 
   return (
-    <div className="bg-[#1a1a1e] rounded-xl overflow-hidden">
-      {/* Image container - always square to match SDO imagery */}
-      <div className="relative aspect-square bg-black">
-        {/* Loading state */}
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="text-white/50 text-sm font-mono">Loading...</div>
+    <div className={`bg-[#0f0f14] rounded-xl overflow-hidden ${className}`}>
+      {/* Header */}
+      <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span className="text-xs font-mono text-white/40">LIVE</span>
           </div>
-        )}
-
-        {/* Solar image */}
-        <img
-          key={imageKey}
-          src={`${imageUrl}?t=${imageKey}`}
-          alt={`Sun at ${WAVELENGTHS[wavelength].label}`}
-          className={`w-full h-full object-contain transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-          onLoad={() => setIsLoading(false)}
-          onError={() => setIsLoading(false)}
-        />
-
-        {/* Wavelength indicator overlay */}
-        <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-sm rounded px-2 py-1">
-          <span className="text-xs font-mono text-white/80">{WAVELENGTHS[wavelength].label}</span>
+          <h3 className="text-sm font-medium text-white">NASA SDO</h3>
         </div>
-
-        {/* Live indicator */}
-        <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-black/70 backdrop-blur-sm rounded px-2 py-1">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-full w-full bg-green-500"></span>
-          </span>
-          <span className="text-[10px] font-mono text-white/60">LIVE</span>
-        </div>
-
-        {/* SDO label */}
-        <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm rounded px-2 py-1">
-          <span className="text-xs font-mono text-white/80">NASA SDO</span>
-        </div>
+        <span className="text-xs text-white/40 font-mono">Geosynchronous Orbit</span>
       </div>
 
-      {/* Controls */}
-      <div className="p-4">
-        {/* Wavelength selector */}
-        <div className="flex bg-white/5 rounded-lg p-1">
-          {(Object.keys(WAVELENGTHS) as WavelengthKey[]).map((key) => (
+      {/* Wavelength Selector */}
+      <div className="px-4 py-2 border-b border-white/10 bg-black/30 overflow-x-auto">
+        <div className="flex gap-1 min-w-max">
+          {wavelengths.map((wavelength) => (
             <button
-              key={key}
-              onClick={() => { setWavelength(key); setIsLoading(true) }}
-              className={`
-                flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors
-                ${wavelength === key
+              key={wavelength.id}
+              onClick={() => setSelectedWavelength(wavelength.id)}
+              className={`px-3 py-1.5 text-xs font-mono rounded transition-all whitespace-nowrap ${
+                selectedWavelength === wavelength.id
                   ? 'bg-white/10 text-white'
-                  : 'text-white/40 hover:text-white/60'
-                }
-              `}
+                  : 'text-white/40 hover:text-white/70 hover:bg-white/5'
+              }`}
             >
-              {WAVELENGTHS[key].label}
+              {wavelength.label}
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Description */}
-        <div className="mt-3 text-center">
-          <p className="text-xs text-white/40">
-            {WAVELENGTHS[wavelength].description}
-          </p>
+      {/* Image Container */}
+      <div className={`relative bg-black ${size === 'large' ? 'aspect-square' : 'aspect-square'}`}>
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+              <span className="text-xs text-white/40 font-mono">Loading imagery...</span>
+            </div>
+          </div>
+        )}
+
+        {error ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-black">
+            <div className="text-center">
+              <div className="text-white/20 text-6xl mb-2">☉</div>
+              <p className="text-sm text-white/40">{error}</p>
+              <p className="text-xs text-white/30 mt-1">Retrying...</p>
+            </div>
+          </div>
+        ) : (
+          imageUrl && (
+            <img
+              src={imageUrl}
+              alt={`Sun in ${currentWavelength.label}`}
+              className="w-full h-full object-contain"
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+            />
+          )
+        )}
+
+        {/* Wavelength Info Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+          <p className="text-sm text-white font-medium">{currentWavelength.description}</p>
+          {currentWavelength.temperature && (
+            <p className="text-xs text-white/50 mt-1">{currentWavelength.temperature}</p>
+          )}
         </div>
+      </div>
+
+      {/* Footer Info */}
+      <div className="px-4 py-3 border-t border-white/10 bg-black/20 flex items-center justify-between">
+        <div className="text-xs text-white/40">
+          Solar Dynamics Observatory • AIA Instrument
+        </div>
+        {lastUpdate && (
+          <span className="text-xs text-white/30 font-mono">
+            {lastUpdate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC
+          </span>
+        )}
       </div>
     </div>
   )
