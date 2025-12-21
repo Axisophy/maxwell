@@ -15,6 +15,7 @@ const navItems = [
     submenu: [
       { href: '/observe/vital-signs', label: 'Vital Signs' },
       { href: '/observe/dashboard', label: 'Dashboard' },
+      { href: '/observe/moon', label: 'Lunar Atlas' },
     ]
   },
   { 
@@ -37,14 +38,13 @@ const navItems = [
     icon: Database,
     matchPaths: ['/data'],
     submenu: [
-      { href: '/data#universe', label: 'The Universe' },
+      { href: '/data#cosmos', label: 'The Cosmos' },
       { href: '/data#matter', label: 'Matter' },
-      { href: '/data#chemistry', label: 'Chemistry' },
       { href: '/data#life', label: 'Life' },
       { href: '/data#earth', label: 'Earth' },
       { href: '/data#mathematics', label: 'Mathematics' },
-      { href: '/data#astronomy', label: 'Astronomy' },
-      { href: '/data#engineering', label: 'Engineering' },
+      { href: '/data#tools', label: 'Tools' },
+      { href: '/data#deep-sky', label: 'Deep Sky' },
     ]
   },
   { 

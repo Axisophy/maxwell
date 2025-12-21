@@ -39,16 +39,15 @@ const toolsSubmenu = [
   { href: '#', label: 'Explore', active: false },
 ]
 
-// Data submenu - category sections
+// Data submenu - NEW 7 CATEGORY STRUCTURE
 const dataSubmenu = [
-  { href: '/data#universe', label: 'The Universe', active: true },
+  { href: '/data#cosmos', label: 'The Cosmos', active: true },
   { href: '/data#matter', label: 'Matter', active: true },
-  { href: '/data#chemistry', label: 'Chemistry', active: true },
   { href: '/data#life', label: 'Life', active: true },
   { href: '/data#earth', label: 'Earth', active: true },
   { href: '/data#mathematics', label: 'Mathematics', active: true },
-  { href: '/data#astronomy', label: 'Astronomy', active: true },
-  { href: '/data#engineering', label: 'Engineering', active: true },
+  { href: '/data#tools', label: 'Tools', active: true },
+  { href: '/data#deep-sky', label: 'Deep Sky', active: true },
 ]
 
 const vaultSubmenu = [
@@ -119,8 +118,8 @@ export default function Header() {
                           key={subItem.label}
                           href={subItem.href}
                           className={`block text-sm cursor-pointer ${
-                            pathname === subItem.href 
-                              ? 'text-black font-medium' 
+                            pathname === subItem.href
+                              ? 'text-black font-medium'
                               : 'text-black'
                           }`}
                         >
@@ -151,7 +150,7 @@ export default function Header() {
               </button>
             </SignInButton>
           </SignedOut>
-          
+
           <SignedIn>
             <Link
               href="/account"
