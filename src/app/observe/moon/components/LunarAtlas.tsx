@@ -12,88 +12,6 @@ interface LunarAtlasProps {
 }
 
 // ============================================================================
-// COORDINATE CONVERSION
-// ============================================================================
-// The tiles are in standard XYZ format. At zoom 0, the entire moon fits in
-// one 256x256 tile. We use CRS.Simple which treats coordinates as pixels.
-//
-// GeoJSON data uses lunar geographic coordinates:
-//   lat: -90 to 90 (south pole to north pole)
-//   lng: -180 to 180 (far side to near side, 0° = center of near side)
-//
-// We need to convert these to CRS.Simple pixel coordinates where:
-//   At zoom 0: x = 0-256, y = 0-256
-//   Origin (0,0) is top-left of the tile
-// ============================================================================
-
-function lunarLatLngToSimple(lat: number, lng: number): L.LatLngExpression {
-  // Convert lunar coordinates to pixel positions at zoom 0
-  // lng: -180 to 180 → x: 0 to 256
-  // lat: 90 to -90 → y: 0 to 256 (note: latitude is inverted for y-down)
-  const x = ((lng + 180) / 360) * 256;
-  const y = ((90 - lat) / 180) * 256;
-
-  // Leaflet's LatLng expects [lat, lng] but in CRS.Simple this is [y, x]
-  // However, L.geoJSON swaps them internally, so we return [y, x]
-  return [y, x];
-}
-
-// Convert entire GeoJSON to CRS.Simple coordinates
-function convertGeoJSONToSimple(geojson: GeoJSON.FeatureCollection): GeoJSON.FeatureCollection {
-  return {
-    ...geojson,
-    features: geojson.features.map(feature => {
-      const geometry = feature.geometry;
-
-      if (geometry.type === 'Point') {
-        const [lng, lat] = geometry.coordinates as [number, number];
-        const [y, x] = lunarLatLngToSimple(lat, lng) as [number, number];
-        return {
-          ...feature,
-          geometry: {
-            type: 'Point' as const,
-            coordinates: [x, y], // GeoJSON uses [x, y] = [lng, lat]
-          },
-        };
-      }
-
-      if (geometry.type === 'Polygon') {
-        const newCoords = (geometry.coordinates as number[][][]).map(ring =>
-          ring.map(([lng, lat]) => {
-            const [y, x] = lunarLatLngToSimple(lat, lng) as [number, number];
-            return [x, y];
-          })
-        );
-        return {
-          ...feature,
-          geometry: {
-            type: 'Polygon' as const,
-            coordinates: newCoords,
-          },
-        };
-      }
-
-      if (geometry.type === 'LineString') {
-        const newCoords = (geometry.coordinates as number[][]).map(([lng, lat]) => {
-          const [y, x] = lunarLatLngToSimple(lat, lng) as [number, number];
-          return [x, y];
-        });
-        return {
-          ...feature,
-          geometry: {
-            type: 'LineString' as const,
-            coordinates: newCoords,
-          },
-        };
-      }
-
-      // Return unchanged for other geometry types
-      return feature;
-    }),
-  };
-}
-
-// ============================================================================
 // COMPONENT
 // ============================================================================
 
@@ -108,44 +26,27 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
-    // ========================================================================
-    // CRS.Simple Setup
-    // ========================================================================
-    // At zoom 0: one 256x256 tile covers the entire map
-    // Bounds in CRS.Simple are in pixel coordinates
-    // We want the center of the map at (128, 128) which corresponds to
-    // lunar coordinates (0°, 0°) - the center of the near side
-    // ========================================================================
-
     const map = L.map(mapRef.current, {
-      crs: L.CRS.Simple,
+      crs: L.CRS.EPSG4326,
+      center: [0, 0],
+      zoom: 1,
       minZoom: 0,
       maxZoom: 6,
+      maxBounds: [[-90, -180], [90, 180]],
+      maxBoundsViscosity: 1.0,
       attributionControl: false,
       zoomControl: true,
     });
 
-    // Calculate proper bounds for CRS.Simple using unproject
-    // At zoom 0, the tile is 256x256 pixels
-    // unproject converts pixel coordinates to LatLng in CRS.Simple space
-    const southWest = map.unproject([0, 256], 0);
-    const northEast = map.unproject([256, 0], 0);
-    const bounds = L.latLngBounds(southWest, northEast);
-
-    map.setMaxBounds(bounds.pad(0.1));
-    map.fitBounds(bounds);
-    map.setView(bounds.getCenter(), 1);
-
     // ========================================================================
-    // Tile Layer
+    // Tile Layer - Using USGS Astrogeology WMS (proper lunar projection)
     // ========================================================================
-    const tileLayer = L.tileLayer(
-      'https://cartocdn-gusc.global.ssl.fastly.net/opmbuilder/api/v1/map/named/opm-moon-basemap-v0-1/all/{z}/{x}/{y}.png',
+    const tileLayer = L.tileLayer.wms(
+      'https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/earth/moon_simp_cyl.map',
       {
-        minZoom: 0,
-        maxZoom: 6,
-        noWrap: true,
-        errorTileUrl: '', // Suppress error tile display
+        layers: 'LROC_WAC_GLOBAL',
+        format: 'image/png',
+        transparent: false,
       }
     );
 
@@ -210,10 +111,7 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
         const response = await fetch(source);
         if (!response.ok) throw new Error(`Failed to load ${layerId}`);
 
-        const rawGeojson = await response.json();
-
-        // Convert coordinates from lunar lat/lng to CRS.Simple pixels
-        const geojson = convertGeoJSONToSimple(rawGeojson as GeoJSON.FeatureCollection);
+        const geojson = await response.json() as GeoJSON.FeatureCollection;
 
         const layerConfig = getLayerById(layerGroups, layerId);
 
