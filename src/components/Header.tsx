@@ -60,8 +60,10 @@ const vaultSubmenu = [
 ]
 
 const playSubmenu = [
-  { href: '#', label: 'Games', active: false },
-  { href: '#', label: 'Simulations', active: false },
+  { href: '/play/attractors', label: 'Attractors', active: true },
+  { href: '/play/fractals', label: 'Fractals', active: false },
+  { href: '/play/patterns', label: 'Patterns', active: false },
+  { href: '/play/games', label: 'Games', active: true },
 ]
 
 // Map nav items to their submenus

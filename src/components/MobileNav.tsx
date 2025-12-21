@@ -66,7 +66,12 @@ const navItems = [
     label: 'Play',
     icon: Sparkles,
     matchPaths: ['/play'],
-    submenu: []
+    submenu: [
+      { href: '/play/attractors', label: 'Attractors' },
+      { href: '/play/fractals', label: 'Fractals' },
+      { href: '/play/patterns', label: 'Patterns' },
+      { href: '/play/games', label: 'Games' },
+    ]
   },
 ]
 
