@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { ArrowLeft, RefreshCw } from 'lucide-react'
+import Breadcrumb from '@/components/ui/Breadcrumb'
 
 // =============================================================================
 // THE SUN
@@ -79,23 +80,13 @@ export default function SunPage() {
       <div className="px-4 md:px-8 lg:px-12 pt-6 md:pt-8 lg:pt-12 pb-16 md:pb-20 lg:pb-24">
         
         {/* Breadcrumb */}
-        <nav className="mb-6 md:mb-8">
-          <ol className="flex items-center gap-2 text-sm">
-            <li>
-              <Link href="/data" className="text-black/50 hover:text-black transition-colors">
-                Data
-              </Link>
-            </li>
-            <li className="text-black/30">/</li>
-            <li>
-              <Link href="/data/solar-system" className="text-black/50 hover:text-black transition-colors">
-                Solar System
-              </Link>
-            </li>
-            <li className="text-black/30">/</li>
-            <li className="text-black">Sun</li>
-          </ol>
-        </nav>
+        <Breadcrumb
+          items={[
+            { label: 'Data', href: '/data' },
+            { label: 'Solar System', href: '/data/solar-system' },
+            { label: 'Sun' },
+          ]}
+        />
 
         {/* Header */}
         <header className="mb-8 md:mb-12">
