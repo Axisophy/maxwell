@@ -233,7 +233,7 @@ export default function SatellitesAbove() {
             🛸 ISS is overhead!
           </div>
           <div className="text-[0.7em] text-amber-600">
-            Look up — the space station is passing over
+            Look up - the space station is passing over
           </div>
         </div>
       )}

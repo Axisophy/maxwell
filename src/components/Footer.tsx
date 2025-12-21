@@ -59,7 +59,7 @@ export default function Footer() {
               A digital laboratory for looking at science.
             </p>
             <p className="text-sm text-white/40 leading-relaxed max-w-sm">
-              Live data, interactive tools, and 2,500 years of scientific texts — beautifully presented.
+              Live data, interactive tools, and 2,500 years of scientific texts - beautifully presented.
             </p>
           </div>
 

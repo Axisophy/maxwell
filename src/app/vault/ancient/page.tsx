@@ -14,7 +14,7 @@ export default function AncientPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-light text-text-primary mb-2">Ancient</h1>
           <p className="text-text-muted max-w-2xl">
-            Before 1500 — The foundations of scientific thought from Euclid, Aristotle, 
+            Before 1500 - The foundations of scientific thought from Euclid, Aristotle, 
             Archimedes, and the classical world.
           </p>
           <p className="text-sm text-text-muted mt-2">{books.length} works</p>

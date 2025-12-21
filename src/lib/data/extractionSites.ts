@@ -278,7 +278,7 @@ export const SITES: ExtractionSite[] = [
     startYear: 1985,
     production: '300 million tonnes Fe/year',
     description: 'World\'s largest iron ore mine. Contains 18 billion tonnes of ore at 66% iron.',
-    significance: 'Purest iron ore on Earth — requires minimal processing',
+    significance: 'Purest iron ore on Earth - requires minimal processing',
     scale: 'mega',
   },
   {
@@ -1184,7 +1184,7 @@ export const SITES: ExtractionSite[] = [
     startYear: 1972,
     production: '2 million tonnes/year',
     description: 'Massive phosphate deposit in disputed Western Sahara. Conveyor belt visible from space.',
-    significance: 'Controversial — territory claimed by Sahrawi people',
+    significance: 'Controversial - territory claimed by Sahrawi people',
     scale: 'large',
   },
   
@@ -1299,7 +1299,7 @@ export const SITES: ExtractionSite[] = [
     startYear: 1957,
     production: '45,000 tonnes REE/year',
     description: 'World\'s largest rare earth deposit. Gives China global dominance.',
-    significance: 'Originally mined for iron — REE was a byproduct',
+    significance: 'Originally mined for iron - REE was a byproduct',
     scale: 'mega',
   },
   {
@@ -1521,7 +1521,7 @@ export const SITES: ExtractionSite[] = [
     status: 'active',
     operator: 'Various',
     production: '$31 billion/year (estimated)',
-    description: 'World\'s largest jade mines. Extremely dangerous — landslides kill hundreds.',
+    description: 'World\'s largest jade mines. Extremely dangerous - landslides kill hundreds.',
     significance: 'Jade worth more than Myanmar\'s entire official GDP',
     scale: 'mega',
   },

@@ -265,7 +265,7 @@ export default function DeepSpaceNetwork() {
         {data.stations.length < 3 && Array(3 - data.stations.length).fill(0).map((_, i) => (
           <div key={`empty-${i}`} className="text-center opacity-30">
             <div className="text-[0.7em] font-medium text-black/60 uppercase tracking-wider mb-1">
-              —
+              -
             </div>
             <div className="flex justify-center">
               <DishIcon isActive={false} size={32} />

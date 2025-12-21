@@ -14,7 +14,7 @@ export default function RenaissancePage() {
         <div className="mb-8">
           <h1 className="text-3xl font-light text-text-primary mb-2">Renaissance</h1>
           <p className="text-text-muted max-w-2xl">
-            1500–1800 — The Scientific Revolution. Copernicus, Galileo, Newton, 
+            1500–1800 - The Scientific Revolution. Copernicus, Galileo, Newton, 
             and the birth of modern science.
           </p>
           <p className="text-sm text-text-muted mt-2">{books.length} works</p>

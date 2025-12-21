@@ -142,7 +142,7 @@ export default function SOHOCoronagraph() {
 
       {/* Description */}
       <div className="text-[0.75em] text-black/60 leading-relaxed">
-        <span className="font-medium text-black/80">Artificial eclipse:</span> The coronagraph blocks the Sun's disk to reveal the faint corona. Watch for bright ejections—coronal mass ejections can trigger auroras on Earth.
+        <span className="font-medium text-black/80">Artificial eclipse:</span> The coronagraph blocks the Sun's disk to reveal the faint corona. Watch for bright ejections-coronal mass ejections can trigger auroras on Earth.
       </div>
 
       {/* Update time */}

@@ -265,7 +265,7 @@ export default function YourSkyWhenBorn() {
         <div className="bg-white/5 rounded-lg p-[0.5em]">
           <div className="text-[0.4375em] text-white/30 uppercase">Brightest</div>
           <div className="text-[0.75em] text-white font-medium truncate">
-            {visibleStars.sort((a, b) => a.mag - b.mag)[0]?.name || '—'}
+            {visibleStars.sort((a, b) => a.mag - b.mag)[0]?.name || '-'}
           </div>
         </div>
       </div>

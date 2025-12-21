@@ -123,7 +123,7 @@ export default function DesignTestPage() {
         {/* PRIMARY SANS */}
         <div className="bg-white rounded-xl p-8 mb-8">
           <h2 className="text-xs font-medium text-neutral-400 uppercase tracking-widest mb-6">
-            Primary Sans — {sansCandidates.find(f => f.id === selectedSans)?.label}
+            Primary Sans - {sansCandidates.find(f => f.id === selectedSans)?.label}
           </h2>
 
           {/* Navigation specimen */}
@@ -157,12 +157,12 @@ export default function DesignTestPage() {
           <div className="mb-8">
             <p className="text-xs text-neutral-400 mb-3">Size scale</p>
             <div className="space-y-2" style={{ fontFamily: `"${selectedSans}", system-ui, sans-serif` }}>
-              <p className="text-4xl font-light">text-4xl — Section Header</p>
-              <p className="text-2xl font-light">text-2xl — Navigation Item</p>
-              <p className="text-xl font-normal">text-xl — Widget Title</p>
-              <p className="text-base font-normal">text-base — Body text at standard size</p>
-              <p className="text-sm font-normal">text-sm — Submenu items, labels</p>
-              <p className="text-xs font-medium uppercase tracking-widest">text-xs — Category labels</p>
+              <p className="text-4xl font-light">text-4xl - Section Header</p>
+              <p className="text-2xl font-light">text-2xl - Navigation Item</p>
+              <p className="text-xl font-normal">text-xl - Widget Title</p>
+              <p className="text-base font-normal">text-base - Body text at standard size</p>
+              <p className="text-sm font-normal">text-sm - Submenu items, labels</p>
+              <p className="text-xs font-medium uppercase tracking-widest">text-xs - Category labels</p>
             </div>
           </div>
 
@@ -174,7 +174,7 @@ export default function DesignTestPage() {
               style={{ fontFamily: `"${selectedSans}", system-ui, sans-serif` }}
             >
               MXWLL is a digital laboratory for observing science. We present live data from NASA satellites, 
-              seismic monitors, and research institutions — beautifully designed for people who are already 
+              seismic monitors, and research institutions - beautifully designed for people who are already 
               curious. This is not science education or science news. This is science, presented properly.
             </p>
           </div>
@@ -183,7 +183,7 @@ export default function DesignTestPage() {
         {/* MONO */}
         <div className="bg-white rounded-xl p-8 mb-8">
           <h2 className="text-xs font-medium text-neutral-400 uppercase tracking-widest mb-6">
-            Mono — {monoCandidates.find(f => f.id === selectedMono)?.label}
+            Mono - {monoCandidates.find(f => f.id === selectedMono)?.label}
           </h2>
 
           {/* Large data display */}
@@ -265,7 +265,7 @@ export default function DesignTestPage() {
         {/* SERIF */}
         <div className="bg-white rounded-xl p-8 mb-8">
           <h2 className="text-xs font-medium text-neutral-400 uppercase tracking-widest mb-6">
-            Serif — {serifCandidates.find(f => f.id === selectedSerif)?.label}
+            Serif - {serifCandidates.find(f => f.id === selectedSerif)?.label}
           </h2>
 
           {/* Long-form reading */}
@@ -304,7 +304,7 @@ export default function DesignTestPage() {
               className="mt-2 text-sm text-neutral-500 pl-6"
               style={{ fontFamily: `"${selectedSans}", system-ui, sans-serif` }}
             >
-              — Marie Curie
+              - Marie Curie
             </p>
           </div>
 
@@ -315,11 +315,11 @@ export default function DesignTestPage() {
               className="space-y-2"
               style={{ fontFamily: `"${selectedSerif}", Georgia, serif` }}
             >
-              <p className="text-3xl">text-3xl — Chapter heading</p>
-              <p className="text-xl">text-xl — Section title</p>
-              <p className="text-lg">text-lg — Body text (reading)</p>
-              <p className="text-base">text-base — Standard body</p>
-              <p className="text-sm italic">text-sm italic — Captions, notes</p>
+              <p className="text-3xl">text-3xl - Chapter heading</p>
+              <p className="text-xl">text-xl - Section title</p>
+              <p className="text-lg">text-lg - Body text (reading)</p>
+              <p className="text-base">text-base - Standard body</p>
+              <p className="text-sm italic">text-sm italic - Captions, notes</p>
             </div>
           </div>
         </div>
@@ -327,7 +327,7 @@ export default function DesignTestPage() {
         {/* DISPLAY */}
         <div className="bg-white rounded-xl p-8 mb-8">
           <h2 className="text-xs font-medium text-neutral-400 uppercase tracking-widest mb-6">
-            Display — {displayCandidates.find(f => f.id === selectedDisplay)?.label}
+            Display - {displayCandidates.find(f => f.id === selectedDisplay)?.label}
           </h2>
 
           <div className="space-y-6">
@@ -366,7 +366,7 @@ export default function DesignTestPage() {
         {/* TRADE GOTHIC (Book Covers) */}
         <div className="bg-white rounded-xl p-8 mb-8">
           <h2 className="text-xs font-medium text-neutral-400 uppercase tracking-widest mb-6">
-            Trade Gothic — Book Covers (decided)
+            Trade Gothic - Book Covers (decided)
           </h2>
 
           <div className="flex gap-8">
@@ -465,7 +465,7 @@ export default function DesignTestPage() {
         {/* COMBINATIONS */}
         <div className="bg-white rounded-xl p-8">
           <h2 className="text-xs font-medium text-neutral-400 uppercase tracking-widest mb-6">
-            Combinations — All fonts together
+            Combinations - All fonts together
           </h2>
 
           {/* Widget-style card */}
@@ -553,7 +553,7 @@ export default function DesignTestPage() {
         {/* PRIMARY SANS - Dark */}
         <div className="bg-[#141419] rounded-xl p-8 mb-8">
           <h2 className="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-6">
-            Primary Sans — {sansCandidates.find(f => f.id === selectedSans)?.label}
+            Primary Sans - {sansCandidates.find(f => f.id === selectedSans)?.label}
           </h2>
 
           {/* Navigation specimen */}
@@ -591,7 +591,7 @@ export default function DesignTestPage() {
               style={{ fontFamily: `"${selectedSans}", system-ui, sans-serif` }}
             >
               MXWLL is a digital laboratory for observing science. We present live data from NASA satellites, 
-              seismic monitors, and research institutions — beautifully designed for people who are already 
+              seismic monitors, and research institutions - beautifully designed for people who are already 
               curious. This is not science education or science news. This is science, presented properly.
             </p>
           </div>
@@ -600,7 +600,7 @@ export default function DesignTestPage() {
         {/* MONO - Dark */}
         <div className="bg-[#141419] rounded-xl p-8 mb-8">
           <h2 className="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-6">
-            Mono — {monoCandidates.find(f => f.id === selectedMono)?.label}
+            Mono - {monoCandidates.find(f => f.id === selectedMono)?.label}
           </h2>
 
           {/* Large data display */}
@@ -637,7 +637,7 @@ export default function DesignTestPage() {
         {/* SERIF - Dark */}
         <div className="bg-[#141419] rounded-xl p-8 mb-8">
           <h2 className="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-6">
-            Serif — {serifCandidates.find(f => f.id === selectedSerif)?.label}
+            Serif - {serifCandidates.find(f => f.id === selectedSerif)?.label}
           </h2>
 
           <div 
@@ -660,7 +660,7 @@ export default function DesignTestPage() {
         {/* Widget combo - Dark */}
         <div className="bg-[#141419] rounded-xl p-8">
           <h2 className="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-6">
-            Combinations — Widget example
+            Combinations - Widget example
           </h2>
 
           <div className="border border-neutral-800 rounded-xl overflow-hidden max-w-md">

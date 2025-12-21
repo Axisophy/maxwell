@@ -29,7 +29,7 @@ const eras = [
     href: '/vault/scientific-fiction',
     name: 'Scientific Fiction',
     period: '1818–1920',
-    description: 'Shelley, Verne, Wells, Čapek — the birth of science fiction as a literary form.',
+    description: 'Shelley, Verne, Wells, Čapek - the birth of science fiction as a literary form.',
   },
 ]
 
@@ -127,7 +127,7 @@ export default function VaultPage() {
             <div className="bg-white rounded-xl border border-[#e5e5e5] p-5 opacity-70">
               <h3 className="text-base font-medium text-black mb-2">Maps & Timelines</h3>
               <p className="text-sm text-black/50">
-                Visual discovery — trace who influenced whom, 
+                Visual discovery - trace who influenced whom, 
                 see where ideas emerged geographically.
               </p>
             </div>

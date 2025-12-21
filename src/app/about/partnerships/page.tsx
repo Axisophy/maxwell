@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Partnerships — MXWLL',
+  title: 'Partnerships - MXWLL',
   description: 'Institutional and corporate partnerships with MXWLL. Bring your science to curious audiences worldwide.',
 }
 
@@ -16,7 +16,7 @@ export default function PartnershipsPage() {
           </h1>
 
           <p className="text-base md:text-lg text-black mb-8">
-            Universities, research institutions, museums, science organisations, and companies — we're building partnerships to bring your work to curious audiences worldwide. Beautiful presentation, effortless engagement.
+            Universities, research institutions, museums, science organisations, and companies - we're building partnerships to bring your work to curious audiences worldwide. Beautiful presentation, effortless engagement.
           </p>
 
           {/* For institutions */}
@@ -70,12 +70,12 @@ export default function PartnershipsPage() {
               We're actively developing relationships with:
             </p>
             <ul className="text-base md:text-lg text-black space-y-2">
-              <li>— UK research universities (Oxford, Cambridge, Imperial, UCL, and others)</li>
-              <li>— International research institutions (CERN, ESA, Max Planck Institutes)</li>
-              <li>— Science museums and educational organisations</li>
-              <li>— Energy companies (National Grid, renewable energy providers)</li>
-              <li>— Space and aerospace organisations</li>
-              <li>— Technology companies with science-focused missions</li>
+              <li>- UK research universities (Oxford, Cambridge, Imperial, UCL, and others)</li>
+              <li>- International research institutions (CERN, ESA, Max Planck Institutes)</li>
+              <li>- Science museums and educational organisations</li>
+              <li>- Energy companies (National Grid, renewable energy providers)</li>
+              <li>- Space and aerospace organisations</li>
+              <li>- Technology companies with science-focused missions</li>
             </ul>
           </section>
 

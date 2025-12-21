@@ -75,7 +75,7 @@ export default function PathsPage() {
             <div className="bg-white rounded-xl border border-[#e5e5e5] p-5">
               <p className="text-lg font-normal text-text-primary mb-2">Maps & Timelines</p>
               <p className="text-sm text-text-muted">
-                Visual exploration — who influenced whom, where ideas emerged.
+                Visual exploration - who influenced whom, where ideas emerged.
               </p>
             </div>
           </div>

@@ -53,7 +53,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     id: 'tides',
     title: 'Tides',
     description: 'Tide predictions for coastal locations worldwide, calculated using simplified harmonic analysis. Shows high and low tide times, current water level, and a 24-hour tide curve.',
-    source: 'Harmonic calculation from tidal constants. Approximate predictions only — not for navigation.',
+    source: 'Harmonic calculation from tidal constants. Approximate predictions only - not for navigation.',
     status: 'ok',
     categories: ['earth-geology', 'personal'],
     component: 'UKTides'
@@ -232,7 +232,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
   'satellites-above': {
     id: 'satellites-above',
     title: 'Satellites Above',
-    description: 'Every tracked satellite currently overhead—GPS, Starlink, weather satellites, the ISS.',
+    description: 'Every tracked satellite currently overhead-GPS, Starlink, weather satellites, the ISS.',
     source: 'N2YO Satellite Database',
     status: 'live',
     categories: ['solar-space', 'personal'],
@@ -286,7 +286,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
   'mars-rover': {
     id: 'mars-rover',
     title: 'Mars Rover Images',
-    description: 'The latest photographs from NASA\'s Mars rovers—Curiosity and Perseverance.',
+    description: 'The latest photographs from NASA\'s Mars rovers-Curiosity and Perseverance.',
     source: 'NASA Mars Exploration Program',
     status: 'live',
     categories: ['astronomy', 'solar-space'],
@@ -313,7 +313,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
   'glacier-watch': {
     id: 'glacier-watch',
     title: 'Glacier Watch',
-    description: 'Global glacier monitoring—tracking mass balance changes as Earth\'s ice responds to climate.',
+    description: 'Global glacier monitoring-tracking mass balance changes as Earth\'s ice responds to climate.',
     source: 'WGMS',
     status: 'live',
     categories: ['climate-environment', 'earth-geology'],
@@ -340,7 +340,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
   'ocean-hydrophones': {
     id: 'ocean-hydrophones',
     title: 'Ocean Hydrophones',
-    description: 'Listen to the deep ocean—underwater microphones capturing whale songs, earthquakes, and ship traffic.',
+    description: 'Listen to the deep ocean-underwater microphones capturing whale songs, earthquakes, and ship traffic.',
     source: 'Ocean Networks Canada / MBARI',
     status: 'live',
     categories: ['earth-geology', 'life-ecology'],
@@ -367,7 +367,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
   'magnetic-field-strength': {
     id: 'magnetic-field-strength',
     title: 'Magnetic Field Strength',
-    description: 'The magnetic field strength at your location—varies from ~25μT at the equator to ~65μT at the poles.',
+    description: 'The magnetic field strength at your location-varies from ~25μT at the equator to ~65μT at the poles.',
     source: 'NOAA WMM',
     status: 'ok',
     categories: ['earth-geology', 'personal'],
@@ -376,7 +376,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
   'pollen-forecast': {
     id: 'pollen-forecast',
     title: 'Pollen Forecast',
-    description: 'Current pollen levels at your location—tree, grass, and weed pollen counts.',
+    description: 'Current pollen levels at your location-tree, grass, and weed pollen counts.',
     source: 'Pollen API',
     status: 'live',
     categories: ['climate-environment', 'personal', 'life-ecology'],
@@ -385,7 +385,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
   'star-map': {
     id: 'star-map',
     title: 'Star Map',
-    description: 'The night sky above you right now—stars, planets, and constellations visible from your location.',
+    description: 'The night sky above you right now-stars, planets, and constellations visible from your location.',
     source: 'Astronomical Calculation',
     status: 'ok',
     categories: ['astronomy', 'personal'],
@@ -403,7 +403,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
   'whats-below-you': {
     id: 'whats-below-you',
     title: 'What\'s Below You',
-    description: 'Journey to the centre of the Earth—see the geological layers beneath your feet.',
+    description: 'Journey to the centre of the Earth-see the geological layers beneath your feet.',
     source: 'Geological Data',
     status: 'ok',
     categories: ['earth-geology', 'personal'],
@@ -421,7 +421,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
   'your-background-dose': {
     id: 'your-background-dose',
     title: 'Your Background Dose',
-    description: 'Calculate your personal annual radiation exposure—from cosmic rays, radon, and medical scans.',
+    description: 'Calculate your personal annual radiation exposure-from cosmic rays, radon, and medical scans.',
     source: 'Calculation based on UNSCEAR data',
     status: 'ok',
     categories: ['physics-particles', 'personal'],

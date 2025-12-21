@@ -492,7 +492,7 @@ export default function VitalSigns() {
               {/* Active Fires */}
               <MetricRow
                 label="Active Fires"
-                value={data.fires ? formatNumber(data.fires.count) : '—'}
+                value={data.fires ? formatNumber(data.fires.count) : '-'}
                 subtext="Global estimate"
                 stale={data.fires?.stale}
                 error={!data.fires}
@@ -512,7 +512,7 @@ export default function VitalSigns() {
               {/* Temperature */}
               <MetricRow
                 label="Global Temperature Anomaly"
-                value={data.temperature ? `+${data.temperature.anomaly.toFixed(2)}` : '—'}
+                value={data.temperature ? `+${data.temperature.anomaly.toFixed(2)}` : '-'}
                 unit="°C"
                 subtext="vs 1951-1980"
                 stale={data.temperature?.stale}
@@ -538,13 +538,13 @@ export default function VitalSigns() {
                   </p>
                 </>
               ) : (
-                <MetricRow label="Atmospheric CO₂" value="—" error />
+                <MetricRow label="Atmospheric CO₂" value="-" error />
               )}
               
               {/* Sea Level */}
               <MetricRow
                 label="Sea Level Rise"
-                value={data.seaLevel ? `+${data.seaLevel.rise.toFixed(0)}` : '—'}
+                value={data.seaLevel ? `+${data.seaLevel.rise.toFixed(0)}` : '-'}
                 unit="mm"
                 subtext="since 1993"
                 stale={data.seaLevel?.stale}
@@ -554,7 +554,7 @@ export default function VitalSigns() {
               {/* Sea Ice */}
               <MetricRow
                 label="Arctic Sea Ice"
-                value={data.seaIce ? data.seaIce.extent.toFixed(2) : '—'}
+                value={data.seaIce ? data.seaIce.extent.toFixed(2) : '-'}
                 unit="M km²"
                 stale={data.seaIce?.stale}
                 error={!data.seaIce}
@@ -585,13 +585,13 @@ export default function VitalSigns() {
                   </div>
                 </>
               ) : (
-                <MetricRow label="Solar Activity" value="—" error />
+                <MetricRow label="Solar Activity" value="-" error />
               )}
               
               {/* ISS */}
               <MetricRow
                 label="ISS Location"
-                value={data.iss ? data.iss.region : '—'}
+                value={data.iss ? data.iss.region : '-'}
                 subtext={data.iss ? `${data.iss.lat.toFixed(1)}°, ${data.iss.lng.toFixed(1)}°` : undefined}
                 stale={data.iss?.stale}
                 error={!data.iss}
@@ -600,7 +600,7 @@ export default function VitalSigns() {
               {/* NEO */}
               <MetricRow
                 label="Near-Earth Objects (7 days)"
-                value={data.neo ? data.neo.count.toString() : '—'}
+                value={data.neo ? data.neo.count.toString() : '-'}
                 subtext={data.neo?.closest ? `Closest: ${data.neo.closest.name}` : undefined}
                 stale={data.neo?.stale}
                 error={!data.neo}
@@ -647,7 +647,7 @@ export default function VitalSigns() {
               <div className="flex items-center justify-between py-2">
                 <span className="text-sm text-black">World Population</span>
                 <span className="text-sm font-mono font-medium tabular-nums">
-                  {livePopulation ? livePopulation.toLocaleString() : '—'}
+                  {livePopulation ? livePopulation.toLocaleString() : '-'}
                 </span>
               </div>
             </div>

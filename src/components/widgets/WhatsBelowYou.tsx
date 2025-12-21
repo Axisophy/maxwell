@@ -117,7 +117,7 @@ const globalLayers: Layer[] = [
     material: 'Solid iron-nickel',
     temp: '~5,500°C',
     color: '#FFD700',
-    description: 'Solid despite heat—pressure keeps it from melting. Hot as the Sun\'s surface.'
+    description: 'Solid despite heat-pressure keeps it from melting. Hot as the Sun\'s surface.'
   },
 ]
 

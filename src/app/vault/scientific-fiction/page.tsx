@@ -12,7 +12,7 @@ export default function ScientificFictionPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-light text-text-primary mb-2">Scientific Fiction</h1>
           <p className="text-text-muted max-w-2xl">
-            1818–1920 — Shelley, Verne, Wells, Čapek. The birth of science fiction 
+            1818–1920 - Shelley, Verne, Wells, Čapek. The birth of science fiction 
             as a literary form, when writers first imagined what science might make possible.
           </p>
           <p className="text-sm text-text-muted mt-2">{books.length} works</p>

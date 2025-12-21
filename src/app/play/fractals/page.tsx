@@ -17,7 +17,7 @@ export default function FractalsPage() {
           </h1>
           <p className="text-base md:text-lg text-black max-w-2xl">
             Infinite complexity from simple equations. Zoom in forever and find the same
-            patterns repeating at every scale — the geometry of coastlines, mountains,
+            patterns repeating at every scale - the geometry of coastlines, mountains,
             and the branching of trees.
           </p>
         </div>
@@ -28,7 +28,7 @@ export default function FractalsPage() {
           {/* Fractal Explorer */}
           <WidgetFrame
             title="Fractal Explorer"
-            description="Explore the Mandelbrot and Julia sets — the most famous fractals in mathematics. Click to zoom in and discover infinite detail. Each point represents whether a simple equation escapes to infinity or stays bounded."
+            description="Explore the Mandelbrot and Julia sets - the most famous fractals in mathematics. Click to zoom in and discover infinite detail. Each point represents whether a simple equation escapes to infinity or stays bounded."
             source="Mathematical visualisation"
             status="ok"
           >
@@ -38,7 +38,7 @@ export default function FractalsPage() {
           {/* Placeholder: Julia Set */}
           <WidgetFrame
             title="Julia Sets"
-            description="Coming soon. The Mandelbrot set's infinite family of cousins — each point in the Mandelbrot corresponds to a unique Julia set."
+            description="Coming soon. The Mandelbrot set's infinite family of cousins - each point in the Mandelbrot corresponds to a unique Julia set."
             source="Mathematical visualisation"
             status="loading"
           >
@@ -61,7 +61,7 @@ export default function FractalsPage() {
             <p>
               A fractal is a shape that contains smaller copies of itself at every scale.
               Zoom into a coastline on a map and you'll find the same jagged patterns
-              repeating — bays within bays within bays, forever.
+              repeating - bays within bays within bays, forever.
             </p>
             <p>
               The Mandelbrot set, discovered by Benoit Mandelbrot in 1980, is generated

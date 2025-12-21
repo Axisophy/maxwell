@@ -290,7 +290,7 @@ export default function PermissibleUniversePage() {
             <section className="px-4 md:px-8 lg:px-12 py-8">
               <h2 className="text-xl font-light text-white mb-4">The Big Questions</h2>
               <p className="text-white/50 text-sm mb-6 max-w-2xl">
-                The Permissible Universe isn't just a map — it's a window into the deepest mysteries of physics.
+                The Permissible Universe isn't just a map - it's a window into the deepest mysteries of physics.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {BIG_QUESTIONS.map(question => (

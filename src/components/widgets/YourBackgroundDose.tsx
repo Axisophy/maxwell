@@ -234,7 +234,7 @@ export default function YourBackgroundDose() {
           <span className="text-[0.75em] text-white/50">μSv/hour</span>
         </div>
         <div className="text-[0.4375em] text-purple-300/50 mt-[0.25em]">
-          ☢️ All natural — you're fine
+          ☢️ All natural - you're fine
         </div>
       </div>
       

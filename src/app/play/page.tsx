@@ -72,7 +72,7 @@ export default function PlayPage() {
 
         {/* Coming soon note */}
         <div className="mt-12 text-sm text-black/50 max-w-2xl">
-          More explorations coming soon — including the Rössler Attractor, Pendulum Wave, 
+          More explorations coming soon - including the Rössler Attractor, Pendulum Wave, 
           and Game Theory Trainer.
         </div>
       </div>

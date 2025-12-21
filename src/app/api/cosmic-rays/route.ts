@@ -115,9 +115,9 @@ async function generateCosmicRayData(): Promise<CosmicRayResponse> {
   // Generate note
   let note: string
   if (globalDeviation > 2) {
-    note = 'Elevated flux — Sun is unusually quiet'
+    note = 'Elevated flux - Sun is unusually quiet'
   } else if (globalDeviation < -2) {
-    note = 'Reduced flux — possible solar storm influence'
+    note = 'Reduced flux - possible solar storm influence'
   } else if (Math.abs(globalDeviation) > 1) {
     note = `Flux ${globalDeviation > 0 ? 'above' : 'below'} average`
   } else {

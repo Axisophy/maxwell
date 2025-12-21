@@ -20,7 +20,7 @@ export default function AttractorsPage() {
           </h1>
           <p className="text-base md:text-lg text-black max-w-2xl">
             Chaotic systems that never repeat, yet always stay bounded. These mathematical
-            objects were discovered in the 1960s and 70s — shapes that emerge from simple
+            objects were discovered in the 1960s and 70s - shapes that emerge from simple
             equations but contain infinite complexity.
           </p>
         </div>
@@ -31,7 +31,7 @@ export default function AttractorsPage() {
           {/* Rössler Attractor */}
           <WidgetFrame
             title="Rössler Attractor"
-            description="Discovered by Otto Rössler in 1976 while studying chemical reactions. The simplest strange attractor — just three equations create this endlessly spiralling, never-repeating shape. Adjust parameters a, b, and c to see how small changes create dramatically different patterns."
+            description="Discovered by Otto Rössler in 1976 while studying chemical reactions. The simplest strange attractor - just three equations create this endlessly spiralling, never-repeating shape. Adjust parameters a, b, and c to see how small changes create dramatically different patterns."
             source="Mathematical simulation"
             status="ok"
           >
@@ -41,7 +41,7 @@ export default function AttractorsPage() {
           {/* Lorenz Attractor */}
           <WidgetFrame
             title="Lorenz Attractor"
-            description="The butterfly effect, visualised — Edward Lorenz discovered this in 1963 while modelling weather. Small changes in initial conditions lead to vastly different outcomes."
+            description="The butterfly effect, visualised - Edward Lorenz discovered this in 1963 while modelling weather. Small changes in initial conditions lead to vastly different outcomes."
             source="Mathematical simulation"
             status="ok"
           >
@@ -88,7 +88,7 @@ export default function AttractorsPage() {
           <div className="space-y-4 text-base text-black/70">
             <p>
               An attractor is where a system naturally tends to end up. Drop a marble in a bowl
-              and it settles at the bottom — that's a simple attractor, a single point.
+              and it settles at the bottom - that's a simple attractor, a single point.
             </p>
             <p>
               A <em>strange</em> attractor is different. The system never settles. It keeps
@@ -96,7 +96,7 @@ export default function AttractorsPage() {
               but never leaving the attractor either. It's bounded chaos.
             </p>
             <p>
-              These shapes are fractal — zoom in and you find infinite detail. They appear in
+              These shapes are fractal - zoom in and you find infinite detail. They appear in
               weather systems, fluid turbulence, population dynamics, and the beating of the
               human heart.
             </p>

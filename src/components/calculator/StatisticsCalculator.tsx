@@ -99,7 +99,7 @@ export default function StatisticsCalculator() {
 
   // Format number
   const fmt = (n: number, decimals = 4) => {
-    if (isNaN(n) || !isFinite(n)) return '—'
+    if (isNaN(n) || !isFinite(n)) return '-'
     return n.toLocaleString(undefined, { 
       minimumFractionDigits: 0, 
       maximumFractionDigits: decimals 

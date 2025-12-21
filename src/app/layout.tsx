@@ -8,7 +8,7 @@ import MobileNav from '@/components/MobileNav'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'MXWLL — A Digital Laboratory',
+  title: 'MXWLL - A Digital Laboratory',
   description: 'Live data feeds, interactive instruments, scientific tools, and reference charts. Science, beautifully observed.',
 }
 

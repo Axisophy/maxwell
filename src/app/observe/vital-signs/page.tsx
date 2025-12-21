@@ -18,7 +18,7 @@ export default function VitalSignsPage() {
             Vital Signs
           </h1>
           <p className="text-base md:text-lg text-black max-w-2xl">
-            Earth's vital signs at a glance. Key scientific indicators updated in real-time — 
+            Earth's vital signs at a glance. Key scientific indicators updated in real-time - 
             atmospheric CO₂, global temperature, seismic activity, solar weather, and more.
           </p>
         </div>

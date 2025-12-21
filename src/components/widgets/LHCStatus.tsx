@@ -253,7 +253,7 @@ export default function LHCStatus() {
             Fill Number
           </div>
           <div className="font-mono text-[1.25em] font-bold text-black">
-            {data.fillNumber ? `#${data.fillNumber.toLocaleString()}` : '—'}
+            {data.fillNumber ? `#${data.fillNumber.toLocaleString()}` : '-'}
           </div>
           <div className="text-[0.6em] text-black/40">current run</div>
         </div>
@@ -266,7 +266,7 @@ export default function LHCStatus() {
             Protons circling <span className="font-mono font-medium">11,245</span> times per second
           </div>
           <div className="text-[0.65em] text-green-600 mt-[0.125em]">
-            {data.energy * 2} TeV collision energy — recreating Big Bang conditions
+            {data.energy * 2} TeV collision energy - recreating Big Bang conditions
           </div>
         </div>
       )}

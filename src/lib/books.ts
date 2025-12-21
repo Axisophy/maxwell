@@ -151,7 +151,7 @@ export const books: Book[] = [
     yearDisplay: '1665',
     era: 'renaissance',
     series: 'observers',
-    description: 'The first scientific bestseller. Hooke\'s exquisite illustrations of the microscopic world — including the first description of cells — astonished readers.',
+    description: 'The first scientific bestseller. Hooke\'s exquisite illustrations of the microscopic world - including the first description of cells - astonished readers.',
     readingTime: '8–10 hours',
   },
   {
@@ -275,7 +275,7 @@ export const books: Book[] = [
     yearDisplay: '1873',
     era: 'modern',
     series: 'forces-fields',
-    description: 'Maxwell\'s comprehensive treatment of electromagnetism. Dense but foundational — Einstein kept a photograph of Maxwell on his wall.',
+    description: 'Maxwell\'s comprehensive treatment of electromagnetism. Dense but foundational - Einstein kept a photograph of Maxwell on his wall.',
     readingTime: '50+ hours',
   },
   {
@@ -339,7 +339,7 @@ export const books: Book[] = [
     yearDisplay: '1818',
     era: 'scientific-fiction',
     series: 'scientific-fiction',
-    description: 'The first science fiction novel. A scientist creates life and confronts the consequences — a story that becomes more relevant every year.',
+    description: 'The first science fiction novel. A scientist creates life and confronts the consequences - a story that becomes more relevant every year.',
     readingTime: '6–8 hours',
   },
   {

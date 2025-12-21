@@ -7,7 +7,7 @@ import { buildFullTree, kingdoms } from '@/lib/living-network/data';
 export const metadata: Metadata = {
   title: 'The Living Network | MXWLL',
   description:
-    'Explore the relationships between all living things — from bacteria to blue whales. An interactive map of life on Earth.',
+    'Explore the relationships between all living things - from bacteria to blue whales. An interactive map of life on Earth.',
 };
 
 export default function LivingNetworkPage() {
@@ -38,7 +38,7 @@ export default function LivingNetworkPage() {
             The Living Network
           </h1>
           <p className="text-base md:text-lg text-black max-w-2xl">
-            Every living thing is your relative. This is the family tree — from the first cells 3.8
+            Every living thing is your relative. This is the family tree - from the first cells 3.8
             billion years ago to the 2 million species alive today.
           </p>
         </div>

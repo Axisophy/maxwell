@@ -140,11 +140,11 @@ function generateGravWaveData(): GravWaveResponse {
   // Generate note based on status
   let note: string
   if (isListening) {
-    note = 'Detectors are observing — listening for spacetime ripples'
+    note = 'Detectors are observing - listening for spacetime ripples'
   } else if (hanfordOnline || livingstonOnline) {
-    note = 'Partial coverage — one detector observing'
+    note = 'Partial coverage - one detector observing'
   } else {
-    note = 'Detectors offline — next observation period soon'
+    note = 'Detectors offline - next observation period soon'
   }
 
   return {

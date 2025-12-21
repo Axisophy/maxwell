@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Investment — MXWLL',
+  title: 'Investment - MXWLL',
   description: 'Investment opportunities with MXWLL. Building the quality layer for science.',
 }
 
@@ -16,14 +16,14 @@ export default function InvestmentPage() {
           </h1>
 
           <p className="text-base md:text-lg text-black mb-8">
-            MXWLL is building the quality layer for science — a platform that combines beautiful design, live data, and deep content. We're seeking partners who share our vision for transforming how the world engages with science.
+            MXWLL is building the quality layer for science - a platform that combines beautiful design, live data, and deep content. We're seeking partners who share our vision for transforming how the world engages with science.
           </p>
 
           {/* The opportunity */}
           <section className="mb-12">
             <h2 className="text-2xl md:text-3xl font-light text-black mt-12 mb-6 first:mt-0">The Opportunity</h2>
             <p className="text-base md:text-lg text-black mb-5">
-              Science communication is broken. The raw material — data, research, historical texts — is abundant and largely free. What's missing is the presentation layer: the curation, design, and craft that makes it accessible, beautiful, and trustworthy.
+              Science communication is broken. The raw material - data, research, historical texts - is abundant and largely free. What's missing is the presentation layer: the curation, design, and craft that makes it accessible, beautiful, and trustworthy.
             </p>
             <p className="text-base md:text-lg text-black">
               MXWLL follows a proven model: <span className="font-medium">taste + presentation + trust = value</span>. Flightradar24 built a billion-dollar business presenting publicly available flight data beautifully. We're applying the same principle to science.
@@ -44,7 +44,7 @@ export default function InvestmentPage() {
               </div>
               <div>
                 <h3 className="text-xl font-medium text-black mb-2">Multiple revenue streams</h3>
-                <p className="text-base md:text-lg text-black">Premium subscriptions, institutional partnerships, educational licensing, and curated advertising — a sustainable model that doesn't compromise user experience.</p>
+                <p className="text-base md:text-lg text-black">Premium subscriptions, institutional partnerships, educational licensing, and curated advertising - a sustainable model that doesn't compromise user experience.</p>
               </div>
               <div>
                 <h3 className="text-xl font-medium text-black mb-2">Deep content moat</h3>
@@ -60,10 +60,10 @@ export default function InvestmentPage() {
               We're interested in speaking with:
             </p>
             <ul className="text-base md:text-lg text-black space-y-2 mb-5">
-              <li>— Science-passionate angels who want to see science communicated better</li>
-              <li>— EdTech investors who see the educational potential</li>
-              <li>— Impact investors optimising for social impact alongside returns</li>
-              <li>— Strategic partners in science, media, or technology</li>
+              <li>- Science-passionate angels who want to see science communicated better</li>
+              <li>- EdTech investors who see the educational potential</li>
+              <li>- Impact investors optimising for social impact alongside returns</li>
+              <li>- Strategic partners in science, media, or technology</li>
             </ul>
             <p className="text-base md:text-lg text-black">
               We're not just looking for capital. We value investors who bring networks, expertise, and genuine enthusiasm for the mission.

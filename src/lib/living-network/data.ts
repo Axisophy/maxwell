@@ -31,7 +31,7 @@ export const domains: Taxon[] = [
     childIds: ['euryarchaeota', 'crenarchaeota', 'thaumarchaeota'],
     isExtinct: false,
     speciesCount: 500, // Known species
-    description: 'Single-celled organisms that resemble bacteria but are genetically distinct. Many thrive in extreme environments — boiling hot springs, salt lakes, deep-sea vents.',
+    description: 'Single-celled organisms that resemble bacteria but are genetically distinct. Many thrive in extreme environments - boiling hot springs, salt lakes, deep-sea vents.',
     commonName: 'Archaea',
     color: domainColors.archaea,
     firstAppearance: {
@@ -229,7 +229,7 @@ export const animalPhyla: Taxon[] = [
     childIds: ['insecta', 'arachnida', 'crustacea', 'myriapoda'],
     isExtinct: false,
     speciesCount: 1200000,
-    description: 'Animals with exoskeletons, segmented bodies, and jointed legs. The most diverse animal phylum — includes insects, spiders, crustaceans, and centipedes.',
+    description: 'Animals with exoskeletons, segmented bodies, and jointed legs. The most diverse animal phylum - includes insects, spiders, crustaceans, and centipedes.',
     commonName: 'Arthropods',
     color: kingdomColors.animalia,
     firstAppearance: {
@@ -246,7 +246,7 @@ export const animalPhyla: Taxon[] = [
     childIds: ['gastropoda', 'bivalvia', 'cephalopoda'],
     isExtinct: false,
     speciesCount: 85000,
-    description: 'Soft-bodied animals, often with shells. Includes snails, clams, octopuses, and squid — some of the most intelligent invertebrates.',
+    description: 'Soft-bodied animals, often with shells. Includes snails, clams, octopuses, and squid - some of the most intelligent invertebrates.',
     commonName: 'Molluscs',
     color: kingdomColors.animalia,
     firstAppearance: {
@@ -314,7 +314,7 @@ export const animalPhyla: Taxon[] = [
     childIds: [],
     isExtinct: false,
     speciesCount: 9000,
-    description: 'The sponges — simple animals without true tissues or organs. They filter water through pores to capture food particles.',
+    description: 'The sponges - simple animals without true tissues or organs. They filter water through pores to capture food particles.',
     commonName: 'Sponges',
     color: kingdomColors.animalia,
     firstAppearance: {
@@ -331,7 +331,7 @@ export const animalPhyla: Taxon[] = [
     childIds: [],
     isExtinct: false,
     speciesCount: 25000,
-    description: 'Flatworms — simple, soft-bodied animals without a body cavity. Includes free-living planarians and parasitic tapeworms and flukes.',
+    description: 'Flatworms - simple, soft-bodied animals without a body cavity. Includes free-living planarians and parasitic tapeworms and flukes.',
     commonName: 'Flatworms',
     color: kingdomColors.animalia,
     firstAppearance: {
@@ -348,7 +348,7 @@ export const animalPhyla: Taxon[] = [
     childIds: [],
     isExtinct: false,
     speciesCount: 25000,
-    description: 'Roundworms — slender, cylindrical worms found in almost every habitat. Many are parasites; others are essential soil organisms.',
+    description: 'Roundworms - slender, cylindrical worms found in almost every habitat. Many are parasites; others are essential soil organisms.',
     commonName: 'Roundworms',
     color: kingdomColors.animalia,
     firstAppearance: {

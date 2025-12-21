@@ -30,7 +30,7 @@ export default function PulsePage() {
               The Pulse is warming up
             </h2>
             <p className="text-base text-black/70 leading-relaxed mb-6">
-              We're building something special here — a curated stream of science news, 
+              We're building something special here - a curated stream of science news, 
               partner discoveries, and MXWLL updates. Think of it as your morning briefing 
               for the scientifically curious.
             </p>

@@ -257,7 +257,7 @@ export default function GravitationalWaves() {
           </div>
           <div className="text-[0.8em] text-purple-900">
             <span className="font-mono font-medium">{latestEvent.id}</span>
-            <span className="text-purple-600"> — {EVENT_TYPES[latestEvent.type]}</span>
+            <span className="text-purple-600"> - {EVENT_TYPES[latestEvent.type]}</span>
           </div>
           <div className="text-[0.65em] text-purple-600 mt-[0.125em]">
             {latestEvent.distance.toLocaleString()} Mpc away • {latestEvent.significance}σ significance

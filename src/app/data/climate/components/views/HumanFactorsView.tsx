@@ -58,7 +58,7 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
   
   // 2020s
   { year: 2021, category: 'policy', title: 'US Rejoins Paris', description: 'Biden administration re-enters agreement', impact: 'positive', significance: 'minor' },
-  { year: 2022, category: 'policy', title: 'US Inflation Reduction Act', description: '$370B for clean energy — largest US climate investment', impact: 'positive', significance: 'major', co2AtTime: 418 },
+  { year: 2022, category: 'policy', title: 'US Inflation Reduction Act', description: '$370B for clean energy - largest US climate investment', impact: 'positive', significance: 'major', co2AtTime: 418 },
   { year: 2022, category: 'policy', title: 'EU Carbon Border Tax', description: 'First major climate tariff on imports', impact: 'positive', significance: 'major' },
   { year: 2023, category: 'policy', title: 'COP28 Dubai', description: 'First mention of fossil fuel "transition away"', impact: 'positive', significance: 'minor', co2AtTime: 421 },
   { year: 2023, category: 'technology', title: 'Renewable Majority', description: 'EU generates more power from renewables than fossil fuels', impact: 'positive', significance: 'major' },
@@ -102,8 +102,8 @@ export default function HumanFactorsView() {
         </h2>
         <p className="text-sm text-neutral-600 mb-6">
           Climate change is a story of industrial development, scientific discovery, policy responses, 
-          and technological change. This timeline shows how human choices have shaped — and continue 
-          to shape — our climate trajectory.
+          and technological change. This timeline shows how human choices have shaped - and continue 
+          to shape - our climate trajectory.
         </p>
 
         {/* Category filters */}
@@ -167,7 +167,7 @@ export default function HumanFactorsView() {
         </div>
         
         <div className="mt-4 p-3 bg-white/60 rounded-lg text-sm text-slate-700">
-          <strong>Key insight:</strong> More than half of all human CO₂ emissions have occurred since 1990 — 
+          <strong>Key insight:</strong> More than half of all human CO₂ emissions have occurred since 1990 - 
           <em>after</em> the science was clear and international agreements began.
         </div>
       </div>

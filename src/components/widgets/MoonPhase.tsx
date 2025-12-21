@@ -253,13 +253,13 @@ export default function MoonPhase() {
                 <div className="text-center p-3 bg-[#f5f5f5] rounded-lg">
                   <div className="text-[10px] text-text-muted uppercase tracking-wide">Moonrise</div>
                   <div className="font-mono text-sm font-medium mt-1">
-                    {moonTimes.rise ? format(moonTimes.rise, 'HH:mm') : '—'}
+                    {moonTimes.rise ? format(moonTimes.rise, 'HH:mm') : '-'}
                   </div>
                 </div>
                 <div className="text-center p-3 bg-[#f5f5f5] rounded-lg">
                   <div className="text-[10px] text-text-muted uppercase tracking-wide">Moonset</div>
                   <div className="font-mono text-sm font-medium mt-1">
-                    {moonTimes.set ? format(moonTimes.set, 'HH:mm') : '—'}
+                    {moonTimes.set ? format(moonTimes.set, 'HH:mm') : '-'}
                   </div>
                 </div>
               </div>

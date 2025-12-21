@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Collaborations — MXWLL',
+  title: 'Collaborations - MXWLL',
   description: 'Collaborate with MXWLL. Suggest new content, share your research, or work with us.',
 }
 
@@ -16,7 +16,7 @@ export default function CollaborationsPage() {
           </h1>
 
           <p className="text-base md:text-lg text-black mb-8">
-            MXWLL is built by people who love science, for people who love science. We're always interested in hearing from our community — whether you've spotted an amazing data source, have research you'd like featured, or want to work together.
+            MXWLL is built by people who love science, for people who love science. We're always interested in hearing from our community - whether you've spotted an amazing data source, have research you'd like featured, or want to work together.
           </p>
 
           {/* For everyone */}
@@ -31,10 +31,10 @@ export default function CollaborationsPage() {
             <div className="bg-[#f5f5f5] p-6 rounded-lg">
               <h3 className="text-xl font-medium text-black mb-3">What makes a good suggestion:</h3>
               <ul className="text-base md:text-lg text-black space-y-2">
-                <li>— Real-time data that's freely accessible</li>
-                <li>— Public domain scientific texts or papers</li>
-                <li>— Interactive visualisations that explain something beautifully</li>
-                <li>— Anything that makes you think "more people should see this"</li>
+                <li>- Real-time data that's freely accessible</li>
+                <li>- Public domain scientific texts or papers</li>
+                <li>- Interactive visualisations that explain something beautifully</li>
+                <li>- Anything that makes you think "more people should see this"</li>
               </ul>
             </div>
           </section>
@@ -43,7 +43,7 @@ export default function CollaborationsPage() {
           <section className="mb-12">
             <h2 className="text-2xl md:text-3xl font-light text-black mt-12 mb-6">For Scientists & Researchers</h2>
             <p className="text-base md:text-lg text-black mb-5">
-              If you're working on something fascinating and want it to reach a broader audience, we'd love to talk. MXWLL can be the presentation layer for your work — reaching curious, intelligent people who genuinely want to understand.
+              If you're working on something fascinating and want it to reach a broader audience, we'd love to talk. MXWLL can be the presentation layer for your work - reaching curious, intelligent people who genuinely want to understand.
             </p>
             <div className="space-y-6">
               <div>

@@ -14,7 +14,7 @@ export default function ModernPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-light text-text-primary mb-2">Modern</h1>
           <p className="text-text-muted max-w-2xl">
-            1800–1950 — Darwin, Maxwell, Einstein, Curie, and the explosive growth 
+            1800–1950 - Darwin, Maxwell, Einstein, Curie, and the explosive growth 
             of scientific knowledge.
           </p>
           <p className="text-sm text-text-muted mt-2">{books.length} works</p>

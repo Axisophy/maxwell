@@ -78,9 +78,9 @@ function calculateMagneticField(lat: number, lon: number): MagneticData {
 
 function getFieldDescription(totalIntensity: number, lat: number): string {
   if (Math.abs(lat) > 60) {
-    return "Near the magnetic pole — strong vertical component. This is where aurora form."
+    return "Near the magnetic pole - strong vertical component. This is where aurora form."
   } else if (Math.abs(lat) < 20) {
-    return "Near the magnetic equator — weak vertical component. The South Atlantic Anomaly may be affecting this region."
+    return "Near the magnetic equator - weak vertical component. The South Atlantic Anomaly may be affecting this region."
   } else {
     return "Mid-latitude field. The horizontal component guides your compass needle."
   }

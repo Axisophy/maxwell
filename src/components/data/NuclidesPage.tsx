@@ -25,7 +25,7 @@ export default function NuclidesPage() {
             </h1>
             <p className="text-base md:text-lg text-black/70 max-w-2xl">
               Every known isotope of every element, mapped by protons and neutrons. 
-              The periodic table shows 118 elements — this chart shows over 3,000 distinct nuclei.
+              The periodic table shows 118 elements - this chart shows over 3,000 distinct nuclei.
               Stable isotopes form the "valley of stability" running diagonally through the chart.
             </p>
           </div>
@@ -49,7 +49,7 @@ export default function NuclidesPage() {
                 <p>
                   A nuclide is a specific combination of protons (Z) and neutrons (N) in an atomic nucleus. 
                   While the periodic table groups atoms by proton count alone (elements), nuclides distinguish 
-                  between isotopes — atoms with the same proton count but different neutron counts.
+                  between isotopes - atoms with the same proton count but different neutron counts.
                 </p>
               </div>
               

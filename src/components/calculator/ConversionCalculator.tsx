@@ -210,7 +210,7 @@ export default function ConversionCalculator() {
 
   // Format result
   const formatResult = (n: number | null): string => {
-    if (n === null || isNaN(n) || !isFinite(n)) return '—'
+    if (n === null || isNaN(n) || !isFinite(n)) return '-'
     if (Math.abs(n) >= 1e9 || (Math.abs(n) < 1e-6 && n !== 0)) {
       return n.toExponential(6)
     }

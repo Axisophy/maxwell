@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Contact — MXWLL',
+  title: 'Contact - MXWLL',
   description: 'Get in touch with the MXWLL team.',
 }
 
@@ -51,7 +51,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="text-xl font-medium text-black mb-2">Press enquiries</h3>
-                <p className="text-base md:text-lg text-black">Journalists and media — we're happy to talk.</p>
+                <p className="text-base md:text-lg text-black">Journalists and media - we're happy to talk.</p>
               </div>
             </div>
           </section>

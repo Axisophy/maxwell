@@ -44,7 +44,7 @@ const SPECTRUM_BANDS: SpectrumBand[] = [
     howItWorks: 'Radio waves are produced by accelerating electric charges, typically in antennas. They can travel through walls and around obstacles by diffraction.',
     applications: ['AM/FM radio broadcasting', 'Television signals', 'GPS navigation', 'Radio astronomy', 'MRI medical imaging'],
     dangers: ['Generally considered safe at normal exposure levels'],
-    funFact: 'The cosmic microwave background radiation — afterglow of the Big Bang — is detected as radio waves.',
+    funFact: 'The cosmic microwave background radiation - afterglow of the Big Bang - is detected as radio waves.',
     icon: <Radio className="w-5 h-5" />,
     visibleToHumans: false,
   },
@@ -146,7 +146,7 @@ const SPECTRUM_BANDS: SpectrumBand[] = [
     howItWorks: 'Gamma rays originate from nuclear reactions, radioactive decay, and the most violent events in the universe. They can penetrate most materials and ionize atoms.',
     applications: ['Cancer radiotherapy', 'Sterilization of medical equipment', 'Gamma-ray astronomy', 'Nuclear physics research', 'Food irradiation'],
     dangers: ['Severe tissue damage', 'Acute radiation syndrome', 'Cancer', 'Genetic damage'],
-    funFact: 'Gamma-ray bursts are the brightest events in the universe — a single burst can release more energy in seconds than the Sun will in its 10-billion year lifetime.',
+    funFact: 'Gamma-ray bursts are the brightest events in the universe - a single burst can release more energy in seconds than the Sun will in its 10-billion year lifetime.',
     icon: <Zap className="w-5 h-5" />,
     visibleToHumans: false,
   },
@@ -212,7 +212,7 @@ export default function EMSpectrumPage() {
             Electromagnetic Spectrum
           </h1>
           <p className="text-base md:text-lg text-neutral-600 max-w-3xl">
-            From radio waves to gamma rays — the full range of electromagnetic radiation.
+            From radio waves to gamma rays - the full range of electromagnetic radiation.
             The visible spectrum is just a tiny sliver of what's out there.
           </p>
         </div>
@@ -228,7 +228,7 @@ export default function EMSpectrumPage() {
                 You're Nearly Blind
               </h2>
               <p className="text-neutral-600 text-sm">
-                The visible spectrum — everything you can see — represents less than 0.0035% of 
+                The visible spectrum - everything you can see - represents less than 0.0035% of 
                 the electromagnetic spectrum. The rest is invisible: radio waves carrying your WiFi, 
                 infrared from everything warm, X-rays passing through walls, gamma rays from distant 
                 supernovas. Your eyes show you almost nothing of what's really there.

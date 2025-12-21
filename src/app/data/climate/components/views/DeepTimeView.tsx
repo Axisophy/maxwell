@@ -61,7 +61,7 @@ export default function DeepTimeView() {
               Deep Time: 800,000 Years of Climate
             </h2>
             <p className="text-sm text-neutral-500">
-              Ice core records from Antarctica reveal Earth's natural climate rhythms — 
+              Ice core records from Antarctica reveal Earth's natural climate rhythms - 
               and how dramatically we've departed from them.
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function DeepTimeView() {
               </div>
               <div className="text-sm text-amber-800">
                 For 800,000 years, CO₂ stayed between {NATURAL_CO2_MIN}–{NATURAL_CO2_MAX} ppm. 
-                It's now {CURRENT_CO2} ppm — {Math.round(((CURRENT_CO2 - NATURAL_CO2_MAX) / NATURAL_CO2_MAX) * 100)}% 
+                It's now {CURRENT_CO2} ppm - {Math.round(((CURRENT_CO2 - NATURAL_CO2_MAX) / NATURAL_CO2_MAX) * 100)}% 
                 above the natural maximum. The rate of increase is ~100x faster than any natural change in the record.
               </div>
             </div>
@@ -326,7 +326,7 @@ export default function DeepTimeView() {
           Why Natural Climate Cycles Happen
         </h3>
         <p className="text-sm text-neutral-600 mb-4">
-          The ~100,000-year glacial cycles visible in ice cores are driven by Milankovitch cycles — 
+          The ~100,000-year glacial cycles visible in ice cores are driven by Milankovitch cycles - 
           predictable variations in Earth's orbit and axial tilt that change how much sunlight reaches different latitudes.
         </p>
         
@@ -364,7 +364,7 @@ export default function DeepTimeView() {
         
         <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200 text-sm text-amber-800">
           <strong>Key insight:</strong> These orbital cycles cause gradual changes over thousands of years. 
-          Current CO₂ rise is happening in decades — roughly 100x faster than any natural climate shift 
+          Current CO₂ rise is happening in decades - roughly 100x faster than any natural climate shift 
           in the ice core record.
         </div>
       </div>

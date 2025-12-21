@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'About — MXWLL',
+  title: 'About - MXWLL',
   description: 'MXWLL is the quality layer for science. We curate and present science the way it deserves to be presented.',
 }
 
@@ -36,7 +36,7 @@ export default function AboutPage() {
               MXWLL curates and presents science the way it deserves to be presented.
             </p>
             <p className="text-base md:text-lg text-black mb-5">
-              We take freely available data, feeds, texts, and tools — and we design them with the care usually reserved for luxury products or art books. We cut through the noise. We make the invisible visible. We create a single, trustworthy place where curious people can encounter real science.
+              We take freely available data, feeds, texts, and tools - and we design them with the care usually reserved for luxury products or art books. We cut through the noise. We make the invisible visible. We create a single, trustworthy place where curious people can encounter real science.
             </p>
             <p className="text-base md:text-lg text-black">
               <span className="font-medium">This is not science education.</span> We're not explaining things to people who don't care. <span className="font-medium">This is not science news.</span> We're not chasing clicks with "Scientists say..." headlines. <span className="font-medium">This is science, presented properly.</span> For people who are already curious and deserve better than what currently exists.
@@ -53,11 +53,11 @@ export default function AboutPage() {
               </div>
               <div>
                 <h3 className="text-xl font-medium text-black mb-2">The Vault</h3>
-                <p className="text-base md:text-lg text-black">Public domain scientific texts — Euclid, Darwin, Newton, Faraday — presented as readable digital editions. Commentary on modern works. Landmark papers. Multiple discovery pathways.</p>
+                <p className="text-base md:text-lg text-black">Public domain scientific texts - Euclid, Darwin, Newton, Faraday - presented as readable digital editions. Commentary on modern works. Landmark papers. Multiple discovery pathways.</p>
               </div>
               <div>
                 <h3 className="text-xl font-medium text-black mb-2">Scientific Tools</h3>
-                <p className="text-base md:text-lg text-black">Calculators, visualisers, explorers — designed with craft and personality. Useful and beautiful.</p>
+                <p className="text-base md:text-lg text-black">Calculators, visualisers, explorers - designed with craft and personality. Useful and beautiful.</p>
               </div>
               <div>
                 <h3 className="text-xl font-medium text-black mb-2">A Curated Experience</h3>
@@ -70,7 +70,7 @@ export default function AboutPage() {
           <section className="mb-12">
             <h2 className="text-2xl md:text-3xl font-light text-black mt-12 mb-6">The Name</h2>
             <p className="text-base md:text-lg text-black">
-              Named for James Clerk Maxwell, who unified electricity, magnetism, and light. His equations are foundational to modern physics. The vowel-less spelling is deliberate — visually distinctive and unmistakably modern.
+              Named for James Clerk Maxwell, who unified electricity, magnetism, and light. His equations are foundational to modern physics. The vowel-less spelling is deliberate - visually distinctive and unmistakably modern.
             </p>
           </section>
 

@@ -32,7 +32,7 @@ export function LimitsView({ boundaries, onBoundaryClick }: Props) {
         <p className="text-white/60 leading-relaxed">
           The universe permits only certain combinations of mass and size. 
           These four boundaries carve out the "permissible" zone where matter, 
-          energy, and structure can exist. Beyond them lie the forbidden regions — 
+          energy, and structure can exist. Beyond them lie the forbidden regions - 
           where the laws of physics say "nothing here."
         </p>
       </div>
@@ -90,7 +90,7 @@ export function LimitsView({ boundaries, onBoundaryClick }: Props) {
           <span className="text-white font-medium"> Planck mass</span> (~22 micrograms, 
           10<sup>-5</sup> grams). This is the only mass where an object could be 
           simultaneously a black hole and a quantum particle. It marks the boundary 
-          where general relativity and quantum mechanics must somehow merge — the 
+          where general relativity and quantum mechanics must somehow merge - the 
           domain of quantum gravity, still not fully understood.
         </p>
         <div className="flex flex-wrap gap-3">
@@ -122,7 +122,7 @@ export function LimitsView({ boundaries, onBoundaryClick }: Props) {
           <h4 className="font-medium mb-2">Fine-Tuned Universe</h4>
           <p className="text-sm text-white/60">
             The fundamental constants (G, ℏ, c) set these boundaries. 
-            Different constants would give different limits — and possibly 
+            Different constants would give different limits - and possibly 
             no "permissible" zone where complexity can exist.
           </p>
         </div>

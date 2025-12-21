@@ -64,7 +64,7 @@ export default function MoonDataPage() {
               to Earth&apos;s outer layers and why it has a relatively small iron core.
             </p>
             <p className="text-base md:text-lg text-black/80 leading-relaxed">
-              After formation, the Moon was much closer to Earth — perhaps only
+              After formation, the Moon was much closer to Earth - perhaps only
               20,000-30,000 km away. It has been slowly spiraling outward ever since,
               currently receding at about 3.8 cm per year.
             </p>
@@ -83,7 +83,7 @@ export default function MoonDataPage() {
               between 3.9 and 3.0 billion years ago.
             </p>
             <p className="text-base md:text-lg text-black/80 leading-relaxed">
-              The surface is covered in <strong>regolith</strong> — a layer of
+              The surface is covered in <strong>regolith</strong> - a layer of
               fine rocky debris created by billions of years of meteorite impacts.
               This grey powder ranges from 4 to 15 metres deep.
             </p>

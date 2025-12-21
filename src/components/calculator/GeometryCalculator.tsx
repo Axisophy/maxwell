@@ -217,7 +217,7 @@ export default function GeometryCalculator() {
 
   // Format number
   const fmt = (n: number) => {
-    if (isNaN(n) || !isFinite(n)) return '—'
+    if (isNaN(n) || !isFinite(n)) return '-'
     if (n >= 1e6 || (n < 0.001 && n !== 0)) return n.toExponential(4)
     return n.toLocaleString(undefined, { maximumFractionDigits: 6 })
   }

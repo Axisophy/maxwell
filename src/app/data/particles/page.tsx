@@ -108,7 +108,7 @@ const PARTICLES: Particle[] = [
     discoveredAt: 'Fermilab',
     color: true,
     antiparticle: 't̄',
-    description: 'The heaviest quark — about as heavy as a gold atom. Decays before forming hadrons.',
+    description: 'The heaviest quark - about as heavy as a gold atom. Decays before forming hadrons.',
     role: 'Too heavy to form stable hadrons',
   },
   {
@@ -201,7 +201,7 @@ const PARTICLES: Particle[] = [
     discovered: 1975,
     discoveredAt: 'SLAC',
     antiparticle: 'τ⁺',
-    description: 'The heaviest lepton — heavier than a proton. Decays in 10⁻¹³ seconds.',
+    description: 'The heaviest lepton - heavier than a proton. Decays in 10⁻¹³ seconds.',
     role: 'Rare decays, particle physics research',
   },
   {
@@ -328,8 +328,8 @@ export default function StandardModelPage() {
             The Standard Model
           </h1>
           <p className="text-base md:text-lg text-neutral-600 max-w-3xl">
-            The most successful theory in physics. 17 fundamental particles — 6 quarks, 6 leptons, 
-            4 gauge bosons, and the Higgs — explain nearly all observed phenomena (except gravity).
+            The most successful theory in physics. 17 fundamental particles - 6 quarks, 6 leptons, 
+            4 gauge bosons, and the Higgs - explain nearly all observed phenomena (except gravity).
           </p>
         </div>
 

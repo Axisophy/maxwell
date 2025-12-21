@@ -72,12 +72,12 @@ const dataCategories = [
   {
     id: 'universe',
     title: 'The Universe',
-    description: 'The structure of reality — scales, constants, and cosmic architecture.',
+    description: 'The structure of reality - scales, constants, and cosmic architecture.',
     pages: [
       {
         href: '/data/permissible-universe',
         title: 'The Permissible Universe',
-        description: 'Where everything fits — the mass-radius diagram of reality.',
+        description: 'Where everything fits - the mass-radius diagram of reality.',
         icon: Scaling,
         ready: true,
         featured: true,
@@ -85,21 +85,21 @@ const dataCategories = [
       {
         href: '/data/scale',
         title: 'Scale of the Universe',
-        description: 'Powers of 10 from quarks to cosmos — 45 orders of magnitude.',
+        description: 'Powers of 10 from quarks to cosmos - 45 orders of magnitude.',
         icon: Scaling,
         ready: false,
       },
       {
         href: '/data/constants',
         title: 'Fundamental Constants',
-        description: 'c, G, h, π, e, φ — the numbers reality is built on.',
+        description: 'c, G, h, π, e, φ - the numbers reality is built on.',
         icon: Hash,
         ready: true,
       },
       {
         href: '/data/spectrum',
         title: 'EM Spectrum',
-        description: 'Radio waves to gamma rays — scroll through the invisible.',
+        description: 'Radio waves to gamma rays - scroll through the invisible.',
         icon: Waves,
         ready: true,
       },
@@ -119,19 +119,19 @@ const dataCategories = [
   {
     id: 'matter',
     title: 'Matter',
-    description: 'What everything is made of — from quarks to the materials we build with.',
+    description: 'What everything is made of - from quarks to the materials we build with.',
     pages: [
       {
         href: '/data/particles',
         title: 'Standard Model',
-        description: 'Quarks, leptons, and bosons — the fundamental particles of physics.',
+        description: 'Quarks, leptons, and bosons - the fundamental particles of physics.',
         icon: Sparkles,
         ready: true,
       },
       {
         href: '/data/nuclides',
         title: 'Chart of Nuclides',
-        description: 'Every known isotope mapped by protons and neutrons — the valley of stability.',
+        description: 'Every known isotope mapped by protons and neutrons - the valley of stability.',
         icon: CircleDot,
         ready: true,
       },
@@ -145,14 +145,14 @@ const dataCategories = [
       {
         href: '/data/materials',
         title: 'Materials Explorer',
-        description: 'Steel, concrete, graphene — what we build civilisation with and why.',
+        description: 'Steel, concrete, graphene - what we build civilisation with and why.',
         icon: Layers,
         ready: false,
       },
       {
         href: '/data/crystals',
         title: 'Crystal Systems',
-        description: 'The 14 Bravais lattices and 7 crystal systems — nature\'s geometry.',
+        description: 'The 14 Bravais lattices and 7 crystal systems - nature\'s geometry.',
         icon: Box,
         ready: false,
       },
@@ -165,26 +165,26 @@ const dataCategories = [
   {
     id: 'chemistry',
     title: 'Chemistry',
-    description: 'How matter combines and transforms — bonds, reactions, and thermodynamics.',
+    description: 'How matter combines and transforms - bonds, reactions, and thermodynamics.',
     pages: [
       {
         href: '/data/bonds',
         title: 'Chemical Bonds',
-        description: 'Ionic, covalent, metallic, hydrogen — how atoms connect.',
+        description: 'Ionic, covalent, metallic, hydrogen - how atoms connect.',
         icon: Link2,
         ready: false,
       },
       {
         href: '/data/reactions',
         title: 'Reaction Types',
-        description: 'Synthesis, decomposition, combustion, redox — how matter transforms.',
+        description: 'Synthesis, decomposition, combustion, redox - how matter transforms.',
         icon: FlaskConical,
         ready: false,
       },
       {
         href: '/data/thermodynamics',
         title: 'Thermodynamics',
-        description: 'Activation energies, Gibbs free energy, entropy — why reactions happen.',
+        description: 'Activation energies, Gibbs free energy, entropy - why reactions happen.',
         icon: Flame,
         ready: false,
       },
@@ -198,7 +198,7 @@ const dataCategories = [
       {
         href: '/data/spectroscopy',
         title: 'Spectroscopy',
-        description: 'IR, NMR, mass spec — how we identify molecules by their signatures.',
+        description: 'IR, NMR, mass spec - how we identify molecules by their signatures.',
         icon: ScanLine,
         ready: false,
       },
@@ -211,40 +211,40 @@ const dataCategories = [
   {
     id: 'life',
     title: 'Life',
-    description: 'Biology from molecules to ecosystems — genetics, metabolism, and species.',
+    description: 'Biology from molecules to ecosystems - genetics, metabolism, and species.',
     pages: [
       {
         href: '/data/genetic-code',
         title: 'Genetic Code',
-        description: 'Codons to amino acids — the translation table of life.',
+        description: 'Codons to amino acids - the translation table of life.',
         icon: Dna,
         ready: false,
       },
       {
         href: '/data/genome',
         title: 'Genome Explorer',
-        description: 'Zoom from 23 chromosomes to individual SNPs — find the gene for red hair.',
+        description: 'Zoom from 23 chromosomes to individual SNPs - find the gene for red hair.',
         icon: GitBranch,
         ready: false,
       },
       {
         href: '/data/pathways',
         title: 'Metabolic Pathways',
-        description: 'Glycolysis, Krebs cycle, photosynthesis — how cells process energy.',
+        description: 'Glycolysis, Krebs cycle, photosynthesis - how cells process energy.',
         icon: Activity,
         ready: false,
       },
       {
         href: '/data/tree-of-life',
         title: 'Tree of Life',
-        description: 'Zoomable taxonomy from domains to species — all life connected.',
+        description: 'Zoomable taxonomy from domains to species - all life connected.',
         icon: TreeDeciduous,
         ready: false,
       },
       {
         href: '/data/bestiary',
         title: 'Bestiary',
-        description: 'Species database linked to geological time — who lived when.',
+        description: 'Species database linked to geological time - who lived when.',
         icon: Bug,
         ready: false,
       },
@@ -271,33 +271,33 @@ const dataCategories = [
   {
     id: 'earth',
     title: 'Earth',
-    description: 'Our planet\'s systems and resources — climate, geology, and what we extract.',
+    description: 'Our planet\'s systems and resources - climate, geology, and what we extract.',
     pages: [
       {
         href: '/data/climate',
         title: 'Climate Data Centre',
-        description: 'Temperature, CO₂, ice extent, sea level — 38 datasets from leading institutions.',
+        description: 'Temperature, CO₂, ice extent, sea level - 38 datasets from leading institutions.',
         icon: Thermometer,
         ready: true,
       },
       {
         href: '/data/unrest',
         title: 'Unrest',
-        description: 'Live earthquakes, lightning strikes, volcanic activity, and storms — the planet in motion.',
+        description: 'Live earthquakes, lightning strikes, volcanic activity, and storms - the planet in motion.',
         icon: Zap,
         ready: true,
       },
       {
         href: '/data/time',
         title: 'Geological Timescale',
-        description: '4.5 billion years of Earth history — eons, eras, periods, and mass extinctions.',
+        description: '4.5 billion years of Earth history - eons, eras, periods, and mass extinctions.',
         icon: Mountain,
         ready: false,
       },
       {
         href: '/data/extraction',
         title: 'Extraction Map',
-        description: 'Where we mine each element — from lithium to rare earths.',
+        description: 'Where we mine each element - from lithium to rare earths.',
         icon: Pickaxe,
         ready: true,
       },
@@ -311,7 +311,7 @@ const dataCategories = [
       {
         href: '/data/atmosphere',
         title: 'Atmosphere',
-        description: 'Layers, composition, and pressure — from troposphere to exosphere.',
+        description: 'Layers, composition, and pressure - from troposphere to exosphere.',
         icon: Wind,
         ready: false,
       },
@@ -331,19 +331,19 @@ const dataCategories = [
   {
     id: 'mathematics',
     title: 'Mathematics',
-    description: 'The language of pattern and structure — constants, sequences, and geometry.',
+    description: 'The language of pattern and structure - constants, sequences, and geometry.',
     pages: [
       {
         href: '/data/math-constants',
         title: 'Mathematical Constants',
-        description: 'π, e, φ, γ — with millions of digits and where they appear.',
+        description: 'π, e, φ, γ - with millions of digits and where they appear.',
         icon: Pi,
         ready: false,
       },
       {
         href: '/data/sequences',
         title: 'Number Sequences',
-        description: 'Primes, Fibonacci, triangular — the patterns in numbers.',
+        description: 'Primes, Fibonacci, triangular - the patterns in numbers.',
         icon: Binary,
         ready: false,
       },
@@ -357,7 +357,7 @@ const dataCategories = [
       {
         href: '/data/equations',
         title: 'Famous Equations',
-        description: 'E=mc², Maxwell\'s equations, Euler\'s identity — the greatest hits.',
+        description: 'E=mc², Maxwell\'s equations, Euler\'s identity - the greatest hits.',
         icon: Equal,
         ready: false,
       },
@@ -370,7 +370,7 @@ const dataCategories = [
   {
     id: 'astronomy',
     title: 'Astronomy',
-    description: 'The sky and beyond — constellations, stars, and distant galaxies.',
+    description: 'The sky and beyond - constellations, stars, and distant galaxies.',
     pages: [
       {
         href: '/data/moon',
@@ -389,21 +389,21 @@ const dataCategories = [
       {
         href: '/data/messier',
         title: 'Messier Objects',
-        description: 'The 110 famous deep-sky objects — galaxies, nebulae, and clusters.',
+        description: 'The 110 famous deep-sky objects - galaxies, nebulae, and clusters.',
         icon: GalleryHorizontalEnd,
         ready: false,
       },
       {
         href: '/data/stellar-types',
         title: 'Stellar Classification',
-        description: 'O B A F G K M — the spectral sequence and HR diagram.',
+        description: 'O B A F G K M - the spectral sequence and HR diagram.',
         icon: Sun,
         ready: false,
       },
       {
         href: '/data/galaxies',
         title: 'Galaxies',
-        description: 'Spirals, ellipticals, irregulars — from the Local Group to the cosmic web.',
+        description: 'Spirals, ellipticals, irregulars - from the Local Group to the cosmic web.',
         icon: Orbit,
         ready: false,
       },
@@ -423,19 +423,19 @@ const dataCategories = [
   {
     id: 'engineering',
     title: 'Engineering',
-    description: 'How we build things — materials properties, structures, and electronics.',
+    description: 'How we build things - materials properties, structures, and electronics.',
     pages: [
       {
         href: '/data/material-properties',
         title: 'Materials Properties',
-        description: 'Young\'s modulus, tensile strength, conductivity — the numbers that matter.',
+        description: 'Young\'s modulus, tensile strength, conductivity - the numbers that matter.',
         icon: Ruler,
         ready: false,
       },
       {
         href: '/data/structures',
         title: 'Structural Forms',
-        description: 'Beams, arches, trusses, shells — why shapes carry loads.',
+        description: 'Beams, arches, trusses, shells - why shapes carry loads.',
         icon: Building2,
         ready: false,
       },
@@ -470,7 +470,7 @@ export default function DataPage() {
         <div className="mb-8 md:mb-12">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-4">Data</h1>
           <p className="text-base md:text-lg text-black/70 max-w-2xl">
-            Reference datasets beautifully presented — from fundamental particles to
+            Reference datasets beautifully presented - from fundamental particles to
             distant galaxies. The raw material of science, designed with care.
           </p>
         </div>
@@ -589,7 +589,7 @@ export default function DataPage() {
           <div className="max-w-2xl">
             <h2 className="text-lg font-medium text-black mb-3">Everything connects</h2>
             <p className="text-sm text-black/50 leading-relaxed">
-              The DATA section isn't a collection of separate reference pages — it's an
+              The DATA section isn't a collection of separate reference pages - it's an
               interconnected knowledge graph. Click on iron in the periodic table, and you
               can trace it to where it's mined, when those deposits formed, how it's used
               in steel, and why it makes your blood red. Every entry point leads everywhere else.

@@ -381,7 +381,7 @@ export default function NuclearReactors() {
         <div className="mt-4 p-3 bg-amber-50 rounded-lg border-l-2 border-amber-400">
           <div className="text-xs">
             <span className="font-medium">🇨🇳 China</span> is building{' '}
-            <span className="font-mono font-bold">23</span> reactors — more than the rest of the world combined.
+            <span className="font-mono font-bold">23</span> reactors - more than the rest of the world combined.
           </div>
         </div>
       </div>

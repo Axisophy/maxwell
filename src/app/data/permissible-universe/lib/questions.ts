@@ -14,7 +14,7 @@ export const BIG_QUESTIONS: BigQuestion[] = [
 
 Does this mean we're inside a black hole?
 
-The catch: The Schwarzschild solution assumes empty space surrounds the black hole. Our universe isn't surrounded by empty Minkowski space — or is it?`,
+The catch: The Schwarzschild solution assumes empty space surrounds the black hole. Our universe isn't surrounded by empty Minkowski space - or is it?`,
     relatedConcepts: ['General relativity', 'Cosmological models', 'White holes', 'Holographic principle'],
   },
   {
@@ -34,7 +34,7 @@ Candidates include: supersymmetric partners, GUT bosons, string excitations, rig
     id: 'below-planck',
     number: 3,
     title: 'What Happens Below the Planck Length?',
-    hook: 'No object can be smaller than the Planck length — but why?',
+    hook: 'No object can be smaller than the Planck length - but why?',
     content: `The diagram shows "sub-Planckian unknown" in the far left. No object can be smaller than the Planck length (10⁻³³ cm).
 
 Does space itself become discrete? Does the concept of "size" break down entirely?
@@ -74,11 +74,11 @@ Current understanding: CP violation exists but is too weak. Baryogenesis require
     number: 6,
     title: 'What Is 95% of the Universe?',
     hook: 'Only 5% is made of atoms. The rest is unknown.',
-    content: `Only 5% of the universe is made of atoms — the stuff we can see and touch. The rest:
+    content: `Only 5% of the universe is made of atoms - the stuff we can see and touch. The rest:
 • ~27% dark matter (unknown particles that clump gravitationally)
 • ~68% dark energy (unknown field that accelerates cosmic expansion)
 
-We've mapped something we don't understand. The Permissible Universe shows the 5% we know — the rest is invisible.`,
+We've mapped something we don't understand. The Permissible Universe shows the 5% we know - the rest is invisible.`,
     relatedConcepts: ['WIMP searches', 'Axion experiments', 'Cosmological constant problem', 'Modified gravity'],
   },
 ]
@@ -105,7 +105,7 @@ export const DARK_MATTER_CANDIDATES: DarkMatterCandidate[] = [
     radiusMin: -3,
     radiusMax: 2,
     line: 'compton',
-    motivation: 'Originally proposed to solve the strong CP problem — dark matter is a bonus',
+    motivation: 'Originally proposed to solve the strong CP problem - dark matter is a bonus',
     status: 'searching',
     experiments: ['ADMX', 'HAYSTAC', 'ABRACADABRA', 'CASPEr'],
     description: 'An elegant solution to two problems at once. If axions exist, they would form an invisible field oscillating everywhere in the universe.',
@@ -121,7 +121,7 @@ export const DARK_MATTER_CANDIDATES: DarkMatterCandidate[] = [
     motivation: "Right-handed neutrinos that don't interact via weak force",
     status: 'constrained',
     experiments: ['X-ray telescopes', 'KATRIN'],
-    description: 'A 3.5 keV X-ray line was spotted in galaxy clusters — possibly sterile neutrino decay. Or possibly not.',
+    description: 'A 3.5 keV X-ray line was spotted in galaxy clusters - possibly sterile neutrino decay. Or possibly not.',
   },
   {
     id: 'pbh_stellar',

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Advertising — MXWLL',
+  title: 'Advertising - MXWLL',
   description: 'Advertising with MXWLL. Curated, relevant, high-quality advertising that respects our audience.',
 }
 
@@ -16,7 +16,7 @@ export default function AdvertisingPage() {
           </h1>
 
           <p className="text-base md:text-lg text-black mb-8">
-            MXWLL is developing an advertising model that respects both our audience and our partners. We believe advertising can be valuable — when it's relevant, high-quality, and carefully curated.
+            MXWLL is developing an advertising model that respects both our audience and our partners. We believe advertising can be valuable - when it's relevant, high-quality, and carefully curated.
           </p>
 
           {/* Our approach */}
@@ -55,13 +55,13 @@ export default function AdvertisingPage() {
               We're particularly interested in partners from:
             </p>
             <ul className="text-base md:text-lg text-black space-y-2 mb-5">
-              <li>— Scientific instruments and equipment</li>
-              <li>— Educational technology and services</li>
-              <li>— Quality consumer electronics</li>
-              <li>— Books, publications, and media</li>
-              <li>— Travel and exploration</li>
-              <li>— Design-led products and services</li>
-              <li>— Sustainability and environmental technology</li>
+              <li>- Scientific instruments and equipment</li>
+              <li>- Educational technology and services</li>
+              <li>- Quality consumer electronics</li>
+              <li>- Books, publications, and media</li>
+              <li>- Travel and exploration</li>
+              <li>- Design-led products and services</li>
+              <li>- Sustainability and environmental technology</li>
             </ul>
           </section>
 

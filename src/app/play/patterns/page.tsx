@@ -19,7 +19,7 @@ export default function PatternsPage() {
           </h1>
           <p className="text-base md:text-lg text-black max-w-2xl">
             Watch order emerge from chaos. These simulations show how simple rules
-            create complex, beautiful patterns — the same mathematics that shapes
+            create complex, beautiful patterns - the same mathematics that shapes
             snowflakes, zebra stripes, and galaxy spirals.
           </p>
         </div>
@@ -40,7 +40,7 @@ export default function PatternsPage() {
           {/* Cellular Automata */}
           <WidgetFrame
             title="Cellular Automata"
-            description="Elementary cellular automata and Conway's Game of Life — simple rules creating complex, emergent patterns from nothing but local interactions."
+            description="Elementary cellular automata and Conway's Game of Life - simple rules creating complex, emergent patterns from nothing but local interactions."
             source="Rule-based simulation"
             status="ok"
           >
@@ -50,7 +50,7 @@ export default function PatternsPage() {
           {/* Reaction-Diffusion */}
           <WidgetFrame
             title="Reaction-Diffusion"
-            description="The Gray-Scott model — the mathematics behind leopard spots, zebra stripes, and fingerprints. Watch Turing patterns emerge from chemical chaos."
+            description="The Gray-Scott model - the mathematics behind leopard spots, zebra stripes, and fingerprints. Watch Turing patterns emerge from chemical chaos."
             source="Turing pattern simulation"
             status="ok"
           >

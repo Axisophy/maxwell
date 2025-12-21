@@ -77,7 +77,7 @@ export default function MetricCard({ dataset, isActive, onToggle }: MetricCardPr
             className="font-mono text-2xl font-bold"
             style={{ color: isActive ? color : '#000' }}
           >
-            {currentValue !== undefined ? formatValue(currentValue, unitShort) : '—'}
+            {currentValue !== undefined ? formatValue(currentValue, unitShort) : '-'}
           </span>
           <span className="text-sm text-neutral-400">
             {unitShort}
