@@ -3,6 +3,7 @@
 import WidgetFrame from '@/components/WidgetFrame'
 import RosslerAttractor from '@/components/widgets/RosslerAttractor'
 import LorenzAttractor from '@/components/widgets/LorenzAttractor'
+import AizawaAttractor from '@/components/widgets/AizawaAttractor'
 // Future imports:
 // import ThomasAttractor from '@/components/widgets/ThomasAttractor'
 
@@ -63,19 +64,14 @@ export default function AttractorsPage() {
             </div>
           </WidgetFrame>
 
-          {/* Placeholder: Aizawa Attractor */}
+          {/* Aizawa Attractor */}
           <WidgetFrame
             title="Aizawa Attractor"
-            description="Coming soon. A beautiful torus-shaped strange attractor."
+            description="Discovered by Yoji Aizawa. Creates toroidal chaotic patterns that twist and fold through three-dimensional space. Six parameters control its behavior."
             source="Mathematical simulation"
-            status="loading"
+            status="ok"
           >
-            <div className="aspect-square flex items-center justify-center bg-[#1a1a1a] rounded-lg m-4">
-              <div className="text-center text-white/30">
-                <div className="text-4xl mb-4">◎</div>
-                <div className="text-sm">Coming soon</div>
-              </div>
-            </div>
+            <AizawaAttractor />
           </WidgetFrame>
 
         </div>
