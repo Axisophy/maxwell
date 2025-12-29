@@ -364,15 +364,6 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['astronomy', 'personal'],
     component: 'StarMap'
   },
-  'whats-below-you': {
-    id: 'whats-below-you',
-    title: 'What\'s Below You',
-    description: 'Journey to the centre of the Earth-see the geological layers beneath your feet.',
-    source: 'Geological Data',
-    status: 'ok',
-    categories: ['earth-geology', 'personal'],
-    component: 'WhatsBelowYou'
-  },
   'your-air-journey': {
     id: 'your-air-journey',
     title: 'Your Air\'s Journey',

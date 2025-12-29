@@ -40,7 +40,6 @@ import OceanHydrophones from '@/components/widgets/OceanHydrophones'
 import PollenForecast from '@/components/widgets/PollenForecast'
 import SeismographGrid from '@/components/widgets/SeismographGrid'
 import StarMap from '@/components/widgets/StarMap'
-import WhatsBelowYou from '@/components/widgets/WhatsBelowYou'
 import YourAirJourney from '@/components/widgets/YourAirJourney'
 import YourBackgroundDose from '@/components/widgets/YourBackgroundDose'
 
@@ -86,7 +85,6 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'PollenForecast': PollenForecast,
   'SeismographGrid': SeismographGrid,
   'StarMap': StarMap,
-  'WhatsBelowYou': WhatsBelowYou,
   'YourAirJourney': YourAirJourney,
   'YourBackgroundDose': YourBackgroundDose,
 }

@@ -53,36 +53,34 @@ const AQI_SEGMENTS = [
   { max: 300, color: '#7c3aed', label: 'Very Unhealthy' },
 ]
 
-// Pollutant card component
-function PollutantCard({
+// Pollutant row component (single line per pollutant)
+function PollutantRow({
   name,
   value,
   unit,
   whoGuideline,
-  baseFontSize,
 }: {
   name: string
   value: number
   unit: string
   whoGuideline: number
-  baseFontSize: number
 }) {
   const percentage = Math.min(100, (value / (whoGuideline * 2)) * 100)
   const whoPosition = Math.min(100, (whoGuideline / (whoGuideline * 2)) * 100)
   const exceedsWho = value > whoGuideline
 
   return (
-    <div
-      className="p-[0.5em] bg-[#f8fafc] rounded-[0.375em]"
-      style={{ fontSize: `${baseFontSize}px` }}
-    >
+    <div className="py-[0.5em] border-b border-black/5 last:border-0">
       <div className="flex items-center justify-between mb-[0.25em]">
-        <span className="text-[0.625em] text-black/60">{name}</span>
-        <span className={`text-[0.75em] font-mono font-medium ${exceedsWho ? 'text-[#ef4444]' : 'text-black'}`}>
-          {value.toFixed(1)}
-        </span>
+        <span className="text-[0.75em] text-black/70">{name}</span>
+        <div className="flex items-baseline gap-[0.25em]">
+          <span className={`text-[1em] font-mono font-medium ${exceedsWho ? 'text-[#ef4444]' : 'text-black'}`}>
+            {value.toFixed(1)}
+          </span>
+          <span className="text-[0.625em] text-black/40">{unit}</span>
+        </div>
       </div>
-      <div className="relative h-[0.25em] bg-black/10 rounded-full overflow-visible">
+      <div className="relative h-[0.375em] bg-black/10 rounded-full overflow-visible">
         <div
           className="h-full rounded-full transition-all"
           style={{
@@ -92,12 +90,13 @@ function PollutantCard({
         />
         {/* WHO guideline marker */}
         <div
-          className="absolute top-[-0.125em] w-[0.125em] h-[0.5em] bg-black"
+          className="absolute top-[-0.125em] w-[0.125em] h-[0.625em] bg-black/60 rounded-full"
           style={{ left: `${whoPosition}%` }}
+          title={`WHO guideline: ${whoGuideline} ${unit}`}
         />
       </div>
-      <div className="text-[0.4375em] text-black/40 mt-[0.25em]">
-        WHO: {whoGuideline} {unit}
+      <div className="text-[0.5625em] text-black/40 mt-[0.125em]">
+        WHO limit: {whoGuideline} {unit}
       </div>
     </div>
   )
@@ -179,7 +178,7 @@ export default function AirQuality() {
 
   if (loading || locationStatus === 'pending') {
     return (
-      <div className="flex items-center justify-center h-full bg-white">
+      <div className="flex items-center justify-center h-full bg-white p-[1em]">
         <div className="text-[0.875em] text-black/50">
           {locationStatus === 'pending' ? 'Getting location...' : 'Loading...'}
         </div>
@@ -189,7 +188,7 @@ export default function AirQuality() {
 
   if (error || !data) {
     return (
-      <div className="flex items-center justify-center h-full bg-white">
+      <div className="flex items-center justify-center h-full bg-white p-[1em]">
         <div className="text-[0.875em] text-[#ef4444]">{error || 'No data'}</div>
       </div>
     )
@@ -201,7 +200,7 @@ export default function AirQuality() {
   // Calculate AQI bar position
   const aqiPosition = Math.min(100, (data.aqi / 300) * 100)
 
-  // Get 4 key pollutants for the grid
+  // Get key pollutants for display
   const keyPollutants = [
     data.pollutants.find(p => p.parameter === 'pm25') || { displayName: 'PM2.5', value: data.pm25, unit: 'μg/m³', whoGuideline: 15, exceedsWho: data.pm25 > 15 },
     data.pollutants.find(p => p.parameter === 'pm10'),
@@ -226,16 +225,16 @@ export default function AirQuality() {
             className="w-[0.5em] h-[0.5em] rounded-full"
             style={{ backgroundColor: data.category.color }}
           />
-          <span className="text-[0.75em] font-medium text-black">Air Quality</span>
+          <span className="text-[0.875em] font-medium text-black">Air Quality</span>
         </div>
-        <div className="text-[0.5em] text-black/40">
+        <div className="text-[0.625em] text-black/40">
           {data.location.city} · OpenAQ
         </div>
       </div>
 
       {/* Main AQI card */}
       <div className="p-[0.75em] bg-[#f8fafc] rounded-[0.5em] mb-[0.75em]">
-        <div className="text-[0.4375em] uppercase tracking-wider text-black/40 mb-[0.25em]">
+        <div className="text-[0.625em] uppercase tracking-wider text-black/50 mb-[0.25em]">
           Air Quality Index
         </div>
 
@@ -244,7 +243,7 @@ export default function AirQuality() {
             {data.aqi}
           </span>
           <span
-            className="text-[0.875em] font-medium px-[0.5em] py-[0.125em] rounded-[0.25em]"
+            className="text-[0.875em] font-medium px-[0.5em] py-[0.25em] rounded-[0.25em]"
             style={{
               backgroundColor: `${data.category.color}20`,
               color: data.category.color
@@ -283,7 +282,7 @@ export default function AirQuality() {
         </div>
 
         {/* Scale labels */}
-        <div className="flex justify-between text-[0.375em] text-black/40 mt-[0.25em]">
+        <div className="flex justify-between text-[0.5em] text-black/40 mt-[0.25em]">
           <span>0</span>
           <span>50</span>
           <span>100</span>
@@ -293,20 +292,19 @@ export default function AirQuality() {
         </div>
       </div>
 
-      {/* Key Pollutants grid */}
-      <div className="mb-[0.75em]">
-        <div className="text-[0.4375em] uppercase tracking-wider text-black/40 mb-[0.375em]">
+      {/* Key Pollutants - single column */}
+      <div className="mb-[0.75em] flex-1 overflow-auto">
+        <div className="text-[0.625em] uppercase tracking-wider text-black/50 mb-[0.375em]">
           Key Pollutants
         </div>
-        <div className="grid grid-cols-2 gap-[0.375em]">
-          {keyPollutants.slice(0, 4).map((pollutant, i) => (
-            <PollutantCard
+        <div className="bg-[#f8fafc] rounded-[0.5em] px-[0.75em]">
+          {keyPollutants.map((pollutant, i) => (
+            <PollutantRow
               key={pollutant?.displayName || i}
               name={pollutant?.displayName || 'N/A'}
               value={pollutant?.value ?? 0}
               unit={pollutant?.unit || 'μg/m³'}
               whoGuideline={pollutant?.whoGuideline || 10}
-              baseFontSize={baseFontSize}
             />
           ))}
         </div>
@@ -314,7 +312,7 @@ export default function AirQuality() {
 
       {/* Health guidance */}
       <div
-        className="p-[0.5em] rounded-[0.375em] mb-[0.5em]"
+        className="p-[0.625em] rounded-[0.5em] mb-[0.5em]"
         style={{ backgroundColor: `${guidance.color}15` }}
       >
         <div className="flex items-center gap-[0.375em]">
@@ -322,18 +320,18 @@ export default function AirQuality() {
             className="w-[0.375em] h-[0.375em] rounded-full flex-shrink-0"
             style={{ backgroundColor: guidance.color }}
           />
-          <span className="text-[0.5625em] text-black/70">
+          <span className="text-[0.75em] text-black/70">
             {guidance.message}
           </span>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="mt-auto flex items-center justify-center text-[0.4375em] text-black/40">
-        <span>
-          Updated {timeString}
-          {data.location.distance && ` · Nearest station: ${data.location.distance.toFixed(1)}km`}
-        </span>
+      <div className="flex items-center justify-between text-[0.5625em] text-black/40 pt-[0.5em] border-t border-black/5">
+        <span>Updated {timeString}</span>
+        {data.location.distance && (
+          <span>Station {data.location.distance.toFixed(1)}km away</span>
+        )}
       </div>
     </div>
   )
