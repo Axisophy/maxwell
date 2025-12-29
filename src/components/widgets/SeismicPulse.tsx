@@ -7,13 +7,40 @@ interface SeismicPulseProps {
   className?: string;
 }
 
-// Single station waveform
-function StationTrace({ station, width, height }: { station: SeismicStation; width: number; height: number }) {
+// Seismograph trace component - renders a single waveform
+function StationTrace({
+  station,
+  height,
+  isHero = false,
+}: {
+  station: SeismicStation;
+  height: number;
+  isHero?: boolean;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(300);
 
+  // Track container width
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateWidth = () => {
+      const rect = container.getBoundingClientRect();
+      setWidth(rect.width);
+    };
+
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
+  // Draw the waveform
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || width <= 0) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -25,19 +52,40 @@ function StationTrace({ station, width, height }: { station: SeismicStation; wid
     canvas.style.height = `${height}px`;
     ctx.scale(dpr, dpr);
 
-    // Background
-    ctx.fillStyle = '#0f172a';
+    // Paper-like background with subtle warmth
+    ctx.fillStyle = '#0f1419';
     ctx.fillRect(0, 0, width, height);
+
+    // Horizontal grid lines (paper roll effect)
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.lineWidth = 1;
+    const gridSpacing = 15;
+    for (let y = gridSpacing; y < height; y += gridSpacing) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    // Vertical time markers (every 20% of width)
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    for (let i = 1; i < 5; i++) {
+      const x = (width * i) / 5;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
 
     // Draw waveform
     const waveform = station.waveform;
     const pointSpacing = width / waveform.length;
     const centerY = height / 2;
-    const amplitude = height * 0.35;
+    const amplitude = height * (isHero ? 0.4 : 0.35);
 
-    // Glow layer
-    ctx.strokeStyle = 'rgba(34, 197, 94, 0.25)';
-    ctx.lineWidth = 4;
+    // Glow/blur layer
+    ctx.strokeStyle = 'rgba(196, 69, 54, 0.3)';
+    ctx.lineWidth = isHero ? 5 : 3;
     ctx.beginPath();
     waveform.forEach((value, i) => {
       const x = i * pointSpacing;
@@ -47,9 +95,9 @@ function StationTrace({ station, width, height }: { station: SeismicStation; wid
     });
     ctx.stroke();
 
-    // Main line
-    ctx.strokeStyle = '#22c55e';
-    ctx.lineWidth = 1.5;
+    // Main seismograph line - red-brown color
+    ctx.strokeStyle = '#c44536';
+    ctx.lineWidth = isHero ? 2 : 1.5;
     ctx.beginPath();
     waveform.forEach((value, i) => {
       const x = i * pointSpacing;
@@ -58,17 +106,27 @@ function StationTrace({ station, width, height }: { station: SeismicStation; wid
       else ctx.lineTo(x, y);
     });
     ctx.stroke();
-
-  }, [station, width, height]);
+  }, [station, width, height, isHero]);
 
   return (
-    <div className="relative bg-[#0f172a] rounded overflow-hidden">
-      <canvas ref={canvasRef} />
-      <div className="absolute bottom-0.5 left-1.5 text-[9px] font-mono text-white/70 font-medium">
-        {station.code}
-      </div>
-      <div className="absolute bottom-0.5 right-1.5 text-[8px] text-white/40">
-        {station.location}
+    <div ref={containerRef} className="w-full">
+      <div className="relative bg-[#0f1419] rounded overflow-hidden">
+        <canvas ref={canvasRef} className="w-full block" />
+
+        {/* Station code - left */}
+        <div className={`absolute left-2 ${isHero ? 'top-2' : 'top-1'}`}>
+          <span className={`font-mono font-bold text-white/80 ${isHero ? 'text-sm' : 'text-[10px]'}`}>
+            {station.code}
+          </span>
+        </div>
+
+        {/* Location - right */}
+        <div className={`absolute right-2 ${isHero ? 'top-2' : 'top-1'}`}>
+          <span className={`text-white/40 ${isHero ? 'text-xs' : 'text-[9px]'}`}>
+            {station.location}
+          </span>
+        </div>
+
       </div>
     </div>
   );
@@ -78,8 +136,7 @@ export default function SeismicPulse({ className = '' }: SeismicPulseProps) {
   const [data, setData] = useState<SeismicData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [traceSize, setTraceSize] = useState({ width: 100, height: 45 });
+  const [showAllStations, setShowAllStations] = useState(false);
 
   // Fetch data
   const fetchData = useCallback(async () => {
@@ -102,60 +159,70 @@ export default function SeismicPulse({ className = '' }: SeismicPulseProps) {
     return () => clearInterval(interval);
   }, [fetchData]);
 
-  // Calculate trace dimensions
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const updateDimensions = () => {
-      const rect = container.getBoundingClientRect();
-      const gap = 6;
-      const cols = 3;
-      const traceWidth = (rect.width - gap * (cols - 1) - 24) / cols; // 24 for padding
-      setTraceSize({ width: Math.floor(traceWidth), height: 45 });
-    };
-
-    updateDimensions();
-    const observer = new ResizeObserver(updateDimensions);
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
-
-  const displayStations = data?.stations.slice(0, 9) || [];
+  // Split stations: 1 hero, 2 secondary, rest hidden
+  const heroStation = data?.stations[0];
+  const secondaryStations = data?.stations.slice(1, 3) || [];
+  const remainingStations = data?.stations.slice(3) || [];
 
   return (
-    <div ref={containerRef} className={`p-3 ${className}`}>
+    <div className={`bg-[#1a1a1e] p-3 ${className}`}>
       {loading && !data ? (
-        <div className="h-[180px] flex items-center justify-center">
-          <span className="text-black/40 text-sm">Loading stations...</span>
+        <div className="min-h-[200px] flex items-center justify-center">
+          <span className="text-white/40 text-sm">Loading stations...</span>
         </div>
       ) : error ? (
-        <div className="h-[180px] flex items-center justify-center">
-          <span className="text-red-500 text-sm">{error}</span>
+        <div className="min-h-[200px] flex items-center justify-center">
+          <span className="text-red-400 text-sm">{error}</span>
         </div>
       ) : (
         <>
-          {/* Station grid */}
-          <div className="grid grid-cols-3 gap-1.5">
-            {displayStations.map(station => (
-              <StationTrace
-                key={station.code}
-                station={station}
-                width={traceSize.width}
-                height={traceSize.height}
-              />
+          {/* Hero trace - full width, taller */}
+          {heroStation && (
+            <div className="mb-2">
+              <StationTrace station={heroStation} height={80} isHero />
+            </div>
+          )}
+
+          {/* Secondary traces - full width, shorter */}
+          <div className="space-y-1.5 mb-2">
+            {secondaryStations.map((station) => (
+              <StationTrace key={station.code} station={station} height={45} />
             ))}
           </div>
 
+          {/* Collapsible section for remaining stations */}
+          {remainingStations.length > 0 && (
+            <div className="border-t border-white/10 pt-2">
+              <button
+                onClick={() => setShowAllStations(!showAllStations)}
+                className="w-full flex items-center justify-center gap-2 py-1.5 text-xs text-white/40 hover:text-white/60 transition-colors"
+              >
+                <span>
+                  {showAllStations
+                    ? '▲ Hide stations'
+                    : `▼ Show ${remainingStations.length} more stations`}
+                </span>
+              </button>
+
+              {showAllStations && (
+                <div className="space-y-1.5 mt-2">
+                  {remainingStations.map((station) => (
+                    <StationTrace key={station.code} station={station} height={45} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Stats bar */}
           {data && (
-            <div className="mt-3 pt-2 border-t border-black/10 flex items-center justify-between">
-              <div className="text-xs text-black/50">
-                <span className="font-mono font-medium text-black">{data.stats.eventsLast24h}</span>
+            <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-between">
+              <div className="text-xs text-white/50">
+                <span className="font-mono font-medium text-white">{data.stats.eventsLast24h}</span>
                 {' '}M4.5+ (24h)
               </div>
-              <div className="text-xs text-black/50">
-                Largest: <span className="font-mono font-medium text-black">M{data.stats.largestMagnitude}</span>
+              <div className="text-xs text-white/50">
+                Largest: <span className="font-mono font-medium text-white">M{data.stats.largestMagnitude}</span>
                 {' '}{data.stats.largestLocation}
               </div>
             </div>

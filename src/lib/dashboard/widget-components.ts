@@ -18,7 +18,7 @@ import NearEarthAsteroids from '@/components/widgets/NearEarthAsteroids'
 import NuclearReactors from '@/components/widgets/NuclearReactors'
 import UKEnergy from '@/components/widgets/UKEnergy'
 import WorldPopulation from '@/components/widgets/WorldPopulation'
-import UKTides from '@/components/widgets/UKTides'
+import TidesLive from '@/components/widgets/TidesLive'
 import LightningLive from '@/components/widgets/LightningLive'
 import SeismicPulse from '@/components/widgets/SeismicPulse'
 import DeepSpaceNetwork from '@/components/widgets/DeepSpaceNetwork'
@@ -67,7 +67,7 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'NuclearReactors': NuclearReactors,
   'UKEnergy': UKEnergy,
   'WorldPopulation': WorldPopulation,
-  'UKTides': UKTides,
+  'TidesLive': TidesLive,
   'LightningLive': LightningLive,
   'SeismicPulse': SeismicPulse,
   'DeepSpaceNetwork': DeepSpaceNetwork,

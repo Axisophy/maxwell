@@ -116,8 +116,11 @@ const TIDE_STATIONS: TideStation[] = [
   { name: 'Casablanca', country: 'Morocco', lat: 33.5731, lon: -7.5898, meanRange: 3.2, meanLevel: 1.9, offset: -60 },
 ]
 
-// Famous fallback location for landlocked users
-const FALLBACK_STATION = TIDE_STATIONS.find(s => s.name === 'Mont Saint-Michel')!
+// Fallback station when geolocation fails or is denied
+const FALLBACK_STATION = TIDE_STATIONS.find(s => s.name === 'St Leonards')!
+
+// Famous fallback for landlocked users (>500km from coast)
+const LANDLOCKED_FALLBACK = TIDE_STATIONS.find(s => s.name === 'Mont Saint-Michel')!
 
 // --- UTILITY FUNCTIONS ---
 
@@ -454,15 +457,15 @@ function TideCurve({ curve, events, now, containerWidth }: TideCurveProps) {
 
 // --- MAIN WIDGET COMPONENT ---
 
-export default function UKTides() {
+export default function TidesLive() {
   // Refs
   const containerRef = useRef<HTMLDivElement>(null)
-  
-  // State
+
+  // State - station starts null until geolocation resolves
   const [baseFontSize, setBaseFontSize] = useState(16)
   const [containerWidth, setContainerWidth] = useState(400)
   const [now, setNow] = useState(new Date())
-  const [station, setStation] = useState<TideStation>(TIDE_STATIONS[7]) // St Leonards default
+  const [station, setStation] = useState<TideStation | null>(null)
   const [distance, setDistance] = useState<number | null>(null)
   const [locationStatus, setLocationStatus] = useState<'loading' | 'found' | 'fallback' | 'manual'>('loading')
   const [eventsExpanded, setEventsExpanded] = useState(false)
@@ -485,19 +488,20 @@ export default function UKTides() {
   // Geolocation on mount
   useEffect(() => {
     if (!navigator.geolocation) {
-      setLocationStatus('fallback')
+      // No geolocation support - use fallback
       setStation(FALLBACK_STATION)
+      setLocationStatus('manual')
       return
     }
-    
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords
         const { station: nearest, distance: dist } = findNearestStation(latitude, longitude)
-        
+
         if (dist > 500) {
-          // Too far from coast, use famous fallback
-          setStation(FALLBACK_STATION)
+          // Too far from coast, use famous tides fallback
+          setStation(LANDLOCKED_FALLBACK)
           setDistance(null)
           setLocationStatus('fallback')
         } else {
@@ -507,7 +511,8 @@ export default function UKTides() {
         }
       },
       () => {
-        // Geolocation denied/failed - keep default (St Leonards)
+        // Geolocation denied/failed - use St Leonards fallback
+        setStation(FALLBACK_STATION)
         setLocationStatus('manual')
       },
       { timeout: 5000, maximumAge: 300000 }
@@ -520,8 +525,11 @@ export default function UKTides() {
     return () => clearInterval(interval)
   }, [])
   
-  // Calculate tide data
-  const tideData = useMemo(() => calculateTides(station, now), [station, now])
+  // Calculate tide data (only when station is available)
+  const tideData = useMemo(() => {
+    if (!station) return { events: [], curve: [] }
+    return calculateTides(station, now)
+  }, [station, now])
   
   // Find next event
   const nextEvent = useMemo(() => {
@@ -556,8 +564,21 @@ export default function UKTides() {
     return regions
   }, [])
 
+  // Show loading state while waiting for geolocation
+  if (!station) {
+    return (
+      <div
+        ref={containerRef}
+        className="w-full bg-white rounded-[0.75em] p-[1em] min-h-[20em] flex items-center justify-center"
+        style={{ fontSize: `${baseFontSize}px` }}
+      >
+        <div className="text-black/40 text-[0.875em]">Getting your location...</div>
+      </div>
+    )
+  }
+
   return (
-    <div 
+    <div
       ref={containerRef}
       className="w-full bg-white rounded-[0.75em] p-[1em]"
       style={{ fontSize: `${baseFontSize}px` }}
@@ -614,8 +635,8 @@ export default function UKTides() {
                     }}
                     className={`
                       px-[0.5em] py-[0.25em] text-[0.75em] rounded-[0.25em] transition-colors
-                      ${s.name === station.name 
-                        ? 'bg-black text-white' 
+                      ${s.name === station?.name
+                        ? 'bg-black text-white'
                         : 'bg-white text-black hover:bg-black/5'
                       }
                     `}

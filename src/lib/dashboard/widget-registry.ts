@@ -56,7 +56,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     source: 'Harmonic calculation from tidal constants. Approximate predictions only - not for navigation.',
     status: 'ok',
     categories: ['earth-geology', 'personal'],
-    component: 'UKTides'
+    component: 'TidesLive'
   },
   'world-population': {
     id: 'world-population',

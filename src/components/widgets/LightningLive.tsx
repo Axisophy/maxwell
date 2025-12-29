@@ -1,20 +1,91 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { LightningData, LightningStrike } from '@/lib/unrest/types';
+import WorldMap, { latLonToXY } from './WorldMap';
 
 interface LightningLiveProps {
   className?: string;
+}
+
+// Lightning strike SVG component
+function LightningStrikeMark({
+  strike,
+  now,
+}: {
+  strike: LightningStrike;
+  now: number;
+}) {
+  const age = now - strike.timestamp;
+  const maxAge = 300000; // 5 minutes
+
+  if (age > maxAge) return null;
+
+  const pos = latLonToXY(strike.lat, strike.lng);
+  const fadeRatio = 1 - age / maxAge;
+  const alpha = fadeRatio * strike.intensity;
+  const isRecent = age < 500;
+
+  // Size based on age and intensity
+  const baseRadius = 3 + strike.intensity * 2;
+  const glowRadius = baseRadius * 3 * fadeRatio;
+
+  return (
+    <g>
+      {/* Outer glow */}
+      <circle
+        cx={pos.x}
+        cy={pos.y}
+        r={glowRadius}
+        fill={`rgba(255, 180, 50, ${alpha * 0.3})`}
+      />
+      {/* Middle glow */}
+      <circle
+        cx={pos.x}
+        cy={pos.y}
+        r={glowRadius * 0.5}
+        fill={`rgba(255, 220, 100, ${alpha * 0.5})`}
+      />
+      {/* Core */}
+      <circle
+        cx={pos.x}
+        cy={pos.y}
+        r={baseRadius * fadeRatio + 1}
+        fill={isRecent ? '#ffffff' : `rgba(255, 255, 220, ${alpha})`}
+      />
+      {/* Flash effect for very recent strikes */}
+      {isRecent && (
+        <circle
+          cx={pos.x}
+          cy={pos.y}
+          r={baseRadius + 4}
+          fill="rgba(255, 255, 255, 0.8)"
+        >
+          <animate
+            attributeName="r"
+            from={`${baseRadius}`}
+            to={`${baseRadius + 10}`}
+            dur="0.3s"
+            fill="freeze"
+          />
+          <animate
+            attributeName="opacity"
+            from="0.8"
+            to="0"
+            dur="0.3s"
+            fill="freeze"
+          />
+        </circle>
+      )}
+    </g>
+  );
 }
 
 export default function LightningLive({ className = '' }: LightningLiveProps) {
   const [data, setData] = useState<LightningData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
-  const strikesRef = useRef<LightningStrike[]>([]);
+  const [now, setNow] = useState(Date.now());
 
   // Fetch data
   const fetchData = useCallback(async () => {
@@ -23,7 +94,6 @@ export default function LightningLive({ className = '' }: LightningLiveProps) {
       if (!res.ok) throw new Error('Failed to fetch');
       const newData: LightningData = await res.json();
       setData(newData);
-      strikesRef.current = newData.strikes;
       setError(null);
     } catch (err) {
       setError('Unable to load lightning data');
@@ -38,166 +108,39 @@ export default function LightningLive({ className = '' }: LightningLiveProps) {
     return () => clearInterval(interval);
   }, [fetchData]);
 
-  // Draw map and strikes
+  // Update time for fade animation (every 100ms for smooth fading)
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const rect = container.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    canvas.style.width = `${rect.width}px`;
-    canvas.style.height = `${rect.height}px`;
-    ctx.scale(dpr, dpr);
-
-    const width = rect.width;
-    const height = rect.height;
-
-    // World map bounds (show Americas primarily)
-    const mapBounds = { west: -140, east: -30, south: -60, north: 60 };
-
-    const projectLng = (lng: number) => ((lng - mapBounds.west) / (mapBounds.east - mapBounds.west)) * width;
-    const projectLat = (lat: number) => height - ((lat - mapBounds.south) / (mapBounds.north - mapBounds.south)) * height;
-
-    const animate = () => {
-      ctx.clearRect(0, 0, width, height);
-      
-      // Dark background
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, 0, width, height);
-
-      // Grid lines
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-      ctx.lineWidth = 1;
-      for (let lat = -60; lat <= 60; lat += 30) {
-        ctx.beginPath();
-        ctx.moveTo(0, projectLat(lat));
-        ctx.lineTo(width, projectLat(lat));
-        ctx.stroke();
-      }
-      for (let lng = -140; lng <= -30; lng += 20) {
-        ctx.beginPath();
-        ctx.moveTo(projectLng(lng), 0);
-        ctx.lineTo(projectLng(lng), height);
-        ctx.stroke();
-      }
-
-      // Continent outlines (simplified)
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 1;
-
-      // North America
-      ctx.beginPath();
-      ctx.moveTo(projectLng(-125), projectLat(48));
-      ctx.lineTo(projectLng(-125), projectLat(32));
-      ctx.lineTo(projectLng(-117), projectLat(32));
-      ctx.lineTo(projectLng(-97), projectLat(26));
-      ctx.lineTo(projectLng(-82), projectLat(25));
-      ctx.lineTo(projectLng(-80), projectLat(32));
-      ctx.lineTo(projectLng(-75), projectLat(35));
-      ctx.lineTo(projectLng(-70), projectLat(42));
-      ctx.lineTo(projectLng(-67), projectLat(45));
-      ctx.stroke();
-
-      // Central America
-      ctx.beginPath();
-      ctx.moveTo(projectLng(-117), projectLat(32));
-      ctx.lineTo(projectLng(-105), projectLat(20));
-      ctx.lineTo(projectLng(-87), projectLat(15));
-      ctx.lineTo(projectLng(-83), projectLat(8));
-      ctx.stroke();
-
-      // South America
-      ctx.beginPath();
-      ctx.moveTo(projectLng(-80), projectLat(10));
-      ctx.lineTo(projectLng(-77), projectLat(-5));
-      ctx.lineTo(projectLng(-70), projectLat(-18));
-      ctx.lineTo(projectLng(-70), projectLat(-55));
-      ctx.lineTo(projectLng(-55), projectLat(-55));
-      ctx.lineTo(projectLng(-45), projectLat(-25));
-      ctx.lineTo(projectLng(-35), projectLat(-5));
-      ctx.lineTo(projectLng(-50), projectLat(5));
-      ctx.stroke();
-
-      // Draw strikes
-      const now = Date.now();
-      const strikes = strikesRef.current;
-
-      strikes.forEach(strike => {
-        const age = now - strike.timestamp;
-        const maxAge = 300000;
-        
-        if (age > maxAge) return;
-
-        const x = projectLng(strike.lng);
-        const y = projectLat(strike.lat);
-
-        if (x < 0 || x > width || y < 0 || y > height) return;
-
-        const fadeRatio = 1 - (age / maxAge);
-        const alpha = fadeRatio * strike.intensity;
-        const isRecent = age < 500;
-
-        if (isRecent) {
-          ctx.fillStyle = `rgba(255, 255, 255, 1)`;
-          ctx.beginPath();
-          ctx.arc(x, y, 4 + Math.random() * 2, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        // Glow
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 10 * fadeRatio + 2);
-        gradient.addColorStop(0, `rgba(255, 220, 100, ${alpha * 0.9})`);
-        gradient.addColorStop(0.4, `rgba(255, 180, 50, ${alpha * 0.5})`);
-        gradient.addColorStop(1, `rgba(255, 150, 0, 0)`);
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(x, y, 10 * fadeRatio + 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Core
-        ctx.fillStyle = `rgba(255, 255, 220, ${alpha})`;
-        ctx.beginPath();
-        ctx.arc(x, y, 2 * fadeRatio + 1, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
-  }, [data]);
-
-  // Handle resize
-  useEffect(() => {
-    const handleResize = () => setData(d => d ? { ...d } : null);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const interval = setInterval(() => setNow(Date.now()), 100);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <div style={{ aspectRatio: '4/3' }} className={className}>
+    <div style={{ aspectRatio: '16/9' }} className={`bg-[#0f172a] ${className}`}>
       {loading && !data ? (
-        <div className="w-full h-full flex items-center justify-center bg-[#0f172a]">
+        <div className="w-full h-full flex items-center justify-center">
           <span className="text-white/50 text-sm">Loading...</span>
         </div>
       ) : error ? (
-        <div className="w-full h-full flex items-center justify-center bg-[#0f172a]">
+        <div className="w-full h-full flex items-center justify-center">
           <span className="text-red-400 text-sm">{error}</span>
         </div>
       ) : (
-        <div ref={containerRef} className="w-full h-full relative">
-          <canvas ref={canvasRef} className="absolute inset-0" />
+        <div className="w-full h-full relative">
+          {/* World map with lightning strikes */}
+          <WorldMap
+            className="w-full h-full"
+            oceanColor="#0f172a"
+            landColor="#1e3a5f"
+          >
+            {/* Render all lightning strikes as SVG elements */}
+            {data?.strikes.map((strike) => (
+              <LightningStrikeMark
+                key={strike.id}
+                strike={strike}
+                now={now}
+              />
+            ))}
+          </WorldMap>
 
           {/* Stats overlay */}
           {data && (
@@ -205,7 +148,9 @@ export default function LightningLive({ className = '' }: LightningLiveProps) {
               <div className="flex items-center justify-between text-white">
                 <div className="flex items-center gap-4">
                   <div>
-                    <span className="font-mono text-xl font-bold">{data.stats.strikesPerMinute.toLocaleString()}</span>
+                    <span className="font-mono text-xl font-bold">
+                      {data.stats.strikesPerMinute.toLocaleString()}
+                    </span>
                     <span className="text-xs text-white/60 ml-1">/min</span>
                   </div>
                   <div className="text-xs text-white/60">
