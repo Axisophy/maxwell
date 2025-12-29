@@ -103,14 +103,14 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['astronomy', 'solar-space'],
     component: 'NearEarthAsteroids'
   },
-  'himawari': {
-    id: 'himawari',
+  'pacific-disc': {
+    id: 'pacific-disc',
     title: 'Pacific Disc',
     description: 'Full-disc Earth imagery from the Himawari-9 satellite, showing the Pacific Ocean and Asia-Pacific region. Updated every 10 minutes.',
     source: 'NICT Japan / Himawari-9',
     status: 'live',
     categories: ['earth-geology', 'climate-environment'],
-    component: 'HimawariLive'
+    component: 'PacificDisc'
   },
   'space-weather': {
     id: 'space-weather',
@@ -175,15 +175,6 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['solar-space', 'personal'],
     component: 'AuroraForecast'
   },
-  'apod': {
-    id: 'apod',
-    title: 'Picture of the Day',
-    description: 'NASA\'s Astronomy Picture of the Day. Each day a different image or photograph of our universe is featured.',
-    source: 'NASA APOD',
-    status: 'ok',
-    categories: ['astronomy'],
-    component: 'APOD'
-  },
   'co2-now': {
     id: 'co2-now',
     title: 'CO₂ Now',
@@ -193,14 +184,14 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['climate-environment'],
     component: 'CO2Now'
   },
-  'dscovr-epic': {
-    id: 'dscovr-epic',
+  'earth-from-l1': {
+    id: 'earth-from-l1',
     title: 'Earth from L1',
     description: 'DSCOVR orbits the L1 Lagrange point, 1.5 million km from Earth, where it always sees the sunlit side of our planet.',
     source: 'NASA DSCOVR EPIC Camera',
     status: 'live',
     categories: ['earth-geology', 'astronomy'],
-    component: 'DSCOVREpic'
+    component: 'EarthFromL1'
   },
   'deep-space-network': {
     id: 'deep-space-network',
@@ -274,23 +265,23 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['earth-geology', 'climate-environment'],
     component: 'ActiveFires'
   },
-  'jwst-latest': {
-    id: 'jwst-latest',
-    title: 'JWST Latest',
+  'webb-telescope': {
+    id: 'webb-telescope',
+    title: 'Webb Telescope',
     description: 'The latest publicly released images from the James Webb Space Telescope.',
     source: 'Space Telescope Science Institute',
     status: 'live',
     categories: ['astronomy'],
-    component: 'JWSTLatest'
+    component: 'WebbTelescope'
   },
   'mars-rover': {
     id: 'mars-rover',
-    title: 'Mars Rover Images',
+    title: 'Mars Rover',
     description: 'The latest photographs from NASA\'s Mars rovers—Curiosity and Perseverance.',
     source: 'NASA Mars Exploration Program',
     status: 'live',
     categories: ['astronomy', 'solar-space'],
-    component: 'MarsRoverImages'
+    component: 'MarsRover'
   },
   'european-radiation': {
     id: 'european-radiation',

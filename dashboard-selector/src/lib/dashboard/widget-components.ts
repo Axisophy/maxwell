@@ -2,13 +2,12 @@
 // Maps component names (from registry) to actual React components
 
 import SolarDisk from '@/components/widgets/SolarDisk'
-import HimawariLive from '@/components/widgets/HimawariLive'
+import PacificDisc from '@/components/widgets/PacificDisc'
 import SpaceWeather from '@/components/widgets/SpaceWeather'
 import AirQuality from '@/components/widgets/AirQuality'
-import APOD from '@/components/widgets/APOD'
 import AuroraForecast from '@/components/widgets/AuroraForecast'
 import CO2Now from '@/components/widgets/CO2Now'
-import DSCOVREpic from '@/components/widgets/DSCOVREpic'
+import EarthFromL1 from '@/components/widgets/EarthFromL1'
 import EarthquakesLive from '@/components/widgets/EarthquakesLive'
 import ISSTracker from '@/components/widgets/ISSTracker'
 import LaunchCountdown from '@/components/widgets/LaunchCountdown'
@@ -34,9 +33,9 @@ import EBirdLive from '@/components/widgets/eBirdLive'
 import EuropeanRadiationMap from '@/components/widgets/EuropeanRadiationMap'
 import GlacierWatch from '@/components/widgets/GlacierWatch'
 import INaturalistLive from '@/components/widgets/iNaturalistLive'
-import JWSTLatest from '@/components/widgets/JWSTLatest'
+import WebbTelescope from '@/components/widgets/WebbTelescope'
 import MagneticField from '@/components/widgets/MagneticField'
-import MarsRoverImages from '@/components/widgets/MarsRoverImages'
+import MarsRover from '@/components/widgets/MarsRover'
 import OceanHydrophones from '@/components/widgets/OceanHydrophones'
 import PollenForecast from '@/components/widgets/PollenForecast'
 import SeismographGrid from '@/components/widgets/SeismographGrid'
@@ -49,13 +48,12 @@ import YourBackgroundDose from '@/components/widgets/YourBackgroundDose'
 // The key must match the 'component' field in WIDGET_REGISTRY
 export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'SolarDisk': SolarDisk,
-  'HimawariLive': HimawariLive,
+  'PacificDisc': PacificDisc,
   'SpaceWeather': SpaceWeather,
   'AirQuality': AirQuality,
-  'APOD': APOD,
   'AuroraForecast': AuroraForecast,
   'CO2Now': CO2Now,
-  'DSCOVREpic': DSCOVREpic,
+  'EarthFromL1': EarthFromL1,
   'EarthquakesLive': EarthquakesLive,
   'ISSTracker': ISSTracker,
   'LaunchCountdown': LaunchCountdown,
@@ -81,9 +79,9 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'EuropeanRadiationMap': EuropeanRadiationMap,
   'GlacierWatch': GlacierWatch,
   'INaturalistLive': INaturalistLive,
-  'JWSTLatest': JWSTLatest,
+  'WebbTelescope': WebbTelescope,
   'MagneticField': MagneticField,
-  'MarsRoverImages': MarsRoverImages,
+  'MarsRover': MarsRover,
   'OceanHydrophones': OceanHydrophones,
   'PollenForecast': PollenForecast,
   'SeismographGrid': SeismographGrid,
