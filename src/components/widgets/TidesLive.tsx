@@ -538,16 +538,21 @@ export default function TidesLive() {
   
   // Current tide state
   const currentState = useMemo(() => {
-    const currentPoint = tideData.curve.reduce((closest, p) => 
+    // Guard against empty curve array
+    if (tideData.curve.length === 0) {
+      return { height: 0, isRising: true }
+    }
+
+    const currentPoint = tideData.curve.reduce((closest, p) =>
       Math.abs(p.time.getTime() - now.getTime()) < Math.abs(closest.time.getTime() - now.getTime()) ? p : closest
     )
-    
+
     // Check trend by comparing to 30 min ago
     const targetTime = new Date(now.getTime() - 30 * 60 * 1000)
-    const prevPoint = tideData.curve.reduce((closest, p) => 
+    const prevPoint = tideData.curve.reduce((closest, p) =>
       Math.abs(p.time.getTime() - targetTime.getTime()) < Math.abs(closest.time.getTime() - targetTime.getTime()) ? p : closest
     )
-    
+
     return {
       height: currentPoint.height,
       isRising: currentPoint.height > prevPoint.height,
