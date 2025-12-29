@@ -110,23 +110,19 @@ function StationTrace({
 
   return (
     <div ref={containerRef} className="w-full">
-      <div className="relative bg-[#0f1419] rounded overflow-hidden">
+      {/* Waveform canvas */}
+      <div className="bg-[#0f1419] rounded overflow-hidden">
         <canvas ref={canvasRef} className="w-full block" />
+      </div>
 
-        {/* Station code - left */}
-        <div className={`absolute left-2 ${isHero ? 'top-2' : 'top-1'}`}>
-          <span className={`font-mono font-bold text-white/80 ${isHero ? 'text-sm' : 'text-[10px]'}`}>
-            {station.code}
-          </span>
-        </div>
-
-        {/* Location - right */}
-        <div className={`absolute right-2 ${isHero ? 'top-2' : 'top-1'}`}>
-          <span className={`text-white/40 ${isHero ? 'text-xs' : 'text-[9px]'}`}>
-            {station.location}
-          </span>
-        </div>
-
+      {/* Labels below the graph */}
+      <div className={`flex items-center justify-between ${isHero ? 'mt-1.5 px-1' : 'mt-1 px-0.5'}`}>
+        <span className={`font-mono font-bold text-white/80 ${isHero ? 'text-sm' : 'text-[10px]'}`}>
+          {station.code}
+        </span>
+        <span className={`text-white/40 ${isHero ? 'text-xs' : 'text-[9px]'}`}>
+          {station.location}
+        </span>
       </div>
     </div>
   );
