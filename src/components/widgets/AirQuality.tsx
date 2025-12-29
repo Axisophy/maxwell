@@ -7,6 +7,12 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 // ===========================================
 // Air quality index with pollutant breakdown
 // Data: OpenAQ
+//
+// Design notes:
+// - NO title/live dot/source (WidgetFrame handles those)
+// - Hero AQI number with category badge
+// - Segmented AQI bar
+// - Single-column pollutant list with WHO comparisons
 // ===========================================
 
 interface AirQualityData {
@@ -15,7 +21,7 @@ interface AirQualityData {
     city: string
     country: string
     coordinates: { latitude: number; longitude: number }
-    distance?: number // km to station
+    distance?: number
   }
   aqi: number
   pm25: number
@@ -53,7 +59,7 @@ const AQI_SEGMENTS = [
   { max: 300, color: '#7c3aed', label: 'Very Unhealthy' },
 ]
 
-// Pollutant row component (single line per pollutant)
+// Pollutant row component
 function PollutantRow({
   name,
   value,
@@ -72,12 +78,12 @@ function PollutantRow({
   return (
     <div className="py-[0.5em] border-b border-black/5 last:border-0">
       <div className="flex items-center justify-between mb-[0.25em]">
-        <span className="text-[0.75em] text-black/70">{name}</span>
+        <span className="text-[0.875em] text-black/70">{name}</span>
         <div className="flex items-baseline gap-[0.25em]">
-          <span className={`text-[1em] font-mono font-medium ${exceedsWho ? 'text-[#ef4444]' : 'text-black'}`}>
+          <span className={`text-[1.125em] font-mono font-medium ${exceedsWho ? 'text-[#ef4444]' : 'text-black'}`}>
             {value.toFixed(1)}
           </span>
-          <span className="text-[0.625em] text-black/40">{unit}</span>
+          <span className="text-[0.75em] text-black/40">{unit}</span>
         </div>
       </div>
       <div className="relative h-[0.375em] bg-black/10 rounded-full overflow-visible">
@@ -95,7 +101,7 @@ function PollutantRow({
           title={`WHO guideline: ${whoGuideline} ${unit}`}
         />
       </div>
-      <div className="text-[0.5625em] text-black/40 mt-[0.125em]">
+      <div className="text-[0.6875em] text-black/40 mt-[0.125em]">
         WHO limit: {whoGuideline} {unit}
       </div>
     </div>
@@ -178,7 +184,11 @@ export default function AirQuality() {
 
   if (loading || locationStatus === 'pending') {
     return (
-      <div className="flex items-center justify-center h-full bg-white p-[1em]">
+      <div
+        ref={containerRef}
+        className="flex items-center justify-center h-full bg-white p-[1em]"
+        style={{ fontSize: `${baseFontSize}px` }}
+      >
         <div className="text-[0.875em] text-black/50">
           {locationStatus === 'pending' ? 'Getting location...' : 'Loading...'}
         </div>
@@ -188,7 +198,11 @@ export default function AirQuality() {
 
   if (error || !data) {
     return (
-      <div className="flex items-center justify-center h-full bg-white p-[1em]">
+      <div
+        ref={containerRef}
+        className="flex items-center justify-center h-full bg-white p-[1em]"
+        style={{ fontSize: `${baseFontSize}px` }}
+      >
         <div className="text-[0.875em] text-[#ef4444]">{error || 'No data'}</div>
       </div>
     )
@@ -218,23 +232,9 @@ export default function AirQuality() {
       className="h-full bg-white overflow-hidden flex flex-col p-[1em]"
       style={{ fontSize: `${baseFontSize}px` }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-[0.75em]">
-        <div className="flex items-center gap-[0.5em]">
-          <div
-            className="w-[0.5em] h-[0.5em] rounded-full"
-            style={{ backgroundColor: data.category.color }}
-          />
-          <span className="text-[0.875em] font-medium text-black">Air Quality</span>
-        </div>
-        <div className="text-[0.625em] text-black/40">
-          {data.location.city} · OpenAQ
-        </div>
-      </div>
-
-      {/* Main AQI card */}
+      {/* Hero AQI section */}
       <div className="p-[0.75em] bg-[#f8fafc] rounded-[0.5em] mb-[0.75em]">
-        <div className="text-[0.625em] uppercase tracking-wider text-black/50 mb-[0.25em]">
+        <div className="text-[0.75em] uppercase tracking-wider text-black/50 mb-[0.25em]">
           Air Quality Index
         </div>
 
@@ -282,7 +282,7 @@ export default function AirQuality() {
         </div>
 
         {/* Scale labels */}
-        <div className="flex justify-between text-[0.5em] text-black/40 mt-[0.25em]">
+        <div className="flex justify-between text-[0.625em] text-black/40 mt-[0.25em]">
           <span>0</span>
           <span>50</span>
           <span>100</span>
@@ -294,7 +294,7 @@ export default function AirQuality() {
 
       {/* Key Pollutants - single column */}
       <div className="mb-[0.75em] flex-1 overflow-auto">
-        <div className="text-[0.625em] uppercase tracking-wider text-black/50 mb-[0.375em]">
+        <div className="text-[0.75em] uppercase tracking-wider text-black/50 mb-[0.375em]">
           Key Pollutants
         </div>
         <div className="bg-[#f8fafc] rounded-[0.5em] px-[0.75em]">
@@ -320,15 +320,15 @@ export default function AirQuality() {
             className="w-[0.375em] h-[0.375em] rounded-full flex-shrink-0"
             style={{ backgroundColor: guidance.color }}
           />
-          <span className="text-[0.75em] text-black/70">
+          <span className="text-[0.875em] text-black/70">
             {guidance.message}
           </span>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between text-[0.5625em] text-black/40 pt-[0.5em] border-t border-black/5">
-        <span>Updated {timeString}</span>
+      <div className="flex items-center justify-between text-[0.6875em] text-black/40 pt-[0.5em] border-t border-black/5">
+        <span>{data.location.city} · Updated {timeString}</span>
         {data.location.distance && (
           <span>Station {data.location.distance.toFixed(1)}km away</span>
         )}
