@@ -136,8 +136,11 @@ export default function ActiveFires() {
     )
   }
 
-  // Calculate max for chart scaling
-  const maxHistory = Math.max(...data.history)
+  // Calculate max for chart scaling - guard against missing data
+  const history = data.history ?? []
+  const maxHistory = history.length > 0 ? Math.max(...history) : 1
+  const regions = data.regions ?? []
+  const globalData = data.global ?? { activeFires: 0, last24h: 0, trend: 'stable', percentChange: 0 }
 
   return (
     <div
@@ -166,25 +169,25 @@ export default function ActiveFires() {
         </div>
         <div className="flex items-baseline gap-[0.5em]">
           <span className="text-[2.5em] font-mono font-bold text-white">
-            {data.global.activeFires.toLocaleString()}
+            {globalData.activeFires.toLocaleString()}
           </span>
           <span className={`text-[0.875em] font-mono font-medium flex items-center gap-[0.25em] ${
-            data.global.trend === 'up' ? 'text-[#fbbf24]' :
-            data.global.trend === 'down' ? 'text-[#4ade80]' : 'text-white/50'
+            globalData.trend === 'up' ? 'text-[#fbbf24]' :
+            globalData.trend === 'down' ? 'text-[#4ade80]' : 'text-white/50'
           }`}>
-            {getTrendArrow(data.global.trend)}
-            {Math.abs(data.global.percentChange)}%
+            {getTrendArrow(globalData.trend)}
+            {Math.abs(globalData.percentChange)}%
           </span>
         </div>
         <div className="text-[0.5625em] text-white/50 mt-[0.25em]">
-          {data.global.last24h.toLocaleString()} new detections (24h)
+          {globalData.last24h.toLocaleString()} new detections (24h)
         </div>
 
         {/* 7-day chart */}
         <div className="mt-[0.75em] h-[3em] flex items-end gap-[0.25em]">
-          {data.history.map((count, i) => {
+          {history.map((count, i) => {
             const height = (count / maxHistory) * 100
-            const isToday = i === data.history.length - 1
+            const isToday = i === history.length - 1
             return (
               <div
                 key={i}
@@ -213,8 +216,8 @@ export default function ActiveFires() {
         </div>
 
         <div className="space-y-[0.25em]">
-          {data.regions.slice(0, 5).map((region) => {
-            const percentage = (region.count / data.global.activeFires) * 100
+          {regions.slice(0, 5).map((region) => {
+            const percentage = globalData.activeFires > 0 ? (region.count / globalData.activeFires) * 100 : 0
             return (
               <div
                 key={region.code}
@@ -264,7 +267,7 @@ export default function ActiveFires() {
           <div className="flex items-center gap-[0.5em]">
             <div className="w-[0.375em] h-[0.375em] rounded-full bg-[#fbbf24]" />
             <span className="text-[0.5625em] text-white/70">
-              Highest activity: <span className="text-white font-medium">{data.regions[0]?.name}</span>
+              Highest activity: <span className="text-white font-medium">{regions[0]?.name ?? 'Unknown'}</span>
             </span>
           </div>
           <span className="text-[0.5em] font-mono text-white/40">
