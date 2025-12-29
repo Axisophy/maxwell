@@ -15,9 +15,13 @@ export default function DashboardPage() {
   // Ensure we only render dynamic content on client
   // This prevents hydration mismatches from localStorage
   useEffect(() => {
+    console.log('[Dashboard] useEffect running, setting isClient=true')
     setIsClient(true)
     setCurrentSetId(getSelectedSetId())
   }, [])
+
+  // Debug: log render state
+  console.log('[Dashboard] Render - isClient:', isClient, 'currentSetId:', currentSetId)
 
   const currentSet = getSetById(currentSetId) || getDefaultSet()
 
