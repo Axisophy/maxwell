@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react'
 // SATELLITES ABOVE WIDGET
 // ===========================================
 // Shows satellites currently overhead
-// Data: N2YO API
+// Data: N2YO API via /api/satellites-above
 // ===========================================
 
 interface Satellite {
@@ -39,10 +39,10 @@ interface SatelliteData {
 
 function SkyDome({ satellites, showStarlink }: { satellites: Satellite[]; showStarlink: boolean }) {
   // Filter satellites
-  const visibleSats = showStarlink 
+  const visibleSats = showStarlink
     ? satellites.slice(0, 50)
     : satellites.filter(s => s.category !== 'Starlink').slice(0, 30)
-  
+
   // Map position to dome coordinates (simplified)
   const getSatPosition = (sat: Satellite, index: number) => {
     // Spread satellites around the dome based on index
@@ -69,28 +69,28 @@ function SkyDome({ satellites, showStarlink }: { satellites: Satellite[]; showSt
       <svg viewBox="0 0 100 100" className="w-full h-full">
         {/* Dome background */}
         <circle cx="50" cy="50" r="45" fill="#0f172a" />
-        
+
         {/* Grid circles */}
-        <circle cx="50" cy="50" r="15" fill="none" stroke="#1e3a5f" strokeWidth="0.5" />
-        <circle cx="50" cy="50" r="30" fill="none" stroke="#1e3a5f" strokeWidth="0.5" />
-        <circle cx="50" cy="50" r="45" fill="none" stroke="#1e3a5f" strokeWidth="0.5" />
-        
+        <circle cx="50" cy="50" r="15" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+        <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+
         {/* Cross lines */}
-        <line x1="50" y1="5" x2="50" y2="95" stroke="#1e3a5f" strokeWidth="0.5" />
-        <line x1="5" y1="50" x2="95" y2="50" stroke="#1e3a5f" strokeWidth="0.5" />
-        
+        <line x1="50" y1="5" x2="50" y2="95" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+        <line x1="5" y1="50" x2="95" y2="50" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+
         {/* Cardinal directions */}
         <text x="50" y="8" textAnchor="middle" className="text-[4px] fill-white/40">N</text>
         <text x="50" y="97" textAnchor="middle" className="text-[4px] fill-white/40">S</text>
         <text x="7" y="51" textAnchor="middle" className="text-[4px] fill-white/40">W</text>
         <text x="93" y="51" textAnchor="middle" className="text-[4px] fill-white/40">E</text>
-        
+
         {/* Satellites */}
         {visibleSats.map((sat, i) => {
           const pos = getSatPosition(sat, i)
           const color = getCategoryColor(sat.category)
           const size = sat.category === 'ISS' ? 3 : sat.category === 'Starlink' ? 1 : 1.5
-          
+
           return (
             <g key={sat.id}>
               <circle
@@ -109,7 +109,7 @@ function SkyDome({ satellites, showStarlink }: { satellites: Satellite[]; showSt
             </g>
           )
         })}
-        
+
         {/* Center dot (you) */}
         <circle cx="50" cy="50" r="2" fill="#ef4444" />
       </svg>
@@ -150,7 +150,7 @@ export default function SatellitesAbove() {
 
   const fetchData = useCallback(async () => {
     if (!location) return
-    
+
     try {
       const response = await fetch(`/api/satellites-above?lat=${location.lat}&lng=${location.lng}`)
       if (!response.ok) throw new Error('Failed to fetch')
@@ -177,9 +177,9 @@ export default function SatellitesAbove() {
   // Loading state
   if (isLoading && !data) {
     return (
-      <div className="p-[1em] flex items-center justify-center h-[16em]">
+      <div className="bg-[#1a1a1e] p-[1em] flex items-center justify-center min-h-[16em]">
         <div className="text-center">
-          <div className="text-black/40 text-[0.875em]">
+          <div className="text-white/40 text-[0.875em]">
             {location ? 'Scanning sky...' : 'Getting your location...'}
           </div>
         </div>
@@ -190,12 +190,12 @@ export default function SatellitesAbove() {
   // Error state
   if (error && !data) {
     return (
-      <div className="p-[1em] flex items-center justify-center h-[16em]">
+      <div className="bg-[#1a1a1e] p-[1em] flex items-center justify-center min-h-[16em]">
         <div className="text-center">
-          <div className="text-red-500 text-[0.875em]">{error}</div>
-          <button 
+          <div className="text-red-400 text-[0.875em]">{error}</div>
+          <button
             onClick={fetchData}
-            className="mt-2 text-[0.75em] text-black/50 hover:text-black"
+            className="mt-2 text-[0.75em] text-white/40 hover:text-white/60 transition-colors"
           >
             Try again
           </button>
@@ -210,29 +210,29 @@ export default function SatellitesAbove() {
   const issOverhead = data.satellites.some(s => s.category === 'ISS')
 
   return (
-    <div className="p-[1em]">
+    <div className="bg-[#1a1a1e] p-[1em]">
       {/* Header stat */}
       <div className="text-center mb-[0.5em]">
         <div className="flex items-baseline justify-center gap-[0.25em]">
-          <span className="font-mono text-[2.5em] font-bold text-black">
+          <span className="font-mono text-[2.5em] font-bold text-white">
             {data.counts.total}
           </span>
-          <span className="text-[1em] text-black/50">
+          <span className="text-[1em] text-white/40">
             satellites
           </span>
         </div>
-        <div className="text-[0.75em] text-black/50">
+        <div className="text-[0.75em] text-white/40">
           overhead right now
         </div>
       </div>
 
       {/* ISS alert */}
       {issOverhead && (
-        <div className="mb-[0.5em] p-[0.5em] bg-amber-50 rounded-[0.5em] text-center border border-amber-200">
-          <div className="text-[0.875em] text-amber-800 font-medium">
-            🛸 ISS is overhead!
+        <div className="mb-[0.5em] p-[0.5em] bg-amber-500/20 rounded-[0.5em] text-center border border-amber-500/30">
+          <div className="text-[0.875em] text-amber-400 font-medium">
+            ISS is overhead!
           </div>
-          <div className="text-[0.7em] text-amber-600">
+          <div className="text-[0.7em] text-amber-400/70">
             Look up - the space station is passing over
           </div>
         </div>
@@ -245,19 +245,19 @@ export default function SatellitesAbove() {
       <div className="flex justify-center gap-[0.75em] mt-[0.5em] text-[0.65em]">
         <div className="flex items-center gap-[0.25em]">
           <div className="w-[0.5em] h-[0.5em] rounded-full bg-[#22c55e]" />
-          <span className="text-black/50">GPS</span>
+          <span className="text-white/40">GPS</span>
         </div>
         <div className="flex items-center gap-[0.25em]">
           <div className="w-[0.5em] h-[0.5em] rounded-full bg-[#0ea5e9]" />
-          <span className="text-black/50">Weather</span>
+          <span className="text-white/40">Weather</span>
         </div>
         <div className="flex items-center gap-[0.25em]">
           <div className="w-[0.5em] h-[0.5em] rounded-full bg-[#a855f7]" />
-          <span className="text-black/50">Other</span>
+          <span className="text-white/40">Other</span>
         </div>
         <div className="flex items-center gap-[0.25em]">
           <div className="w-[0.5em] h-[0.5em] rounded-full bg-[#ef4444]" />
-          <span className="text-black/50">You</span>
+          <span className="text-white/40">You</span>
         </div>
       </div>
 
@@ -267,9 +267,9 @@ export default function SatellitesAbove() {
           onClick={() => setShowStarlink(!showStarlink)}
           className={`
             text-[0.7em] px-[0.75em] py-[0.25em] rounded-full transition-all
-            ${showStarlink 
-              ? 'bg-slate-700 text-white' 
-              : 'bg-black/5 text-black/50 hover:bg-black/10'
+            ${showStarlink
+              ? 'bg-slate-600 text-white'
+              : 'bg-white/5 text-white/40 hover:bg-white/10'
             }
           `}
         >
@@ -278,37 +278,37 @@ export default function SatellitesAbove() {
       </div>
 
       {/* Divider */}
-      <div className="border-t border-[#e5e5e5] my-[0.75em]" />
+      <div className="border-t border-white/10 my-[0.75em]" />
 
       {/* Breakdown */}
       <div className="grid grid-cols-4 gap-[0.25em] text-center">
         <div>
-          <div className="font-mono text-[1.125em] font-bold">{data.counts.starlink}</div>
-          <div className="text-[0.6em] text-black/50">Starlink</div>
+          <div className="font-mono text-[1.125em] font-bold text-white">{data.counts.starlink}</div>
+          <div className="text-[0.6em] text-white/40">Starlink</div>
         </div>
         <div>
-          <div className="font-mono text-[1.125em] font-bold">{data.counts.gps}</div>
-          <div className="text-[0.6em] text-black/50">GPS</div>
+          <div className="font-mono text-[1.125em] font-bold text-white">{data.counts.gps}</div>
+          <div className="text-[0.6em] text-white/40">GPS</div>
         </div>
         <div>
-          <div className="font-mono text-[1.125em] font-bold">{data.counts.weather}</div>
-          <div className="text-[0.6em] text-black/50">Weather</div>
+          <div className="font-mono text-[1.125em] font-bold text-white">{data.counts.weather}</div>
+          <div className="text-[0.6em] text-white/40">Weather</div>
         </div>
         <div>
-          <div className="font-mono text-[1.125em] font-bold">{data.counts.other}</div>
-          <div className="text-[0.6em] text-black/50">Other</div>
+          <div className="font-mono text-[1.125em] font-bold text-white">{data.counts.other}</div>
+          <div className="text-[0.6em] text-white/40">Other</div>
         </div>
       </div>
 
       {/* Nearest satellite */}
       {data.nearest && (
-        <div className="mt-[0.75em] text-center text-[0.75em] text-black/60">
-          Nearest: <span className="font-medium text-black">{data.nearest.name}</span> at {data.nearest.altitude.toLocaleString()} km
+        <div className="mt-[0.75em] text-center text-[0.75em] text-white/50">
+          Nearest: <span className="font-medium text-white">{data.nearest.name}</span> at {data.nearest.altitude.toLocaleString()} km
         </div>
       )}
 
       {/* Location */}
-      <div className="mt-[0.5em] text-[0.625em] text-black/30 text-center">
+      <div className="mt-[0.5em] text-[0.625em] text-white/30 text-center">
         {location ? `${location.lat.toFixed(2)}°, ${location.lng.toFixed(2)}°` : 'Location unavailable'}
       </div>
     </div>

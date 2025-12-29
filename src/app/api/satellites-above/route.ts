@@ -1,18 +1,13 @@
 // app/api/satellites-above/route.ts
 import { NextResponse } from 'next/server'
+import { cachedFetch, TTL } from '@/lib/cache'
 
-// Cache for 60 seconds per location
-export const revalidate = 60
-
-// N2YO satellite categories
-const CATEGORIES = {
-  ALL: 0,
-  ISS: 2,
-  STARLINK: 52, // Starlink
-  GPS: 20,
-  WEATHER: 3,
-  EARTH_OBSERVATION: 6,
-  MILITARY: 30,
+// Spacecraft name mapping for N2YO
+const SPACECRAFT_NAMES: Record<string, string> = {
+  ISS: 'ISS (ZARYA)',
+  STARLINK: 'Starlink',
+  GPS: 'GPS',
+  WEATHER: 'Weather',
 }
 
 interface Satellite {
@@ -59,6 +54,12 @@ export async function GET(request: Request) {
   const lng = parseFloat(searchParams.get('lng') || '-0.1')
   const radius = parseInt(searchParams.get('radius') || '70') // degrees above horizon
 
+  // Round location to 1 decimal place for caching efficiency
+  // This groups nearby users to the same cache key
+  const roundedLat = Math.round(lat * 10) / 10
+  const roundedLng = Math.round(lng * 10) / 10
+  const cacheKey = `satellites-above:${roundedLat}:${roundedLng}:${radius}`
+
   // Get API key from environment
   const apiKey = process.env.N2YO_API_KEY
 
@@ -68,50 +69,60 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Fetch satellites above location
-    // N2YO API: /satellite/above/{lat}/{lng}/{alt}/{radius}/{categoryId}
-    const url = `https://api.n2yo.com/rest/v1/satellite/above/${lat}/${lng}/0/${radius}/0/&apiKey=${apiKey}`
-    
-    const response = await fetch(url, {
-      next: { revalidate: 60 },
+    const { data, cacheStatus } = await cachedFetch<SatelliteResponse>({
+      key: cacheKey,
+      ttl: TTL.FAST, // 60 seconds
+      fetcher: async () => {
+        // Fetch satellites above location
+        // N2YO API: /satellite/above/{lat}/{lng}/{alt}/{radius}/{categoryId}
+        const url = `https://api.n2yo.com/rest/v1/satellite/above/${roundedLat}/${roundedLng}/0/${radius}/0/&apiKey=${apiKey}`
+
+        const response = await fetch(url)
+
+        if (!response.ok) {
+          throw new Error(`N2YO API returned ${response.status}`)
+        }
+
+        const data = await response.json()
+
+        // Process satellites
+        const satellites = (data.above || []).map((sat: Satellite) => ({
+          id: sat.satid,
+          name: cleanSatelliteName(sat.satname),
+          altitude: Math.round(sat.satalt),
+          latitude: sat.satlat,
+          longitude: sat.satlng,
+          category: categorizeSatellite(sat.satname),
+        }))
+
+        // Count by category
+        const counts = {
+          total: satellites.length,
+          starlink: satellites.filter((s: { category: string }) => s.category === 'Starlink').length,
+          gps: satellites.filter((s: { category: string }) => s.category === 'GPS').length,
+          weather: satellites.filter((s: { category: string }) => s.category === 'Weather').length,
+          other: satellites.filter((s: { category: string }) => s.category === 'Other').length,
+        }
+
+        // Find nearest
+        const sortedByAlt = [...satellites].sort((a, b) => a.altitude - b.altitude)
+        const nearest = sortedByAlt[0] || null
+
+        return {
+          timestamp: new Date().toISOString(),
+          location: { lat: roundedLat, lng: roundedLng },
+          satellites: satellites.slice(0, 100), // Limit to 100 for performance
+          counts,
+          nearest: nearest ? { name: nearest.name, altitude: nearest.altitude } : null,
+        }
+      }
     })
 
-    if (!response.ok) {
-      throw new Error(`N2YO API returned ${response.status}`)
-    }
+    // Add cache headers for debugging
+    const headers = new Headers()
+    headers.set('X-Cache-Status', cacheStatus)
 
-    const data = await response.json()
-    
-    // Process satellites
-    const satellites = (data.above || []).map((sat: Satellite) => ({
-      id: sat.satid,
-      name: cleanSatelliteName(sat.satname),
-      altitude: Math.round(sat.satalt),
-      latitude: sat.satlat,
-      longitude: sat.satlng,
-      category: categorizeSatellite(sat.satname),
-    }))
-
-    // Count by category
-    const counts = {
-      total: satellites.length,
-      starlink: satellites.filter((s: { category: string }) => s.category === 'Starlink').length,
-      gps: satellites.filter((s: { category: string }) => s.category === 'GPS').length,
-      weather: satellites.filter((s: { category: string }) => s.category === 'Weather').length,
-      other: satellites.filter((s: { category: string }) => s.category === 'Other').length,
-    }
-
-    // Find nearest
-    const sortedByAlt = [...satellites].sort((a, b) => a.altitude - b.altitude)
-    const nearest = sortedByAlt[0] || null
-
-    return NextResponse.json({
-      timestamp: new Date().toISOString(),
-      location: { lat, lng },
-      satellites: satellites.slice(0, 100), // Limit to 100 for performance
-      counts,
-      nearest: nearest ? { name: nearest.name, altitude: nearest.altitude } : null,
-    } as SatelliteResponse)
+    return NextResponse.json(data, { headers })
   } catch (error) {
     console.error('Satellites fetch error:', error)
     return NextResponse.json(generateSimulatedData(lat, lng))
@@ -139,7 +150,7 @@ function categorizeSatellite(name: string): string {
 function generateSimulatedData(lat: number, lng: number): SatelliteResponse {
   // Generate realistic simulated data for demo/fallback
   const satellites = []
-  
+
   // Add some Starlinks (most common)
   for (let i = 0; i < 45; i++) {
     satellites.push({
@@ -151,7 +162,7 @@ function generateSimulatedData(lat: number, lng: number): SatelliteResponse {
       category: 'Starlink',
     })
   }
-  
+
   // Add GPS satellites
   for (let i = 0; i < 8; i++) {
     satellites.push({
@@ -163,7 +174,7 @@ function generateSimulatedData(lat: number, lng: number): SatelliteResponse {
       category: 'GPS',
     })
   }
-  
+
   // Add weather satellites
   for (let i = 0; i < 3; i++) {
     satellites.push({
@@ -175,7 +186,7 @@ function generateSimulatedData(lat: number, lng: number): SatelliteResponse {
       category: 'Weather',
     })
   }
-  
+
   // Add ISS if it might be overhead
   if (Math.random() > 0.7) {
     satellites.push({
@@ -187,7 +198,7 @@ function generateSimulatedData(lat: number, lng: number): SatelliteResponse {
       category: 'ISS',
     })
   }
-  
+
   // Add some other satellites
   const otherSats = ['COSMOS 2545', 'SENTINEL-2B', 'LANDSAT 9', 'HUBBLE', 'TERRA']
   for (let i = 0; i < 12; i++) {
@@ -200,9 +211,9 @@ function generateSimulatedData(lat: number, lng: number): SatelliteResponse {
       category: 'Other',
     })
   }
-  
+
   const nearest = satellites.reduce((min, s) => s.altitude < min.altitude ? s : min)
-  
+
   return {
     timestamp: new Date().toISOString(),
     location: { lat, lng },
