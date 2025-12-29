@@ -34,7 +34,6 @@ import EBirdLive from '@/components/widgets/eBirdLive'
 import EuropeanRadiationMap from '@/components/widgets/EuropeanRadiationMap'
 import GlacierWatch from '@/components/widgets/GlacierWatch'
 import INaturalistLive from '@/components/widgets/iNaturalistLive'
-import ISSLivePosition from '@/components/widgets/ISSLivePosition'
 import JWSTLatest from '@/components/widgets/JWSTLatest'
 import MagneticField from '@/components/widgets/MagneticField'
 import MagneticFieldStrength from '@/components/widgets/MagneticFieldStrength'
@@ -84,7 +83,6 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'EuropeanRadiationMap': EuropeanRadiationMap,
   'GlacierWatch': GlacierWatch,
   'INaturalistLive': INaturalistLive,
-  'ISSLivePosition': ISSLivePosition,
   'JWSTLatest': JWSTLatest,
   'MagneticField': MagneticField,
   'MagneticFieldStrength': MagneticFieldStrength,

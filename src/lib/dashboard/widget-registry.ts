@@ -292,15 +292,6 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['astronomy', 'solar-space'],
     component: 'MarsRoverImages'
   },
-  'iss-live-position': {
-    id: 'iss-live-position',
-    title: 'ISS Live Position',
-    description: 'The International Space Station orbits 420 km above Earth at 28,000 km/h.',
-    source: 'Open Notify',
-    status: 'live',
-    categories: ['solar-space'],
-    component: 'ISSLivePosition'
-  },
   'european-radiation': {
     id: 'european-radiation',
     title: 'European Radiation',

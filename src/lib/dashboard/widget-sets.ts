@@ -44,8 +44,7 @@ export const WIDGET_SETS: WidgetSet[] = [
       'mars-rover',
       'deep-space-network',
       'solar-corona',
-      'satellites-above',
-      'iss-live-position'
+      'satellites-above'
     ]
   },
   {
