@@ -36,7 +36,6 @@ import GlacierWatch from '@/components/widgets/GlacierWatch'
 import INaturalistLive from '@/components/widgets/iNaturalistLive'
 import JWSTLatest from '@/components/widgets/JWSTLatest'
 import MagneticField from '@/components/widgets/MagneticField'
-import MagneticFieldStrength from '@/components/widgets/MagneticFieldStrength'
 import MarsRoverImages from '@/components/widgets/MarsRoverImages'
 import OceanHydrophones from '@/components/widgets/OceanHydrophones'
 import PollenForecast from '@/components/widgets/PollenForecast'
@@ -85,7 +84,6 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'INaturalistLive': INaturalistLive,
   'JWSTLatest': JWSTLatest,
   'MagneticField': MagneticField,
-  'MagneticFieldStrength': MagneticFieldStrength,
   'MarsRoverImages': MarsRoverImages,
   'OceanHydrophones': OceanHydrophones,
   'PollenForecast': PollenForecast,

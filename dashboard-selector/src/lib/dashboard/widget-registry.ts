@@ -355,15 +355,6 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['earth-geology', 'solar-space'],
     component: 'MagneticField'
   },
-  'magnetic-field-strength': {
-    id: 'magnetic-field-strength',
-    title: 'Magnetic Field Strength',
-    description: 'The magnetic field strength at your location—varies from ~25μT at the equator to ~65μT at the poles.',
-    source: 'NOAA WMM',
-    status: 'ok',
-    categories: ['earth-geology', 'personal'],
-    component: 'MagneticFieldStrength'
-  },
   'pollen-forecast': {
     id: 'pollen-forecast',
     title: 'Pollen Forecast',
