@@ -195,14 +195,17 @@ function MapCanvas({ position, groundTrack, sunlit, orbitProgress }: MapCanvasPr
     if (!ctx) return
 
     const rect = canvas.getBoundingClientRect()
-    const dpr = window.devicePixelRatio || 1
-
-    canvas.width = rect.width * dpr
-    canvas.height = rect.height * dpr
-    ctx.scale(dpr, dpr)
-
     const w = rect.width
     const h = rect.height
+
+    // Guard against zero dimensions or invalid position data
+    if (w <= 0 || h <= 0) return
+    if (!isFinite(position.latitude) || !isFinite(position.longitude)) return
+
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = w * dpr
+    canvas.height = h * dpr
+    ctx.scale(dpr, dpr)
 
     // Dark background
     ctx.fillStyle = '#0f1419'
@@ -258,6 +261,7 @@ function MapCanvas({ position, groundTrack, sunlit, orbitProgress }: MapCanvasPr
 
     let prevX = 0
     groundTrack.forEach((pos, i) => {
+      if (!isFinite(pos.lon) || !isFinite(pos.lat)) return
       const x = w * (pos.lon + 180) / 360
       const y = h * (1 - (pos.lat + 90) / 180)
 
