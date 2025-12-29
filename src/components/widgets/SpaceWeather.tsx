@@ -2,6 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react'
 
+// ===========================================
+// SPACE WEATHER WIDGET
+// ===========================================
+// Shows current space weather conditions
+// Data: NOAA Space Weather Prediction Center
+// Design: Mission control / monitoring station
+// ===========================================
+
 interface SpaceWeatherData {
   kp: {
     current: number
@@ -20,161 +28,98 @@ interface SpaceWeatherData {
   timestamp: string
 }
 
-// Kp Index gauge component
-function KpGauge({ value }: { value: number }) {
-  const normalizedValue = Math.min(9, Math.max(0, value))
-  const angle = (normalizedValue / 9) * 180 - 90
-  
-  const getColor = (kp: number) => {
-    if (kp >= 7) return '#ef4444'
-    if (kp >= 5) return '#f97316'
-    if (kp >= 4) return '#eab308'
-    if (kp >= 3) return '#84cc16'
-    return '#22c55e'
-  }
-  
-  const color = getColor(normalizedValue)
-  
-  return (
-    <div className="flex flex-col items-center">
-      <div className="w-32 h-20">
-        <svg viewBox="0 0 100 60" className="w-full h-full">
-          {/* Background arc */}
-          <path
-            d="M 10 55 A 40 40 0 0 1 90 55"
-            fill="none"
-            stroke="#e5e5e5"
-            strokeWidth="8"
-            strokeLinecap="round"
-          />
-          
-          {/* Colored segments */}
-          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => {
-            const startAngle = (i / 9) * 180 - 180
-            const endAngle = ((i + 1) / 9) * 180 - 180
-            const startRad = (startAngle * Math.PI) / 180
-            const endRad = (endAngle * Math.PI) / 180
-            const x1 = 50 + 40 * Math.cos(startRad)
-            const y1 = 55 + 40 * Math.sin(startRad)
-            const x2 = 50 + 40 * Math.cos(endRad)
-            const y2 = 55 + 40 * Math.sin(endRad)
-            
-            const segmentColor = i <= normalizedValue ? getColor(i) : '#e5e5e5'
-            
-            return (
-              <path
-                key={i}
-                d={`M ${x1} ${y1} A 40 40 0 0 1 ${x2} ${y2}`}
-                fill="none"
-                stroke={segmentColor}
-                strokeWidth="6"
-                strokeLinecap="butt"
-                opacity={i <= normalizedValue ? 1 : 0.4}
-              />
-            )
-          })}
-          
-          {/* Needle */}
-          <g transform={`rotate(${angle}, 50, 55)`}>
-            <line x1="50" y1="55" x2="50" y2="20" stroke={color} strokeWidth="2" strokeLinecap="round" />
-            <circle cx="50" cy="55" r="4" fill={color} />
-          </g>
-          
-          {/* Scale labels */}
-          <text x="12" y="58" fill="#666666" fontSize="7" fontWeight="500" textAnchor="middle">0</text>
-          <text x="50" y="12" fill="#666666" fontSize="7" fontWeight="500" textAnchor="middle">5</text>
-          <text x="88" y="58" fill="#666666" fontSize="7" fontWeight="500" textAnchor="middle">9</text>
-        </svg>
-      </div>
-      
-      <div className="text-center mt-1">
-        <span className="font-mono font-bold text-3xl" style={{ color }}>{value.toFixed(1)}</span>
-      </div>
-    </div>
-  )
+// Get color for Kp value
+function getKpColor(kp: number): string {
+  if (kp >= 7) return '#ef4444' // Red - severe
+  if (kp >= 5) return '#f97316' // Orange - storm
+  if (kp >= 4) return '#eab308' // Yellow - active
+  if (kp >= 3) return '#84cc16' // Light green - unsettled
+  return '#22c55e' // Green - quiet
 }
 
-// Solar wind speed bar
-function WindSpeedBar({ speed }: { speed: number }) {
-  const percentage = Math.min(100, (speed / 800) * 100)
-  
-  const getColor = () => {
-    if (speed >= 700) return '#ef4444'
-    if (speed >= 500) return '#f97316'
-    if (speed >= 400) return '#eab308'
-    return '#22c55e'
-  }
-  
-  const color = getColor()
-  
+// Get status text for Kp
+function getKpStatus(kp: number): string {
+  if (kp >= 8) return 'Severe Storm'
+  if (kp >= 7) return 'Strong Storm'
+  if (kp >= 6) return 'Moderate Storm'
+  if (kp >= 5) return 'Minor Storm'
+  if (kp >= 4) return 'Active'
+  if (kp >= 3) return 'Unsettled'
+  return 'Quiet'
+}
+
+// Get color for solar wind speed
+function getWindColor(speed: number): string {
+  if (speed >= 700) return '#ef4444'
+  if (speed >= 500) return '#f97316'
+  if (speed >= 400) return '#eab308'
+  return '#22c55e'
+}
+
+// Get color for X-ray class
+function getXrayColor(xrayClass: string): string {
+  if (xrayClass.startsWith('X')) return '#ef4444'
+  if (xrayClass.startsWith('M')) return '#f97316'
+  if (xrayClass.startsWith('C')) return '#eab308'
+  if (xrayClass.startsWith('B')) return '#84cc16'
+  return '#22c55e'
+}
+
+// Kp horizontal bar component
+function KpBar({ value }: { value: number }) {
+  const color = getKpColor(value)
+  const percentage = Math.min(100, (value / 9) * 100)
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-text-muted uppercase tracking-wide">Solar Wind</span>
-        <span className="font-mono text-sm font-medium">{speed.toFixed(0)} km/s</span>
-      </div>
-      <div className="h-2 bg-[#e5e5e5] rounded-full overflow-hidden">
-        <div 
-          className="h-full rounded-full transition-all duration-500"
+    <div className="mt-[0.5em]">
+      {/* Bar track */}
+      <div className="relative h-[0.5em] bg-white/10 rounded-full overflow-hidden">
+        {/* Filled portion */}
+        <div
+          className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
           style={{ width: `${percentage}%`, backgroundColor: color }}
         />
+        {/* Threshold markers */}
+        <div className="absolute inset-0 flex">
+          <div className="w-[33.3%] border-r border-white/20" /> {/* 0-3 */}
+          <div className="w-[22.2%] border-r border-white/20" /> {/* 3-5 */}
+          <div className="w-[22.2%] border-r border-white/20" /> {/* 5-7 */}
+          <div className="flex-1" /> {/* 7-9 */}
+        </div>
+      </div>
+      {/* Scale labels */}
+      <div className="flex justify-between mt-[0.25em] text-[0.5625em] font-mono text-white/40">
+        <span>0</span>
+        <span style={{ marginLeft: '30%' }}>3</span>
+        <span style={{ marginLeft: '15%' }}>5</span>
+        <span style={{ marginLeft: '15%' }}>7</span>
+        <span>9</span>
       </div>
     </div>
   )
 }
 
-// X-ray class indicator
-function XrayIndicator({ xrayClass }: { xrayClass: string }) {
-  const getColor = () => {
-    if (xrayClass.startsWith('X')) return '#ef4444'
-    if (xrayClass.startsWith('M')) return '#f97316'
-    if (xrayClass.startsWith('C')) return '#eab308'
-    if (xrayClass.startsWith('B')) return '#84cc16'
-    return '#22c55e'
-  }
-  
-  const color = getColor()
-  
-  return (
-    <div className="text-center">
-      <span className="text-xs text-text-muted uppercase tracking-wide block mb-1">X-Ray Flux</span>
-      <div 
-        className="w-12 h-12 rounded-full border-2 flex items-center justify-center mx-auto"
-        style={{ borderColor: color }}
-      >
-        <span className="font-mono font-bold text-xl" style={{ color }}>
-          {xrayClass.charAt(0) || 'A'}
-        </span>
-      </div>
-    </div>
-  )
-}
-
-// Kp history bar chart
+// Kp history mini bar chart
 function KpHistory({ data }: { data: number[] }) {
   if (!data || data.length === 0) return null
-  
-  const getColor = (kp: number) => {
-    if (kp >= 7) return '#ef4444'
-    if (kp >= 5) return '#f97316'
-    if (kp >= 4) return '#eab308'
-    if (kp >= 3) return '#84cc16'
-    return '#22c55e'
-  }
-  
+
+  // Take last 24 readings for cleaner display
+  const displayData = data.slice(-24)
+
   return (
     <div>
-      <span className="text-xs text-text-muted uppercase tracking-wide block mb-2">Kp History (72h)</span>
-      <div className="flex items-end gap-0.5 h-8">
-        {data.map((kp, i) => (
+      <div className="text-[0.6875em] font-medium text-white/40 uppercase tracking-wider mb-[0.5em]">
+        Kp History (72h)
+      </div>
+      <div className="flex items-end gap-[0.125em] h-[2em]">
+        {displayData.map((kp, i) => (
           <div
             key={i}
-            className="flex-1 rounded-t transition-all duration-300"
+            className="flex-1 rounded-t-[0.125em] transition-all duration-300"
             style={{
-              height: `${(kp / 9) * 100}%`,
-              minHeight: '2px',
-              backgroundColor: getColor(kp),
-              opacity: i === data.length - 1 ? 1 : 0.7,
+              height: `${Math.max(8, (kp / 9) * 100)}%`,
+              backgroundColor: getKpColor(kp),
+              opacity: i === displayData.length - 1 ? 1 : 0.6,
             }}
           />
         ))}
@@ -211,66 +156,155 @@ export default function SpaceWeather() {
 
   if (isLoading) {
     return (
-      <div className="w-full aspect-square flex items-center justify-center">
-        <div className="text-text-muted text-sm animate-pulse">Loading...</div>
+      <div className="bg-[#1a1a1e] p-[1em]">
+        <div className="flex items-center justify-center h-[16em]">
+          <div className="text-white/40 text-[0.875em] font-mono">Loading...</div>
+        </div>
       </div>
     )
   }
 
   if (error || !data) {
     return (
-      <div className="w-full aspect-square flex items-center justify-center">
-        <div className="text-red-500 text-sm">{error || 'No data'}</div>
+      <div className="bg-[#1a1a1e] p-[1em]">
+        <div className="flex items-center justify-center h-[16em]">
+          <div className="text-red-400 text-[0.875em]">{error || 'No data available'}</div>
+        </div>
       </div>
     )
   }
 
-  const getStatusColor = () => {
-    if (data.kp.current >= 5) return '#ef4444'
-    if (data.kp.current >= 4) return '#f97316'
-    if (data.kp.current >= 3) return '#eab308'
-    return '#22c55e'
-  }
+  const kpColor = getKpColor(data.kp.current)
+  const kpStatus = getKpStatus(data.kp.current)
+  const windColor = getWindColor(data.solarWind.speed)
+  const xrayColor = getXrayColor(data.xray.class)
+
+  // Aurora visibility threshold
+  const auroraVisible = data.kp.current >= 5
+  const auroraLikely = data.kp.current >= 4
 
   return (
-    <div className="w-full">
-      {/* Header with status */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-2 h-2 rounded-full animate-pulse"
-            style={{ backgroundColor: getStatusColor() }}
-          />
-          <span className="font-medium" style={{ color: getStatusColor() }}>
-            {data.kp.status}
+    <div className="bg-[#1a1a1e] p-[1em]">
+      {/* Geomagnetic Activity Section */}
+      <div className="mb-[1em]">
+        <div className="flex items-center justify-between mb-[0.5em]">
+          <span className="text-[0.6875em] font-medium text-white/40 uppercase tracking-wider">
+            Geomagnetic Activity
+          </span>
+          <div className="flex items-center gap-[0.375em]">
+            <span className="relative flex h-[0.5em] w-[0.5em]">
+              <span
+                className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                style={{ backgroundColor: kpColor }}
+              />
+              <span
+                className="relative inline-flex rounded-full h-full w-full"
+                style={{ backgroundColor: kpColor }}
+              />
+            </span>
+            <span className="text-[0.5625em] font-mono text-white/40">LIVE</span>
+          </div>
+        </div>
+
+        {/* Kp Value and Status */}
+        <div className="flex items-baseline gap-[0.5em]">
+          <span
+            className="font-mono text-[2.5em] font-bold leading-none"
+            style={{ color: kpColor }}
+          >
+            {data.kp.current.toFixed(1)}
+          </span>
+          <span
+            className="text-[0.875em] font-medium"
+            style={{ color: kpColor }}
+          >
+            {kpStatus}
           </span>
         </div>
-        <span className="text-xs text-text-muted font-mono">NOAA SWPC</span>
+
+        {/* Kp Bar */}
+        <KpBar value={data.kp.current} />
       </div>
-      
-      {/* Main Kp gauge */}
-      <div className="flex flex-col items-center mb-6">
-        <span className="text-xs text-text-muted uppercase tracking-wide mb-2">Geomagnetic Activity (Kp)</span>
-        <KpGauge value={data.kp.current} />
+
+      {/* Solar Wind and X-Ray Grid */}
+      <div className="grid grid-cols-2 gap-[0.75em] mb-[1em]">
+        {/* Solar Wind */}
+        <div className="bg-white/5 rounded-[0.375em] p-[0.75em]">
+          <div className="text-[0.5625em] font-medium text-white/40 uppercase tracking-wider mb-[0.25em]">
+            Solar Wind
+          </div>
+          <div className="flex items-baseline gap-[0.25em]">
+            <span
+              className="font-mono text-[1.25em] font-bold"
+              style={{ color: windColor }}
+            >
+              {data.solarWind.speed.toFixed(0)}
+            </span>
+            <span className="text-[0.6875em] text-white/40">km/s</span>
+          </div>
+          <div className="flex items-center gap-[0.25em] mt-[0.25em]">
+            <div
+              className="w-[0.375em] h-[0.375em] rounded-full"
+              style={{ backgroundColor: windColor }}
+            />
+            <span className="text-[0.5625em] text-white/50">
+              {data.solarWind.speed >= 500 ? 'Elevated' : 'Normal'}
+            </span>
+          </div>
+        </div>
+
+        {/* X-Ray Flux */}
+        <div className="bg-white/5 rounded-[0.375em] p-[0.75em]">
+          <div className="text-[0.5625em] font-medium text-white/40 uppercase tracking-wider mb-[0.25em]">
+            X-Ray Flux
+          </div>
+          <div className="flex items-baseline gap-[0.25em]">
+            <span
+              className="font-mono text-[1.25em] font-bold"
+              style={{ color: xrayColor }}
+            >
+              {data.xray.class || 'A'}
+            </span>
+          </div>
+          <div className="flex items-center gap-[0.25em] mt-[0.25em]">
+            <div
+              className="w-[0.375em] h-[0.375em] rounded-full"
+              style={{ backgroundColor: xrayColor }}
+            />
+            <span className="text-[0.5625em] text-white/50">
+              {data.xray.class.startsWith('M') || data.xray.class.startsWith('X') ? 'Flare activity' : 'Low'}
+            </span>
+          </div>
+        </div>
       </div>
-      
-      {/* Secondary indicators */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <WindSpeedBar speed={data.solarWind.speed} />
-        <XrayIndicator xrayClass={data.xray.class} />
-      </div>
-      
-      {/* Kp history */}
+
+      {/* Kp History */}
       <KpHistory data={data.kp.recent} />
-      
+
       {/* Aurora hint */}
-      {data.kp.current >= 5 && (
-        <div className="text-center mt-4">
-          <span className="text-green-600 text-sm font-medium">
-            ✨ Aurora may be visible at lower latitudes
+      {(auroraVisible || auroraLikely) && (
+        <div
+          className="mt-[0.75em] text-center py-[0.5em] rounded-[0.375em]"
+          style={{ backgroundColor: auroraVisible ? 'rgba(34, 197, 94, 0.15)' : 'rgba(234, 179, 8, 0.1)' }}
+        >
+          <span
+            className="text-[0.75em] font-medium"
+            style={{ color: auroraVisible ? '#22c55e' : '#eab308' }}
+          >
+            {auroraVisible
+              ? '✨ Aurora may be visible at lower latitudes'
+              : '✨ Aurora possible at high latitudes'
+            }
           </span>
         </div>
       )}
+
+      {/* Source */}
+      <div className="mt-[0.75em] text-center">
+        <span className="text-[0.5625em] font-mono text-white/30">
+          NOAA Space Weather Prediction Center
+        </span>
+      </div>
     </div>
   )
 }

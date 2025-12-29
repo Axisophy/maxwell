@@ -16,7 +16,7 @@ export const WIDGET_SETS: WidgetSet[] = [
     description: 'Our curated selection of live science',
     isDefault: true,
     widgets: [
-      'solar-live',
+      'solar-disk',
       'earthquakes',
       'moon-phase',
       'uk-energy',
@@ -33,7 +33,7 @@ export const WIDGET_SETS: WidgetSet[] = [
     name: 'Space',
     description: 'Solar system, satellites, and beyond',
     widgets: [
-      'solar-live',
+      'solar-disk',
       'space-weather',
       'moon-phase',
       'iss-tracker',
@@ -43,7 +43,7 @@ export const WIDGET_SETS: WidgetSet[] = [
       'jwst-latest',
       'mars-rover',
       'deep-space-network',
-      'soho-coronagraph',
+      'solar-corona',
       'satellites-above',
       'iss-live-position'
     ]
@@ -114,13 +114,13 @@ export const WIDGET_SETS: WidgetSet[] = [
     name: 'Images & Video',
     description: 'Live feeds and cameras',
     widgets: [
-      'solar-live',
+      'solar-disk',
       'himawari',
       'dscovr-epic',
       'apod',
       'jwst-latest',
       'mars-rover',
-      'soho-coronagraph'
+      'solar-corona'
     ]
   },
   {

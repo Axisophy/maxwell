@@ -1,7 +1,7 @@
 // src/lib/dashboard/widget-components.ts
 // Maps component names (from registry) to actual React components
 
-import SolarLive from '@/components/widgets/SolarLive'
+import SolarDisk from '@/components/widgets/SolarDisk'
 import HimawariLive from '@/components/widgets/HimawariLive'
 import SpaceWeather from '@/components/widgets/SpaceWeather'
 import AirQuality from '@/components/widgets/AirQuality'
@@ -25,7 +25,7 @@ import DeepSpaceNetwork from '@/components/widgets/DeepSpaceNetwork'
 import LHCStatus from '@/components/widgets/LHCStatus'
 import NeutrinoWatch from '@/components/widgets/NeutrinoWatch'
 import SatellitesAbove from '@/components/widgets/SatellitesAbove'
-import SOHOCoronagraph from '@/components/widgets/SOHOCoronagraph'
+import SolarCorona from '@/components/widgets/SolarCorona'
 import CosmicRayMonitor from '@/components/widgets/CosmicRayMonitor'
 import GravitationalWaves from '@/components/widgets/GravitationalWaves'
 import ActiveFires from '@/components/widgets/ActiveFires'
@@ -51,7 +51,7 @@ import YourSkyWhenBorn from '@/components/widgets/YourSkyWhenBorn'
 // Map component names (from registry) to actual components
 // The key must match the 'component' field in WIDGET_REGISTRY
 export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
-  'SolarLive': SolarLive,
+  'SolarDisk': SolarDisk,
   'HimawariLive': HimawariLive,
   'SpaceWeather': SpaceWeather,
   'AirQuality': AirQuality,
@@ -75,7 +75,7 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'LHCStatus': LHCStatus,
   'NeutrinoWatch': NeutrinoWatch,
   'SatellitesAbove': SatellitesAbove,
-  'SOHOCoronagraph': SOHOCoronagraph,
+  'SolarCorona': SolarCorona,
   'CosmicRayMonitor': CosmicRayMonitor,
   'GravitationalWaves': GravitationalWaves,
   'ActiveFires': ActiveFires,

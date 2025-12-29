@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 
 // ===========================================
-// SOHO CORONAGRAPH WIDGET
+// SOLAR CORONA WIDGET
 // ===========================================
 // Shows live coronagraph imagery from SOHO LASCO
 // Data: NASA/ESA SOHO (direct image URLs)
@@ -17,13 +17,13 @@ const CORONAGRAPH_VIEWS = {
 
 type CoronagraphKey = keyof typeof CORONAGRAPH_VIEWS
 
-interface SOHOCoronagraphProps {
+interface SolarCoronaProps {
   defaultView?: CoronagraphKey
 }
 
-export default function SOHOCoronagraph({ 
+export default function SolarCorona({ 
   defaultView = 'C2'
-}: SOHOCoronagraphProps) {
+}: SolarCoronaProps) {
   const [view, setView] = useState<CoronagraphKey>(defaultView)
   const [isLoading, setIsLoading] = useState(true)
   const [imageKey, setImageKey] = useState(0)

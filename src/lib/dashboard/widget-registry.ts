@@ -22,14 +22,14 @@ export interface WidgetDefinition {
 }
 
 export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
-  'solar-live': {
-    id: 'solar-live',
-    title: 'Solar Live',
+  'solar-disk': {
+    id: 'solar-disk',
+    title: 'Solar Disk',
     description: 'Real-time imagery of the Sun from NASA\'s Solar Dynamics Observatory. Switch between wavelengths to see different layers of the solar atmosphere.',
     source: 'NASA Solar Dynamics Observatory',
     status: 'live',
     categories: ['solar-space', 'astronomy'],
-    component: 'SolarLive'
+    component: 'SolarDisk'
   },
   'nuclear-reactors': {
     id: 'nuclear-reactors',
@@ -238,14 +238,14 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['solar-space', 'personal'],
     component: 'SatellitesAbove'
   },
-  'soho-coronagraph': {
-    id: 'soho-coronagraph',
+  'solar-corona': {
+    id: 'solar-corona',
     title: 'Solar Corona',
     description: 'SOHO\'s coronagraph creates an artificial eclipse to reveal the sun\'s outer atmosphere.',
     source: 'SOHO/LASCO, ESA & NASA',
     status: 'live',
     categories: ['solar-space'],
-    component: 'SOHOCoronagraph'
+    component: 'SolarCorona'
   },
   'cosmic-rays': {
     id: 'cosmic-rays',

@@ -121,8 +121,8 @@ export default function WidgetFrame({
         </div>
       )}
 
-      {/* Widget Content */}
-      <div className={`bg-white rounded-[0.75em] ${infoOpen ? 'mt-[0.5em]' : 'mt-[0.5em]'} overflow-hidden`}>
+      {/* Widget Content - with border for better definition against page background */}
+      <div className="bg-white rounded-[0.75em] border border-[#e5e5e5] mt-[0.5em] overflow-hidden">
         {children}
       </div>
     </div>

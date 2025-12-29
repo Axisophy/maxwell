@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 
 // ===========================================
-// SOLAR LIVE WIDGET
+// SOLAR DISK WIDGET
 // ===========================================
 // Shows live imagery from NASA Solar Dynamics Observatory
 // Data: NASA SDO (direct image URLs - CORS allowed)
@@ -11,24 +11,25 @@ import { useState, useEffect } from 'react'
 // ===========================================
 
 const WAVELENGTHS = {
-  '0193': { label: 'AIA 193Å', description: 'Corona at 1.2 million K' },
-  '0171': { label: 'AIA 171Å', description: 'Corona at 600,000 K' },
-  '0304': { label: 'AIA 304Å', description: 'Chromosphere at 50,000 K' },
-  '0131': { label: 'AIA 131Å', description: 'Flare plasma at 10 million K' },
-  'HMIIC': { label: 'HMI', description: 'Visible light surface' },
+  '0193': { label: '193Å', description: 'Corona at 1.2 million K', group: 'corona' },
+  '0171': { label: '171Å', description: 'Corona at 600,000 K', group: 'corona' },
+  '0304': { label: '304Å', description: 'Chromosphere at 50,000 K', group: 'corona' },
+  '0131': { label: '131Å', description: 'Flare plasma at 10 million K', group: 'corona' },
+  'HMIIC': { label: 'HMI Vis', description: 'Visible light surface', group: 'surface' },
+  'HMIB': { label: 'HMI Mag', description: 'Magnetic field polarity', group: 'surface' },
 } as const
 
 type WavelengthKey = keyof typeof WAVELENGTHS
 
-interface SolarLiveProps {
+interface SolarDiskProps {
   defaultWavelength?: WavelengthKey
   size?: 512 | 1024 | 2048
 }
 
-export default function SolarLive({ 
+export default function SolarDisk({ 
   defaultWavelength = '0193',
   size = 1024 
-}: SolarLiveProps) {
+}: SolarDiskProps) {
   const [wavelength, setWavelength] = useState<WavelengthKey>(defaultWavelength)
   const [isLoading, setIsLoading] = useState(true)
   const [imageKey, setImageKey] = useState(0)
@@ -81,24 +82,48 @@ export default function SolarLive({
         </div>
       </div>
 
-      {/* Wavelength selector */}
-      <div className="mt-[0.75em]">
+      {/* Wavelength selector - two rows for better spacing */}
+      <div className="mt-[0.75em] space-y-[0.25em]">
+        {/* Corona views (top row) */}
         <div className="flex bg-[#e5e5e5] rounded-[0.5em] p-[0.25em]">
-          {(Object.keys(WAVELENGTHS) as WavelengthKey[]).map((key) => (
-            <button
-              key={key}
-              onClick={() => { setWavelength(key); setIsLoading(true) }}
-              className={`
-                flex-1 px-[0.5em] py-[0.375em] text-[0.6875em] font-medium rounded-[0.375em] transition-colors
-                ${wavelength === key 
-                  ? 'bg-white text-black shadow-sm' 
-                  : 'text-black/50 hover:text-black'
-                }
-              `}
-            >
-              {WAVELENGTHS[key].label}
-            </button>
-          ))}
+          {(Object.keys(WAVELENGTHS) as WavelengthKey[])
+            .filter(key => WAVELENGTHS[key].group === 'corona')
+            .map((key) => (
+              <button
+                key={key}
+                onClick={() => { setWavelength(key); setIsLoading(true) }}
+                className={`
+                  flex-1 px-[0.5em] py-[0.375em] text-[0.6875em] font-medium rounded-[0.375em] transition-colors
+                  ${wavelength === key 
+                    ? 'bg-white text-black shadow-sm' 
+                    : 'text-black/50 hover:text-black'
+                  }
+                `}
+              >
+                {WAVELENGTHS[key].label}
+              </button>
+            ))}
+        </div>
+        
+        {/* Surface views (bottom row) */}
+        <div className="flex bg-[#e5e5e5] rounded-[0.5em] p-[0.25em]">
+          {(Object.keys(WAVELENGTHS) as WavelengthKey[])
+            .filter(key => WAVELENGTHS[key].group === 'surface')
+            .map((key) => (
+              <button
+                key={key}
+                onClick={() => { setWavelength(key); setIsLoading(true) }}
+                className={`
+                  flex-1 px-[0.5em] py-[0.375em] text-[0.6875em] font-medium rounded-[0.375em] transition-colors
+                  ${wavelength === key 
+                    ? 'bg-white text-black shadow-sm' 
+                    : 'text-black/50 hover:text-black'
+                  }
+                `}
+              >
+                {WAVELENGTHS[key].label}
+              </button>
+            ))}
         </div>
       </div>
 
