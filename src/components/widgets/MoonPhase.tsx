@@ -2,16 +2,20 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import SunCalc from 'suncalc'
-import { format, addDays } from 'date-fns'
+import { format, addDays, startOfMonth, endOfMonth, startOfWeek, eachDayOfInterval, isSameDay } from 'date-fns'
 
 // ===========================================
 // MOON PHASE WIDGET
 // ===========================================
 // Real-time moon phase using SunCalc library
 // No API needed - pure calculation
+// Design: Dark background, Today/Week/Month views
 // ===========================================
 
+type ViewMode = 'today' | 'week' | 'month'
+
 interface MoonData {
+  date: Date
   phase: number
   illumination: number
   phaseName: string
@@ -35,28 +39,35 @@ function getPhaseName(phase: number): string {
   return 'Waning Crescent'
 }
 
-// Find next occurrence of a specific phase (starting from tomorrow)
+// Get short phase name for compact displays
+function getShortPhaseName(phase: number): string {
+  if (phase < 0.025 || phase >= 0.975) return 'New'
+  if (phase < 0.225) return 'Wax Cr'
+  if (phase < 0.275) return '1st Qtr'
+  if (phase < 0.475) return 'Wax Gib'
+  if (phase < 0.525) return 'Full'
+  if (phase < 0.725) return 'Wan Gib'
+  if (phase < 0.775) return '3rd Qtr'
+  return 'Wan Cr'
+}
+
+// Find next occurrence of a specific phase
 function findNextPhase(startDate: Date, targetPhase: number): Date {
   let date = addDays(startDate, 1)
-  const maxDays = 35 // More than one lunar cycle
+  const maxDays = 35
 
   for (let i = 0; i < maxDays; i++) {
     const illumination = SunCalc.getMoonIllumination(date)
     const phase = illumination.phase
 
     let isMatch = false
-
     if (targetPhase === 0) {
-      // New moon: phase near 0 or near 1 (wraparound)
       isMatch = phase < 0.03 || phase > 0.97
     } else {
-      // Full moon (0.5) or other phases: simple proximity check
       isMatch = Math.abs(phase - targetPhase) < 0.03
     }
 
-    if (isMatch) {
-      return date
-    }
+    if (isMatch) return date
     date = addDays(date, 1)
   }
   return date
@@ -68,6 +79,7 @@ function getMoonData(date: Date): MoonData {
   const moonAge = illumination.phase * 29.53
 
   return {
+    date,
     phase: illumination.phase,
     illumination: illumination.fraction,
     phaseName: getPhaseName(illumination.phase),
@@ -84,27 +96,32 @@ function getMoonTimes(date: Date, lat: number, lon: number): MoonTimes {
   }
 }
 
+// Get moon position (for distance calculation)
+function getMoonPosition(date: Date, lat: number, lon: number) {
+  return SunCalc.getMoonPosition(date, lat, lon)
+}
+
 // ===========================================
-// MOON VISUAL (SVG)
+// MOON VISUAL (SVG) - Reusable at different sizes
 // ===========================================
 
 interface MoonVisualProps {
   phase: number
   illumination: number
   size?: number
+  showGlow?: boolean
 }
 
-function MoonVisual({ phase, illumination, size = 180 }: MoonVisualProps) {
-  const radius = size / 2 - 4
+function MoonVisual({ phase, illumination, size = 120, showGlow = true }: MoonVisualProps) {
+  const radius = size / 2 - 2
   const cx = size / 2
   const cy = size / 2
 
-  // Create the illuminated portion path
   const illuminatedPath = useMemo(() => {
     if (illumination < 0.01) return ''
-    
+
     if (illumination > 0.99) {
-      return `M ${cx - radius} ${cy} 
+      return `M ${cx - radius} ${cy}
               A ${radius} ${radius} 0 1 1 ${cx + radius} ${cy}
               A ${radius} ${radius} 0 1 1 ${cx - radius} ${cy}`
     }
@@ -112,12 +129,10 @@ function MoonVisual({ phase, illumination, size = 180 }: MoonVisualProps) {
     const sweepWidth = Math.abs(Math.cos(phase * 2 * Math.PI)) * radius
 
     if (phase <= 0.5) {
-      // Waxing: illuminated on the right
       return `M ${cx} ${cy - radius}
               A ${radius} ${radius} 0 0 1 ${cx} ${cy + radius}
               A ${sweepWidth} ${radius} 0 0 ${phase < 0.25 ? 1 : 0} ${cx} ${cy - radius}`
     } else {
-      // Waning: illuminated on the left
       return `M ${cx} ${cy - radius}
               A ${radius} ${radius} 0 0 0 ${cx} ${cy + radius}
               A ${sweepWidth} ${radius} 0 0 ${phase > 0.75 ? 0 : 1} ${cx} ${cy - radius}`
@@ -125,19 +140,26 @@ function MoonVisual({ phase, illumination, size = 180 }: MoonVisualProps) {
   }, [phase, illumination, cx, cy, radius])
 
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox={`0 0 ${size} ${size}`}
-      className="mx-auto"
-    >
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {/* Glow effect for larger moons */}
+      {showGlow && illumination > 0.3 && (
+        <circle
+          cx={cx}
+          cy={cy}
+          r={radius + 4}
+          fill="none"
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth="4"
+        />
+      )}
+
       {/* Dark moon base */}
       <circle
         cx={cx}
         cy={cy}
         r={radius}
-        fill="#1a1a1a"
-        stroke="#333"
+        fill="#2a2a2e"
+        stroke="#3a3a3e"
         strokeWidth="1"
       />
 
@@ -145,20 +167,282 @@ function MoonVisual({ phase, illumination, size = 180 }: MoonVisualProps) {
       {illumination > 0.01 && (
         <path
           d={illuminatedPath}
-          fill="#f5f5f0"
+          fill="#e8e8e0"
         />
       )}
-
-      {/* Subtle outer glow */}
-      <circle
-        cx={cx}
-        cy={cy}
-        r={radius + 2}
-        fill="none"
-        stroke="rgba(255,255,255,0.1)"
-        strokeWidth="1"
-      />
     </svg>
+  )
+}
+
+// ===========================================
+// MINI MOON (for week/month views)
+// ===========================================
+
+interface MiniMoonProps {
+  data: MoonData
+  isToday?: boolean
+  showDate?: boolean
+  size?: number
+}
+
+function MiniMoon({ data, isToday = false, showDate = false, size = 24 }: MiniMoonProps) {
+  return (
+    <div className={`flex flex-col items-center ${isToday ? 'opacity-100' : 'opacity-70'}`}>
+      <div className={`rounded-full ${isToday ? 'ring-2 ring-white/40 ring-offset-1 ring-offset-[#1a1a1e]' : ''}`}>
+        <MoonVisual
+          phase={data.phase}
+          illumination={data.illumination}
+          size={size}
+          showGlow={false}
+        />
+      </div>
+      {showDate && (
+        <span className={`text-[0.5em] font-mono mt-[0.25em] ${isToday ? 'text-white' : 'text-white/40'}`}>
+          {format(data.date, 'd')}
+        </span>
+      )}
+    </div>
+  )
+}
+
+// ===========================================
+// TODAY VIEW
+// ===========================================
+
+interface TodayViewProps {
+  moonData: MoonData
+  moonTimes: MoonTimes | null
+  nextFullMoon: Date
+  nextNewMoon: Date
+}
+
+function TodayView({ moonData, moonTimes, nextFullMoon, nextNewMoon }: TodayViewProps) {
+  return (
+    <div className="space-y-[1em]">
+      {/* Large moon visual */}
+      <div className="flex justify-center py-[0.5em]">
+        <MoonVisual
+          phase={moonData.phase}
+          illumination={moonData.illumination}
+          size={140}
+          showGlow={true}
+        />
+      </div>
+
+      {/* Phase name and illumination */}
+      <div className="text-center">
+        <div className="text-[1.125em] font-medium text-white">{moonData.phaseName}</div>
+        <div className="flex items-baseline justify-center gap-[0.25em] mt-[0.25em]">
+          <span className="font-mono text-[1.75em] font-bold text-white">
+            {(moonData.illumination * 100).toFixed(0)}%
+          </span>
+          <span className="text-[0.75em] text-white/50">illuminated</span>
+        </div>
+      </div>
+
+      {/* Rise/Set and Next Phases Grid */}
+      <div className="grid grid-cols-2 gap-[0.5em]">
+        {/* Moonrise */}
+        <div className="bg-white/5 rounded-[0.375em] p-[0.625em] text-center">
+          <div className="text-[0.5625em] font-medium text-white/40 uppercase tracking-wider">
+            Moonrise
+          </div>
+          <div className="font-mono text-[1em] font-medium text-white mt-[0.125em]">
+            {moonTimes?.rise ? format(moonTimes.rise, 'HH:mm') : '—'}
+          </div>
+        </div>
+
+        {/* Moonset */}
+        <div className="bg-white/5 rounded-[0.375em] p-[0.625em] text-center">
+          <div className="text-[0.5625em] font-medium text-white/40 uppercase tracking-wider">
+            Moonset
+          </div>
+          <div className="font-mono text-[1em] font-medium text-white mt-[0.125em]">
+            {moonTimes?.set ? format(moonTimes.set, 'HH:mm') : '—'}
+          </div>
+        </div>
+
+        {/* Next Full Moon */}
+        <div className="bg-white/5 rounded-[0.375em] p-[0.625em] text-center">
+          <div className="text-[0.5625em] font-medium text-white/40 uppercase tracking-wider">
+            Next Full
+          </div>
+          <div className="font-mono text-[1em] font-medium text-white mt-[0.125em]">
+            {format(nextFullMoon, 'MMM d')}
+          </div>
+        </div>
+
+        {/* Next New Moon */}
+        <div className="bg-white/5 rounded-[0.375em] p-[0.625em] text-center">
+          <div className="text-[0.5625em] font-medium text-white/40 uppercase tracking-wider">
+            Next New
+          </div>
+          <div className="font-mono text-[1em] font-medium text-white mt-[0.125em]">
+            {format(nextNewMoon, 'MMM d')}
+          </div>
+        </div>
+      </div>
+
+      {/* Moon age */}
+      <div className="text-center">
+        <span className="text-[0.6875em] text-white/40">
+          Moon age: <span className="font-mono text-white/60">{moonData.moonAge.toFixed(1)}</span> days
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ===========================================
+// WEEK VIEW
+// ===========================================
+
+interface WeekViewProps {
+  today: Date
+}
+
+function WeekView({ today }: WeekViewProps) {
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 }) // Monday
+  const weekDays = useMemo(() => {
+    return eachDayOfInterval({ start: weekStart, end: addDays(weekStart, 6) })
+      .map(date => ({
+        ...getMoonData(date),
+        isToday: isSameDay(date, today)
+      }))
+  }, [weekStart, today])
+
+  const todayData = weekDays.find(d => d.isToday)
+
+  return (
+    <div className="space-y-[1em]">
+      {/* Week row of moons */}
+      <div className="flex justify-between items-end px-[0.25em]">
+        {weekDays.map((day, i) => (
+          <div key={i} className="flex flex-col items-center">
+            <MiniMoon
+              data={day}
+              isToday={day.isToday}
+              size={32}
+            />
+            <span className={`text-[0.5625em] font-mono mt-[0.375em] ${day.isToday ? 'text-white' : 'text-white/40'}`}>
+              {format(day.date, 'EEE')}
+            </span>
+            <span className={`text-[0.5em] font-mono ${day.isToday ? 'text-white/70' : 'text-white/30'}`}>
+              {format(day.date, 'd')}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-white/10" />
+
+      {/* Today's details */}
+      {todayData && (
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-[0.875em] font-medium text-white">{todayData.phaseName}</div>
+            <div className="text-[0.6875em] text-white/50">Today</div>
+          </div>
+          <div className="text-right">
+            <div className="font-mono text-[1.25em] font-bold text-white">
+              {(todayData.illumination * 100).toFixed(0)}%
+            </div>
+            <div className="text-[0.5625em] text-white/40">illuminated</div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ===========================================
+// MONTH VIEW
+// ===========================================
+
+interface MonthViewProps {
+  today: Date
+}
+
+function MonthView({ today }: MonthViewProps) {
+  const monthStart = startOfMonth(today)
+  const monthEnd = endOfMonth(today)
+
+  const monthDays = useMemo(() => {
+    return eachDayOfInterval({ start: monthStart, end: monthEnd })
+      .map(date => ({
+        ...getMoonData(date),
+        isToday: isSameDay(date, today)
+      }))
+  }, [monthStart, monthEnd, today])
+
+  // Find key phases this month
+  const keyPhases = useMemo(() => {
+    const phases: { type: string; date: Date }[] = []
+    monthDays.forEach((day, i) => {
+      if (i === 0) return
+      const prev = monthDays[i - 1]
+
+      // New moon (crosses 0)
+      if ((prev.phase > 0.97 && day.phase < 0.03) ||
+          (prev.phase > 0.5 && day.phase < 0.03)) {
+        phases.push({ type: 'New', date: day.date })
+      }
+      // Full moon (crosses 0.5)
+      if (prev.phase < 0.5 && day.phase >= 0.5) {
+        phases.push({ type: 'Full', date: day.date })
+      }
+      // First quarter (crosses 0.25)
+      if (prev.phase < 0.25 && day.phase >= 0.25) {
+        phases.push({ type: '1st Qtr', date: day.date })
+      }
+      // Last quarter (crosses 0.75)
+      if (prev.phase < 0.75 && day.phase >= 0.75) {
+        phases.push({ type: '3rd Qtr', date: day.date })
+      }
+    })
+    return phases
+  }, [monthDays])
+
+  return (
+    <div className="space-y-[0.75em]">
+      {/* Month label */}
+      <div className="text-[0.75em] font-medium text-white/60 text-center">
+        {format(today, 'MMMM yyyy')}
+      </div>
+
+      {/* Scrollable row of moons */}
+      <div className="overflow-x-auto -mx-[1em] px-[1em]">
+        <div className="flex gap-[0.125em]" style={{ width: 'max-content' }}>
+          {monthDays.map((day, i) => (
+            <MiniMoon
+              key={i}
+              data={day}
+              isToday={day.isToday}
+              showDate={true}
+              size={20}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Key phases legend */}
+      {keyPhases.length > 0 && (
+        <>
+          <div className="border-t border-white/10" />
+          <div className="flex flex-wrap justify-center gap-x-[1em] gap-y-[0.25em]">
+            {keyPhases.map((phase, i) => (
+              <div key={i} className="flex items-center gap-[0.375em]">
+                <span className="text-[0.625em] text-white/40">{phase.type}</span>
+                <span className="text-[0.625em] font-mono text-white/70">
+                  {format(phase.date, 'MMM d')}
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   )
 }
 
@@ -167,8 +451,8 @@ function MoonVisual({ phase, illumination, size = 180 }: MoonVisualProps) {
 // ===========================================
 
 export default function MoonPhase() {
+  const [viewMode, setViewMode] = useState<ViewMode>('today')
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null)
-  const [showDetails, setShowDetails] = useState(false)
 
   // Request location on mount
   useEffect(() => {
@@ -181,111 +465,66 @@ export default function MoonPhase() {
           })
         },
         () => {
-          // Silently fail - location is optional
+          // Default to London if no location
+          setUserLocation({ lat: 51.5, lon: -0.1 })
         }
       )
+    } else {
+      setUserLocation({ lat: 51.5, lon: -0.1 })
     }
   }, [])
 
-  // Calculate moon data for today
   const today = new Date()
   const moonData = useMemo(() => getMoonData(today), [])
 
   const moonTimes = useMemo(() => {
     if (!userLocation) return null
     return getMoonTimes(today, userLocation.lat, userLocation.lon)
-  }, [userLocation])
+  }, [userLocation, today])
 
-  const nextFullMoon = useMemo(() => findNextPhase(today, 0.5), [])
-  const nextNewMoon = useMemo(() => findNextPhase(today, 0), [])
+  const nextFullMoon = useMemo(() => findNextPhase(today, 0.5), [today])
+  const nextNewMoon = useMemo(() => findNextPhase(today, 0), [today])
 
   return (
-    <div className="p-4 space-y-4">
-      {/* Moon visual */}
-      <div className="py-4 bg-black rounded-lg">
-        <MoonVisual
-          phase={moonData.phase}
-          illumination={moonData.illumination}
-          size={160}
-        />
-      </div>
-
-      {/* Phase name and illumination */}
-      <div className="text-center">
-        <div className="text-xl font-medium">{moonData.phaseName}</div>
-        <div className="font-mono text-2xl font-bold mt-1">
-          {(moonData.illumination * 100).toFixed(1)}%
-        </div>
-        <div className="text-xs text-text-muted">illuminated</div>
-      </div>
-
-      {/* Divider */}
-      <div className="border-t border-[#e5e5e5]" />
-
-      {/* Details (collapsible) */}
-      <div>
-        <button
-          onClick={() => setShowDetails(!showDetails)}
-          className="w-full flex items-center justify-between"
-        >
-          <span className="text-sm text-text-muted">More details</span>
-          <svg
-            className={`w-5 h-5 text-text-muted transition-transform ${showDetails ? 'rotate-180' : ''}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+    <div className="bg-[#1a1a1e] p-[1em]">
+      {/* View mode selector */}
+      <div className="flex bg-white/5 rounded-[0.5em] p-[0.25em] mb-[1em]">
+        {(['today', 'week', 'month'] as ViewMode[]).map((mode) => (
+          <button
+            key={mode}
+            onClick={() => setViewMode(mode)}
+            className={`
+              flex-1 px-[0.5em] py-[0.375em] text-[0.75em] font-medium rounded-[0.375em] transition-colors capitalize
+              ${viewMode === mode
+                ? 'bg-white/10 text-white'
+                : 'text-white/40 hover:text-white/60'
+              }
+            `}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
+            {mode}
+          </button>
+        ))}
+      </div>
 
-        {showDetails && (
-          <div className="mt-4 space-y-4">
-            {/* Moon age */}
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-text-muted">Moon age</span>
-              <span className="font-mono text-sm">{moonData.moonAge.toFixed(1)} days</span>
-            </div>
+      {/* View content */}
+      {viewMode === 'today' && (
+        <TodayView
+          moonData={moonData}
+          moonTimes={moonTimes}
+          nextFullMoon={nextFullMoon}
+          nextNewMoon={nextNewMoon}
+        />
+      )}
 
-            {/* Rise/Set times */}
-            {moonTimes ? (
-              <div className="grid grid-cols-2 gap-3">
-                <div className="text-center p-3 bg-[#f5f5f5] rounded-lg">
-                  <div className="text-[10px] text-text-muted uppercase tracking-wide">Moonrise</div>
-                  <div className="font-mono text-sm font-medium mt-1">
-                    {moonTimes.rise ? format(moonTimes.rise, 'HH:mm') : '-'}
-                  </div>
-                </div>
-                <div className="text-center p-3 bg-[#f5f5f5] rounded-lg">
-                  <div className="text-[10px] text-text-muted uppercase tracking-wide">Moonset</div>
-                  <div className="font-mono text-sm font-medium mt-1">
-                    {moonTimes.set ? format(moonTimes.set, 'HH:mm') : '-'}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center text-xs text-text-muted py-2">
-                Location needed for rise/set times
-              </div>
-            )}
+      {viewMode === 'week' && <WeekView today={today} />}
 
-            {/* Next phases */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="text-center p-3 bg-[#f5f5f5] rounded-lg">
-                <div className="text-[10px] text-text-muted uppercase tracking-wide">Next Full Moon</div>
-                <div className="font-mono text-sm font-medium mt-1">
-                  {format(nextFullMoon, 'MMM d')}
-                </div>
-              </div>
-              <div className="text-center p-3 bg-[#f5f5f5] rounded-lg">
-                <div className="text-[10px] text-text-muted uppercase tracking-wide">Next New Moon</div>
-                <div className="font-mono text-sm font-medium mt-1">
-                  {format(nextNewMoon, 'MMM d')}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+      {viewMode === 'month' && <MonthView today={today} />}
+
+      {/* Source attribution */}
+      <div className="mt-[1em] text-center">
+        <span className="text-[0.5625em] font-mono text-white/30">
+          Calculated using SunCalc
+        </span>
       </div>
     </div>
   )
