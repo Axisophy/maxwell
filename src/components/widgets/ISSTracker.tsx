@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import WorldMap, { latLonToXY } from './WorldMap'
 
 // ===========================================
 // ISS TRACKER WIDGET - CONSOLIDATED
@@ -167,18 +168,16 @@ function formatCoord(value: number, isLat: boolean): string {
 }
 
 // ===========================================
-// MAP CANVAS COMPONENT
+// ISS MAP COMPONENT (uses WorldMap SVG)
 // ===========================================
 
-interface MapCanvasProps {
+interface ISSMapProps {
   position: ISSPosition
   groundTrack: Array<{ lat: number; lon: number }>
   sunlit: boolean
-  orbitProgress: number
 }
 
-function MapCanvas({ position, groundTrack, sunlit, orbitProgress }: MapCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+function ISSMap({ position, groundTrack, sunlit }: ISSMapProps) {
   const [tick, setTick] = useState(0)
 
   // Animation tick for pulse effect
@@ -187,147 +186,105 @@ function MapCanvas({ position, groundTrack, sunlit, orbitProgress }: MapCanvasPr
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+  const pulsePhase = (tick % 20) / 20
+  const pulseOpacity = 0.6 - pulsePhase * 0.6
+  const pulseSize = 8 + pulsePhase * 15
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+  // Guard against invalid position data
+  if (!isFinite(position.latitude) || !isFinite(position.longitude)) {
+    return (
+      <div className="w-full h-full bg-[#0f1419] flex items-center justify-center">
+        <span className="text-white/40 text-[0.875em]">Loading map...</span>
+      </div>
+    )
+  }
 
-    const rect = canvas.getBoundingClientRect()
-    const w = rect.width
-    const h = rect.height
+  // Convert ISS position to SVG coordinates
+  const issPos = latLonToXY(position.latitude, position.longitude)
 
-    // Guard against zero dimensions or invalid position data
-    if (w <= 0 || h <= 0) return
-    if (!isFinite(position.latitude) || !isFinite(position.longitude)) return
+  // Build ground track path, handling date line wrap-around
+  const trackSegments: string[] = []
+  let currentSegment: string[] = []
+  let prevX = 0
 
-    const dpr = window.devicePixelRatio || 1
-    canvas.width = w * dpr
-    canvas.height = h * dpr
-    ctx.scale(dpr, dpr)
+  groundTrack.forEach((pt, i) => {
+    if (!isFinite(pt.lat) || !isFinite(pt.lon)) return
+    const { x, y } = latLonToXY(pt.lat, pt.lon)
 
-    // Dark background
-    ctx.fillStyle = '#0f1419'
-    ctx.fillRect(0, 0, w, h)
-
-    // Day/night terminator (simplified gradient)
-    const now = new Date()
-    const hourAngle = (now.getUTCHours() + now.getUTCMinutes() / 60) * 15 - 180
-    const solarLonX = w * ((-hourAngle + 180) % 360) / 360
-
-    // Night side gradient
-    const nightGradient = ctx.createLinearGradient(solarLonX - w/4, 0, solarLonX + w/4, 0)
-    nightGradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
-    nightGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.4)')
-    nightGradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
-    ctx.fillStyle = nightGradient
-    ctx.fillRect(0, 0, w, h)
-
-    // Grid lines
-    ctx.strokeStyle = 'rgba(59, 130, 246, 0.15)'
-    ctx.lineWidth = 0.5
-
-    // Latitude lines
-    for (let lat = -60; lat <= 60; lat += 30) {
-      const y = h * (1 - (lat + 90) / 180)
-      ctx.beginPath()
-      ctx.moveTo(0, y)
-      ctx.lineTo(w, y)
-      ctx.stroke()
-    }
-
-    // Longitude lines
-    for (let lon = -120; lon <= 120; lon += 60) {
-      const x = w * (lon + 180) / 360
-      ctx.beginPath()
-      ctx.moveTo(x, 0)
-      ctx.lineTo(x, h)
-      ctx.stroke()
-    }
-
-    // Equator (slightly brighter)
-    ctx.strokeStyle = 'rgba(59, 130, 246, 0.25)'
-    const equatorY = h / 2
-    ctx.beginPath()
-    ctx.moveTo(0, equatorY)
-    ctx.lineTo(w, equatorY)
-    ctx.stroke()
-
-    // Draw ground track
-    ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)'
-    ctx.lineWidth = 2
-    ctx.beginPath()
-
-    let prevX = 0
-    groundTrack.forEach((pos, i) => {
-      if (!isFinite(pos.lon) || !isFinite(pos.lat)) return
-      const x = w * (pos.lon + 180) / 360
-      const y = h * (1 - (pos.lat + 90) / 180)
-
-      // Handle wrap-around
-      if (i === 0) {
-        ctx.moveTo(x, y)
-      } else if (Math.abs(x - prevX) > w / 2) {
-        ctx.stroke()
-        ctx.beginPath()
-        ctx.moveTo(x, y)
-      } else {
-        ctx.lineTo(x, y)
-      }
+    if (i === 0) {
+      currentSegment.push(`M ${x} ${y}`)
       prevX = x
-    })
-    ctx.stroke()
+    } else if (Math.abs(x - prevX) > 400) {
+      // Date line crossing - start new segment
+      if (currentSegment.length > 0) {
+        trackSegments.push(currentSegment.join(' '))
+      }
+      currentSegment = [`M ${x} ${y}`]
+      prevX = x
+    } else {
+      currentSegment.push(`L ${x} ${y}`)
+      prevX = x
+    }
+  })
 
-    // Draw visibility footprint (approximate 2200km radius)
-    const issX = w * (position.longitude + 180) / 360
-    const issY = h * (1 - (position.latitude + 90) / 180)
-    const footprintRadius = w * (20 / 360) // ~20 degrees
-
-    ctx.fillStyle = 'rgba(59, 130, 246, 0.1)'
-    ctx.beginPath()
-    ctx.arc(issX, issY, footprintRadius, 0, 2 * Math.PI)
-    ctx.fill()
-
-    ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)'
-    ctx.lineWidth = 1
-    ctx.stroke()
-
-    // Draw ISS position with pulse effect
-    const pulsePhase = (tick % 20) / 20
-    const pulseSize = 8 + pulsePhase * 15
-    const pulseOpacity = 0.6 - pulsePhase * 0.6
-
-    // Pulse ring
-    ctx.strokeStyle = sunlit
-      ? `rgba(251, 191, 36, ${pulseOpacity})`
-      : `rgba(59, 130, 246, ${pulseOpacity})`
-    ctx.lineWidth = 2
-    ctx.beginPath()
-    ctx.arc(issX, issY, pulseSize, 0, 2 * Math.PI)
-    ctx.stroke()
-
-    // ISS dot glow
-    const gradient = ctx.createRadialGradient(issX, issY, 0, issX, issY, 12)
-    gradient.addColorStop(0, sunlit ? 'rgba(251, 191, 36, 0.9)' : 'rgba(59, 130, 246, 0.9)')
-    gradient.addColorStop(1, 'transparent')
-    ctx.fillStyle = gradient
-    ctx.fillRect(issX - 12, issY - 12, 24, 24)
-
-    // ISS core dot
-    ctx.fillStyle = sunlit ? '#fbbf24' : '#3b82f6'
-    ctx.beginPath()
-    ctx.arc(issX, issY, 5, 0, 2 * Math.PI)
-    ctx.fill()
-
-  }, [position, groundTrack, sunlit, tick])
+  if (currentSegment.length > 0) {
+    trackSegments.push(currentSegment.join(' '))
+  }
 
   return (
-    <canvas
-      ref={canvasRef}
+    <WorldMap
       className="w-full h-full"
-      style={{ display: 'block' }}
-    />
+      oceanColor="#0f1419"
+      landColor="#1e3a5f"
+    >
+      {/* Ground track lines */}
+      {trackSegments.map((segment, i) => (
+        <path
+          key={i}
+          d={segment}
+          fill="none"
+          stroke="rgba(59, 130, 246, 0.6)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      ))}
+
+      {/* Visibility footprint */}
+      <circle
+        cx={issPos.x}
+        cy={issPos.y}
+        r={40}
+        fill="rgba(59, 130, 246, 0.1)"
+        stroke="rgba(59, 130, 246, 0.3)"
+        strokeWidth="1"
+      />
+
+      {/* Pulse ring animation */}
+      <circle
+        cx={issPos.x}
+        cy={issPos.y}
+        r={pulseSize}
+        fill="none"
+        stroke={sunlit ? `rgba(251, 191, 36, ${pulseOpacity})` : `rgba(59, 130, 246, ${pulseOpacity})`}
+        strokeWidth="2"
+      />
+
+      {/* ISS glow */}
+      <circle
+        cx={issPos.x}
+        cy={issPos.y}
+        r={12}
+        fill={sunlit ? 'rgba(251, 191, 36, 0.3)' : 'rgba(59, 130, 246, 0.3)'}
+      />
+
+      {/* ISS dot */}
+      <circle
+        cx={issPos.x}
+        cy={issPos.y}
+        r={5}
+        fill={sunlit ? '#fbbf24' : '#3b82f6'}
+      />
+    </WorldMap>
   )
 }
 
@@ -491,11 +448,10 @@ export default function ISSTracker() {
         </div>
 
         {data ? (
-          <MapCanvas
+          <ISSMap
             position={data.position}
             groundTrack={data.groundTrack}
             sunlit={data.sunlit}
-            orbitProgress={orbitProgress}
           />
         ) : (
           <div className="w-full h-full bg-[#0f1419] flex items-center justify-center">

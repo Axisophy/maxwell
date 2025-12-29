@@ -159,8 +159,6 @@ function MoonVisual({ phase, illumination, size = 120, showGlow = true }: MoonVi
         cy={cy}
         r={radius}
         fill="#2a2a2e"
-        stroke="#3a3a3e"
-        strokeWidth="1"
       />
 
       {/* Illuminated portion */}
