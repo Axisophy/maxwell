@@ -126,8 +126,23 @@ export default function SolarObservatoryPage() {
               OVATION PRIME
             </span>
           </div>
-          
-          <AuroraOval />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <AuroraOval />
+            <div className="bg-[#0f0f14] rounded-xl p-5 flex flex-col justify-center">
+              <h3 className="text-sm font-medium text-white mb-3">Aurora Visibility</h3>
+              <p className="text-xs text-white/50 leading-relaxed mb-3">
+                The OVATION Prime model predicts aurora probability based on current
+                solar wind conditions measured at L1. Brighter areas indicate higher
+                chances of visible aurora.
+              </p>
+              <p className="text-xs text-white/50 leading-relaxed">
+                Aurora is most visible during local night, away from light pollution,
+                when the Kp index is elevated. The auroral oval expands toward lower
+                latitudes during geomagnetic storms.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* ===== SOLAR CYCLE POSITION ===== */}
