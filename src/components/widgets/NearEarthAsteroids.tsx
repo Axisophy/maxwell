@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { format, addDays } from 'date-fns'
+import { format, addDays, formatDistanceToNow } from 'date-fns'
 
 // ===========================================
 // NEAR-EARTH ASTEROIDS WIDGET
 // ===========================================
 // Upcoming asteroid close approaches
 // Data: NASA JPL Small-Body Database (CAD API)
+// Design: Planetary Defense Monitoring aesthetic
 // ===========================================
 
 interface Asteroid {
@@ -24,25 +25,204 @@ interface Asteroid {
 
 // Size comparisons
 function getSizeComparison(diameterM: number): string {
-  if (diameterM < 10) return 'car-sized'
-  if (diameterM < 25) return 'bus-sized'
-  if (diameterM < 50) return 'house-sized'
-  if (diameterM < 100) return 'airplane-sized'
-  if (diameterM < 200) return 'football field'
-  if (diameterM < 500) return 'stadium-sized'
-  return 'mountain-sized'
+  if (diameterM < 10) return 'car'
+  if (diameterM < 25) return 'bus'
+  if (diameterM < 50) return 'house'
+  if (diameterM < 100) return 'aircraft'
+  if (diameterM < 200) return 'stadium'
+  if (diameterM < 500) return 'skyscraper'
+  return 'mountain'
 }
 
-// Distance color
-function getDistanceColor(lunarDistance: number): string {
-  if (lunarDistance < 1) return '#ef4444'
-  if (lunarDistance < 5) return '#f59e0b'
-  if (lunarDistance < 10) return '#84cc16'
-  return '#22c55e'
+// Status based on distance
+function getDistanceStatus(lunarDistance: number): { color: string; label: string } {
+  if (lunarDistance < 1) return { color: '#ef4444', label: 'VERY CLOSE' }
+  if (lunarDistance < 5) return { color: '#f59e0b', label: 'CLOSE' }
+  if (lunarDistance < 10) return { color: '#22c55e', label: 'MODERATE' }
+  return { color: '#22c55e', label: 'DISTANT' }
 }
 
 // ===========================================
-// ASTEROID CARD
+// RADAR DISTANCE VISUALISATION
+// ===========================================
+
+interface RadarDisplayProps {
+  asteroids: Asteroid[]
+}
+
+function RadarDisplay({ asteroids }: RadarDisplayProps) {
+  // Sort by distance and take top 5 for display
+  const displayAsteroids = [...asteroids]
+    .sort((a, b) => a.distanceLunar - b.distanceLunar)
+    .slice(0, 5)
+
+  const maxLD = 20 // Maximum lunar distance to display
+  const rings = [1, 5, 10, 15, 20]
+
+  return (
+    <div className="relative aspect-[2/1] w-full">
+      {/* Background grid effect */}
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '20px 20px'
+        }}
+      />
+
+      {/* Radar arc container */}
+      <svg
+        viewBox="0 0 400 200"
+        className="w-full h-full"
+        preserveAspectRatio="xMidYMax meet"
+      >
+        <defs>
+          {/* Gradient for sweep effect */}
+          <linearGradient id="sweepGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="rgba(34,197,94,0)" />
+            <stop offset="50%" stopColor="rgba(34,197,94,0.1)" />
+            <stop offset="100%" stopColor="rgba(34,197,94,0)" />
+          </linearGradient>
+
+          {/* Glow filter for asteroids */}
+          <filter id="asteroidGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Distance arcs */}
+        {rings.map((ring) => {
+          const radius = (ring / maxLD) * 180
+          return (
+            <g key={ring}>
+              <path
+                d={`M ${200 - radius} 195 A ${radius} ${radius} 0 0 1 ${200 + radius} 195`}
+                fill="none"
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth="1"
+              />
+              {/* Distance labels */}
+              <text
+                x={200 + radius + 4}
+                y={192}
+                fill="rgba(255,255,255,0.3)"
+                fontSize="9"
+                fontFamily="monospace"
+              >
+                {ring}
+              </text>
+            </g>
+          )
+        })}
+
+        {/* Center line */}
+        <line x1="20" y1="195" x2="380" y2="195" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+
+        {/* Earth position */}
+        <circle cx="200" cy="195" r="6" fill="#0ea5e9" />
+        <text
+          x="200"
+          y="182"
+          fill="rgba(255,255,255,0.5)"
+          fontSize="8"
+          fontFamily="monospace"
+          textAnchor="middle"
+        >
+          EARTH
+        </text>
+
+        {/* Moon marker */}
+        <g>
+          <circle cx={200 + (1 / maxLD) * 180} cy="195" r="3" fill="rgba(255,255,255,0.6)" />
+          <text
+            x={200 + (1 / maxLD) * 180}
+            y="210"
+            fill="rgba(255,255,255,0.4)"
+            fontSize="7"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            MOON
+          </text>
+        </g>
+
+        {/* Asteroid positions */}
+        {displayAsteroids.map((asteroid, index) => {
+          const distance = Math.min(asteroid.distanceLunar, maxLD)
+          const radius = (distance / maxLD) * 180
+          // Spread asteroids across the arc
+          const angle = -30 - (index * 30) // Spread from -30° to -150°
+          const radian = (angle * Math.PI) / 180
+          const x = 200 + radius * Math.cos(radian)
+          const y = 195 + radius * Math.sin(radian)
+          const status = getDistanceStatus(asteroid.distanceLunar)
+
+          return (
+            <g key={asteroid.id}>
+              {/* Connection line to Earth */}
+              <line
+                x1="200"
+                y1="195"
+                x2={x}
+                y2={y}
+                stroke={status.color}
+                strokeWidth="1"
+                strokeOpacity="0.2"
+                strokeDasharray="2 2"
+              />
+              {/* Asteroid dot */}
+              <circle
+                cx={x}
+                cy={y}
+                r={asteroid.isPotentiallyHazardous ? 5 : 4}
+                fill={status.color}
+                filter="url(#asteroidGlow)"
+              />
+              {/* Asteroid label */}
+              <text
+                x={x}
+                y={y - 10}
+                fill="rgba(255,255,255,0.6)"
+                fontSize="7"
+                fontFamily="monospace"
+                textAnchor="middle"
+              >
+                {asteroid.name.replace(/\(|\)/g, '').slice(0, 12)}
+              </text>
+            </g>
+          )
+        })}
+
+        {/* LD label */}
+        <text
+          x="390"
+          y="195"
+          fill="rgba(255,255,255,0.3)"
+          fontSize="8"
+          fontFamily="monospace"
+          textAnchor="end"
+        >
+          LD
+        </text>
+      </svg>
+
+      {/* Legend */}
+      <div className="absolute bottom-1 left-2 flex items-center gap-3 text-[0.625em]">
+        <span className="text-white/40">LD = Lunar Distance (384,400 km)</span>
+      </div>
+    </div>
+  )
+}
+
+// ===========================================
+// ASTEROID CARD (Compact)
 // ===========================================
 
 interface AsteroidCardProps {
@@ -54,74 +234,105 @@ function AsteroidCard({ asteroid, isNext }: AsteroidCardProps) {
   const [expanded, setExpanded] = useState(false)
   const avgDiameter = (asteroid.diameterMin + asteroid.diameterMax) / 2
   const sizeDesc = getSizeComparison(avgDiameter)
-  const distanceColor = getDistanceColor(asteroid.distanceLunar)
+  const status = getDistanceStatus(asteroid.distanceLunar)
+  const timeUntil = formatDistanceToNow(asteroid.closeApproachDate, { addSuffix: false })
 
   return (
     <div
-      className={`p-3 rounded-lg ${isNext ? 'bg-blue-50 border border-blue-200' : 'bg-[#f5f5f5]'}`}
+      className={`rounded-[0.375em] transition-colors ${
+        isNext
+          ? 'bg-white/10 border border-white/20'
+          : 'bg-white/5 hover:bg-white/[0.07]'
+      }`}
     >
-      {/* Header row */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
+      {/* Main row - always visible */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full p-[0.625em] text-left"
+      >
+        <div className="flex items-center justify-between gap-3">
+          {/* Left: Name + badges */}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
             {isNext && (
-              <span className="px-1.5 py-0.5 bg-blue-500 text-white text-[9px] font-semibold rounded">
-                NEXT
+              <span className="flex-shrink-0 px-[0.375em] py-[0.125em] bg-white/20 text-white text-[0.5625em] font-semibold rounded uppercase tracking-wider">
+                Next
               </span>
             )}
             {asteroid.isPotentiallyHazardous && (
-              <span className="px-1.5 py-0.5 bg-red-100 text-red-700 text-[9px] font-semibold rounded">
-                PHA
-              </span>
+              <span className="flex-shrink-0 w-[0.5em] h-[0.5em] rounded-full bg-red-500" />
             )}
+            <span className="font-mono text-[0.875em] text-white truncate">
+              {asteroid.name}
+            </span>
           </div>
-          <div className="font-mono text-sm font-medium mt-1">{asteroid.name}</div>
-          <div className="text-xs text-text-muted">
-            {format(asteroid.closeApproachDate, 'MMM d, yyyy • HH:mm')} UTC
+
+          {/* Right: Distance */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <span className="text-[0.75em] text-white/40">
+              {timeUntil}
+            </span>
+            <div className="text-right">
+              <span
+                className="font-mono text-[1.125em] font-bold"
+                style={{ color: status.color }}
+              >
+                {asteroid.distanceLunar.toFixed(1)}
+              </span>
+              <span className="text-[0.625em] text-white/40 ml-1">LD</span>
+            </div>
+            <svg
+              className={`w-4 h-4 text-white/30 transition-transform ${expanded ? 'rotate-180' : ''}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
         </div>
-
-        {/* Distance - always visible */}
-        <div className="text-right">
-          <div className="font-mono text-lg font-bold" style={{ color: distanceColor }}>
-            {asteroid.distanceLunar.toFixed(1)}
-          </div>
-          <div className="text-[10px] text-text-muted">lunar dist.</div>
-        </div>
-      </div>
-
-      {/* Expand toggle */}
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-center mt-2 pt-2 border-t border-black/5"
-      >
-        <svg
-          className={`w-4 h-4 text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
       </button>
 
       {/* Expanded details */}
       {expanded && (
-        <div className="mt-3 pt-3 border-t border-black/10 grid grid-cols-3 gap-3">
-          <div className="text-center">
-            <div className="text-[10px] text-text-muted uppercase tracking-wide">Distance</div>
-            <div className="font-mono text-sm font-medium">
-              {(asteroid.distanceKm / 1000000).toFixed(2)}M km
+        <div className="px-[0.625em] pb-[0.625em] pt-0">
+          <div className="pt-[0.5em] border-t border-white/10">
+            {/* Date/time */}
+            <div className="text-[0.75em] text-white/50 mb-[0.75em]">
+              {format(asteroid.closeApproachDate, 'EEEE, MMMM d, yyyy')} at {format(asteroid.closeApproachDate, 'HH:mm')} UTC
             </div>
-          </div>
-          <div className="text-center">
-            <div className="text-[10px] text-text-muted uppercase tracking-wide">Size</div>
-            <div className="font-mono text-sm font-medium">{avgDiameter.toFixed(0)}m</div>
-            <div className="text-[10px] text-text-muted">{sizeDesc}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[10px] text-text-muted uppercase tracking-wide">Speed</div>
-            <div className="font-mono text-sm font-medium">{asteroid.velocityKmS.toFixed(1)} km/s</div>
+
+            {/* Stats grid */}
+            <div className="grid grid-cols-3 gap-[0.5em]">
+              <div className="bg-white/5 rounded-[0.25em] p-[0.5em] text-center">
+                <div className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.25em]">Distance</div>
+                <div className="font-mono text-[0.875em] text-white">
+                  {(asteroid.distanceKm / 1000000).toFixed(2)}M
+                </div>
+                <div className="text-[0.5625em] text-white/30">km</div>
+              </div>
+              <div className="bg-white/5 rounded-[0.25em] p-[0.5em] text-center">
+                <div className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.25em]">Size</div>
+                <div className="font-mono text-[0.875em] text-white">
+                  ~{avgDiameter.toFixed(0)}m
+                </div>
+                <div className="text-[0.5625em] text-white/30">{sizeDesc}</div>
+              </div>
+              <div className="bg-white/5 rounded-[0.25em] p-[0.5em] text-center">
+                <div className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.25em]">Velocity</div>
+                <div className="font-mono text-[0.875em] text-white">
+                  {asteroid.velocityKmS.toFixed(1)}
+                </div>
+                <div className="text-[0.5625em] text-white/30">km/s</div>
+              </div>
+            </div>
+
+            {/* Hazard notice */}
+            {asteroid.isPotentiallyHazardous && (
+              <div className="mt-[0.5em] flex items-center gap-2 text-[0.6875em] text-red-400/80">
+                <span className="w-1 h-1 rounded-full bg-red-500" />
+                Potentially Hazardous Asteroid (PHA)
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -129,68 +340,35 @@ function AsteroidCard({ asteroid, isNext }: AsteroidCardProps) {
   )
 }
 
-// ===========================================
-// DISTANCE SCALE
-// ===========================================
-
-interface DistanceScaleProps {
-  asteroids: Asteroid[]
-}
-
-function DistanceScale({ asteroids }: DistanceScaleProps) {
-  const maxLD = 20
+// Compact row for overflow list
+function CompactAsteroidRow({ asteroid }: { asteroid: Asteroid }) {
+  const status = getDistanceStatus(asteroid.distanceLunar)
 
   return (
-    <div className="p-3 bg-[#f5f5f5] rounded-lg">
-      <div className="text-[10px] text-text-muted uppercase tracking-wide mb-3">
-        Distance from Earth
+    <div className="flex items-center justify-between py-[0.375em] px-[0.5em] rounded-[0.25em] hover:bg-white/5 transition-colors">
+      <div className="flex items-center gap-2 min-w-0">
+        {asteroid.isPotentiallyHazardous && (
+          <span className="flex-shrink-0 w-[0.375em] h-[0.375em] rounded-full bg-red-500" />
+        )}
+        <span className="font-mono text-[0.75em] text-white/70 truncate">{asteroid.name}</span>
       </div>
-      <div className="relative h-8">
-        {/* Scale line */}
-        <div className="absolute bottom-3 left-0 right-0 h-0.5 bg-[#e5e5e5]" />
-
-        {/* Moon marker */}
-        <div
-          className="absolute bottom-2 flex flex-col items-center"
-          style={{ left: `${(1 / maxLD) * 100}%`, transform: 'translateX(-50%)' }}
+      <div className="flex items-center gap-3 flex-shrink-0">
+        <span className="text-[0.6875em] text-white/40">
+          {format(asteroid.closeApproachDate, 'MMM d')}
+        </span>
+        <span
+          className="font-mono text-[0.75em] font-medium w-10 text-right"
+          style={{ color: status.color }}
         >
-          <span className="text-sm">🌙</span>
-          <span className="text-[8px] text-text-muted">Moon</span>
-        </div>
-
-        {/* Asteroid markers */}
-        {asteroids.slice(0, 5).map((ast) => {
-          const pos = Math.min((ast.distanceLunar / maxLD) * 100, 98)
-          return (
-            <div
-              key={ast.id}
-              className="absolute bottom-3"
-              style={{ left: `${pos}%`, transform: 'translateX(-50%)' }}
-              title={`${ast.name}: ${ast.distanceLunar.toFixed(1)} LD`}
-            >
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: getDistanceColor(ast.distanceLunar) }}
-              />
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Scale labels */}
-      <div className="flex justify-between font-mono text-[9px] text-text-muted mt-1">
-        <span>0</span>
-        <span>5 LD</span>
-        <span>10 LD</span>
-        <span>15 LD</span>
-        <span>20 LD</span>
+          {asteroid.distanceLunar.toFixed(1)}
+        </span>
       </div>
     </div>
   )
 }
 
 // ===========================================
-// ASTEROID LIST WITH EXPANDABLE OVERFLOW
+// ASTEROID LIST WITH OVERFLOW
 // ===========================================
 
 interface AsteroidListProps {
@@ -202,34 +380,30 @@ function AsteroidList({ asteroids }: AsteroidListProps) {
 
   if (asteroids.length === 0) {
     return (
-      <div className="text-center text-sm text-text-muted py-6">
+      <div className="text-center text-[0.875em] text-white/40 py-[1.5em]">
         No close approaches in selected period
       </div>
     )
   }
 
-  const topAsteroids = asteroids.slice(0, 5)
-  const remainingAsteroids = asteroids.slice(5)
+  const topAsteroids = asteroids.slice(0, 4)
+  const remainingAsteroids = asteroids.slice(4)
 
   return (
-    <div className="space-y-2">
-      {/* Top 5 as full cards */}
+    <div className="space-y-[0.375em]">
       {topAsteroids.map((asteroid, i) => (
         <AsteroidCard key={asteroid.id} asteroid={asteroid} isNext={i === 0} />
       ))}
 
-      {/* Remaining asteroids */}
       {remainingAsteroids.length > 0 && (
-        <div className="pt-2">
+        <div className="pt-[0.25em]">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="w-full flex items-center justify-center gap-2 py-2 text-xs text-text-muted hover:text-text-primary transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-[0.5em] text-[0.75em] text-white/40 hover:text-white/60 transition-colors"
           >
-            <span>
-              {showAll ? 'Hide' : `Show ${remainingAsteroids.length} more`}
-            </span>
+            <span>{showAll ? 'Show less' : `${remainingAsteroids.length} more approaches`}</span>
             <svg
-              className={`w-4 h-4 transition-transform ${showAll ? 'rotate-180' : ''}`}
+              className={`w-3 h-3 transition-transform ${showAll ? 'rotate-180' : ''}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -239,7 +413,7 @@ function AsteroidList({ asteroids }: AsteroidListProps) {
           </button>
 
           {showAll && (
-            <div className="mt-2 border-t border-[#e5e5e5] pt-2 space-y-1">
+            <div className="mt-[0.25em] border-t border-white/10 pt-[0.375em]">
               {remainingAsteroids.map((asteroid) => (
                 <CompactAsteroidRow key={asteroid.id} asteroid={asteroid} />
               ))}
@@ -247,30 +421,6 @@ function AsteroidList({ asteroids }: AsteroidListProps) {
           )}
         </div>
       )}
-    </div>
-  )
-}
-
-// Compact single-line row for overflow asteroids
-function CompactAsteroidRow({ asteroid }: { asteroid: Asteroid }) {
-  const distanceColor = getDistanceColor(asteroid.distanceLunar)
-
-  return (
-    <div className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-[#f5f5f5] transition-colors">
-      <div className="flex items-center gap-2 min-w-0">
-        {asteroid.isPotentiallyHazardous && (
-          <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-red-500" />
-        )}
-        <span className="font-mono text-xs truncate">{asteroid.name}</span>
-      </div>
-      <div className="flex items-center gap-3 flex-shrink-0">
-        <span className="text-[10px] text-text-muted">
-          {format(asteroid.closeApproachDate, 'MMM d')}
-        </span>
-        <span className="font-mono text-xs font-medium w-12 text-right" style={{ color: distanceColor }}>
-          {asteroid.distanceLunar.toFixed(1)} LD
-        </span>
-      </div>
     </div>
   )
 }
@@ -287,7 +437,6 @@ export default function NearEarthAsteroids() {
   const [error, setError] = useState<string | null>(null)
   const [timeRange, setTimeRange] = useState<TimeRange>('month')
   const [showHazardousOnly, setShowHazardousOnly] = useState(false)
-  const [showScale, setShowScale] = useState(false)
 
   // Calculate date range
   const dateRange = useMemo(() => {
@@ -299,7 +448,7 @@ export default function NearEarthAsteroids() {
     }
   }, [timeRange])
 
-  // Fetch data from local API proxy (avoids CORS issues with JPL API)
+  // Fetch data
   const fetchAsteroids = useCallback(async () => {
     setLoading(true)
     setError(null)
@@ -308,7 +457,7 @@ export default function NearEarthAsteroids() {
       const url = new URL('/api/asteroids', window.location.origin)
       url.searchParams.set('date-min', dateRange.start)
       url.searchParams.set('date-max', dateRange.end)
-      url.searchParams.set('dist-max', '0.05') // ~20 lunar distances
+      url.searchParams.set('dist-max', '0.05')
 
       const response = await fetch(url.toString())
       if (!response.ok) throw new Error('Failed to fetch asteroid data')
@@ -361,10 +510,12 @@ export default function NearEarthAsteroids() {
 
   // Filter asteroids
   const filteredAsteroids = useMemo(() => {
+    let result = [...asteroids]
     if (showHazardousOnly) {
-      return asteroids.filter((a) => a.isPotentiallyHazardous)
+      result = result.filter((a) => a.isPotentiallyHazardous)
     }
-    return asteroids
+    // Sort by approach date
+    return result.sort((a, b) => a.closeApproachDate.getTime() - b.closeApproachDate.getTime())
   }, [asteroids, showHazardousOnly])
 
   // Stats
@@ -382,8 +533,11 @@ export default function NearEarthAsteroids() {
   // Loading state
   if (loading) {
     return (
-      <div className="p-4 flex items-center justify-center h-48 text-text-muted">
-        Scanning near-Earth space...
+      <div className="bg-[#1a1a1e] p-[1em] min-h-[300px] flex items-center justify-center">
+        <div className="flex items-center gap-3 text-white/50">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="text-[0.875em] font-mono tracking-wide">SCANNING NEO TRAJECTORIES</span>
+        </div>
       </div>
     )
   }
@@ -391,12 +545,12 @@ export default function NearEarthAsteroids() {
   // Error state
   if (error) {
     return (
-      <div className="p-4">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center justify-between">
-          <span className="text-sm text-red-700">{error}</span>
+      <div className="bg-[#1a1a1e] p-[1em]">
+        <div className="bg-red-500/10 border border-red-500/30 rounded-[0.5em] p-[0.75em] flex items-center justify-between">
+          <span className="text-[0.875em] text-red-400">{error}</span>
           <button
             onClick={fetchAsteroids}
-            className="px-3 py-1 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 transition-colors"
+            className="px-[0.75em] py-[0.375em] bg-red-500 text-white text-[0.75em] font-medium rounded-[0.25em] hover:bg-red-600 transition-colors"
           >
             Retry
           </button>
@@ -406,20 +560,55 @@ export default function NearEarthAsteroids() {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="bg-[#1a1a1e] p-[1em]">
+      {/* Header stats */}
+      {stats && (
+        <div className="grid grid-cols-3 gap-[0.5em] mb-[1em]">
+          <div className="bg-white/5 rounded-[0.375em] p-[0.625em] text-center">
+            <div className="font-mono text-[1.5em] font-bold text-white">{stats.total}</div>
+            <div className="text-[0.625em] text-white/40 uppercase tracking-wider">Approaches</div>
+          </div>
+          <div className="bg-white/5 rounded-[0.375em] p-[0.625em] text-center">
+            <div
+              className="font-mono text-[1.5em] font-bold"
+              style={{ color: getDistanceStatus(stats.closest.distanceLunar).color }}
+            >
+              {stats.closest.distanceLunar.toFixed(1)}
+            </div>
+            <div className="text-[0.625em] text-white/40 uppercase tracking-wider">Closest (LD)</div>
+          </div>
+          <div className="bg-white/5 rounded-[0.375em] p-[0.625em] text-center">
+            <div className="font-mono text-[1.5em] font-bold text-white">
+              {stats.hazardous}
+            </div>
+            <div className="text-[0.625em] text-white/40 uppercase tracking-wider">Hazardous</div>
+          </div>
+        </div>
+      )}
+
+      {/* Radar display */}
+      {filteredAsteroids.length > 0 && (
+        <div className="mb-[1em] bg-white/[0.02] rounded-[0.5em] p-[0.5em] border border-white/5">
+          <RadarDisplay asteroids={filteredAsteroids} />
+        </div>
+      )}
+
       {/* Filters */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-[0.5em] mb-[0.75em]">
         {/* Time range */}
-        <div className="flex p-1 rounded-lg" style={{ backgroundColor: '#e5e5e5' }}>
+        <div className="flex bg-white/5 rounded-[0.5em] p-[0.25em]">
           {(['week', 'month', '3months'] as TimeRange[]).map((range) => (
             <button
               key={range}
               onClick={() => setTimeRange(range)}
-              className="px-2 py-1 text-xs font-medium rounded-md transition-colors"
-              style={{
-                backgroundColor: timeRange === range ? '#ffffff' : 'transparent',
-                color: timeRange === range ? '#000000' : 'rgba(0,0,0,0.5)',
-              }}
+              className={`
+                px-[0.625em] py-[0.375em] text-[0.75em] font-medium
+                rounded-[0.375em] transition-colors
+                ${timeRange === range
+                  ? 'bg-white/10 text-white'
+                  : 'text-white/40 hover:text-white/60'
+                }
+              `}
             >
               {range === 'week' ? '7d' : range === 'month' ? '30d' : '90d'}
             </button>
@@ -429,73 +618,27 @@ export default function NearEarthAsteroids() {
         {/* PHA filter */}
         <button
           onClick={() => setShowHazardousOnly(!showHazardousOnly)}
-          className="px-2 py-1 text-xs font-medium rounded-md transition-colors"
-          style={{
-            backgroundColor: showHazardousOnly ? '#000000' : '#e5e5e5',
-            color: showHazardousOnly ? '#ffffff' : 'rgba(0,0,0,0.5)',
-          }}
+          className={`
+            flex items-center gap-[0.375em] px-[0.625em] py-[0.375em]
+            text-[0.75em] font-medium rounded-[0.375em] transition-colors
+            ${showHazardousOnly
+              ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+              : 'bg-white/5 text-white/40 hover:text-white/60'
+            }
+          `}
         >
-          PHA only
+          <span className="w-[0.5em] h-[0.5em] rounded-full bg-red-500" />
+          PHA
         </button>
       </div>
 
-      {/* Stats bar */}
-      {stats && (
-        <div className="grid grid-cols-3 gap-2">
-          <div className="text-center p-2 bg-[#f5f5f5] rounded-lg">
-            <div className="font-mono text-xl font-bold">{stats.total}</div>
-            <div className="text-[10px] text-text-muted">approaches</div>
-          </div>
-          <div className="text-center p-2 bg-[#f5f5f5] rounded-lg">
-            <div
-              className="font-mono text-xl font-bold"
-              style={{ color: getDistanceColor(stats.closest.distanceLunar) }}
-            >
-              {stats.closest.distanceLunar.toFixed(1)}
-            </div>
-            <div className="text-[10px] text-text-muted">closest (LD)</div>
-          </div>
-          <div className="text-center p-2 bg-[#f5f5f5] rounded-lg">
-            <div className="font-mono text-xl font-bold">{stats.hazardous}</div>
-            <div className="text-[10px] text-text-muted">hazardous</div>
-          </div>
-        </div>
-      )}
-
-      {/* Divider */}
-      <div className="border-t border-[#e5e5e5]" />
-
-      {/* Distance scale (collapsible) */}
-      {filteredAsteroids.length > 0 && (
-        <div>
-          <button
-            onClick={() => setShowScale(!showScale)}
-            className="w-full flex items-center justify-between"
-          >
-            <span className="text-sm text-text-muted">Distance scale</span>
-            <svg
-              className={`w-5 h-5 text-text-muted transition-transform ${showScale ? 'rotate-180' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-
-          {showScale && (
-            <div className="mt-3">
-              <DistanceScale asteroids={filteredAsteroids} />
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Divider */}
-      <div className="border-t border-[#e5e5e5]" />
-
       {/* Asteroid list */}
       <AsteroidList asteroids={filteredAsteroids} />
+
+      {/* Attribution */}
+      <div className="mt-[1em] pt-[0.75em] border-t border-white/5 text-[0.6875em] text-white/30">
+        NASA JPL Small-Body Database
+      </div>
     </div>
   )
 }
