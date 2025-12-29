@@ -440,10 +440,10 @@ export default function OceanHydrophones() {
       {/* Frequency bands */}
       <div className="flex gap-[0.25em] px-[0.75em] py-[0.5em] border-t border-cyan-500/10">
         {[
-          { label: '<20Hz', value: data.frequencyBands.infrasonic, color: '#ef4444' },
-          { label: '20-200', value: data.frequencyBands.low, color: '#f97316' },
-          { label: '0.2-2k', value: data.frequencyBands.mid, color: '#22d3ee' },
-          { label: '>2kHz', value: data.frequencyBands.high, color: '#a5b4fc' },
+          { label: '<20Hz', value: data.frequencyBands?.infrasonic ?? 0, color: '#ef4444' },
+          { label: '20-200', value: data.frequencyBands?.low ?? 0, color: '#f97316' },
+          { label: '0.2-2k', value: data.frequencyBands?.mid ?? 0, color: '#22d3ee' },
+          { label: '>2kHz', value: data.frequencyBands?.high ?? 0, color: '#a5b4fc' },
         ].map(band => (
           <div key={band.label} className="flex-1">
             <div className="h-[1.5em] bg-white/5 rounded-[0.25em] overflow-hidden flex flex-col-reverse">
@@ -466,22 +466,22 @@ export default function OceanHydrophones() {
       {/* 24h Stats */}
       <div className="flex justify-around px-[0.75em] py-[0.375em] border-t border-cyan-500/10 bg-white/[0.02]">
         <div className="text-center">
-          <div className="text-[0.75em] font-mono font-medium text-cyan-400">{data.stats24h.whales}</div>
+          <div className="text-[0.75em] font-mono font-medium text-cyan-400">{data.stats24h?.whales ?? 0}</div>
           <div className="text-[0.375em] text-white/40 uppercase">Whales</div>
         </div>
         <div className="text-center">
-          <div className="text-[0.75em] font-mono font-medium text-orange-400">{data.stats24h.ships}</div>
+          <div className="text-[0.75em] font-mono font-medium text-orange-400">{data.stats24h?.ships ?? 0}</div>
           <div className="text-[0.375em] text-white/40 uppercase">Ships</div>
         </div>
         <div className="text-center">
-          <div className="text-[0.75em] font-mono font-medium text-red-400">{data.stats24h.earthquakes}</div>
+          <div className="text-[0.75em] font-mono font-medium text-red-400">{data.stats24h?.earthquakes ?? 0}</div>
           <div className="text-[0.375em] text-white/40 uppercase">Seismic</div>
         </div>
       </div>
 
       {/* Recent events */}
       <div className="px-[0.5em] py-[0.375em] border-t border-cyan-500/20">
-        {data.recentEvents.length === 0 ? (
+        {!data.recentEvents || data.recentEvents.length === 0 ? (
           <div className="text-[0.5625em] text-white/30 text-center py-[0.25em]">
             Listening...
           </div>
