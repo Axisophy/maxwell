@@ -44,7 +44,6 @@ import StarMap from '@/components/widgets/StarMap'
 import WhatsBelowYou from '@/components/widgets/WhatsBelowYou'
 import YourAirJourney from '@/components/widgets/YourAirJourney'
 import YourBackgroundDose from '@/components/widgets/YourBackgroundDose'
-import YourSkyWhenBorn from '@/components/widgets/YourSkyWhenBorn'
 
 // Map component names (from registry) to actual components
 // The key must match the 'component' field in WIDGET_REGISTRY
@@ -92,7 +91,6 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'WhatsBelowYou': WhatsBelowYou,
   'YourAirJourney': YourAirJourney,
   'YourBackgroundDose': YourBackgroundDose,
-  'YourSkyWhenBorn': YourSkyWhenBorn,
 }
 
 // Helper to check if a component exists

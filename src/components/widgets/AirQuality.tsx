@@ -1,13 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 // ===========================================
-// AIR QUALITY WIDGET
+// AIR QUALITY
 // ===========================================
-// Shows current air quality index with collapsible pollutant breakdown
-// Defaults to user's location, falls back to London
-// Data: OpenAQ via /api/air-quality (cached server-side)
+// Air quality index with pollutant breakdown
+// Data: OpenAQ
 // ===========================================
 
 interface AirQualityData {
@@ -16,6 +15,7 @@ interface AirQualityData {
     city: string
     country: string
     coordinates: { latitude: number; longitude: number }
+    distance?: number // km to station
   }
   aqi: number
   pm25: number
@@ -34,141 +34,98 @@ interface AirQualityData {
   lastUpdated: string
 }
 
-// AQI Gauge - semicircular design similar to SpaceWeather Kp gauge
-function AQIGauge({ aqi, color }: { aqi: number; color: string }) {
-  // AQI scale: 0-500, but most readings are 0-200
-  const normalizedValue = Math.min(300, Math.max(0, aqi))
-  const angle = (normalizedValue / 300) * 180 - 90
-  
-  // Segment colors for the gauge background
-  const segments = [
-    { max: 50, color: '#22c55e' },   // Good
-    { max: 100, color: '#eab308' },  // Moderate
-    { max: 150, color: '#f97316' },  // Unhealthy (Sensitive)
-    { max: 200, color: '#ef4444' },  // Unhealthy
-    { max: 300, color: '#7c3aed' },  // Very Unhealthy
-  ]
-  
-  return (
-    <div className="flex flex-col items-center">
-      <div className="w-32 h-20">
-        <svg viewBox="0 0 100 60" className="w-full h-full">
-          {/* Background arc */}
-          <path
-            d="M 10 55 A 40 40 0 0 1 90 55"
-            fill="none"
-            stroke="#e5e5e5"
-            strokeWidth="8"
-            strokeLinecap="round"
-          />
-          
-          {/* Colored segments */}
-          {segments.map((segment, i) => {
-            const prevMax = i === 0 ? 0 : segments[i - 1].max
-            const startAngle = (prevMax / 300) * 180 - 180
-            const endAngle = (segment.max / 300) * 180 - 180
-            const startRad = (startAngle * Math.PI) / 180
-            const endRad = (endAngle * Math.PI) / 180
-            const x1 = 50 + 40 * Math.cos(startRad)
-            const y1 = 55 + 40 * Math.sin(startRad)
-            const x2 = 50 + 40 * Math.cos(endRad)
-            const y2 = 55 + 40 * Math.sin(endRad)
-            
-            const isActive = aqi >= prevMax
-            
-            return (
-              <path
-                key={i}
-                d={`M ${x1} ${y1} A 40 40 0 0 1 ${x2} ${y2}`}
-                fill="none"
-                stroke={segment.color}
-                strokeWidth="6"
-                strokeLinecap="butt"
-                opacity={isActive ? (aqi > segment.max ? 1 : 0.8) : 0.2}
-              />
-            )
-          })}
-          
-          {/* Needle */}
-          <g transform={`rotate(${angle}, 50, 55)`}>
-            <line 
-              x1="50" y1="55" x2="50" y2="20" 
-              stroke={color} 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-            />
-            <circle cx="50" cy="55" r="4" fill={color} />
-          </g>
-          
-          {/* Scale labels */}
-          <text x="12" y="58" fill="#666666" fontSize="7" fontWeight="500" textAnchor="middle">0</text>
-          <text x="50" y="10" fill="#666666" fontSize="7" fontWeight="500" textAnchor="middle">150</text>
-          <text x="88" y="58" fill="#666666" fontSize="7" fontWeight="500" textAnchor="middle">300</text>
-        </svg>
-      </div>
-      
-      <div className="text-center mt-1">
-        <span className="font-mono font-bold text-3xl" style={{ color }}>{aqi}</span>
-      </div>
-    </div>
-  )
+// Health guidance messages by AQI category
+const healthGuidance: Record<string, { message: string; color: string }> = {
+  'Good': { message: 'Good for outdoor activity', color: '#22c55e' },
+  'Moderate': { message: 'Acceptable for most people', color: '#eab308' },
+  'Unhealthy for Sensitive Groups': { message: 'Sensitive groups should limit outdoor exertion', color: '#f97316' },
+  'Unhealthy': { message: 'Everyone should reduce prolonged outdoor exertion', color: '#ef4444' },
+  'Very Unhealthy': { message: 'Avoid prolonged outdoor exertion', color: '#7c3aed' },
+  'Hazardous': { message: 'Everyone should avoid all outdoor exertion', color: '#831843' },
 }
 
-// Pollutant bar with WHO guideline marker
-function PollutantBar({ 
-  displayName, 
-  value, 
-  unit, 
-  whoGuideline, 
-  exceedsWho 
+// AQI segments for the horizontal bar
+const AQI_SEGMENTS = [
+  { max: 50, color: '#22c55e', label: 'Good' },
+  { max: 100, color: '#eab308', label: 'Moderate' },
+  { max: 150, color: '#f97316', label: 'USG' },
+  { max: 200, color: '#ef4444', label: 'Unhealthy' },
+  { max: 300, color: '#7c3aed', label: 'Very Unhealthy' },
+]
+
+// Pollutant card component
+function PollutantCard({
+  name,
+  value,
+  unit,
+  whoGuideline,
+  baseFontSize,
 }: {
-  displayName: string
+  name: string
   value: number
   unit: string
   whoGuideline: number
-  exceedsWho: boolean
+  baseFontSize: number
 }) {
-  // Scale: show up to 2x WHO guideline
-  const maxValue = whoGuideline * 2
-  const percentage = Math.min(100, (value / maxValue) * 100)
-  const whoPosition = Math.min(100, (whoGuideline / maxValue) * 100)
-  
+  const percentage = Math.min(100, (value / (whoGuideline * 2)) * 100)
+  const whoPosition = Math.min(100, (whoGuideline / (whoGuideline * 2)) * 100)
+  const exceedsWho = value > whoGuideline
+
   return (
-    <div className="mb-3 last:mb-0">
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-text-primary">{displayName}</span>
-        <span className={`font-mono text-xs ${exceedsWho ? 'text-red-500 font-medium' : 'text-text-muted'}`}>
-          {value.toFixed(1)} {unit}
+    <div
+      className="p-[0.5em] bg-[#f8fafc] rounded-[0.375em]"
+      style={{ fontSize: `${baseFontSize}px` }}
+    >
+      <div className="flex items-center justify-between mb-[0.25em]">
+        <span className="text-[0.625em] text-black/60">{name}</span>
+        <span className={`text-[0.75em] font-mono font-medium ${exceedsWho ? 'text-[#ef4444]' : 'text-black'}`}>
+          {value.toFixed(1)}
         </span>
       </div>
-      <div className="relative h-1.5 bg-[#e5e5e5] rounded-full">
-        <div 
-          className="h-full rounded-full transition-all duration-500"
-          style={{ 
-            width: `${percentage}%`, 
-            backgroundColor: exceedsWho ? '#ef4444' : '#22c55e' 
+      <div className="relative h-[0.25em] bg-black/10 rounded-full overflow-visible">
+        <div
+          className="h-full rounded-full transition-all"
+          style={{
+            width: `${percentage}%`,
+            backgroundColor: exceedsWho ? '#ef4444' : '#22c55e'
           }}
         />
         {/* WHO guideline marker */}
-        <div 
-          className="absolute top-[-2px] w-0.5 h-2.5 bg-text-primary"
+        <div
+          className="absolute top-[-0.125em] w-[0.125em] h-[0.5em] bg-black"
           style={{ left: `${whoPosition}%` }}
-          title={`WHO: ${whoGuideline} ${unit}`}
         />
+      </div>
+      <div className="text-[0.4375em] text-black/40 mt-[0.25em]">
+        WHO: {whoGuideline} {unit}
       </div>
     </div>
   )
 }
 
 export default function AirQuality() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [baseFontSize, setBaseFontSize] = useState(16)
   const [data, setData] = useState<AirQualityData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [showPollutants, setShowPollutants] = useState(false)
   const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(null)
   const [locationStatus, setLocationStatus] = useState<'pending' | 'granted' | 'denied'>('pending')
 
-  // Request user location on mount
+  // Responsive scaling
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const observer = new ResizeObserver((entries) => {
+      const width = entries[0]?.contentRect.width || 400
+      setBaseFontSize(width / 25)
+    })
+
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  // Request user location
   useEffect(() => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -179,10 +136,7 @@ export default function AirQuality() {
           })
           setLocationStatus('granted')
         },
-        () => {
-          // Location denied - will use default (London)
-          setLocationStatus('denied')
-        },
+        () => setLocationStatus('denied'),
         { timeout: 5000 }
       )
     } else {
@@ -190,7 +144,7 @@ export default function AirQuality() {
     }
   }, [])
 
-  // Fetch air quality data
+  // Fetch data
   const fetchData = useCallback(async () => {
     try {
       const params = new URLSearchParams()
@@ -198,137 +152,189 @@ export default function AirQuality() {
         params.set('lat', String(userCoords.lat))
         params.set('lon', String(userCoords.lon))
       }
-      
+
       const response = await fetch(`/api/air-quality?${params}`)
       if (!response.ok) throw new Error('Failed to fetch')
-      
+
       const result = await response.json()
       if (result.error) throw new Error(result.error)
-      
+
       setData(result)
       setError(null)
     } catch (err) {
       console.error('Error fetching air quality:', err)
       setError('Unable to fetch data')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }, [userCoords])
 
-  // Fetch when location is determined
   useEffect(() => {
     if (locationStatus !== 'pending') {
       fetchData()
-      // Refresh every 15 minutes (matches server cache)
       const interval = setInterval(fetchData, 15 * 60 * 1000)
       return () => clearInterval(interval)
     }
   }, [fetchData, locationStatus])
 
-  // Loading state
-  if (isLoading || locationStatus === 'pending') {
+  if (loading || locationStatus === 'pending') {
     return (
-      <div className="w-full aspect-[4/3] flex items-center justify-center">
-        <div className="text-text-muted text-sm animate-pulse">
+      <div className="flex items-center justify-center h-full bg-white">
+        <div className="text-[0.875em] text-black/50">
           {locationStatus === 'pending' ? 'Getting location...' : 'Loading...'}
         </div>
       </div>
     )
   }
 
-  // Error state
   if (error || !data) {
     return (
-      <div className="w-full aspect-[4/3] flex items-center justify-center">
-        <div className="text-red-500 text-sm">{error || 'No data'}</div>
+      <div className="flex items-center justify-center h-full bg-white">
+        <div className="text-[0.875em] text-[#ef4444]">{error || 'No data'}</div>
       </div>
     )
   }
 
+  // Get health guidance
+  const guidance = healthGuidance[data.category.level] || healthGuidance['Good']
+
+  // Calculate AQI bar position
+  const aqiPosition = Math.min(100, (data.aqi / 300) * 100)
+
+  // Get 4 key pollutants for the grid
+  const keyPollutants = [
+    data.pollutants.find(p => p.parameter === 'pm25') || { displayName: 'PM2.5', value: data.pm25, unit: 'μg/m³', whoGuideline: 15, exceedsWho: data.pm25 > 15 },
+    data.pollutants.find(p => p.parameter === 'pm10'),
+    data.pollutants.find(p => p.parameter === 'no2'),
+    data.pollutants.find(p => p.parameter === 'o3'),
+  ].filter(Boolean)
+
+  // Format last updated time
+  const lastUpdated = new Date(data.lastUpdated)
+  const timeString = lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
   return (
-    <div className="w-full">
-      {/* Location and status */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div 
-            className="w-2 h-2 rounded-full"
+    <div
+      ref={containerRef}
+      className="h-full bg-white overflow-hidden flex flex-col p-[1em]"
+      style={{ fontSize: `${baseFontSize}px` }}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-[0.75em]">
+        <div className="flex items-center gap-[0.5em]">
+          <div
+            className="w-[0.5em] h-[0.5em] rounded-full"
             style={{ backgroundColor: data.category.color }}
           />
-          <span className="text-sm text-text-primary">
-            {data.location.city}
+          <span className="text-[0.75em] font-medium text-black">Air Quality</span>
+        </div>
+        <div className="text-[0.5em] text-black/40">
+          {data.location.city} · OpenAQ
+        </div>
+      </div>
+
+      {/* Main AQI card */}
+      <div className="p-[0.75em] bg-[#f8fafc] rounded-[0.5em] mb-[0.75em]">
+        <div className="text-[0.4375em] uppercase tracking-wider text-black/40 mb-[0.25em]">
+          Air Quality Index
+        </div>
+
+        <div className="flex items-baseline justify-between mb-[0.5em]">
+          <span className="text-[2.5em] font-mono font-bold text-black">
+            {data.aqi}
+          </span>
+          <span
+            className="text-[0.875em] font-medium px-[0.5em] py-[0.125em] rounded-[0.25em]"
+            style={{
+              backgroundColor: `${data.category.color}20`,
+              color: data.category.color
+            }}
+          >
+            {data.category.level}
           </span>
         </div>
-        <span className="text-xs text-text-muted font-mono">OpenAQ</span>
-      </div>
-      
-      {/* Main AQI display */}
-      <div className="flex flex-col items-center mb-4">
-        <span className="text-xs text-text-muted uppercase tracking-wide mb-2">
-          Air Quality Index
-        </span>
-        <AQIGauge aqi={data.aqi} color={data.category.color} />
-      </div>
-      
-      {/* Category label */}
-      <div className="text-center mb-4">
-        <span 
-          className="text-sm font-medium"
-          style={{ color: data.category.color }}
-        >
-          {data.category.level}
-        </span>
-      </div>
-      
-      {/* PM2.5 highlight */}
-      <div className="flex items-center justify-between py-2 border-t border-[#e5e5e5]">
-        <span className="text-xs text-text-muted">PM2.5</span>
-        <span className="font-mono text-sm font-medium">
-          {data.pm25.toFixed(1)} <span className="text-text-muted font-normal">μg/m³</span>
-        </span>
-      </div>
-      
-      {/* Collapsible pollutants breakdown */}
-      {data.pollutants.length > 0 && (
-        <div className="border-t border-[#e5e5e5] pt-3 mt-2">
-          <button
-            onClick={() => setShowPollutants(!showPollutants)}
-            className="flex items-center justify-between w-full text-left"
-          >
-            <span className="text-xs text-text-muted uppercase tracking-wide">
-              Pollutants
-            </span>
-            <svg 
-              className={`w-4 h-4 text-text-muted transition-transform ${showPollutants ? 'rotate-180' : ''}`}
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          
-          {showPollutants && (
-            <div className="mt-3">
-              {data.pollutants.map((p) => (
-                <PollutantBar
-                  key={p.parameter}
-                  displayName={p.displayName}
-                  value={p.value}
-                  unit={p.unit}
-                  whoGuideline={p.whoGuideline}
-                  exceedsWho={p.exceedsWho}
-                />
-              ))}
-              
-              {/* WHO legend */}
-              <div className="flex items-center gap-2 mt-3 pt-2 border-t border-[#e5e5e5]">
-                <div className="w-2 h-2 bg-text-primary" />
-                <span className="text-[10px] text-text-muted">WHO guideline</span>
-              </div>
-            </div>
-          )}
+
+        {/* Segmented AQI bar */}
+        <div className="relative h-[0.5em] rounded-full overflow-hidden flex">
+          {AQI_SEGMENTS.map((segment, i) => {
+            const prevMax = i === 0 ? 0 : AQI_SEGMENTS[i - 1].max
+            const width = ((segment.max - prevMax) / 300) * 100
+            const isActive = data.aqi >= prevMax
+            const isCurrent = data.aqi >= prevMax && data.aqi < segment.max
+
+            return (
+              <div
+                key={segment.label}
+                className="h-full transition-opacity"
+                style={{
+                  width: `${width}%`,
+                  backgroundColor: segment.color,
+                  opacity: isActive ? (isCurrent ? 1 : 0.7) : 0.2
+                }}
+              />
+            )
+          })}
+
+          {/* Position indicator */}
+          <div
+            className="absolute top-[-0.125em] w-[0.375em] h-[0.75em] bg-black rounded-full shadow-sm"
+            style={{ left: `calc(${aqiPosition}% - 0.1875em)` }}
+          />
         </div>
-      )}
+
+        {/* Scale labels */}
+        <div className="flex justify-between text-[0.375em] text-black/40 mt-[0.25em]">
+          <span>0</span>
+          <span>50</span>
+          <span>100</span>
+          <span>150</span>
+          <span>200</span>
+          <span>300</span>
+        </div>
+      </div>
+
+      {/* Key Pollutants grid */}
+      <div className="mb-[0.75em]">
+        <div className="text-[0.4375em] uppercase tracking-wider text-black/40 mb-[0.375em]">
+          Key Pollutants
+        </div>
+        <div className="grid grid-cols-2 gap-[0.375em]">
+          {keyPollutants.slice(0, 4).map((pollutant, i) => (
+            <PollutantCard
+              key={pollutant?.displayName || i}
+              name={pollutant?.displayName || 'N/A'}
+              value={pollutant?.value ?? 0}
+              unit={pollutant?.unit || 'μg/m³'}
+              whoGuideline={pollutant?.whoGuideline || 10}
+              baseFontSize={baseFontSize}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Health guidance */}
+      <div
+        className="p-[0.5em] rounded-[0.375em] mb-[0.5em]"
+        style={{ backgroundColor: `${guidance.color}15` }}
+      >
+        <div className="flex items-center gap-[0.375em]">
+          <div
+            className="w-[0.375em] h-[0.375em] rounded-full flex-shrink-0"
+            style={{ backgroundColor: guidance.color }}
+          />
+          <span className="text-[0.5625em] text-black/70">
+            {guidance.message}
+          </span>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-auto flex items-center justify-center text-[0.4375em] text-black/40">
+        <span>
+          Updated {timeString}
+          {data.location.distance && ` · Nearest station: ${data.location.distance.toFixed(1)}km`}
+        </span>
+      </div>
     </div>
   )
 }

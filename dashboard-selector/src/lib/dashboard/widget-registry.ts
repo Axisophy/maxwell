@@ -373,15 +373,6 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['astronomy', 'personal'],
     component: 'StarMap'
   },
-  'your-sky-when-born': {
-    id: 'your-sky-when-born',
-    title: 'Your Sky When Born',
-    description: 'Enter your birth date and location to see exactly what stars and planets were overhead.',
-    source: 'Astronomical Calculation',
-    status: 'ok',
-    categories: ['astronomy', 'personal'],
-    component: 'YourSkyWhenBorn'
-  },
   'whats-below-you': {
     id: 'whats-below-you',
     title: 'What\'s Below You',
