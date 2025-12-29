@@ -56,8 +56,18 @@ function RadarDisplay({ asteroids }: RadarDisplayProps) {
     .sort((a, b) => a.distanceLunar - b.distanceLunar)
     .slice(0, 5)
 
-  const maxLD = 20 // Maximum lunar distance to display
-  const rings = [1, 5, 10, 15, 20]
+  // Calculate adaptive scale based on data, minimum 10LD for visual consistency
+  const furthestAsteroid = Math.max(...asteroids.map(a => a.distanceLunar), 5)
+  const maxLD = Math.max(10, Math.ceil(furthestAsteroid / 5) * 5)
+
+  // Generate appropriate ring markers based on maxDistance
+  const generateRings = (max: number): number[] => {
+    if (max <= 10) return [1, 2, 5, 10]
+    if (max <= 15) return [1, 5, 10, 15]
+    if (max <= 20) return [1, 5, 10, 15, 20]
+    return [1, 5, 10, 15, 20, Math.ceil(max / 5) * 5]
+  }
+  const rings = generateRings(maxLD)
 
   return (
     <div className="relative aspect-[2/1] w-full">
@@ -73,9 +83,9 @@ function RadarDisplay({ asteroids }: RadarDisplayProps) {
         }}
       />
 
-      {/* Radar arc container */}
+      {/* Radar arc container - taller viewBox for labels below */}
       <svg
-        viewBox="0 0 400 200"
+        viewBox="0 0 400 220"
         className="w-full h-full"
         preserveAspectRatio="xMidYMax meet"
       >
@@ -99,22 +109,23 @@ function RadarDisplay({ asteroids }: RadarDisplayProps) {
 
         {/* Distance arcs */}
         {rings.map((ring) => {
-          const radius = (ring / maxLD) * 180
+          const radius = (ring / maxLD) * 165
           return (
             <g key={ring}>
               <path
-                d={`M ${200 - radius} 195 A ${radius} ${radius} 0 0 1 ${200 + radius} 195`}
+                d={`M ${200 - radius} 175 A ${radius} ${radius} 0 0 1 ${200 + radius} 175`}
                 fill="none"
                 stroke="rgba(255,255,255,0.1)"
                 strokeWidth="1"
               />
-              {/* Distance labels */}
+              {/* Distance labels - below baseline */}
               <text
-                x={200 + radius + 4}
-                y={192}
-                fill="rgba(255,255,255,0.3)"
+                x={200 + radius}
+                y={195}
+                fill="rgba(255,255,255,0.4)"
                 fontSize="9"
                 fontFamily="monospace"
+                textAnchor="middle"
               >
                 {ring}
               </text>
@@ -122,14 +133,14 @@ function RadarDisplay({ asteroids }: RadarDisplayProps) {
           )
         })}
 
-        {/* Center line */}
-        <line x1="20" y1="195" x2="380" y2="195" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+        {/* Center line / baseline */}
+        <line x1="20" y1="175" x2="380" y2="175" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
 
         {/* Earth position */}
-        <circle cx="200" cy="195" r="6" fill="#0ea5e9" />
+        <circle cx="200" cy="175" r="5" fill="#0ea5e9" />
         <text
           x="200"
-          y="182"
+          y="190"
           fill="rgba(255,255,255,0.5)"
           fontSize="8"
           fontFamily="monospace"
@@ -138,30 +149,30 @@ function RadarDisplay({ asteroids }: RadarDisplayProps) {
           EARTH
         </text>
 
-        {/* Moon marker */}
-        <g>
-          <circle cx={200 + (1 / maxLD) * 180} cy="195" r="3" fill="rgba(255,255,255,0.6)" />
-          <text
-            x={200 + (1 / maxLD) * 180}
-            y="210"
-            fill="rgba(255,255,255,0.4)"
-            fontSize="7"
-            fontFamily="monospace"
-            textAnchor="middle"
-          >
-            MOON
-          </text>
-        </g>
+        {/* Moon marker at 1 LD */}
+        <circle cx={200 + (1 / maxLD) * 165} cy="175" r="2" fill="rgba(255,255,255,0.5)" />
+
+        {/* LD explanation - bottom right */}
+        <text
+          x="385"
+          y="215"
+          fill="rgba(255,255,255,0.3)"
+          fontSize="8"
+          fontFamily="monospace"
+          textAnchor="end"
+        >
+          LD = lunar distance
+        </text>
 
         {/* Asteroid positions */}
         {displayAsteroids.map((asteroid, index) => {
           const distance = Math.min(asteroid.distanceLunar, maxLD)
-          const radius = (distance / maxLD) * 180
+          const radius = (distance / maxLD) * 165
           // Spread asteroids across the arc
           const angle = -30 - (index * 30) // Spread from -30° to -150°
           const radian = (angle * Math.PI) / 180
           const x = 200 + radius * Math.cos(radian)
-          const y = 195 + radius * Math.sin(radian)
+          const y = 175 + radius * Math.sin(radian)
           const status = getDistanceStatus(asteroid.distanceLunar)
 
           return (
@@ -169,7 +180,7 @@ function RadarDisplay({ asteroids }: RadarDisplayProps) {
               {/* Connection line to Earth */}
               <line
                 x1="200"
-                y1="195"
+                y1="175"
                 x2={x}
                 y2={y}
                 stroke={status.color}
@@ -199,24 +210,7 @@ function RadarDisplay({ asteroids }: RadarDisplayProps) {
             </g>
           )
         })}
-
-        {/* LD label */}
-        <text
-          x="390"
-          y="195"
-          fill="rgba(255,255,255,0.3)"
-          fontSize="8"
-          fontFamily="monospace"
-          textAnchor="end"
-        >
-          LD
-        </text>
       </svg>
-
-      {/* Legend */}
-      <div className="absolute bottom-1 left-2 flex items-center gap-3 text-[0.625em]">
-        <span className="text-white/40">LD = Lunar Distance (384,400 km)</span>
-      </div>
     </div>
   )
 }

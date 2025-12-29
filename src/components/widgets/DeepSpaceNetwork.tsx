@@ -40,14 +40,14 @@ interface DSNData {
 // DISH ICON COMPONENT
 // ===========================================
 
-function DishIcon({ 
-  isActive, 
+function DishIcon({
+  isActive,
   size = 40,
-  spacecraft 
-}: { 
+  spacecraft
+}: {
   isActive: boolean
   size?: number
-  spacecraft?: string 
+  spacecraft?: string
 }) {
   return (
     <div className="relative" style={{ width: size, height: size }}>
@@ -86,36 +86,36 @@ function DishIcon({
             </path>
           </>
         )}
-        
+
         {/* Dish base/pedestal */}
-        <rect x="17" y="28" width="6" height="8" fill={isActive ? '#22c55e' : '#9ca3af'} rx="1" />
-        
+        <rect x="17" y="28" width="6" height="8" fill={isActive ? '#22c55e' : 'rgba(255,255,255,0.3)'} rx="1" />
+
         {/* Dish */}
-        <ellipse 
-          cx="20" 
-          cy="20" 
-          rx="14" 
-          ry="6" 
-          fill="none" 
-          stroke={isActive ? '#22c55e' : '#9ca3af'} 
+        <ellipse
+          cx="20"
+          cy="20"
+          rx="14"
+          ry="6"
+          fill="none"
+          stroke={isActive ? '#22c55e' : 'rgba(255,255,255,0.3)'}
           strokeWidth="2"
           transform="rotate(-30 20 20)"
         />
-        
+
         {/* Feed horn */}
-        <circle 
-          cx="20" 
-          cy="14" 
-          r="2" 
-          fill={isActive ? '#22c55e' : '#9ca3af'} 
+        <circle
+          cx="20"
+          cy="14"
+          r="2"
+          fill={isActive ? '#22c55e' : 'rgba(255,255,255,0.3)'}
         />
-        <line 
-          x1="20" y1="16" x2="20" y2="22" 
-          stroke={isActive ? '#22c55e' : '#9ca3af'} 
-          strokeWidth="1.5" 
+        <line
+          x1="20" y1="16" x2="20" y2="22"
+          stroke={isActive ? '#22c55e' : 'rgba(255,255,255,0.3)'}
+          strokeWidth="1.5"
         />
       </svg>
-      
+
       {/* Spacecraft label */}
       {spacecraft && isActive && (
         <div className="absolute -top-1 -right-1 bg-green-500 text-white text-[0.5em] px-1 rounded font-medium whitespace-nowrap">
@@ -133,18 +133,18 @@ function DishIcon({
 function Station({ station }: { station: StationData }) {
   const activeDishes = station.dishes.filter(d => d.isActive)
   const primaryTarget = activeDishes[0]?.targets[0]?.spacecraft
-  
+
   return (
     <div className="text-center">
       {/* Station name */}
-      <div className="text-[0.7em] font-medium text-black/60 uppercase tracking-wider mb-1">
+      <div className="text-[0.7em] font-medium text-white/50 uppercase tracking-wider mb-1">
         {station.name}
       </div>
-      
+
       {/* Dishes */}
       <div className="flex justify-center gap-1 mb-1">
         {station.dishes.slice(0, 3).map((dish) => (
-          <DishIcon 
+          <DishIcon
             key={dish.name}
             isActive={dish.isActive}
             size={32}
@@ -152,14 +152,14 @@ function Station({ station }: { station: StationData }) {
           />
         ))}
         {station.dishes.length > 3 && (
-          <div className="flex items-center justify-center w-8 h-8 text-[0.6em] text-black/40">
+          <div className="flex items-center justify-center w-8 h-8 text-[0.6em] text-white/30">
             +{station.dishes.length - 3}
           </div>
         )}
       </div>
-      
+
       {/* Location */}
-      <div className="text-[0.6em] text-black/40">
+      <div className="text-[0.6em] text-white/30">
         {station.location}
       </div>
     </div>
@@ -180,7 +180,7 @@ export default function DeepSpaceNetwork() {
       const response = await fetch('/api/dsn')
       if (!response.ok) throw new Error('Failed to fetch')
       const result = await response.json()
-      
+
       if (result.error) {
         setError(result.error)
       } else {
@@ -205,9 +205,9 @@ export default function DeepSpaceNetwork() {
   // Loading state
   if (isLoading && !data) {
     return (
-      <div className="p-[1em] flex items-center justify-center h-[16em]">
+      <div className="bg-[#1a1a1e] p-[1em] flex items-center justify-center min-h-[16em]">
         <div className="text-center">
-          <div className="text-black/40 text-[0.875em]">Contacting Deep Space Network...</div>
+          <div className="text-white/40 text-[0.875em]">Contacting Deep Space Network...</div>
         </div>
       </div>
     )
@@ -216,12 +216,12 @@ export default function DeepSpaceNetwork() {
   // Error state
   if (error && !data) {
     return (
-      <div className="p-[1em] flex items-center justify-center h-[16em]">
+      <div className="bg-[#1a1a1e] p-[1em] flex items-center justify-center min-h-[16em]">
         <div className="text-center">
-          <div className="text-red-500 text-[0.875em]">{error}</div>
-          <button 
+          <div className="text-red-400 text-[0.875em]">{error}</div>
+          <button
             onClick={fetchData}
-            className="mt-2 text-[0.75em] text-black/50 hover:text-black"
+            className="mt-2 text-[0.75em] text-white/40 hover:text-white/60 transition-colors"
           >
             Try again
           </button>
@@ -234,23 +234,23 @@ export default function DeepSpaceNetwork() {
 
   // Get all active spacecraft with unique names
   const activeSpacecraft = data.activeSpacecraft.slice(0, 6)
-  
+
   // Get the most interesting target (Voyager, JWST, etc.)
   const priorityTargets = ['Voyager 1', 'Voyager 2', 'James Webb', 'Perseverance', 'New Horizons', 'Juno']
   const featuredTarget = priorityTargets.find(t => data.activeSpacecraft.includes(t)) || data.activeSpacecraft[0]
 
   return (
-    <div className="p-[1em]">
+    <div className="bg-[#1a1a1e] p-[1em]">
       {/* Header stat */}
       <div className="text-center mb-[1em]">
-        <div className="text-[0.7em] text-black/50 uppercase tracking-wider mb-[0.25em]">
+        <div className="text-[0.7em] text-white/40 uppercase tracking-wider mb-[0.25em]">
           Active Communications
         </div>
         <div className="flex items-baseline justify-center gap-[0.25em]">
-          <span className="font-mono text-[2em] font-bold text-black">
+          <span className="font-mono text-[2em] font-bold text-white">
             {data.activeDishes}
           </span>
-          <span className="text-[1em] text-black/50">
+          <span className="text-[1em] text-white/40">
             / {data.totalDishes} dishes
           </span>
         </div>
@@ -264,7 +264,7 @@ export default function DeepSpaceNetwork() {
         {/* Fill empty slots if less than 3 stations */}
         {data.stations.length < 3 && Array(3 - data.stations.length).fill(0).map((_, i) => (
           <div key={`empty-${i}`} className="text-center opacity-30">
-            <div className="text-[0.7em] font-medium text-black/60 uppercase tracking-wider mb-1">
+            <div className="text-[0.7em] font-medium text-white/50 uppercase tracking-wider mb-1">
               -
             </div>
             <div className="flex justify-center">
@@ -275,23 +275,23 @@ export default function DeepSpaceNetwork() {
       </div>
 
       {/* Divider */}
-      <div className="border-t border-[#e5e5e5] my-[0.75em]" />
+      <div className="border-t border-white/10 my-[0.75em]" />
 
       {/* Active spacecraft list */}
       {activeSpacecraft.length > 0 && (
         <div>
-          <div className="text-[0.7em] text-black/50 uppercase tracking-wider mb-[0.5em]">
+          <div className="text-[0.7em] text-white/40 uppercase tracking-wider mb-[0.5em]">
             Now Communicating With
           </div>
           <div className="flex flex-wrap gap-[0.375em]">
             {activeSpacecraft.map((spacecraft) => (
-              <span 
+              <span
                 key={spacecraft}
                 className={`
                   text-[0.75em] px-[0.5em] py-[0.125em] rounded-full
-                  ${spacecraft === featuredTarget 
-                    ? 'bg-green-100 text-green-700 font-medium' 
-                    : 'bg-black/5 text-black/70'
+                  ${spacecraft === featuredTarget
+                    ? 'bg-green-500/20 text-green-400 font-medium'
+                    : 'bg-white/5 text-white/60'
                   }
                 `}
               >
@@ -304,16 +304,16 @@ export default function DeepSpaceNetwork() {
 
       {/* Featured callout for Voyager */}
       {(featuredTarget === 'Voyager 1' || featuredTarget === 'Voyager 2') && (
-        <div className="mt-[0.75em] p-[0.5em] bg-black/5 rounded-[0.5em]">
-          <div className="text-[0.7em] text-black/70">
-            <span className="font-medium">{featuredTarget}</span> is {featuredTarget === 'Voyager 1' ? '24.5' : '20.5'} billion km away.
-            <span className="text-black/50"> Signal travel time: {featuredTarget === 'Voyager 1' ? '22h 47m' : '19h 2m'}</span>
+        <div className="mt-[0.75em] p-[0.5em] bg-white/5 rounded-[0.5em]">
+          <div className="text-[0.7em] text-white/60">
+            <span className="font-medium text-white">{featuredTarget}</span> is {featuredTarget === 'Voyager 1' ? '24.5' : '20.5'} billion km away.
+            <span className="text-white/40"> Signal travel time: {featuredTarget === 'Voyager 1' ? '22h 47m' : '19h 2m'}</span>
           </div>
         </div>
       )}
 
       {/* Update time */}
-      <div className="mt-[0.75em] text-[0.625em] text-black/30 text-center">
+      <div className="mt-[0.75em] text-[0.625em] text-white/30 text-center">
         Updated {new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} UTC
       </div>
     </div>

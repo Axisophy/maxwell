@@ -53,7 +53,7 @@ function getVerdict(kpForecast: number, requiredKp: number): {
       color: '#6b7280', // grey
     }
   }
-  
+
   if (kpForecast >= requiredKp + 1) {
     return {
       answer: 'yes',
@@ -61,7 +61,7 @@ function getVerdict(kpForecast: number, requiredKp: number): {
       color: '#22c55e', // green
     }
   }
-  
+
   if (kpForecast >= requiredKp) {
     return {
       answer: 'maybe',
@@ -69,7 +69,7 @@ function getVerdict(kpForecast: number, requiredKp: number): {
       color: '#eab308', // yellow
     }
   }
-  
+
   if (kpForecast >= requiredKp - 1) {
     return {
       answer: 'unlikely',
@@ -77,7 +77,7 @@ function getVerdict(kpForecast: number, requiredKp: number): {
       color: '#f97316', // orange
     }
   }
-  
+
   return {
     answer: 'no',
     message: 'Not expected tonight',
@@ -128,10 +128,10 @@ export default function AuroraForecast() {
     try {
       const response = await fetch('/api/aurora')
       if (!response.ok) throw new Error('Failed to fetch')
-      
+
       const result = await response.json()
       if (result.error) throw new Error(result.error)
-      
+
       setData(result)
       setError(null)
     } catch (err) {
@@ -158,8 +158,8 @@ export default function AuroraForecast() {
   // Loading state
   if (isLoading || locationStatus === 'pending') {
     return (
-      <div className="w-full aspect-[4/3] flex items-center justify-center">
-        <div className="text-text-muted text-sm animate-pulse">
+      <div className="bg-[#1a1a1e] p-[1em] min-h-[300px] flex items-center justify-center">
+        <div className="text-white/40 text-[0.875em] animate-pulse">
           {locationStatus === 'pending' ? 'Getting location...' : 'Loading...'}
         </div>
       </div>
@@ -169,77 +169,77 @@ export default function AuroraForecast() {
   // Error state
   if (error || !data) {
     return (
-      <div className="w-full aspect-[4/3] flex items-center justify-center">
-        <div className="text-red-500 text-sm">{error || 'No data'}</div>
+      <div className="bg-[#1a1a1e] p-[1em] min-h-[300px] flex items-center justify-center">
+        <div className="text-red-400 text-[0.875em]">{error || 'No data'}</div>
       </div>
     )
   }
 
   return (
-    <div className="w-full">
+    <div className="bg-[#1a1a1e] p-[1em]">
       {/* Location */}
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-sm text-text-primary">{locationName}</span>
-        <span className="text-xs text-text-muted font-mono">NOAA</span>
+      <div className="flex items-center justify-between mb-[1em]">
+        <span className="text-[0.875em] text-white">{locationName}</span>
+        <span className="text-[0.75em] text-white/40 font-mono">NOAA</span>
       </div>
 
       {/* Main verdict */}
-      <div className="text-center py-6">
-        <div 
-          className="text-5xl font-bold capitalize mb-2"
+      <div className="text-center py-[1.5em]">
+        <div
+          className="text-[3em] font-bold capitalize mb-[0.25em]"
           style={{ color: verdict?.color }}
         >
           {verdict?.answer}
         </div>
-        <div className="text-sm text-text-muted">
+        <div className="text-[0.875em] text-white/50">
           {verdict?.message}
         </div>
       </div>
 
       {/* Kp comparison */}
-      <div className="border-t border-[#e5e5e5] pt-4 mt-4">
-        <div className="flex items-center justify-between mb-3">
+      <div className="border-t border-white/10 pt-[1em] mt-[1em]">
+        <div className="flex items-center justify-between mb-[0.75em]">
           <div className="text-center flex-1">
-            <div className="text-xs text-text-muted uppercase tracking-wide mb-1">Tonight</div>
-            <div className="font-mono text-2xl font-bold" style={{ color: verdict?.color }}>
+            <div className="text-[0.6875em] text-white/40 uppercase tracking-wider mb-[0.25em]">Tonight</div>
+            <div className="font-mono text-[1.5em] font-bold" style={{ color: verdict?.color }}>
               Kp {data.forecast.tonight}
             </div>
           </div>
-          <div className="text-text-muted text-lg">/</div>
+          <div className="text-white/30 text-[1.25em]">/</div>
           <div className="text-center flex-1">
-            <div className="text-xs text-text-muted uppercase tracking-wide mb-1">You need</div>
-            <div className="font-mono text-2xl font-medium text-text-primary">
+            <div className="text-[0.6875em] text-white/40 uppercase tracking-wider mb-[0.25em]">You need</div>
+            <div className="font-mono text-[1.5em] font-medium text-white">
               Kp {requiredKp}+
             </div>
           </div>
         </div>
 
         {/* Simple bar visualisation */}
-        <div className="relative h-2 bg-[#e5e5e5] rounded-full overflow-hidden">
+        <div className="relative h-[0.5em] bg-white/10 rounded-full overflow-hidden">
           {/* Required threshold marker */}
-          <div 
-            className="absolute top-0 bottom-0 w-0.5 bg-text-primary z-10"
+          <div
+            className="absolute top-0 bottom-0 w-0.5 bg-white z-10"
             style={{ left: `${(requiredKp / 9) * 100}%` }}
           />
           {/* Tonight's forecast */}
-          <div 
+          <div
             className="h-full rounded-full transition-all duration-500"
-            style={{ 
+            style={{
               width: `${(data.forecast.tonight / 9) * 100}%`,
               backgroundColor: verdict?.color,
             }}
           />
         </div>
-        <div className="flex justify-between mt-1">
-          <span className="text-[10px] text-text-muted">Kp 0</span>
-          <span className="text-[10px] text-text-muted">Kp 9</span>
+        <div className="flex justify-between mt-[0.25em]">
+          <span className="text-[0.625em] text-white/30">Kp 0</span>
+          <span className="text-[0.625em] text-white/30">Kp 9</span>
         </div>
       </div>
 
       {/* Tomorrow preview */}
-      <div className="flex items-center justify-between border-t border-[#e5e5e5] pt-3 mt-4">
-        <span className="text-xs text-text-muted">Tomorrow night</span>
-        <span className="text-xs font-mono text-text-muted">
+      <div className="flex items-center justify-between border-t border-white/10 pt-[0.75em] mt-[1em]">
+        <span className="text-[0.75em] text-white/40">Tomorrow night</span>
+        <span className="text-[0.75em] font-mono text-white/50">
           Kp {data.forecast.tomorrow} forecast
         </span>
       </div>
