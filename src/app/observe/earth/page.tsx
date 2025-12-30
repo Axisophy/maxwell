@@ -40,8 +40,8 @@ const earthPages = [
     title: 'Atmosphere',
     description: 'Air quality, CO₂ levels, and atmospheric composition monitoring.',
     icon: Wind,
-    status: 'SOON',
-    available: false,
+    status: 'LIVE',
+    available: true,
   },
 ]
 
