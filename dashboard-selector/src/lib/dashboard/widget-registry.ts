@@ -364,14 +364,14 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['astronomy', 'personal'],
     component: 'StarMap'
   },
-  'your-air-journey': {
-    id: 'your-air-journey',
-    title: 'Your Air\'s Journey',
+  'air-journey': {
+    id: 'air-journey',
+    title: 'Air Journey',
     description: 'Where has the air you\'re breathing been? Back-trajectory analysis of air masses arriving at your location.',
     source: 'NOAA HYSPLIT Model',
     status: 'ok',
     categories: ['climate-environment', 'personal'],
-    component: 'YourAirJourney'
+    component: 'AirJourney'
   },
   'your-background-dose': {
     id: 'your-background-dose',

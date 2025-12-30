@@ -40,7 +40,7 @@ import OceanHydrophones from '@/components/widgets/OceanHydrophones'
 import PollenForecast from '@/components/widgets/PollenForecast'
 import SeismographGrid from '@/components/widgets/SeismographGrid'
 import StarMap from '@/components/widgets/StarMap'
-import YourAirJourney from '@/components/widgets/YourAirJourney'
+import AirJourney from '@/components/widgets/AirJourney'
 import YourBackgroundDose from '@/components/widgets/YourBackgroundDose'
 
 // Map component names (from registry) to actual components
@@ -85,7 +85,7 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'PollenForecast': PollenForecast,
   'SeismographGrid': SeismographGrid,
   'StarMap': StarMap,
-  'YourAirJourney': YourAirJourney,
+  'AirJourney': AirJourney,
   'YourBackgroundDose': YourBackgroundDose,
 }
 
