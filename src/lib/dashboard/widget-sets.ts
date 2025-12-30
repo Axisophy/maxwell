@@ -78,7 +78,7 @@ export const WIDGET_SETS: WidgetSet[] = [
       'european-radiation',
       'glacier-watch',
       'pollen-forecast',
-      'your-air-journey',
+      'air-journey',
       'world-population'
     ]
   },
@@ -133,7 +133,7 @@ export const WIDGET_SETS: WidgetSet[] = [
       'star-map',
       'your-sky-when-born',
       'whats-below-you',
-      'your-air-journey',
+      'air-journey',
       'your-background-dose',
       'cosmic-rays-through',
       'magnetic-field-strength',
