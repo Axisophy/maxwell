@@ -193,15 +193,7 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     categories: ['earth-geology', 'astronomy'],
     component: 'EarthFromL1'
   },
-  'deep-space-network': {
-    id: 'deep-space-network',
-    title: 'Deep Space Network',
-    description: 'NASA\'s global array of giant radio antennas communicating with spacecraft across the solar system.',
-    source: 'NASA Jet Propulsion Laboratory',
-    status: 'live',
-    categories: ['solar-space', 'infrastructure'],
-    component: 'DeepSpaceNetwork'
-  },
+  // deep-space-network deprecated - NASA removed public XML feed
   'lhc-status': {
     id: 'lhc-status',
     title: 'LHC Status',

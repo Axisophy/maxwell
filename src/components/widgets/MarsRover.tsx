@@ -142,20 +142,6 @@ export default function MarsRover() {
       className="bg-[#1a1a1e] p-[1em] h-full"
       style={{ fontSize: `${baseFontSize}px` }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-[0.75em]">
-        <div className="flex items-center gap-[0.5em]">
-          <span className="relative flex h-[0.5em] w-[0.5em]">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-full w-full bg-green-500"></span>
-          </span>
-          <span className="text-[0.875em] font-medium text-white">Mars Rover</span>
-        </div>
-        <span className="text-[0.6875em] font-mono text-white/40">
-          Sol {currentPhoto?.sol || manifest?.max_sol || '--'}
-        </span>
-      </div>
-
       {/* Rover toggle */}
       <div className="flex bg-white/10 rounded-[0.375em] p-[0.125em] mb-[0.75em]">
         {(['perseverance', 'curiosity'] as RoverName[]).map((rover) => (
@@ -235,8 +221,16 @@ export default function MarsRover() {
         </div>
       )}
 
-      {/* Stats cards */}
+      {/* Stats cards - 2x2 grid */}
       <div className="grid grid-cols-2 gap-[0.5em] mb-[0.75em]">
+        <div className="bg-white/5 rounded-[0.375em] p-[0.625em]">
+          <div className="text-[0.5625em] uppercase tracking-wider text-white/40 mb-[0.25em]">
+            Sol
+          </div>
+          <div className="text-[0.75em] font-mono text-white">
+            {currentPhoto?.sol || manifest?.max_sol || '--'}
+          </div>
+        </div>
         <div className="bg-white/5 rounded-[0.375em] p-[0.625em]">
           <div className="text-[0.5625em] uppercase tracking-wider text-white/40 mb-[0.25em]">
             Earth Date
@@ -247,10 +241,18 @@ export default function MarsRover() {
         </div>
         <div className="bg-white/5 rounded-[0.375em] p-[0.625em]">
           <div className="text-[0.5625em] uppercase tracking-wider text-white/40 mb-[0.25em]">
-            Mission
+            Mission Duration
           </div>
           <div className="text-[0.75em] font-mono text-white">
-            {missionSols.toLocaleString()} sols active
+            {missionSols.toLocaleString()} sols
+          </div>
+        </div>
+        <div className="bg-white/5 rounded-[0.375em] p-[0.625em]">
+          <div className="text-[0.5625em] uppercase tracking-wider text-white/40 mb-[0.25em]">
+            Total Photos
+          </div>
+          <div className="text-[0.75em] font-mono text-white">
+            {manifest ? `${(manifest.total_photos / 1000).toFixed(0)}K+` : '--'}
           </div>
         </div>
       </div>
@@ -260,8 +262,8 @@ export default function MarsRover() {
         <span className="text-[0.6875em] text-white/40">
           {ROVER_INFO[activeRover].site}
         </span>
-        <span className="text-[0.6875em] font-mono text-white/40">
-          {manifest ? `${(manifest.total_photos / 1000).toFixed(0)}K+ photos` : '--'}
+        <span className="text-[0.6875em] text-white/40">
+          Landed {ROVER_INFO[activeRover].landing}
         </span>
       </div>
     </div>

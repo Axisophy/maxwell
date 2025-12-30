@@ -20,7 +20,7 @@ import WorldPopulation from '@/components/widgets/WorldPopulation'
 import TidesLive from '@/components/widgets/TidesLive'
 import LightningLive from '@/components/widgets/LightningLive'
 import SeismicPulse from '@/components/widgets/SeismicPulse'
-import DeepSpaceNetwork from '@/components/widgets/DeepSpaceNetwork'
+// DeepSpaceNetwork deprecated - NASA removed public XML feed
 import LHCStatus from '@/components/widgets/LHCStatus'
 import NeutrinoWatch from '@/components/widgets/NeutrinoWatch'
 import SatellitesAbove from '@/components/widgets/SatellitesAbove'
@@ -65,7 +65,7 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'TidesLive': TidesLive,
   'LightningLive': LightningLive,
   'SeismicPulse': SeismicPulse,
-  'DeepSpaceNetwork': DeepSpaceNetwork,
+  // 'DeepSpaceNetwork': deprecated,
   'LHCStatus': LHCStatus,
   'NeutrinoWatch': NeutrinoWatch,
   'SatellitesAbove': SatellitesAbove,

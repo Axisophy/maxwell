@@ -42,7 +42,6 @@ export const WIDGET_SETS: WidgetSet[] = [
       'aurora-forecast',
       'jwst-latest',
       'mars-rover',
-      'deep-space-network',
       'solar-corona',
       'satellites-above'
     ]
