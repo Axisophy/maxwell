@@ -1,8 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { LightningData, LightningStrike } from '@/lib/unrest/types';
 import WorldMap, { latLonToXY } from './WorldMap';
+
+// ===========================================
+// LIGHTNING LIVE
+// ===========================================
+// Real-time lightning strike visualization
+// Data: /api/unrest/lightning (currently mock data)
+// TODO: Integrate real data source (Blitzortung, GOES-R GLM)
+// ===========================================
 
 interface LightningLiveProps {
   className?: string;
@@ -82,10 +90,26 @@ function LightningStrikeMark({
 }
 
 export default function LightningLive({ className = '' }: LightningLiveProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [baseFontSize, setBaseFontSize] = useState(16);
   const [data, setData] = useState<LightningData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState(Date.now());
+
+  // Responsive scaling
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.clientWidth;
+        setBaseFontSize(width / 25);
+      }
+    };
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Fetch data
   const fetchData = useCallback(async () => {
@@ -115,55 +139,71 @@ export default function LightningLive({ className = '' }: LightningLiveProps) {
   }, []);
 
   return (
-    <div style={{ aspectRatio: '16/9' }} className={`bg-[#0f172a] ${className}`}>
+    <div
+      ref={containerRef}
+      style={{ fontSize: `${baseFontSize}px` }}
+      className={`bg-[#1a1a1e] p-[1em] h-full flex flex-col ${className}`}
+    >
       {loading && !data ? (
-        <div className="w-full h-full flex items-center justify-center">
-          <span className="text-white/50 text-sm">Loading...</span>
+        <div className="flex-1 flex items-center justify-center">
+          <span className="text-white/50 text-[0.875em]">Loading lightning data...</span>
         </div>
       ) : error ? (
-        <div className="w-full h-full flex items-center justify-center">
-          <span className="text-red-400 text-sm">{error}</span>
+        <div className="flex-1 flex items-center justify-center">
+          <span className="text-red-400 text-[0.875em]">{error}</span>
         </div>
       ) : (
-        <div className="w-full h-full relative">
-          {/* World map with lightning strikes */}
-          <WorldMap
-            className="w-full h-full"
-            oceanColor="#0f172a"
-            landColor="#1e3a5f"
-          >
-            {/* Render all lightning strikes as SVG elements */}
-            {data?.strikes.map((strike) => (
-              <LightningStrikeMark
-                key={strike.id}
-                strike={strike}
-                now={now}
-              />
-            ))}
-          </WorldMap>
+        <>
+          {/* Map container - no overlay */}
+          <div className="flex-1 min-h-0 rounded-[0.5em] overflow-hidden">
+            <WorldMap
+              className="w-full h-full"
+              oceanColor="#0a0a12"
+              landColor="#1e3a5f"
+            >
+              {data?.strikes.map((strike) => (
+                <LightningStrikeMark
+                  key={strike.id}
+                  strike={strike}
+                  now={now}
+                />
+              ))}
+            </WorldMap>
+          </div>
 
-          {/* Stats overlay */}
+          {/* Stats below map - clear labels */}
           {data && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-              <div className="flex items-center justify-between text-white">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <span className="font-mono text-xl font-bold">
-                      {data.stats.strikesPerMinute.toLocaleString()}
-                    </span>
-                    <span className="text-xs text-white/60 ml-1">/min</span>
+            <div className="pt-[0.75em] mt-[0.75em] border-t border-white/10">
+              <div className="grid grid-cols-3 gap-[0.5em]">
+                <div>
+                  <div className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.125em]">
+                    Strike Rate
                   </div>
-                  <div className="text-xs text-white/60">
-                    {data.stats.activeCells} cells
+                  <div className="font-mono text-[1.25em] font-bold text-amber-400">
+                    {data.stats.strikesPerMinute.toLocaleString()}
+                    <span className="text-[0.5em] text-white/40 ml-[0.25em]">/min</span>
                   </div>
                 </div>
-                <div className="text-xs text-white/60">
-                  {data.stats.mostActiveRegion}
+                <div>
+                  <div className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.125em]">
+                    Active Cells
+                  </div>
+                  <div className="font-mono text-[1.25em] font-bold text-white">
+                    {data.stats.activeCells}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.125em]">
+                    Most Active
+                  </div>
+                  <div className="text-[0.875em] text-white/70 truncate">
+                    {data.stats.mostActiveRegion}
+                  </div>
                 </div>
               </div>
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );
