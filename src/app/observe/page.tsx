@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Activity, LayoutDashboard, Moon, Sun, PawPrint } from 'lucide-react'
+import { Activity, LayoutDashboard, Moon, Sun, PawPrint, Orbit } from 'lucide-react'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 
 const observePages = [
@@ -8,6 +8,12 @@ const observePages = [
     title: 'Vital Signs',
     description: 'Live data from Earth and space at a glance. Earthquakes, CO₂, solar activity, and more.',
     icon: Activity,
+  },
+  {
+    href: '/observe/space',
+    title: 'Space',
+    description: 'Live observation of our solar system. Sun, Moon, aurora, and spacecraft monitoring.',
+    icon: Orbit,
   },
   {
     href: '/observe/solar-observatory',
