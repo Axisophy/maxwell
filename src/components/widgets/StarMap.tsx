@@ -10,19 +10,19 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 //
 // Design notes:
 // - NO title/live dot (WidgetFrame handles those)
-// - Full-width sky dome (no wrapper background)
-// - Subtle status info top-right
-// - Planet legend below dome
+// - Warm grey background (#A6A09B)
+// - Black sky dome with cream grid lines
+// - Clickable celestial objects list with selection
 // ===========================================
 
-interface PlanetData {
+interface CelestialObject {
   name: string
   ra: number
   dec: number
   magnitude: number
-  isVisible: boolean
   altitude: number
   azimuth: number
+  type: 'star' | 'planet'
 }
 
 interface SkyData {
@@ -35,8 +35,8 @@ interface SkyData {
   sunAltitude: number
   moonPhase: number
   moonAltitude: number
-  planets: PlanetData[]
-  visiblePlanets: string[]
+  visibleStars: CelestialObject[]
+  visiblePlanets: CelestialObject[]
 }
 
 // Bright stars data
@@ -70,6 +70,13 @@ const PLANET_COLORS: Record<string, string> = {
   'Saturn': '#f4a460',
 }
 
+// Get compass direction from azimuth
+function getCompassDirection(azimuth: number): string {
+  const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
+  const index = Math.round(azimuth / 22.5) % 16
+  return directions[index]
+}
+
 export default function StarMap() {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -78,6 +85,8 @@ export default function StarMap() {
   const [data, setData] = useState<SkyData | null>(null)
   const [loading, setLoading] = useState(true)
   const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(null)
+  const [selectedObject, setSelectedObject] = useState<string | null>(null)
+  const [showAllStars, setShowAllStars] = useState(false)
 
   // Responsive scaling
   useEffect(() => {
@@ -139,13 +148,46 @@ export default function StarMap() {
     const daysSinceNewMoon = (now.getTime() - knownNewMoon) / 86400000
     const moonPhase = ((daysSinceNewMoon % lunarCycle) / lunarCycle)
 
+    // Calculate visible stars
+    const visibleStars: CelestialObject[] = []
+    BRIGHT_STARS.forEach((star) => {
+      const ha = lst - star.ra * 15
+      const haRad = ha * Math.PI / 180
+      const decRad = star.dec * Math.PI / 180
+      const latRad = userCoords.lat * Math.PI / 180
+
+      const sinAlt = Math.sin(latRad) * Math.sin(decRad) +
+                     Math.cos(latRad) * Math.cos(decRad) * Math.cos(haRad)
+      const alt = Math.asin(sinAlt) * 180 / Math.PI
+
+      if (alt > 0) {
+        const cosAz = (Math.sin(decRad) - Math.sin(latRad) * sinAlt) /
+                      (Math.cos(latRad) * Math.cos(Math.asin(sinAlt)))
+        let az = Math.acos(Math.max(-1, Math.min(1, cosAz))) * 180 / Math.PI
+        if (Math.sin(haRad) > 0) az = 360 - az
+
+        visibleStars.push({
+          name: star.name,
+          ra: star.ra,
+          dec: star.dec,
+          magnitude: star.magnitude,
+          altitude: Math.round(alt),
+          azimuth: Math.round(az),
+          type: 'star' as const,
+        })
+      }
+    })
+
+    // Sort by brightness
+    visibleStars.sort((a, b) => a.magnitude - b.magnitude)
+
     // Simulated planet positions
-    const planets: PlanetData[] = [
-      { name: 'Venus', ra: (lst/15 + 2) % 24, dec: 15, magnitude: -4.0, isVisible: true, altitude: 30, azimuth: 270 },
-      { name: 'Mars', ra: (lst/15 + 6) % 24, dec: 5, magnitude: 0.5, isVisible: true, altitude: 45, azimuth: 180 },
-      { name: 'Jupiter', ra: (lst/15 + 4) % 24, dec: 20, magnitude: -2.5, isVisible: true, altitude: 55, azimuth: 200 },
-      { name: 'Saturn', ra: (lst/15 + 8) % 24, dec: -10, magnitude: 0.8, isVisible: sunAlt < -6, altitude: 25, azimuth: 220 },
-    ].filter(p => p.altitude > 0)
+    const visiblePlanets: CelestialObject[] = [
+      { name: 'Venus', ra: (lst/15 + 2) % 24, dec: 15, magnitude: -4.0, altitude: 30, azimuth: 270, type: 'planet' as const },
+      { name: 'Mars', ra: (lst/15 + 6) % 24, dec: 5, magnitude: 0.5, altitude: 45, azimuth: 180, type: 'planet' as const },
+      { name: 'Jupiter', ra: (lst/15 + 4) % 24, dec: 20, magnitude: -2.5, altitude: 55, azimuth: 200, type: 'planet' as const },
+      { name: 'Saturn', ra: (lst/15 + 8) % 24, dec: -10, magnitude: 0.8, altitude: 25, azimuth: 220, type: 'planet' as const },
+    ].filter(p => p.altitude > 0 && (sunAlt < -6 || p.magnitude < -1))
 
     setData({
       location: userCoords,
@@ -154,8 +196,8 @@ export default function StarMap() {
       sunAltitude: sunAlt,
       moonPhase,
       moonAltitude: 30,
-      planets,
-      visiblePlanets: planets.filter(p => p.isVisible).map(p => p.name),
+      visibleStars,
+      visiblePlanets,
     })
     setLoading(false)
   }, [userCoords])
@@ -184,21 +226,21 @@ export default function StarMap() {
     const centerY = size / 2
     const radius = size / 2 - 8
 
-    // Background
-    ctx.fillStyle = '#0f172a'
+    // Background - black
+    ctx.fillStyle = '#000000'
     ctx.fillRect(0, 0, size, size)
 
     // Dome circle
     ctx.beginPath()
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
-    ctx.fillStyle = '#1e293b'
+    ctx.fillStyle = '#000000'
     ctx.fill()
-    ctx.strokeStyle = '#334155'
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'
     ctx.lineWidth = 1
     ctx.stroke()
 
     // Altitude circles
-    ctx.strokeStyle = '#334155'
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'
     ctx.lineWidth = 0.5
     ctx.setLineDash([4, 4])
     for (const alt of [30, 60]) {
@@ -210,7 +252,7 @@ export default function StarMap() {
     ctx.setLineDash([])
 
     // Cardinal lines
-    ctx.strokeStyle = '#334155'
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'
     ctx.lineWidth = 0.5
     ctx.beginPath()
     ctx.moveTo(centerX, centerY - radius)
@@ -219,8 +261,8 @@ export default function StarMap() {
     ctx.lineTo(centerX + radius, centerY)
     ctx.stroke()
 
-    // Cardinal labels
-    ctx.fillStyle = '#64748b'
+    // Cardinal labels - cream on black
+    ctx.fillStyle = '#d4d0c8'
     ctx.font = '11px system-ui'
     ctx.textAlign = 'center'
     ctx.fillText('N', centerX, centerY - radius + 14)
@@ -228,32 +270,22 @@ export default function StarMap() {
     ctx.fillText('E', centerX + radius - 10, centerY + 4)
     ctx.fillText('W', centerX - radius + 10, centerY + 4)
 
-    const lst = data.siderealTime
-
     // Draw stars
-    BRIGHT_STARS.forEach((star) => {
-      const ha = lst - star.ra * 15
-      const haRad = ha * Math.PI / 180
-      const decRad = star.dec * Math.PI / 180
-      const latRad = data.location.lat * Math.PI / 180
-
-      const sinAlt = Math.sin(latRad) * Math.sin(decRad) +
-                     Math.cos(latRad) * Math.cos(decRad) * Math.cos(haRad)
-      const alt = Math.asin(sinAlt) * 180 / Math.PI
-
-      if (alt < 0) return
-
-      const cosAz = (Math.sin(decRad) - Math.sin(latRad) * sinAlt) /
-                    (Math.cos(latRad) * Math.cos(Math.asin(sinAlt)))
-      let az = Math.acos(Math.max(-1, Math.min(1, cosAz))) * 180 / Math.PI
-      if (Math.sin(haRad) > 0) az = 360 - az
-
-      const r = radius * (1 - alt / 90)
-      const angle = (az - 90) * Math.PI / 180
+    data.visibleStars.forEach((star) => {
+      const r = radius * (1 - star.altitude / 90)
+      const angle = (star.azimuth - 90) * Math.PI / 180
       const x = centerX + r * Math.cos(angle)
       const y = centerY + r * Math.sin(angle)
 
       const starSize = Math.max(1, 3.5 - star.magnitude)
+
+      // Selection highlight
+      if (selectedObject === star.name) {
+        ctx.beginPath()
+        ctx.arc(x, y, starSize + 4, 0, Math.PI * 2)
+        ctx.fillStyle = 'rgba(255,255,255,0.3)'
+        ctx.fill()
+      }
 
       ctx.beginPath()
       ctx.arc(x, y, starSize, 0, Math.PI * 2)
@@ -261,45 +293,46 @@ export default function StarMap() {
       ctx.fill()
     })
 
-    // Draw planets
-    data.planets.forEach((planet) => {
-      if (!planet.isVisible || planet.altitude < 0) return
-
+    // Draw planets (no labels on dome)
+    data.visiblePlanets.forEach((planet) => {
       const r = radius * (1 - planet.altitude / 90)
       const angle = (planet.azimuth - 90) * Math.PI / 180
       const x = centerX + r * Math.cos(angle)
       const y = centerY + r * Math.sin(angle)
 
       const planetSize = Math.max(3, 5 - planet.magnitude)
+
+      // Selection highlight
+      if (selectedObject === planet.name) {
+        ctx.beginPath()
+        ctx.arc(x, y, planetSize + 4, 0, Math.PI * 2)
+        ctx.fillStyle = 'rgba(255,255,255,0.3)'
+        ctx.fill()
+      }
+
       ctx.beginPath()
       ctx.arc(x, y, planetSize, 0, Math.PI * 2)
       ctx.fillStyle = PLANET_COLORS[planet.name] || '#ffffff'
       ctx.fill()
-
-      // Planet label
-      ctx.fillStyle = PLANET_COLORS[planet.name] || '#ffffff'
-      ctx.font = '10px system-ui'
-      ctx.textAlign = 'center'
-      ctx.fillText(planet.name, x, y - planetSize - 4)
     })
 
     // Zenith marker
     ctx.beginPath()
     ctx.arc(centerX, centerY, 2, 0, Math.PI * 2)
-    ctx.fillStyle = '#64748b'
+    ctx.fillStyle = '#d4d0c8'
     ctx.fill()
 
-  }, [data, containerWidth, baseFontSize])
+  }, [data, containerWidth, baseFontSize, selectedObject])
 
   // Loading state
   if (loading || !userCoords) {
     return (
       <div
         ref={containerRef}
-        className="flex items-center justify-center h-full bg-[#1a1a1e] p-[1em]"
-        style={{ fontSize: `${baseFontSize}px` }}
+        className="flex items-center justify-center h-full p-[1em]"
+        style={{ fontSize: `${baseFontSize}px`, backgroundColor: '#A6A09B' }}
       >
-        <div className="text-[0.875em] text-white/50">Getting location...</div>
+        <div className="text-[0.875em] text-black/50">Getting location...</div>
       </div>
     )
   }
@@ -308,10 +341,10 @@ export default function StarMap() {
     return (
       <div
         ref={containerRef}
-        className="flex items-center justify-center h-full bg-[#1a1a1e] p-[1em]"
-        style={{ fontSize: `${baseFontSize}px` }}
+        className="flex items-center justify-center h-full p-[1em]"
+        style={{ fontSize: `${baseFontSize}px`, backgroundColor: '#A6A09B' }}
       >
-        <div className="text-[0.875em] text-white/50">Calculating sky...</div>
+        <div className="text-[0.875em] text-black/50">Calculating sky...</div>
       </div>
     )
   }
@@ -319,22 +352,23 @@ export default function StarMap() {
   const isNight = data.sunAltitude < -6
   const isTwilight = data.sunAltitude >= -6 && data.sunAltitude < 0
   const canvasSize = containerWidth - (baseFontSize * 2)
+  const displayStars = showAllStars ? data.visibleStars : data.visibleStars.slice(0, 4)
 
   return (
     <div
       ref={containerRef}
-      className="h-full bg-[#1a1a1e] overflow-hidden flex flex-col p-[1em]"
-      style={{ fontSize: `${baseFontSize}px` }}
+      className="h-full overflow-hidden flex flex-col p-[1em]"
+      style={{ fontSize: `${baseFontSize}px`, backgroundColor: '#A6A09B' }}
     >
-      {/* Status bar - subtle, top right aligned */}
+      {/* Status bar - top right */}
       <div className="flex items-center justify-end gap-[0.5em] mb-[0.5em]">
-        <div className={`w-[0.375em] h-[0.375em] rounded-full ${isNight ? 'bg-indigo-400' : isTwilight ? 'bg-orange-400' : 'bg-yellow-400'}`} />
-        <span className="text-[0.75em] text-white/50">
+        <div className={`w-[0.375em] h-[0.375em] rounded-full ${isNight ? 'bg-indigo-500' : isTwilight ? 'bg-orange-400' : 'bg-yellow-400'}`} />
+        <span className="text-[0.75em] text-black/50">
           {isNight ? 'Night' : isTwilight ? 'Twilight' : 'Daylight'} · {data.localTime}
         </span>
       </div>
 
-      {/* Star map canvas - full width, no wrapper */}
+      {/* Star map canvas - full width */}
       <div className="flex justify-center mb-[0.75em]">
         <canvas
           ref={canvasRef}
@@ -344,29 +378,77 @@ export default function StarMap() {
         />
       </div>
 
-      {/* Visible planets legend */}
-      {data.visiblePlanets.length > 0 && (
-        <div className="flex items-center justify-center gap-[0.75em] mb-[0.5em]">
-          <span className="text-[0.625em] text-white/40 uppercase tracking-wider">Visible</span>
-          {data.visiblePlanets.map((planet) => (
-            <div key={planet} className="flex items-center gap-[0.25em]">
-              <div
-                className="w-[0.5em] h-[0.5em] rounded-full"
-                style={{ backgroundColor: PLANET_COLORS[planet] || '#ffffff' }}
-              />
-              <span className="text-[0.75em] text-white/60">{planet}</span>
+      {/* Celestial objects list */}
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+        {/* Planets section */}
+        {data.visiblePlanets.length > 0 && (
+          <div className="mb-[0.5em]">
+            <div className="text-[0.625em] text-black/40 uppercase tracking-wider mb-[0.25em]">
+              Planets
             </div>
+            {data.visiblePlanets.map((planet) => (
+              <button
+                key={planet.name}
+                onClick={() => setSelectedObject(selectedObject === planet.name ? null : planet.name)}
+                className={`w-full flex items-center justify-between py-[0.25em] px-[0.375em] rounded-[0.25em] transition-colors ${
+                  selectedObject === planet.name ? 'bg-black/15' : 'hover:bg-black/5'
+                }`}
+              >
+                <div className="flex items-center gap-[0.375em]">
+                  <div
+                    className="w-[0.5em] h-[0.5em] rounded-full"
+                    style={{ backgroundColor: PLANET_COLORS[planet.name] }}
+                  />
+                  <span className="text-[0.75em] text-black/80">{planet.name}</span>
+                </div>
+                <span className="text-[0.625em] font-mono text-black/50">
+                  {planet.altitude}° {getCompassDirection(planet.azimuth)}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Stars section */}
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className="text-[0.625em] text-black/40 uppercase tracking-wider mb-[0.25em]">
+            Stars
+          </div>
+          {displayStars.map((star) => (
+            <button
+              key={star.name}
+              onClick={() => setSelectedObject(selectedObject === star.name ? null : star.name)}
+              className={`w-full flex items-center justify-between py-[0.25em] px-[0.375em] rounded-[0.25em] transition-colors ${
+                selectedObject === star.name ? 'bg-black/15' : 'hover:bg-black/5'
+              }`}
+            >
+              <div className="flex items-center gap-[0.375em]">
+                <div className="w-[0.5em] h-[0.5em] rounded-full bg-white border border-black/20" />
+                <span className="text-[0.75em] text-black/80">{star.name}</span>
+              </div>
+              <span className="text-[0.625em] font-mono text-black/50">
+                {star.altitude}° {getCompassDirection(star.azimuth)}
+              </span>
+            </button>
           ))}
+          {data.visibleStars.length > 4 && (
+            <button
+              onClick={() => setShowAllStars(!showAllStars)}
+              className="w-full text-[0.6875em] text-black/40 hover:text-black/60 py-[0.25em]"
+            >
+              {showAllStars ? 'Show less' : `+${data.visibleStars.length - 4} more visible`}
+            </button>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-[0.5em] mt-auto border-t border-white/10">
-        <span className="text-[0.625em] text-white/40">
+      <div className="flex items-center justify-between pt-[0.5em] mt-auto border-t border-black/10">
+        <span className="text-[0.625em] text-black/50">
           {data.location.lat.toFixed(1)}°{data.location.lat >= 0 ? 'N' : 'S'}, {Math.abs(data.location.lon).toFixed(1)}°{data.location.lon >= 0 ? 'E' : 'W'}
         </span>
-        <span className="text-[0.625em] font-mono text-white/40">
-          {BRIGHT_STARS.length} bright stars
+        <span className="text-[0.625em] font-mono text-black/50">
+          {data.visibleStars.length} stars visible
         </span>
       </div>
     </div>
