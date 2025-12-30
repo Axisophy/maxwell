@@ -27,6 +27,7 @@ export default function SolarObservatoryPage() {
             items={[
               { label: 'MXWLL', href: '/' },
               { label: 'Observe', href: '/observe' },
+              { label: 'Space', href: '/observe/space' },
               { label: 'Solar Observatory' },
             ]}
             theme="dark"
@@ -250,10 +251,10 @@ export default function SolarObservatoryPage() {
               Learn more about the Sun →
             </Link>
             <Link
-              href="/observe"
+              href="/observe/space"
               className="text-white/60 hover:text-white transition-colors text-sm"
             >
-              ← Back to Observe
+              ← Back to Space
             </Link>
           </div>
 

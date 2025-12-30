@@ -64,6 +64,7 @@ export default function MoonPage() {
             items={[
               { label: 'MXWLL', href: '/' },
               { label: 'Observe', href: '/observe' },
+              { label: 'Space', href: '/observe/space' },
               { label: 'Lunar Atlas' },
             ]}
             theme="light"
@@ -158,7 +159,7 @@ export default function MoonPage() {
               and the history of human exploration.
             </p>
             <Link
-              href="/data/moon"
+              href="/data/solar-system/earth/moon"
               className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-[#e6007e] transition-colors"
             >
               View Moon data page →

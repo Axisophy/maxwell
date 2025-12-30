@@ -82,7 +82,8 @@ export default function UnrestPage() {
           <Breadcrumb
             items={[
               { label: 'MXWLL', href: '/' },
-              { label: 'Data', href: '/data' },
+              { label: 'Observe', href: '/observe' },
+              { label: 'Earth', href: '/observe/earth' },
               { label: 'Unrest' },
             ]}
             theme="light"

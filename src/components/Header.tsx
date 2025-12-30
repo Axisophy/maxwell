@@ -22,11 +22,11 @@ const navItems = [
 
 // Submenus - using category names for DATA
 const observeSubmenu = [
+  { href: '/observe', label: 'Living Dashboard', active: true },
   { href: '/observe/vital-signs', label: 'Vital Signs', active: true },
-  { href: '/observe/solar-observatory', label: 'Solar Observatory', active: true },
-  { href: '/observe/wildlife', label: 'Wildlife Tracking', active: true },
-  { href: '/observe/dashboard', label: 'Dashboard', active: true },
-  { href: '/observe/moon', label: 'Lunar Atlas', active: true },
+  { href: '/observe/space', label: 'Space', active: true },
+  { href: '/observe/earth', label: 'Earth', active: true },
+  { href: '/observe/your-dashboard', label: 'Your Dashboard', active: true },
 ]
 
 const pulseSubmenu = [
@@ -43,12 +43,13 @@ const toolsSubmenu = [
 
 // Data submenu
 const dataSubmenu = [
-  { href: '/data/solar-system', label: 'Solar System', active: true },
-  { href: '/data/elements', label: 'Elements', active: false },
-  { href: '/data/unrest', label: 'Unrest', active: true },
-  { href: '/data/climate', label: 'Climate', active: true },
-  { href: '/data/nuclides', label: 'Nuclides', active: true },
+  { href: '/data/elements', label: 'Elements', active: true },
+  { href: '/data/particles', label: 'Particles', active: true },
+  { href: '/data/constants', label: 'Constants', active: true },
   { href: '/data/spectrum', label: 'Spectrum', active: true },
+  { href: '/data/earth', label: 'Earth', active: true },
+  { href: '/data/solar-system', label: 'Solar System', active: true },
+  { href: '/data/time', label: 'Time', active: true },
 ]
 
 const vaultSubmenu = [

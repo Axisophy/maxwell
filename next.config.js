@@ -16,6 +16,25 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/observe/solar-observatory',
+        destination: '/observe/space/solar-observatory',
+        permanent: true,
+      },
+      {
+        source: '/observe/moon',
+        destination: '/observe/space/lunar-atlas',
+        permanent: true,
+      },
+      {
+        source: '/data/unrest',
+        destination: '/observe/earth/unrest',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

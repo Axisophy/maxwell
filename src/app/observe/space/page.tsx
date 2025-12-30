@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 const spacePages = [
   {
-    href: '/observe/solar-observatory',
+    href: '/observe/space/solar-observatory',
     title: 'Solar Observatory',
     description: 'Live solar imagery from SDO, SOHO, and STEREO-A. X-ray flux, solar wind, CMEs, and space weather monitoring.',
     icon: Sun,
@@ -20,7 +20,7 @@ const spacePages = [
     statusColor: 'emerald',
   },
   {
-    href: '/observe/moon',
+    href: '/observe/space/lunar-atlas',
     title: 'Lunar Atlas',
     description: 'Explore the Moon\'s surface. Maria, craters, and Apollo landing sites with multiple map layers.',
     icon: Moon,
@@ -28,7 +28,7 @@ const spacePages = [
     statusColor: null,
   },
   {
-    href: '/observe/aurora',
+    href: '/observe/space/aurora',
     title: 'Aurora Watch',
     description: 'Real-time aurora forecasts. OVATION Prime model predictions for northern and southern lights.',
     icon: Sparkles,
