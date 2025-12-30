@@ -1,36 +1,99 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 // NASA FIRMS API for active fire data
-export async function GET() {
+// Note: Real implementation would use NASA FIRMS API:
+// https://firms.modaps.eosdis.nasa.gov/api/area/csv/{MAP_KEY}/{source}/{area}/{days}
+
+type Confidence = 'high' | 'nominal' | 'low'
+
+interface Fire {
+  id: string
+  lat: number
+  lon: number
+  brightness: number
+  confidence: Confidence
+  frp: number
+  satellite: string
+  timestamp: string
+  region: string
+}
+
+// Generate realistic fire distribution
+function generateFires(days: number, regionFilter: string): Fire[] {
+  const regions: { name: string; bounds: { lat: [number, number]; lon: [number, number] }; baseCount: number }[] = [
+    { name: 'North America', bounds: { lat: [25, 55], lon: [-125, -70] }, baseCount: 180 },
+    { name: 'South America', bounds: { lat: [-35, 10], lon: [-80, -35] }, baseCount: 380 },
+    { name: 'Europe', bounds: { lat: [35, 60], lon: [-10, 40] }, baseCount: 35 },
+    { name: 'Africa', bounds: { lat: [-30, 35], lon: [-20, 55] }, baseCount: 520 },
+    { name: 'Asia', bounds: { lat: [10, 55], lon: [60, 145] }, baseCount: 290 },
+    { name: 'Australia', bounds: { lat: [-40, -10], lon: [115, 155] }, baseCount: 95 },
+  ]
+
+  const fires: Fire[] = []
+  const now = new Date()
+  const satellites = ['VIIRS', 'MODIS']
+  const confidenceLevels: Confidence[] = ['high', 'nominal', 'low']
+
+  const filteredRegions = regionFilter === 'all'
+    ? regions
+    : regions.filter(r => r.name.toLowerCase().replace(' ', '-') === regionFilter)
+
+  filteredRegions.forEach(region => {
+    // Scale count by days
+    const count = Math.floor(region.baseCount * days * (0.8 + Math.random() * 0.4))
+
+    for (let i = 0; i < count; i++) {
+      const lat = region.bounds.lat[0] + Math.random() * (region.bounds.lat[1] - region.bounds.lat[0])
+      const lon = region.bounds.lon[0] + Math.random() * (region.bounds.lon[1] - region.bounds.lon[0])
+      const hoursAgo = Math.random() * days * 24
+      const timestamp = new Date(now.getTime() - hoursAgo * 60 * 60 * 1000)
+
+      fires.push({
+        id: `f${fires.length + 1}`,
+        lat: parseFloat(lat.toFixed(4)),
+        lon: parseFloat(lon.toFixed(4)),
+        brightness: 300 + Math.floor(Math.random() * 150),
+        confidence: confidenceLevels[Math.floor(Math.random() * 3)],
+        frp: parseFloat((5 + Math.random() * 80).toFixed(1)),
+        satellite: satellites[Math.floor(Math.random() * 2)],
+        timestamp: timestamp.toISOString(),
+        region: region.name,
+      })
+    }
+  })
+
+  // Sort by timestamp (most recent first)
+  return fires.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const days = parseInt(searchParams.get('days') || '1', 10)
+  const region = searchParams.get('region') || 'all'
+
   try {
-    // Generate mock fire detections matching widget's expected format
-    const fires = [
-      { id: 'f1', lat: 34.05, lon: -118.24, brightness: 380, confidence: 'high' as const, frp: 45.2, satellite: 'VIIRS', timestamp: new Date().toISOString(), region: 'North America' },
-      { id: 'f2', lat: -23.55, lon: -46.63, brightness: 365, confidence: 'nominal' as const, frp: 38.5, satellite: 'MODIS', timestamp: new Date().toISOString(), region: 'South America' },
-      { id: 'f3', lat: -25.87, lon: 135.21, brightness: 398, confidence: 'high' as const, frp: 52.1, satellite: 'VIIRS', timestamp: new Date().toISOString(), region: 'Australia' },
-      { id: 'f4', lat: 10.5, lon: 20.3, brightness: 342, confidence: 'nominal' as const, frp: 28.4, satellite: 'MODIS', timestamp: new Date().toISOString(), region: 'Africa' },
-      { id: 'f5', lat: 55.2, lon: 92.1, brightness: 355, confidence: 'high' as const, frp: 35.8, satellite: 'VIIRS', timestamp: new Date().toISOString(), region: 'Asia' },
-    ]
+    const fires = generateFires(Math.min(days, 10), region)
 
-    const byRegion: Record<string, number> = {
-      'North America': 234,
-      'South America': 456,
-      'Europe': 45,
-      'Africa': 312,
-      'Asia': 178,
-      'Australia': 89,
-    }
+    // Calculate statistics
+    const byRegion: Record<string, number> = {}
+    fires.forEach(fire => {
+      byRegion[fire.region] = (byRegion[fire.region] || 0) + 1
+    })
 
-    const mockData = {
+    const largestFire = fires.reduce((max, fire) =>
+      fire.frp > (max?.frp || 0) ? fire : max, fires[0] || null
+    )
+
+    const result = {
       timestamp: new Date().toISOString(),
-      fires,
-      totalFires: 1314,
+      fires: fires.slice(0, 500), // Limit response size
+      totalFires: fires.length,
       byRegion,
-      largestFire: fires[2], // Australia fire
-      recentHours: 24,
+      largestFire,
+      recentHours: days * 24,
     }
 
-    return NextResponse.json(mockData)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Fires API error:', error)
     return NextResponse.json(
@@ -39,3 +102,5 @@ export async function GET() {
     )
   }
 }
+
+export const revalidate = 300 // Revalidate every 5 minutes
