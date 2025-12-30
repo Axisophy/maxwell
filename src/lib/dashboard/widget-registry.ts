@@ -382,6 +382,42 @@ export const WIDGET_REGISTRY: Record<string, WidgetDefinition> = {
     status: 'ok',
     categories: ['physics-particles', 'personal'],
     component: 'CosmicRaysThrough'
+  },
+  'volcano-watch': {
+    id: 'volcano-watch',
+    title: 'Volcano Watch',
+    description: 'Currently erupting and active volcanoes worldwide. Alert levels from the Smithsonian Global Volcanism Program.',
+    source: 'Smithsonian Global Volcanism Program',
+    status: 'live',
+    categories: ['earth-geology'],
+    component: 'VolcanoWatch'
+  },
+  'meteor-watch': {
+    id: 'meteor-watch',
+    title: 'Meteor Watch',
+    description: 'Active and upcoming meteor showers. See peak rates, moon conditions, and best viewing times.',
+    source: 'International Meteor Organization',
+    status: 'live',
+    categories: ['astronomy', 'personal'],
+    component: 'MeteorWatch'
+  },
+  'aircraft-above': {
+    id: 'aircraft-above',
+    title: 'Aircraft Above',
+    description: 'Real-time aircraft currently flying overhead. See callsigns, altitudes, and estimated passengers.',
+    source: 'OpenSky Network',
+    status: 'live',
+    categories: ['infrastructure', 'personal'],
+    component: 'AircraftAbove'
+  },
+  'ships-live': {
+    id: 'ships-live',
+    title: 'Ships Live',
+    description: 'Ships and vessels in your area via AIS tracking. Cargo ships, tankers, and passenger ferries.',
+    source: 'AIS Data',
+    status: 'live',
+    categories: ['infrastructure', 'personal'],
+    component: 'ShipsLive'
   }
 };
 

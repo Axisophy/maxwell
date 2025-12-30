@@ -42,6 +42,10 @@ import SeismographGrid from '@/components/widgets/SeismographGrid'
 import StarMap from '@/components/widgets/StarMap'
 import AirJourney from '@/components/widgets/AirJourney'
 import YourBackgroundDose from '@/components/widgets/YourBackgroundDose'
+import VolcanoWatch from '@/components/widgets/VolcanoWatch'
+import MeteorWatch from '@/components/widgets/MeteorWatch'
+import AircraftAbove from '@/components/widgets/AircraftAbove'
+import ShipsLive from '@/components/widgets/ShipsLive'
 
 // Map component names (from registry) to actual components
 // The key must match the 'component' field in WIDGET_REGISTRY
@@ -87,6 +91,10 @@ export const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   'StarMap': StarMap,
   'AirJourney': AirJourney,
   'YourBackgroundDose': YourBackgroundDose,
+  'VolcanoWatch': VolcanoWatch,
+  'MeteorWatch': MeteorWatch,
+  'AircraftAbove': AircraftAbove,
+  'ShipsLive': ShipsLive,
 }
 
 // Helper to check if a component exists
