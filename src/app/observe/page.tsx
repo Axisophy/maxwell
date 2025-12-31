@@ -94,10 +94,10 @@ export default function ObservePage() {
 
   return (
     <main className="min-h-screen bg-black">
-      <div className="px-4 pt-4 pb-8 flex flex-col gap-2">
+      <div className="px-4 pt-4 pb-8 flex flex-col gap-0.5">
 
         {/* Header Frame */}
-        <section className="bg-white rounded-2xl p-6 md:p-8">
+        <section className="bg-white rounded-lg p-4">
           <Breadcrumb
             items={[
               { label: 'MXWLL', href: '/' },
@@ -115,7 +115,7 @@ export default function ObservePage() {
         </section>
 
         {/* Vital Signs Frame */}
-        <section className="bg-white rounded-2xl p-6 md:p-8">
+        <section className="bg-white rounded-lg p-4">
           <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
             Vital Signs
           </div>
@@ -217,12 +217,12 @@ export default function ObservePage() {
         </section>
 
         {/* Explore Frame */}
-        <section className="bg-white rounded-2xl p-6 md:p-8">
+        <section className="bg-white rounded-lg p-4">
           <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
             Explore
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-0.5">
             {portals.map((portal) => (
               <PortalCard
                 key={portal.href}

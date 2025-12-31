@@ -12,7 +12,7 @@ export default function PortalCard({ title, description, href, icon: Icon }: Por
   return (
     <Link
       href={href}
-      className="block p-5 md:p-6 bg-black rounded-2xl border border-white/10 hover:border-white/30 transition-colors"
+      className="block p-4 bg-black rounded-lg border border-white/10 hover:border-white/30 transition-colors"
     >
       <Icon size={24} className="text-white/40 mb-3" strokeWidth={1.5} />
       <h2 className="text-lg md:text-xl font-light text-white mb-1">
