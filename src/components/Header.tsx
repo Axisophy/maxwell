@@ -12,12 +12,12 @@ import {
 import Logo from './Logo'
 
 const navItems = [
-  { href: '/observe', label: 'observe' },
-  { href: '/pulse', label: 'pulse' },
-  { href: '/tools', label: 'tools' },
-  { href: '/data', label: 'data' },
-  { href: '/vault', label: 'vault' },
-  { href: '/play', label: 'play' },
+  { href: '/observe', label: 'Observe' },
+  { href: '/pulse', label: 'Pulse' },
+  { href: '/tools', label: 'Tools' },
+  { href: '/data', label: 'Data' },
+  { href: '/vault', label: 'Vault' },
+  { href: '/play', label: 'Play' },
 ]
 
 // Submenus - using category names for DATA
@@ -82,13 +82,13 @@ export default function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="hidden md:block w-full px-4 md:px-8 lg:px-12 py-6 border-b border-black/10 bg-white">
+    <header className="hidden md:block w-full px-4 py-6 border-b border-white/10 bg-black">
       <div className="grid grid-cols-12 items-start">
         {/* Logo + tagline: cols 1-2 */}
         <div className="col-span-2">
           <Link href="/" className="block group">
-            <Logo className="h-14 w-auto text-black" />
-            <span className="text-xs text-black/60 tracking-wide mt-1 block">
+            <Logo className="h-14 w-auto text-white" />
+            <span className="text-xs text-white/60 tracking-wide mt-1 block">
               a digital laboratory
             </span>
           </Link>
@@ -107,8 +107,8 @@ export default function Header() {
               <div key={item.href} className="flex-1">
                 <Link
                   href={item.href}
-                  className={`text-xl font-light tracking-wide cursor-pointer block leading-none ${
-                    isActive ? 'text-black' : 'text-black'
+                  className={`text-sm font-light tracking-wider uppercase cursor-pointer block leading-none ${
+                    isActive ? 'text-white' : 'text-white'
                   }`}
                 >
                   {item.label}
@@ -122,10 +122,10 @@ export default function Header() {
                         <Link
                           key={subItem.label}
                           href={subItem.href}
-                          className={`block text-sm cursor-pointer ${
+                          className={`block text-xs cursor-pointer ${
                             pathname === subItem.href
-                              ? 'text-black font-medium'
-                              : 'text-black'
+                              ? 'text-white font-medium'
+                              : 'text-white/60'
                           }`}
                         >
                           {subItem.label}
@@ -133,7 +133,7 @@ export default function Header() {
                       ) : (
                         <span
                           key={subItem.label}
-                          className="block text-sm text-black/40"
+                          className="block text-xs text-white/40"
                         >
                           {subItem.label}
                         </span>
@@ -150,7 +150,7 @@ export default function Header() {
         <div className="col-span-2 flex justify-end items-center gap-3">
           <SignedOut>
             <SignInButton mode="modal">
-              <button className="text-sm text-black/60 hover:text-black transition-colors cursor-pointer">
+              <button className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
                 Sign In
               </button>
             </SignInButton>
@@ -159,7 +159,7 @@ export default function Header() {
           <SignedIn>
             <Link
               href="/account"
-              className="text-sm text-black/60 hover:text-black transition-colors"
+              className="text-sm text-white/60 hover:text-white transition-colors"
             >
               Account
             </Link>
