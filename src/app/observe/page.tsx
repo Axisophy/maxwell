@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Orbit, Globe, Leaf, Factory, Radio, LayoutDashboard } from 'lucide-react'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import { ObserveIcon } from '@/components/icons'
 import VitalSign from './components/VitalSign'
@@ -34,37 +33,31 @@ const portals = [
     title: 'Space',
     description: 'Sun, Moon, aurora, and spacecraft monitoring',
     href: '/observe/space',
-    icon: Orbit,
   },
   {
     title: 'Earth',
     description: 'Weather, earthquakes, fires, and atmosphere',
     href: '/observe/earth',
-    icon: Globe,
   },
   {
     title: 'Life',
     description: 'Wildlife tracking and ocean monitoring',
     href: '/observe/life',
-    icon: Leaf,
   },
   {
     title: 'Infrastructure',
     description: 'Power grids and submarine cables',
     href: '/observe/infrastructure',
-    icon: Factory,
   },
   {
     title: 'Detectors',
     description: 'LHC, LIGO, IceCube, and cosmic rays',
     href: '/observe/detectors',
-    icon: Radio,
   },
   {
     title: 'Dashboard',
     description: 'Your customised widget display',
     href: '/observe/dashboard',
-    icon: LayoutDashboard,
   },
 ]
 
@@ -288,7 +281,6 @@ export default function ObservePage() {
                   title={portal.title}
                   description={portal.description}
                   href={portal.href}
-                  icon={portal.icon}
                 />
               ))}
             </div>
