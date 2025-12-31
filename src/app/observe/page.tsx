@@ -115,7 +115,7 @@ export default function ObservePage() {
 
           {/* Header Frame */}
           <section className="bg-white rounded-lg p-4">
-            <ObserveIcon size={32} className="text-black mb-3" />
+            <ObserveIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
               Observe
             </h1>
@@ -126,7 +126,7 @@ export default function ObservePage() {
 
           {/* Vital Signs Frame */}
           <section className="bg-white rounded-lg p-4">
-            <div className="text-lg font-light text-black uppercase tracking-wide mb-6">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
               Vital Signs
             </div>
 
@@ -228,7 +228,7 @@ export default function ObservePage() {
 
           {/* Explore Frame */}
           <section className="bg-white rounded-lg p-4">
-            <div className="text-lg font-light text-black uppercase tracking-wide mb-6">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
               Explore
             </div>
 
