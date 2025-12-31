@@ -130,7 +130,7 @@ export default function ObservePage() {
               Vital Signs
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px">
               {/* Row 1: Earth metrics */}
               <VitalSign
                 value={data?.earthquakes?.count || 0}
