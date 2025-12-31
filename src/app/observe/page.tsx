@@ -49,7 +49,7 @@ const portals = [
   {
     title: 'Detectors',
     description: 'LHC, LIGO, IceCube, and cosmic rays',
-    href: '/observe/detectors/lhc',
+    href: '/observe/detectors',
     icon: Radio,
   },
   {
