@@ -82,7 +82,7 @@ export default function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="hidden md:block w-full px-4 py-6 border-b border-white/10 bg-black">
+    <header className="hidden md:block w-full px-4 py-6 bg-black">
       <div className="grid grid-cols-12 items-start">
         {/* Logo + tagline: cols 1-2 */}
         <div className="col-span-2">
