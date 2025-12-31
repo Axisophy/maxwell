@@ -1,52 +1,103 @@
-import Link from 'next/link'
-import { LayoutDashboard, Orbit, Globe, Leaf, Factory, Radio } from 'lucide-react'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+'use client'
 
-const observePages = [
+import { useEffect, useState } from 'react'
+import { Orbit, Globe, Leaf, Factory, Radio, LayoutDashboard } from 'lucide-react'
+import Breadcrumb from '@/components/ui/Breadcrumb'
+import VitalSign from './components/VitalSign'
+import PopulationCounter from './components/PopulationCounter'
+import StatusVitalSign from './components/StatusVitalSign'
+import PortalCard from './components/PortalCard'
+
+interface VitalSignsData {
+  earthquakes: { count: number; period: string }
+  co2: { value: number; unit: string }
+  solarWind: { speed: number; unit: string }
+  population: { count: number; growthPerSecond: number }
+  kpIndex: { value: number; status: string }
+  cosmicRays: { flux: number; unit: string; deviation: number }
+  ukGrid: { demand: number; unit: string; carbonIntensity: number }
+  fires: { count: number; period: string }
+  lhc: { status: string; beamEnergy: number }
+  updatedAt: string
+}
+
+const portals = [
   {
-    href: '/observe/dashboard',
-    title: 'Dashboard',
-    description: 'Beautiful live widgets showing the Sun, Earth, space weather, and other real-time data.',
-    icon: LayoutDashboard,
-  },
-  {
-    href: '/observe/space',
     title: 'Space',
-    description: 'Live observation of our solar system. Sun, Moon, aurora, and spacecraft monitoring.',
+    description: 'Sun, Moon, aurora, and spacecraft monitoring',
+    href: '/observe/space',
     icon: Orbit,
   },
   {
-    href: '/observe/earth',
     title: 'Earth',
-    description: 'Live monitoring of our planet. Earthquakes, volcanoes, fires, weather, and atmosphere.',
+    description: 'Weather, earthquakes, fires, and atmosphere',
+    href: '/observe/earth',
     icon: Globe,
   },
   {
-    href: '/observe/life',
     title: 'Life',
-    description: 'Wildlife tracking and biological monitoring. GPS-tracked animals, ocean sounds, and bird observations.',
+    description: 'Wildlife tracking and ocean monitoring',
+    href: '/observe/life',
     icon: Leaf,
   },
   {
-    href: '/observe/infrastructure',
     title: 'Infrastructure',
-    description: 'The invisible systems that keep civilisation running. Power grids, submarine cables, and connectivity.',
+    description: 'Power grids and submarine cables',
+    href: '/observe/infrastructure',
     icon: Factory,
   },
   {
-    href: '/observe/detectors',
     title: 'Detectors',
-    description: 'The world\'s most sensitive instruments. Particle colliders, gravitational waves, neutrinos, and cosmic rays.',
+    description: 'LHC, LIGO, IceCube, and cosmic rays',
+    href: '/observe/detectors',
     icon: Radio,
+  },
+  {
+    title: 'Dashboard',
+    description: 'Your customised widget display',
+    href: '/observe/dashboard',
+    icon: LayoutDashboard,
   },
 ]
 
 export default function ObservePage() {
+  const [data, setData] = useState<VitalSignsData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchVitalSigns() {
+      try {
+        const res = await fetch('/api/vital-signs')
+        const json = await res.json()
+        setData(json)
+      } catch (error) {
+        console.error('Failed to fetch vital signs:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchVitalSigns()
+
+    // Refresh every 60 seconds
+    const interval = setInterval(fetchVitalSigns, 60000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Determine LHC status color
+  const lhcStatusColor = data?.lhc?.status === 'STABLE BEAMS' ? 'green'
+    : data?.lhc?.status === 'NO BEAM' ? 'neutral'
+    : 'amber'
+
+  // Determine Kp status severity
+  const kpStatus = data?.kpIndex?.value && data.kpIndex.value >= 5 ? 'warning' : 'normal'
+
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
+
         {/* Header */}
-        <div className="mb-6 md:mb-8">
+        <div className="mb-8 md:mb-12">
           <Breadcrumb
             items={[
               { label: 'MXWLL', href: '/' },
@@ -59,38 +110,132 @@ export default function ObservePage() {
             Observe
           </h1>
           <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Live windows into science happening right now. Real-time data feeds from NASA, NOAA,
-            and observatories around the world.
+            Live science happening right now. Real-time data from NASA, NOAA, CERN, and observatories worldwide.
           </p>
         </div>
 
-        {/* Page cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl">
-          {observePages.map((page) => {
-            const Icon = page.icon
-            return (
-              <Link
-                key={page.href}
-                href={page.href}
-                className="bg-white rounded-xl border border-[#e5e5e5] p-6 hover:border-black transition-colors group"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-[#f5f5f5] rounded-lg">
-                    <Icon size={24} className="text-black/50" strokeWidth={1.5} />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-medium text-black mb-1 group-hover:underline">
-                      {page.title}
-                    </h2>
-                    <p className="text-sm text-black/50">{page.description}</p>
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
+        {/* Vital Signs Section */}
+        <section className="mb-12 md:mb-16">
+          <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
+            Vital Signs
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+            {/* Row 1: Earth metrics */}
+            <VitalSign
+              value={data?.earthquakes?.count || 0}
+              unit="earthquakes"
+              context="in the last 24h"
+              href="/observe/earth/unrest"
+              loading={loading}
+            />
+
+            <VitalSign
+              value={data?.co2?.value || 0}
+              unit="ppm CO₂"
+              context="Mauna Loa"
+              href="/data/earth/climate"
+              loading={loading}
+            />
+
+            <VitalSign
+              value={data?.fires?.count || 0}
+              unit="active fires"
+              context="worldwide"
+              href="/observe/earth/fires"
+              loading={loading}
+            />
+
+            {/* Row 2: Space metrics */}
+            <VitalSign
+              value={data?.solarWind?.speed || 0}
+              unit="km/s"
+              context="solar wind"
+              href="/observe/space/solar-observatory"
+              loading={loading}
+            />
+
+            <VitalSign
+              value={data?.kpIndex?.value || 0}
+              unit={`Kp · ${data?.kpIndex?.status || 'quiet'}`}
+              context="geomagnetic"
+              href="/observe/space/aurora"
+              status={kpStatus}
+              loading={loading}
+            />
+
+            <VitalSign
+              value={data?.cosmicRays?.flux || 0}
+              unit="counts/min"
+              context="cosmic rays"
+              href="/observe/detectors/cosmic-rays"
+              loading={loading}
+            />
+
+            {/* Row 3: Infrastructure + Detectors */}
+            <VitalSign
+              value={data?.ukGrid?.demand || 0}
+              unit="GW"
+              context="UK grid demand"
+              href="/observe/infrastructure/power"
+              loading={loading}
+            />
+
+            {/* Population - special animated component */}
+            {loading ? (
+              <VitalSign
+                value={0}
+                unit="humans"
+                href="/data/earth/civilisation"
+                loading={true}
+              />
+            ) : (
+              <PopulationCounter
+                baseCount={data?.population?.count || 8147000000}
+                growthPerSecond={data?.population?.growthPerSecond || 2.5}
+                href="/data/earth/civilisation"
+              />
+            )}
+
+            {/* LHC Status - text based */}
+            <StatusVitalSign
+              status={data?.lhc?.status || 'LOADING'}
+              label="LHC"
+              context={data?.lhc?.beamEnergy ? `${data.lhc.beamEnergy} TeV` : undefined}
+              href="/observe/detectors/lhc"
+              statusColor={lhcStatusColor}
+              loading={loading}
+            />
+          </div>
+        </section>
+
+        {/* Explore Section */}
+        <section>
+          <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
+            Explore
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {portals.map((portal) => (
+              <PortalCard
+                key={portal.href}
+                title={portal.title}
+                description={portal.description}
+                href={portal.href}
+                icon={portal.icon}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Last updated */}
+        {data?.updatedAt && (
+          <div className="mt-8 text-xs text-black/30 text-center">
+            Last updated: {new Date(data.updatedAt).toLocaleTimeString()}
+          </div>
+        )}
       </div>
-      
+
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
     </main>
