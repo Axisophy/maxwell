@@ -128,7 +128,7 @@ export default function AuthenticatedHome() {
       {/* NO mobile top padding here - hero goes full bleed */}
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen rounded-lg overflow-hidden pt-20 md:pt-48 pb-12 md:pb-16 flex flex-col justify-end">
+      <section className="relative min-h-screen rounded-lg overflow-hidden border border-white/10 pt-20 md:pt-48 pb-12 md:pb-16 flex flex-col justify-end">
         {/* Hero image background */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
           <Image
