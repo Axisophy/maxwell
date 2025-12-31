@@ -98,8 +98,8 @@ export default function ObservePage() {
       <div className="px-4 pt-4 pb-8">
 
         {/* Breadcrumb Frame */}
-        <div className="mb-0.5">
-          <span className="inline-block bg-white rounded-lg p-4">
+        <div className="mb-px">
+          <span className="inline-block bg-white rounded-lg py-2 px-4">
             <Breadcrumb
               items={[
                 { label: 'MXWLL', href: '/' },
@@ -232,7 +232,7 @@ export default function ObservePage() {
               Explore
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-0.5">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-px">
               {portals.map((portal) => (
                 <PortalCard
                   key={portal.href}
