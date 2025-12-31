@@ -40,7 +40,7 @@ export default function PopulationCounter({
       </div>
 
       {/* Primary number */}
-      <div className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums text-white">
+      <div className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-[-0.03em] tabular-nums text-white">
         {formatted}
       </div>
     </Link>

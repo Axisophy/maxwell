@@ -48,7 +48,7 @@ export default function StatusVitalSign({
 
       {/* Status text */}
       <div className={`
-        text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums uppercase
+        text-3xl md:text-4xl lg:text-5xl font-bold tracking-[-0.03em] tabular-nums uppercase
         ${colors[statusColor]}
       `}>
         {status}
