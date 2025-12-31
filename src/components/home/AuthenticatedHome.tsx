@@ -124,11 +124,11 @@ export default function AuthenticatedHome() {
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-black px-4 pt-4 pb-8">
       {/* NO mobile top padding here - hero goes full bleed */}
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen bg-black pt-20 md:pt-48 pb-12 md:pb-16 flex flex-col justify-end">
+      <section className="relative min-h-screen rounded-lg overflow-hidden pt-20 md:pt-48 pb-12 md:pb-16 flex flex-col justify-end">
         {/* Hero image background */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800">
           <Image
@@ -144,7 +144,7 @@ export default function AuthenticatedHome() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
         {/* Hero content - at bottom of section */}
-        <div className="relative px-4 md:px-8 lg:px-12">
+        <div className="relative px-4">
           <h1
             className="text-white text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.9] mb-8 max-w-[85%]"
             style={{ letterSpacing: '-0.03em' }}
@@ -172,36 +172,32 @@ export default function AuthenticatedHome() {
       </section>
 
       {/* WHAT CAN MXWLL DO FOR YOU? SECTION */}
-      <section className="bg-white text-black py-16 md:py-24">
-        <div className="px-4 md:px-8 lg:px-12">
+      <section className="mt-px bg-white text-black rounded-lg p-4">
+        <div>
           <h2
-            className="text-3xl md:text-5xl font-bold mb-12"
+            className="text-3xl md:text-5xl font-bold mb-8 pt-4"
             style={{ letterSpacing: '-0.02em' }}
           >
             What can MXWLL<br />do for you?
           </h2>
 
           {/* User type buttons */}
-          <div className="max-w-2xl lg:max-w-3xl xl:max-w-4xl">
+          <div className="flex flex-col gap-px">
             {userTypes.map((userType) => {
               const isExpanded = expandedUser === userType.id
 
               return (
-                <div key={userType.id} className="border-t border-black/20">
-                  {/* Button */}
+                <div key={userType.id}>
+                  {/* Button - now a black frame */}
                   <button
                     onClick={() => toggleUser(userType.id)}
-                    className="w-full py-5 flex items-center justify-between text-left group"
+                    className="w-full p-4 bg-black rounded-lg flex items-center justify-between text-left group"
                   >
-                    <span
-                      className={`text-xl md:text-2xl text-black ${
-                        isExpanded ? 'font-medium' : 'font-normal'
-                      }`}
-                    >
+                    <span className="text-xl md:text-2xl text-white font-light">
                       {userType.label}
                     </span>
                     <span
-                      className={`text-2xl transition-transform ${
+                      className={`text-2xl text-white transition-transform ${
                         isExpanded ? 'rotate-45' : ''
                       }`}
                     >
@@ -209,14 +205,14 @@ export default function AuthenticatedHome() {
                     </span>
                   </button>
 
-                  {/* Expanded content - white on black */}
+                  {/* Expanded content - still black, now radiused */}
                   {isExpanded && (
-                    <div className="bg-black text-white -mx-4 md:-mx-8 lg:-mx-12 px-4 md:px-8 lg:px-12 py-8 mb-4">
+                    <div className="bg-black text-white rounded-lg p-4 mt-px">
                       <div className="max-w-2xl">
-                        <p className="text-lg mb-6 leading-relaxed">
+                        <p className="text-base mb-6 leading-relaxed text-white/80">
                           {userType.content.intro}
                         </p>
-                        <p className="font-medium mb-4">
+                        <p className="font-medium mb-4 text-white">
                           {userType.content.prompt}
                         </p>
                         <div className="flex flex-col gap-3">
@@ -224,7 +220,7 @@ export default function AuthenticatedHome() {
                             <Link
                               key={link.href}
                               href={link.href}
-                              className="text-lg underline underline-offset-4 hover:no-underline"
+                              className="text-base text-white underline underline-offset-4 hover:no-underline"
                             >
                               {link.label} →
                             </Link>
@@ -236,54 +232,37 @@ export default function AuthenticatedHome() {
                 </div>
               )
             })}
-            {/* Final border */}
-            <div className="border-t border-black/20" />
           </div>
         </div>
       </section>
 
       {/* EXPLORE SECTION */}
-      <section className="bg-black py-16 md:py-24">
-        <div className="px-4 md:px-8 lg:px-12">
+      <section className="mt-px bg-white rounded-lg p-4">
+        <div>
           <h2
-            className="text-3xl md:text-5xl font-bold mb-12 text-white"
+            className="text-3xl md:text-5xl font-bold mb-8 pt-4 text-black"
             style={{ letterSpacing: '-0.02em' }}
           >
             Explore
           </h2>
 
           {/* Section grid - 6 items now */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
             {exploreSections.map((section) => (
               <Link
                 key={section.href}
                 href={section.href}
-                className="group relative aspect-square rounded-xl overflow-hidden"
+                className="group relative aspect-square rounded-lg overflow-hidden bg-[#f5f5f5] hover:bg-[#e5e5e5] transition-colors"
               >
-                {/* Background - themed gradient placeholder, or image when available */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${section.placeholderGradient}`}>
-                  {/* Uncomment when images exist:
-                  <Image
-                    src={section.image}
-                    alt={section.label}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  */}
-                </div>
-
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-
-                {/* Content */}
-                <div className="absolute inset-0 flex flex-col justify-end p-6">
+                {/* Placeholder - will add graphics later */}
+                <div className="absolute inset-0 flex flex-col justify-end p-4">
                   <h3
-                    className="text-white text-2xl md:text-3xl font-bold mb-2"
+                    className="text-black text-2xl md:text-3xl font-light uppercase mb-2"
                     style={{ letterSpacing: '-0.02em' }}
                   >
                     {section.label}
                   </h3>
-                  <p className="text-white/80 text-sm md:text-base">
+                  <p className="text-black/50 text-sm md:text-base">
                     {section.description}
                   </p>
                 </div>
@@ -293,8 +272,6 @@ export default function AuthenticatedHome() {
         </div>
       </section>
 
-      {/* Mobile bottom padding - matches Explore section bg */}
-      <div className="h-20 md:hidden bg-black" />
     </main>
   )
 }
