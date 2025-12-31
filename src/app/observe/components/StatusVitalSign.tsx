@@ -30,8 +30,8 @@ export default function StatusVitalSign({
   if (loading) {
     return (
       <div className="p-4 bg-black rounded-lg animate-pulse">
-        <div className="h-10 md:h-12 bg-white/10 rounded mb-3 mx-auto w-32 md:w-40" />
-        <div className="h-4 bg-white/10 rounded mx-auto w-16 md:w-20" />
+        <div className="h-4 bg-white/10 rounded mx-auto w-20 md:w-24 mb-2" />
+        <div className="h-14 md:h-20 bg-white/10 rounded mx-auto w-28 md:w-36" />
       </div>
     )
   }
@@ -41,25 +41,18 @@ export default function StatusVitalSign({
       href={href}
       className="block p-4 text-center bg-black rounded-lg hover:bg-neutral-900 transition-colors"
     >
+      {/* Label - above the status */}
+      <div className="text-xs md:text-sm text-white/50 uppercase tracking-wide mb-2">
+        {label}{context ? ` · ${context}` : ''}
+      </div>
+
       {/* Status text */}
       <div className={`
-        text-2xl md:text-3xl lg:text-4xl font-light tracking-tight uppercase
+        text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums uppercase
         ${colors[statusColor]}
       `}>
         {status}
       </div>
-
-      {/* Label */}
-      <div className="text-xs md:text-sm text-white/50 uppercase mb-2">
-        {label}
-      </div>
-
-      {/* Context */}
-      {context && (
-        <div className="text-xs md:text-sm text-white/40 mt-1">
-          {context}
-        </div>
-      )}
     </Link>
   )
 }

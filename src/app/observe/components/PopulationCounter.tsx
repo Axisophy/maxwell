@@ -34,19 +34,14 @@ export default function PopulationCounter({
       href={href}
       className="block p-4 text-center bg-black rounded-lg hover:bg-neutral-900 transition-colors"
     >
-      {/* Primary number - slightly smaller due to length */}
-      <div className="text-3xl md:text-4xl lg:text-5xl font-light font-mono tracking-tight tabular-nums text-white">
+      {/* Label - above the number */}
+      <div className="text-xs md:text-sm text-white/50 uppercase tracking-wide mb-2">
+        Humans
+      </div>
+
+      {/* Primary number */}
+      <div className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums text-white">
         {formatted}
-      </div>
-
-      {/* Unit / label */}
-      <div className="text-xs md:text-sm text-white/50 uppercase mb-2">
-        humans
-      </div>
-
-      {/* Context */}
-      <div className="text-xs md:text-sm text-white/40 mt-1">
-        and counting
       </div>
     </Link>
   )
