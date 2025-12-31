@@ -107,11 +107,11 @@ export default function ObservePage() {
         />
 
         {/* Frames container */}
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-px">
 
           {/* Header Frame */}
           <section className="bg-white rounded-lg p-4">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
               Observe
             </h1>
             <p className="text-base md:text-lg text-black/60 max-w-2xl">
@@ -121,7 +121,7 @@ export default function ObservePage() {
 
           {/* Vital Signs Frame */}
           <section className="bg-white rounded-lg p-4">
-            <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
+            <div className="text-lg font-light text-black uppercase tracking-wide mb-6">
               Vital Signs
             </div>
 
@@ -223,7 +223,7 @@ export default function ObservePage() {
 
           {/* Explore Frame */}
           <section className="bg-white rounded-lg p-4">
-            <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
+            <div className="text-lg font-light text-black uppercase tracking-wide mb-6">
               Explore
             </div>
 
