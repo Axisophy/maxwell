@@ -32,26 +32,21 @@ export default function PopulationCounter({
   return (
     <Link
       href={href}
-      className="block p-5 md:p-8 text-center hover:bg-white rounded-xl transition-colors group"
+      className="block p-4 text-center bg-black rounded-lg hover:bg-neutral-900 transition-colors"
     >
       {/* Primary number - slightly smaller due to length */}
-      <div className="text-3xl md:text-4xl lg:text-5xl font-light font-mono tracking-tight tabular-nums text-black">
+      <div className="text-3xl md:text-4xl lg:text-5xl font-light font-mono tracking-tight tabular-nums text-white">
         {formatted}
       </div>
 
       {/* Unit / label */}
-      <div className="text-sm md:text-base text-black/50 uppercase tracking-wider mt-2">
+      <div className="text-xs md:text-sm text-white/50 uppercase mb-2">
         humans
       </div>
 
       {/* Context */}
-      <div className="text-xs md:text-sm text-black/40 mt-1">
+      <div className="text-xs md:text-sm text-white/40 mt-1">
         and counting
-      </div>
-
-      {/* Hover indicator */}
-      <div className="text-xs text-black/30 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-        Explore →
       </div>
     </Link>
   )

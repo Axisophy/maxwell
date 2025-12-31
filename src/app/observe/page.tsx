@@ -19,6 +19,13 @@ interface VitalSignsData {
   ukGrid: { demand: number; unit: string; carbonIntensity: number }
   fires: { count: number; period: string }
   lhc: { status: string; beamEnergy: number }
+  seaIce: { extent: number; unit: string }
+  uvIndex: { value: number; location: string }
+  nearestAsteroid: { distance: number; name: string }
+  seaLevel: { rise: number; baseline: string }
+  solarFlares: { today: number; class: string }
+  neutronMonitor: { flux: number; station: string }
+  internetTraffic: { tbps: number; trend: string }
   updatedAt: string
 }
 
@@ -134,41 +141,36 @@ export default function ObservePage() {
               {/* Row 1: Earth metrics */}
               <VitalSign
                 value={data?.earthquakes?.count || 0}
-                unit="earthquakes"
-                context="in the last 24h"
+                label="Earthquakes (24h)"
                 href="/observe/earth/unrest"
                 loading={loading}
               />
 
               <VitalSign
                 value={data?.co2?.value || 0}
-                unit="ppm CO₂"
-                context="Mauna Loa"
+                label="CO₂ ppm (Mauna Loa)"
                 href="/data/earth/climate"
                 loading={loading}
               />
 
               <VitalSign
                 value={data?.fires?.count || 0}
-                unit="active fires"
-                context="worldwide"
+                label="Active Fires"
                 href="/observe/earth/fires"
                 loading={loading}
               />
 
-              {/* Row 2: Space metrics */}
               <VitalSign
                 value={data?.solarWind?.speed || 0}
-                unit="km/s"
-                context="solar wind"
+                label="Solar Wind (km/s)"
                 href="/observe/space/solar-observatory"
                 loading={loading}
               />
 
+              {/* Row 2: Space + Infrastructure */}
               <VitalSign
                 value={data?.kpIndex?.value || 0}
-                unit={`Kp · ${data?.kpIndex?.status || 'quiet'}`}
-                context="geomagnetic"
+                label={`Kp Index · ${data?.kpIndex?.status || 'quiet'}`}
                 href="/observe/space/aurora"
                 status={kpStatus}
                 loading={loading}
@@ -176,17 +178,14 @@ export default function ObservePage() {
 
               <VitalSign
                 value={data?.cosmicRays?.flux || 0}
-                unit="counts/min"
-                context="cosmic rays"
+                label="Cosmic Rays"
                 href="/observe/detectors/cosmic-rays"
                 loading={loading}
               />
 
-              {/* Row 3: Infrastructure + Detectors */}
               <VitalSign
                 value={data?.ukGrid?.demand || 0}
-                unit="GW"
-                context="UK grid demand"
+                label="UK Grid (GW)"
                 href="/observe/infrastructure/power"
                 loading={loading}
               />
@@ -195,7 +194,7 @@ export default function ObservePage() {
               {loading ? (
                 <VitalSign
                   value={0}
-                  unit="humans"
+                  label="Humans"
                   href="/data/earth/civilisation"
                   loading={true}
                 />
@@ -207,13 +206,63 @@ export default function ObservePage() {
                 />
               )}
 
-              {/* LHC Status - text based */}
+              {/* Row 3: Detectors + Climate */}
               <StatusVitalSign
                 status={data?.lhc?.status || 'LOADING'}
                 label="LHC"
                 context={data?.lhc?.beamEnergy ? `${data.lhc.beamEnergy} TeV` : undefined}
                 href="/observe/detectors/lhc"
                 statusColor={lhcStatusColor}
+                loading={loading}
+              />
+
+              <VitalSign
+                value={data?.seaIce?.extent || 0}
+                label="Arctic Sea Ice (M km²)"
+                href="/observe/earth/climate"
+                loading={loading}
+              />
+
+              <VitalSign
+                value={data?.uvIndex?.value || 0}
+                label="UV Index (Local)"
+                href="/observe/earth/atmosphere"
+                loading={loading}
+              />
+
+              <VitalSign
+                value={data?.nearestAsteroid?.distance || 0}
+                label="Nearest Asteroid (LD)"
+                href="/observe/space/asteroids"
+                loading={loading}
+              />
+
+              {/* Row 4: Additional metrics */}
+              <VitalSign
+                value={data?.seaLevel?.rise || 0}
+                label="Sea Level Rise (mm)"
+                href="/observe/earth/climate"
+                loading={loading}
+              />
+
+              <VitalSign
+                value={data?.solarFlares?.today || 0}
+                label="Solar Flares (24h)"
+                href="/observe/space/solar-observatory"
+                loading={loading}
+              />
+
+              <VitalSign
+                value={data?.neutronMonitor?.flux || 0}
+                label="Neutron Flux"
+                href="/observe/detectors/cosmic-rays"
+                loading={loading}
+              />
+
+              <VitalSign
+                value={data?.internetTraffic?.tbps || 0}
+                label="Internet Traffic (Tbps)"
+                href="/observe/infrastructure/internet"
                 loading={loading}
               />
             </div>
