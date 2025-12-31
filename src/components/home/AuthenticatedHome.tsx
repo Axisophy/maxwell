@@ -124,7 +124,7 @@ export default function AuthenticatedHome() {
   }
 
   return (
-    <main className="min-h-screen bg-black px-4 pt-4 pb-8">
+    <main className="min-h-screen bg-black px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
       {/* NO mobile top padding here - hero goes full bleed */}
 
       {/* HERO SECTION */}
@@ -144,7 +144,7 @@ export default function AuthenticatedHome() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
         {/* Hero content - at bottom of section */}
-        <div className="relative px-4">
+        <div className="relative px-2 md:px-4">
           <h1
             className="text-white text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.9] mb-8 max-w-[85%]"
             style={{ letterSpacing: '-0.03em' }}
@@ -172,7 +172,7 @@ export default function AuthenticatedHome() {
       </section>
 
       {/* WHAT CAN MXWLL DO FOR YOU? SECTION */}
-      <section className="mt-px bg-white text-black rounded-lg p-4">
+      <section className="mt-px bg-white text-black rounded-lg p-2 md:p-4">
         <div>
           <h2
             className="text-3xl md:text-5xl font-bold mb-8 pt-4"
@@ -191,7 +191,7 @@ export default function AuthenticatedHome() {
                   {/* Button - now a black frame */}
                   <button
                     onClick={() => toggleUser(userType.id)}
-                    className="w-full p-4 bg-black rounded-lg flex items-center justify-between text-left group"
+                    className="w-full p-2 md:p-4 bg-black rounded-lg flex items-center justify-between text-left group"
                   >
                     <span className="text-xl md:text-2xl text-white font-light">
                       {userType.label}
@@ -207,7 +207,7 @@ export default function AuthenticatedHome() {
 
                   {/* Expanded content - still black, now radiused */}
                   {isExpanded && (
-                    <div className="bg-black text-white rounded-lg p-4 mt-px">
+                    <div className="bg-black text-white rounded-lg p-2 md:p-4 mt-px">
                       <div className="max-w-2xl">
                         <p className="text-base mb-6 leading-relaxed text-white/80">
                           {userType.content.intro}
@@ -237,7 +237,7 @@ export default function AuthenticatedHome() {
       </section>
 
       {/* EXPLORE SECTION */}
-      <section className="mt-px bg-white rounded-lg p-4">
+      <section className="mt-px bg-white rounded-lg p-2 md:p-4">
         <div>
           <h2
             className="text-3xl md:text-5xl font-bold mb-8 pt-4 text-black"
@@ -255,7 +255,7 @@ export default function AuthenticatedHome() {
                 className="group relative aspect-square rounded-lg overflow-hidden bg-[#f5f5f5] hover:bg-[#e5e5e5] transition-colors"
               >
                 {/* Placeholder - will add graphics later */}
-                <div className="absolute inset-0 flex flex-col justify-end p-4">
+                <div className="absolute inset-0 flex flex-col justify-end p-2 md:p-4">
                   <h3
                     className="text-black text-2xl md:text-3xl font-light uppercase mb-2"
                     style={{ letterSpacing: '-0.02em' }}

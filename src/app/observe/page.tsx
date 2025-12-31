@@ -95,11 +95,11 @@ export default function ObservePage() {
 
   return (
     <main className="min-h-screen bg-black">
-      <div className="px-4 pt-4 pb-8">
+      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
 
         {/* Breadcrumb Frame */}
         <div className="mb-px">
-          <span className="inline-block bg-white rounded-lg py-2 px-4">
+          <div className="block bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
             <Breadcrumb
               items={[
                 { label: 'MXWLL', href: '/' },
@@ -107,14 +107,14 @@ export default function ObservePage() {
               ]}
               theme="light"
             />
-          </span>
+          </div>
         </div>
 
         {/* Frames container */}
         <div className="flex flex-col gap-px">
 
           {/* Header Frame */}
-          <section className="bg-white rounded-lg p-4">
+          <section className="bg-white rounded-lg p-2 md:p-4">
             <ObserveIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
               Observe
@@ -125,7 +125,7 @@ export default function ObservePage() {
           </section>
 
           {/* Vital Signs Frame */}
-          <section className="bg-white rounded-lg p-4">
+          <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
               Vital Signs
             </div>
@@ -269,12 +269,12 @@ export default function ObservePage() {
           </section>
 
           {/* Explore Frame */}
-          <section className="bg-white rounded-lg p-4">
+          <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
               Explore
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-px">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
               {portals.map((portal) => (
                 <PortalCard
                   key={portal.href}

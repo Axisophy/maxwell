@@ -10,7 +10,7 @@ export default function PortalCard({ title, description, href }: PortalCardProps
   return (
     <Link
       href={href}
-      className="block p-4 bg-black rounded-lg border border-white/10 hover:border-white/30 transition-colors"
+      className="block p-2 md:p-4 bg-black rounded-lg border border-white/10 hover:border-white/30 transition-colors"
     >
       <h2 className="text-2xl md:text-3xl font-light text-white uppercase mb-2">
         {title}
