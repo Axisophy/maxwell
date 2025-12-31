@@ -64,7 +64,7 @@ export default function EarthHero({ className = '' }: EarthHeroProps) {
               />
             ) : (
               <Image
-                src="https://himawari.asia/img/FULL_24H/1/00.png"
+                src="https://www.data.jma.go.jp/mscweb/data/himawari/img/fd_/fd__trm_0000.jpg"
                 alt="Earth from Himawari-9"
                 fill
                 className="object-contain"

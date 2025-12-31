@@ -44,13 +44,13 @@ const toolsSubmenu = [
 
 // Data submenu
 const dataSubmenu = [
-  { href: '/data/elements', label: 'Elements', active: true },
+  { href: '/data/elements', label: 'Elements', active: false },
   { href: '/data/particles', label: 'Particles', active: true },
   { href: '/data/constants', label: 'Constants', active: true },
   { href: '/data/spectrum', label: 'Spectrum', active: true },
   { href: '/data/earth', label: 'Earth', active: true },
   { href: '/data/solar-system', label: 'Solar System', active: true },
-  { href: '/data/time', label: 'Time', active: true },
+  { href: '/data/time', label: 'Time', active: false },
 ]
 
 const vaultSubmenu = [
