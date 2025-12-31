@@ -93,11 +93,11 @@ export default function ObservePage() {
   const kpStatus = data?.kpIndex?.value && data.kpIndex.value >= 5 ? 'warning' : 'normal'
 
   return (
-    <main className="min-h-screen bg-[#f5f5f5]">
-      <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
+    <main className="min-h-screen bg-black">
+      <div className="px-4 pt-4 pb-8 flex flex-col gap-2">
 
-        {/* Header */}
-        <div className="mb-8 md:mb-12">
+        {/* Header Frame */}
+        <section className="bg-white rounded-2xl p-6 md:p-8">
           <Breadcrumb
             items={[
               { label: 'MXWLL', href: '/' },
@@ -112,10 +112,10 @@ export default function ObservePage() {
           <p className="text-base md:text-lg text-black/60 max-w-2xl">
             Live science happening right now. Real-time data from NASA, NOAA, CERN, and observatories worldwide.
           </p>
-        </div>
+        </section>
 
-        {/* Vital Signs Section */}
-        <section className="mb-12 md:mb-16">
+        {/* Vital Signs Frame */}
+        <section className="bg-white rounded-2xl p-6 md:p-8">
           <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
             Vital Signs
           </div>
@@ -207,15 +207,22 @@ export default function ObservePage() {
               loading={loading}
             />
           </div>
+
+          {/* Last updated */}
+          {data?.updatedAt && (
+            <div className="mt-6 text-xs text-black/30">
+              Last updated: {new Date(data.updatedAt).toLocaleTimeString()}
+            </div>
+          )}
         </section>
 
-        {/* Explore Section */}
-        <section>
+        {/* Explore Frame */}
+        <section className="bg-white rounded-2xl p-6 md:p-8">
           <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
             Explore
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {portals.map((portal) => (
               <PortalCard
                 key={portal.href}
@@ -228,12 +235,6 @@ export default function ObservePage() {
           </div>
         </section>
 
-        {/* Last updated */}
-        {data?.updatedAt && (
-          <div className="mt-8 text-xs text-black/30 text-center">
-            Last updated: {new Date(data.updatedAt).toLocaleTimeString()}
-          </div>
-        )}
       </div>
 
       {/* Mobile bottom padding */}
