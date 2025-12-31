@@ -2,6 +2,68 @@
 
 import Link from 'next/link'
 import Breadcrumb from '@/components/ui/Breadcrumb'
+import KeyNumber from './components/KeyNumber'
+
+// ============================================================================
+// KEY NUMBERS - Fundamental constants and counts
+// ============================================================================
+
+const keyNumbers = [
+  {
+    value: '299,792,458',
+    unit: 'm/s',
+    context: 'speed of light',
+    href: '/data/constants',
+  },
+  {
+    value: '118',
+    unit: 'elements',
+    context: 'periodic table',
+    href: '/data/elements',
+  },
+  {
+    value: '3,352',
+    unit: 'nuclides',
+    context: 'known isotopes',
+    href: '/data/nuclides',
+  },
+  {
+    value: '8',
+    unit: 'planets',
+    context: '+ 5 dwarf planets',
+    href: '/data/solar-system',
+  },
+  {
+    value: '88',
+    unit: 'constellations',
+    context: 'official IAU',
+    href: '/data/constellations',
+  },
+  {
+    value: '4.54',
+    unit: 'billion years',
+    context: "Earth's age",
+    href: '/data/time',
+  },
+  {
+    value: '6.022×10<sup>23</sup>',
+    unit: 'mol⁻¹',
+    context: "Avogadro's number",
+    href: '/data/constants',
+  },
+  {
+    value: '~8.7',
+    unit: 'million',
+    context: 'estimated species',
+    href: '/data/bestiary',
+  },
+  {
+    value: '110',
+    unit: 'objects',
+    context: 'Messier catalogue',
+    href: '/data/messier',
+  },
+]
 
 // ============================================================================
 // DATA SECTION - 6 CATEGORIES
@@ -125,7 +187,7 @@ export default function DataPage() {
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
         {/* Header */}
-        <div className="mb-6 md:mb-8">
+        <div className="mb-8 md:mb-10">
           <Breadcrumb
             items={[
               { label: 'MXWLL', href: '/' },
@@ -145,6 +207,25 @@ export default function DataPage() {
             {stats.ready} ready · {stats.comingSoon} coming soon
           </p>
         </div>
+
+        {/* Key Numbers Section */}
+        <section className="mb-12 md:mb-16">
+          <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
+            Key Numbers
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
+            {keyNumbers.map((num) => (
+              <KeyNumber
+                key={num.href + num.value}
+                value={num.value}
+                unit={num.unit}
+                context={num.context}
+                href={num.href}
+              />
+            ))}
+          </div>
+        </section>
 
         {/* Categories */}
         <div className="space-y-12 md:space-y-16">
