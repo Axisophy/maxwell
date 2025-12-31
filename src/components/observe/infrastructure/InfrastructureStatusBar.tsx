@@ -24,10 +24,15 @@ export default function InfrastructureStatusBar({ className = '' }: Infrastructu
         const energyResponse = await fetch('/api/uk-energy')
         const energyData = await energyResponse.json()
 
+        // Extract intensity - API returns { actual, forecast, index }
+        const intensityValue = typeof energyData.intensity === 'object'
+          ? (energyData.intensity?.actual ?? energyData.intensity?.forecast ?? 186)
+          : (energyData.intensity || 186)
+
         setStats({
           ukDemand: energyData.demand || 32.4,
           gridFrequency: 50.00 + (Math.random() * 0.04 - 0.02), // Simulated ~50Hz ± 0.02
-          carbonIntensity: energyData.intensity || 186,
+          carbonIntensity: intensityValue,
           activeCables: 552, // Static for now
         })
       } catch (error) {

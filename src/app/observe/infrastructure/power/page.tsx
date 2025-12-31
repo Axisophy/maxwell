@@ -8,7 +8,7 @@ interface GridData {
   frequency: number
   demand: number
   generation: Record<string, number>
-  intensity: number
+  intensity: number // actual or forecast gCO2/kWh
   renewable: number
   lowCarbon: number
 }
@@ -52,13 +52,18 @@ export default function PowerPage() {
       const energyData = await energyRes.json()
       const freqData = await freqRes.json()
 
+      // Extract intensity - API returns { actual, forecast, index }
+      const intensityValue = typeof energyData.intensity === 'object'
+        ? (energyData.intensity?.actual ?? energyData.intensity?.forecast ?? 186)
+        : (energyData.intensity || 186)
+
       setData({
         frequency: freqData.frequency || 50.0,
         demand: energyData.demand || 32.4,
         generation: energyData.generation || {},
-        intensity: energyData.intensity || 186,
-        renewable: energyData.renewable || 35,
-        lowCarbon: energyData.lowCarbon || 55,
+        intensity: intensityValue,
+        renewable: energyData.renewablePercent ?? energyData.renewable ?? 35,
+        lowCarbon: energyData.lowCarbonPercent ?? energyData.lowCarbon ?? 55,
       })
     } catch (error) {
       console.error('Failed to fetch power data:', error)
