@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Orbit, Globe, Leaf, Factory, Radio, LayoutDashboard } from 'lucide-react'
 import Breadcrumb from '@/components/ui/Breadcrumb'
+import { ObserveIcon } from '@/components/icons'
 import VitalSign from './components/VitalSign'
 import PopulationCounter from './components/PopulationCounter'
 import StatusVitalSign from './components/StatusVitalSign'
@@ -96,21 +97,25 @@ export default function ObservePage() {
     <main className="min-h-screen bg-black">
       <div className="px-4 pt-4 pb-8">
 
-        {/* Breadcrumb - outside frames */}
-        <Breadcrumb
-          items={[
-            { label: 'MXWLL', href: '/' },
-            { label: 'Observe' },
-          ]}
-          theme="dark"
-          className="mb-2"
-        />
+        {/* Breadcrumb Frame */}
+        <div className="mb-0.5">
+          <span className="inline-block bg-white rounded-lg p-4">
+            <Breadcrumb
+              items={[
+                { label: 'MXWLL', href: '/' },
+                { label: 'Observe' },
+              ]}
+              theme="light"
+            />
+          </span>
+        </div>
 
         {/* Frames container */}
         <div className="flex flex-col gap-px">
 
           {/* Header Frame */}
           <section className="bg-white rounded-lg p-4">
+            <ObserveIcon size={32} className="text-black mb-3" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
               Observe
             </h1>
