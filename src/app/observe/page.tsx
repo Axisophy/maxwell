@@ -1,13 +1,13 @@
 import Link from 'next/link'
-import { Activity, LayoutDashboard, PawPrint, Orbit, Globe } from 'lucide-react'
+import { LayoutDashboard, Orbit, Globe, Leaf, Factory, Radio } from 'lucide-react'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 
 const observePages = [
   {
-    href: '/observe/vital-signs',
-    title: 'Vital Signs',
-    description: 'Live data from Earth and space at a glance. Earthquakes, CO₂, solar activity, and more.',
-    icon: Activity,
+    href: '/observe/dashboard',
+    title: 'Dashboard',
+    description: 'Beautiful live widgets showing the Sun, Earth, space weather, and other real-time data.',
+    icon: LayoutDashboard,
   },
   {
     href: '/observe/space',
@@ -22,16 +22,22 @@ const observePages = [
     icon: Globe,
   },
   {
-    href: '/observe/wildlife',
-    title: 'Wildlife Tracking',
-    description: 'Where are they now? Live GPS tracking of sharks, whales, turtles, and birds worldwide.',
-    icon: PawPrint,
+    href: '/observe/life',
+    title: 'Life',
+    description: 'Wildlife tracking and biological monitoring. GPS-tracked animals, ocean sounds, and bird observations.',
+    icon: Leaf,
   },
   {
-    href: '/observe/dashboard',
-    title: 'Dashboard',
-    description: 'Beautiful live widgets showing the Sun, Earth, space weather, and other real-time data.',
-    icon: LayoutDashboard,
+    href: '/observe/infrastructure',
+    title: 'Infrastructure',
+    description: 'The invisible systems that keep civilisation running. Power grids, submarine cables, and connectivity.',
+    icon: Factory,
+  },
+  {
+    href: '/observe/detectors',
+    title: 'Detectors',
+    description: 'The world\'s most sensitive instruments. Particle colliders, gravitational waves, neutrinos, and cosmic rays.',
+    icon: Radio,
   },
 ]
 
@@ -59,7 +65,7 @@ export default function ObservePage() {
         </div>
 
         {/* Page cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl">
           {observePages.map((page) => {
             const Icon = page.icon
             return (

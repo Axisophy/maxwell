@@ -22,11 +22,12 @@ const navItems = [
 
 // Submenus - using category names for DATA
 const observeSubmenu = [
-  { href: '/observe', label: 'Living Dashboard', active: true },
-  { href: '/observe/vital-signs', label: 'Vital Signs', active: true },
+  { href: '/observe/dashboard', label: 'Dashboard', active: true },
   { href: '/observe/space', label: 'Space', active: true },
   { href: '/observe/earth', label: 'Earth', active: true },
-  { href: '/observe/your-dashboard', label: 'Your Dashboard', active: true },
+  { href: '/observe/life', label: 'Life', active: true },
+  { href: '/observe/infrastructure', label: 'Infrastructure', active: true },
+  { href: '/observe/detectors', label: 'Detectors', active: true },
 ]
 
 const pulseSubmenu = [
