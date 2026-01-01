@@ -1,207 +1,298 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import { Sun, Moon, Sparkles, Satellite, Radio, Telescope } from 'lucide-react'
-import Breadcrumb from '@/components/ui/Breadcrumb'
-import SpaceStatusBar from '@/components/observe/space/SpaceStatusBar'
-import SpaceHero from '@/components/observe/space/SpaceHero'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Space | MXWLL',
-  description: 'Live observation of our solar system. Real-time data from spacecraft, satellites, and observatories monitoring the Sun, Moon, and near-Earth environment.',
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import Breadcrumb from '@/components/ui/Breadcrumb'
+
+interface SpaceData {
+  solarWind: { speed: number; density: number }
+  kpIndex: { value: number; status: string }
+  solarFlares: { today: number; class: string }
+  moonPhase: { illumination: number; phase: string }
+  issPosition: { lat: number; lon: number; altitude: number }
+  nextLaunch: { name: string; date: string; provider: string }
+  nearestAsteroid: { name: string; distance: number; date: string }
+  updatedAt: string
 }
 
 const spacePages = [
   {
-    href: '/observe/space/solar-observatory',
     title: 'Solar Observatory',
-    description: 'Live solar imagery from SDO, SOHO, and STEREO-A. X-ray flux, solar wind, CMEs, and space weather monitoring.',
-    icon: Sun,
-    status: 'LIVE',
-    statusColor: 'emerald',
+    description: 'Live imagery from SDO, SOHO, and STEREO spacecraft',
+    href: '/observe/space/solar-observatory',
   },
   {
-    href: '/observe/space/lunar-atlas',
     title: 'Lunar Atlas',
-    description: 'Explore the Moon\'s surface. Maria, craters, and Apollo landing sites with multiple map layers.',
-    icon: Moon,
-    status: null,
-    statusColor: null,
+    description: 'Interactive Moon map and phase tracker',
+    href: '/observe/space/lunar-atlas',
   },
   {
+    title: 'Aurora',
+    description: 'Northern and southern lights forecast',
     href: '/observe/space/aurora',
-    title: 'Aurora Watch',
-    description: 'Real-time aurora forecasts. OVATION Prime model predictions for northern and southern lights.',
-    icon: Sparkles,
-    status: 'LIVE',
-    statusColor: 'emerald',
   },
 ]
 
-const upcomingPages = [
+const spaceWidgets = [
   {
-    title: 'Satellites Above',
-    description: 'Track satellites and the ISS overhead in real-time.',
-    icon: Satellite,
+    title: 'ISS Tracker',
+    description: 'Real-time position of the International Space Station',
+    href: '/observe/dashboard?widget=iss',
   },
   {
-    title: 'Deep Space Network',
-    description: 'Live communications with interplanetary spacecraft.',
-    icon: Radio,
+    title: 'Near-Earth Asteroids',
+    description: 'Tracking objects passing close to Earth',
+    href: '/observe/dashboard?widget=asteroids',
   },
   {
-    title: 'Night Sky',
-    description: 'What\'s visible tonight from your location.',
-    icon: Telescope,
+    title: 'Launch Schedule',
+    description: 'Upcoming rocket launches worldwide',
+    href: '/observe/dashboard?widget=launches',
+  },
+  {
+    title: 'Space Weather',
+    description: 'Solar wind, geomagnetic activity, and radiation',
+    href: '/observe/dashboard?widget=space-weather',
   },
 ]
+
+function SpaceMetric({
+  value,
+  label,
+  unit,
+  loading = false,
+}: {
+  value: string | number
+  label: string
+  unit?: string
+  loading?: boolean
+}) {
+  return (
+    <div className="bg-black rounded-lg p-3">
+      <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1">
+        {label}
+      </div>
+      {loading ? (
+        <div className="h-7 bg-white/10 rounded animate-pulse" />
+      ) : (
+        <div className="font-mono text-lg font-bold text-white">
+          {value}
+          {unit && <span className="text-white/60 text-sm ml-1">{unit}</span>}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function PageCard({
+  title,
+  description,
+  href,
+}: {
+  title: string
+  description: string
+  href: string
+}) {
+  return (
+    <Link
+      href={href}
+      className="block bg-black rounded-lg p-4 hover:bg-black/80 transition-colors group"
+    >
+      <h3 className="text-lg font-medium text-white mb-1 group-hover:text-white/90">
+        {title}
+      </h3>
+      <p className="text-sm text-white/50">
+        {description}
+      </p>
+    </Link>
+  )
+}
+
+function WidgetCard({
+  title,
+  description,
+  href,
+}: {
+  title: string
+  description: string
+  href: string
+}) {
+  return (
+    <Link
+      href={href}
+      className="block bg-black/5 rounded-lg p-4 hover:bg-black/10 transition-colors border border-transparent hover:border-black/20"
+    >
+      <h3 className="text-base font-medium text-black mb-1">
+        {title}
+      </h3>
+      <p className="text-sm text-black/50">
+        {description}
+      </p>
+    </Link>
+  )
+}
 
 export default function SpacePage() {
+  const [data, setData] = useState<SpaceData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchSpaceData() {
+      try {
+        // Fetch from vital-signs API (or create a dedicated space API)
+        const res = await fetch('/api/vital-signs')
+        const json = await res.json()
+        setData({
+          solarWind: json.solarWind || { speed: 0, density: 0 },
+          kpIndex: json.kpIndex || { value: 0, status: 'quiet' },
+          solarFlares: json.solarFlares || { today: 0, class: 'none' },
+          moonPhase: { illumination: 0, phase: 'waxing' }, // TODO: Add to API
+          issPosition: { lat: 0, lon: 0, altitude: 408 }, // TODO: Add to API
+          nextLaunch: { name: 'TBD', date: '', provider: '' }, // TODO: Add to API
+          nearestAsteroid: json.nearestAsteroid || { name: '', distance: 0, date: '' },
+          updatedAt: json.updatedAt,
+        })
+      } catch (error) {
+        console.error('Failed to fetch space data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSpaceData()
+    const interval = setInterval(fetchSpaceData, 60000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Determine Kp status styling
+  const kpValue = data?.kpIndex?.value || 0
+  const kpStatusText = kpValue >= 5 ? 'Storm' : kpValue >= 4 ? 'Active' : 'Quiet'
+
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-white">
-      <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Observe', href: '/observe' },
-              { label: 'Space' },
-            ]}
-            theme="dark"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light mb-3">
-            Space
-          </h1>
-          <p className="text-base md:text-lg text-white/60 max-w-2xl">
-            Live observation of our solar system. Real-time data from spacecraft, satellites,
-            and observatories monitoring the Sun, Moon, and near-Earth environment.
-          </p>
+    <main className="min-h-screen bg-white">
+      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
+
+        {/* Breadcrumb Frame */}
+        <div className="mb-px">
+          <div className="block bg-black rounded-lg py-1 md:py-2 px-2 md:px-4">
+            <Breadcrumb
+              items={[
+                { label: 'MXWLL', href: '/' },
+                { label: 'Observe', href: '/observe' },
+                { label: 'Space' },
+              ]}
+              theme="dark"
+            />
+          </div>
         </div>
 
-        {/* Status Bar */}
-        <SpaceStatusBar className="mb-8" />
+        {/* Frames container */}
+        <div className="flex flex-col gap-px">
 
-        {/* Hero Visualization */}
-        <SpaceHero className="mb-10" />
+          {/* Header Frame */}
+          <section className="bg-black rounded-lg p-2 md:p-4">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-white uppercase mb-3">
+              Space
+            </h1>
+            <p className="text-base md:text-lg text-white/60 max-w-2xl">
+              Sun, Moon, aurora, and spacecraft. Live data from NASA, ESA, and space agencies worldwide.
+            </p>
+          </section>
 
-        {/* Main Pages */}
-        <section className="mb-12">
-          <h2 className="text-sm font-mono text-white/40 uppercase tracking-wider mb-4">
-            Live Observations
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {spacePages.map((page) => {
-              const Icon = page.icon
-              return (
-                <Link
+          {/* Space Metrics Frame */}
+          <section className="bg-[#404040] rounded-lg p-2 md:p-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px">
+              <SpaceMetric
+                value={data?.solarWind?.speed || 0}
+                label="Solar Wind"
+                unit="km/s"
+                loading={loading}
+              />
+              <SpaceMetric
+                value={kpValue}
+                label={`Kp Index · ${kpStatusText}`}
+                loading={loading}
+              />
+              <SpaceMetric
+                value={data?.solarFlares?.today || 0}
+                label="Solar Flares (24h)"
+                loading={loading}
+              />
+              <SpaceMetric
+                value={data?.nearestAsteroid?.distance?.toFixed(1) || '—'}
+                label="Nearest Asteroid"
+                unit="LD"
+                loading={loading}
+              />
+            </div>
+          </section>
+
+          {/* Observatory Pages Frame */}
+          <section className="bg-black rounded-lg p-2 md:p-4">
+            <div className="text-sm text-white/40 uppercase tracking-wider mb-4">
+              Observatories
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
+              {spacePages.map((page) => (
+                <PageCard
                   key={page.href}
+                  title={page.title}
+                  description={page.description}
                   href={page.href}
-                  className="bg-[#0f0f14] rounded-xl border border-white/10 p-6 hover:border-white/30 transition-colors group"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 bg-white/5 rounded-lg">
-                      <Icon size={22} className="text-white/70" strokeWidth={1.5} />
-                    </div>
-                    {page.status && (
-                      <span className={`px-2 py-0.5 bg-${page.statusColor}-500/20 text-${page.statusColor}-400 text-xs font-mono rounded`}>
-                        {page.status}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-lg font-medium text-white mb-2 group-hover:underline">
-                    {page.title}
-                  </h3>
-                  <p className="text-sm text-white/50 leading-relaxed">
-                    {page.description}
-                  </p>
-                </Link>
-              )
-            })}
-          </div>
-        </section>
-
-        {/* Coming Soon */}
-        <section className="mb-12">
-          <h2 className="text-sm font-mono text-white/40 uppercase tracking-wider mb-4">
-            Coming Soon
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {upcomingPages.map((page) => {
-              const Icon = page.icon
-              return (
-                <div
-                  key={page.title}
-                  className="bg-[#0f0f14] rounded-xl border border-white/5 p-6 opacity-60"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 bg-white/5 rounded-lg">
-                      <Icon size={22} className="text-white/40" strokeWidth={1.5} />
-                    </div>
-                    <span className="px-2 py-0.5 bg-white/10 text-white/40 text-xs font-mono rounded">
-                      SOON
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-medium text-white/60 mb-2">
-                    {page.title}
-                  </h3>
-                  <p className="text-sm text-white/30 leading-relaxed">
-                    {page.description}
-                  </p>
-                </div>
-              )
-            })}
-          </div>
-        </section>
-
-        {/* What's Happening Now */}
-        <section className="mb-12">
-          <h2 className="text-sm font-mono text-white/40 uppercase tracking-wider mb-4">
-            What&apos;s Happening Now
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[#0f0f14] rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                <h3 className="text-sm font-medium text-white">Solar Cycle 25</h3>
-              </div>
-              <p className="text-xs text-white/50 leading-relaxed">
-                We&apos;re approaching solar maximum (expected 2024-2025). Sunspot numbers are
-                rising, meaning more frequent solar flares, CMEs, and enhanced aurora activity.
-              </p>
+                />
+              ))}
             </div>
+          </section>
 
-            <div className="bg-[#0f0f14] rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                <h3 className="text-sm font-medium text-white">Active Spacecraft</h3>
-              </div>
-              <p className="text-xs text-white/50 leading-relaxed">
-                Data from SDO (solar disk), SOHO &amp; STEREO-A (coronagraphs), and DSCOVR
-                (solar wind at L1) stream to Earth continuously, enabling real-time monitoring.
-              </p>
+          {/* Widgets Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4 border border-black/10">
+            <div className="text-sm text-black/40 uppercase tracking-wider mb-4">
+              Widgets
             </div>
-          </div>
-        </section>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {spaceWidgets.map((widget) => (
+                <WidgetCard
+                  key={widget.href}
+                  title={widget.title}
+                  description={widget.description}
+                  href={widget.href}
+                />
+              ))}
+            </div>
+          </section>
 
-        {/* Footer */}
-        <footer className="pt-8 border-t border-white/10">
-          <div className="flex flex-wrap gap-6">
-            <Link
-              href="/observe"
-              className="text-white/60 hover:text-white transition-colors text-sm"
-            >
-              ← Back to Observe
-            </Link>
-            <Link
-              href="/data/solar-system"
-              className="text-white/60 hover:text-white transition-colors text-sm"
-            >
-              Solar System Data →
-            </Link>
-          </div>
-        </footer>
+          {/* Cross-references Frame */}
+          <section className="bg-black rounded-lg p-2 md:p-4">
+            <div className="text-sm text-white/40 uppercase tracking-wider mb-3">
+              Related
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/data/solar-system"
+                className="text-sm text-white/60 hover:text-white transition-colors"
+              >
+                Solar System Reference →
+              </Link>
+              <Link
+                href="/observe/detectors"
+                className="text-sm text-white/60 hover:text-white transition-colors"
+              >
+                Particle Detectors →
+              </Link>
+              <Link
+                href="/observe/dashboard"
+                className="text-sm text-white/60 hover:text-white transition-colors"
+              >
+                Dashboard →
+              </Link>
+            </div>
+          </section>
+
+        </div>
       </div>
+
+      {/* Mobile bottom padding */}
+      <div className="h-20 md:hidden" />
     </main>
   )
 }
