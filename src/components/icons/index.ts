@@ -1,3 +1,7 @@
 export { default as ObserveIcon } from './ObserveIcon'
 export { default as ToolsIcon } from './ToolsIcon'
 export { default as HomeIcon } from './HomeIcon'
+export { default as PulseIcon } from './PulseIcon'
+export { default as VaultIcon } from './VaultIcon'
+export { default as PlayIcon } from './PlayIcon'
+export { default as DataIcon } from './DataIcon'
