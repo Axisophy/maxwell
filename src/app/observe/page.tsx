@@ -30,6 +30,11 @@ interface VitalSignsData {
 
 const portals = [
   {
+    title: 'Dashboard',
+    description: 'Your customised widget display',
+    href: '/observe/dashboard',
+  },
+  {
     title: 'Space',
     description: 'Sun, Moon, aurora, and spacecraft monitoring',
     href: '/observe/space',
@@ -53,11 +58,6 @@ const portals = [
     title: 'Detectors',
     description: 'LHC, LIGO, IceCube, and cosmic rays',
     href: '/observe/detectors',
-  },
-  {
-    title: 'Dashboard',
-    description: 'Your customised widget display',
-    href: '/observe/dashboard',
   },
 ]
 
