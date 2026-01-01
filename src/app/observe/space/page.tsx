@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Breadcrumb from '@/components/ui/Breadcrumb'
+import { ObserveIcon } from '@/components/icons'
 
 interface SpaceData {
   solarWind: { speed: number; density: number }
@@ -115,6 +116,45 @@ function SpaceCard({
   )
 }
 
+// Live image component with separate image and caption frames
+function LiveImageCard({
+  src,
+  alt,
+  title,
+  caption,
+  href,
+}: {
+  src: string
+  alt: string
+  title: string
+  caption: string
+  href: string
+}) {
+  return (
+    <Link href={href} className="block">
+      <div className="flex flex-col gap-px">
+        {/* Image frame */}
+        <div className="bg-white rounded-lg p-2 md:p-3">
+          <div className="aspect-square relative rounded-lg overflow-hidden bg-black">
+            <Image
+              src={src}
+              alt={alt}
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+        </div>
+        {/* Caption frame */}
+        <div className="bg-white rounded-lg p-2 md:p-3 hover:bg-neutral-100 transition-colors">
+          <div className="text-sm font-medium text-black">{title}</div>
+          <div className="text-xs text-black/50">{caption}</div>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
 export default function SpacePage() {
   const [data, setData] = useState<SpaceData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -169,6 +209,7 @@ export default function SpacePage() {
 
           {/* Header Frame */}
           <section className="bg-black rounded-lg p-2 md:p-4">
+            <ObserveIcon className="text-white mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-white uppercase mb-3">
               Space
             </h1>
@@ -183,45 +224,20 @@ export default function SpacePage() {
               Live Imagery
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-px">
-              {/* SDO Solar Image */}
-              <Link
+              <LiveImageCard
+                src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_512_0193.jpg"
+                alt="SDO AIA 193Å - Solar corona"
+                title="SDO AIA 193Å"
+                caption="Solar corona · Updated every 15 minutes"
                 href="/observe/space/solar-observatory"
-                className="block bg-white rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
-              >
-                <div className="aspect-square relative bg-black">
-                  <Image
-                    src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_512_0193.jpg"
-                    alt="SDO AIA 193Å - Solar corona"
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
-                <div className="p-3">
-                  <div className="text-sm font-medium text-black">SDO AIA 193Å</div>
-                  <div className="text-xs text-black/50">Solar corona · Updated every 15 minutes</div>
-                </div>
-              </Link>
-
-              {/* SOHO LASCO C3 */}
-              <Link
+              />
+              <LiveImageCard
+                src="https://soho.nascom.nasa.gov/data/realtime/c3/512/latest.jpg"
+                alt="SOHO LASCO C3 - Solar coronagraph"
+                title="SOHO LASCO C3"
+                caption="Coronagraph · Updated every 30 minutes"
                 href="/observe/space/solar-observatory"
-                className="block bg-white rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
-              >
-                <div className="aspect-square relative bg-black">
-                  <Image
-                    src="https://soho.nascom.nasa.gov/data/realtime/c3/512/latest.jpg"
-                    alt="SOHO LASCO C3 - Solar coronagraph"
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
-                <div className="p-3">
-                  <div className="text-sm font-medium text-black">SOHO LASCO C3</div>
-                  <div className="text-xs text-black/50">Coronagraph · Updated every 30 minutes</div>
-                </div>
-              </Link>
+              />
             </div>
           </section>
 
