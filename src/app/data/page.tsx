@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Breadcrumb from '@/components/ui/Breadcrumb'
+import { DataIcon } from '@/components/icons'
 import KeyNumber from './components/KeyNumber'
 
 // ============================================================================
@@ -68,13 +69,6 @@ const keyNumbers = [
 // ============================================================================
 // DATA SECTION - 6 CATEGORIES
 // ============================================================================
-// 1. THE COSMOS - Universe at every scale (merged Universe + Astronomy basics)
-// 2. MATTER - Elements, isotopes, molecules, materials
-// 3. LIFE - Biology, genetics, species
-// 4. EARTH - Our planet's systems
-// 5. MATHEMATICS - Pure math
-// 6. DEEP SKY - Beyond the Solar System
-// ============================================================================
 
 interface DataItem {
   title: string
@@ -94,7 +88,7 @@ const categories: Category[] = [
   {
     id: 'cosmos',
     title: 'The Cosmos',
-    description: 'The universe at every scale - from fundamental constants to the solar system.',
+    description: 'The universe at every scale — from fundamental constants to the solar system.',
     items: [
       { title: 'Solar System', href: '/data/solar-system', status: 'ready', description: 'The Sun, eight planets, and everything in between' },
       { title: 'Scale of the Universe', href: '/data/scale', status: 'coming-soon', description: 'Powers of 10, from quarks to cosmos' },
@@ -107,7 +101,7 @@ const categories: Category[] = [
   {
     id: 'matter',
     title: 'Matter',
-    description: 'What everything is made of - elements, isotopes, molecules, and materials.',
+    description: 'What everything is made of — elements, isotopes, molecules, and materials.',
     items: [
       { title: 'Periodic Table', href: '/data/elements', status: 'coming-soon', description: 'The 118 elements' },
       { title: 'Chart of Nuclides', href: '/data/nuclides', status: 'ready', description: 'Every known isotope' },
@@ -120,7 +114,7 @@ const categories: Category[] = [
   {
     id: 'life',
     title: 'Life',
-    description: 'Biology from molecules to ecosystems - genetics, metabolism, and species.',
+    description: 'Biology from molecules to ecosystems — genetics, metabolism, and species.',
     items: [
       { title: 'Genetic Code', href: '/data/genetic-code', status: 'coming-soon', description: 'Codons and amino acids' },
       { title: 'Genome Explorer', href: '/data/genome', status: 'coming-soon', description: 'Chromosomes, genes, and variants' },
@@ -134,7 +128,7 @@ const categories: Category[] = [
   {
     id: 'earth',
     title: 'Earth',
-    description: 'Our planet - climate, geology, tectonics, and the systems that shape it.',
+    description: 'Our planet — climate, geology, tectonics, and the systems that shape it.',
     items: [
       { title: 'Climate Data Centre', href: '/data/climate', status: 'ready', description: '38 climate datasets' },
       { title: 'Unrest', href: '/data/unrest', status: 'ready', description: 'Earthquakes, volcanoes, and storms' },
@@ -148,7 +142,7 @@ const categories: Category[] = [
   {
     id: 'mathematics',
     title: 'Mathematics',
-    description: 'Pure mathematics - numbers, geometry, equations, and topology.',
+    description: 'Pure mathematics — numbers, geometry, equations, and topology.',
     items: [
       { title: 'Number Sequences', href: '/data/sequences', status: 'coming-soon', description: 'Primes, Fibonacci, and more' },
       { title: 'Geometry', href: '/data/geometry', status: 'coming-soon', description: 'Platonic solids and tessellations' },
@@ -159,7 +153,7 @@ const categories: Category[] = [
   {
     id: 'deep-sky',
     title: 'Deep Sky',
-    description: 'Beyond the Solar System - stars, galaxies, and the distant universe.',
+    description: 'Beyond the Solar System — stars, galaxies, and the distant universe.',
     items: [
       { title: 'Constellations', href: '/data/constellations', status: 'coming-soon', description: 'All 88 official constellations' },
       { title: 'Messier Objects', href: '/data/messier', status: 'coming-soon', description: '110 deep-sky objects' },
@@ -184,56 +178,65 @@ const stats = categories.reduce(
 
 export default function DataPage() {
   return (
-    <main className="min-h-screen bg-[#f5f5f5]">
-      <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-8 md:mb-10">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Data' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            Data
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Reference datasets, interactive visualizations, and tools. The raw material
-            of science, presented properly.
-          </p>
-          <p className="text-sm text-black/40 mt-2">
-            {stats.ready} ready · {stats.comingSoon} coming soon
-          </p>
+    <main className="min-h-screen bg-black">
+      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
+
+        {/* Breadcrumb Frame */}
+        <div className="mb-px">
+          <div className="block bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
+            <Breadcrumb
+              items={[
+                { label: 'MXWLL', href: '/' },
+                { label: 'Data' },
+              ]}
+              theme="light"
+            />
+          </div>
         </div>
 
-        {/* Key Numbers Section */}
-        <section className="mb-12 md:mb-16">
-          <div className="text-xs font-mono text-black/40 uppercase tracking-wider mb-6">
-            Key Numbers
-          </div>
+        {/* Frames container */}
+        <div className="flex flex-col gap-px">
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
-            {keyNumbers.map((num) => (
-              <KeyNumber
-                key={num.href + num.value}
-                value={num.value}
-                unit={num.unit}
-                context={num.context}
-                href={num.href}
-              />
-            ))}
-          </div>
-        </section>
+          {/* Header Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
+              Data
+            </h1>
+            <p className="text-base md:text-lg text-black/60 max-w-2xl">
+              Reference datasets, interactive visualizations, and tools. The raw material
+              of science, presented properly.
+            </p>
+            <p className="text-sm text-black/40 mt-2">
+              {stats.ready} ready · {stats.comingSoon} coming soon
+            </p>
+          </section>
 
-        {/* Categories */}
-        <div className="space-y-12 md:space-y-16">
+          {/* Key Numbers Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
+              Key Numbers
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-px">
+              {keyNumbers.map((num) => (
+                <KeyNumber
+                  key={num.href + num.value}
+                  value={num.value}
+                  unit={num.unit}
+                  context={num.context}
+                  href={num.href}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Categories - Each category gets its own frame */}
           {categories.map((category) => (
-            <section key={category.id} id={category.id}>
+            <section key={category.id} id={category.id} className="bg-white rounded-lg p-2 md:p-4">
               {/* Category Header */}
               <div className="mb-4 md:mb-6">
-                <h2 className="text-xl md:text-2xl font-light text-black mb-1">
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-2">
                   {category.title}
                 </h2>
                 <p className="text-sm text-black/50">
@@ -242,22 +245,23 @@ export default function DataPage() {
               </div>
 
               {/* Items Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
                 {category.items.map((item) => (
                   <DataCard key={item.href} item={item} />
                 ))}
               </div>
             </section>
           ))}
-        </div>
 
-        {/* Footer note */}
-        <div className="mt-16 pt-8 border-t border-black/10">
-          <p className="text-sm text-black/40 max-w-2xl">
-            Everything connects. Elements link to where they're mined, which links to
-            when those deposits formed, which links to the geological timescale, which
-            links to what was alive. Follow the threads.
-          </p>
+          {/* Footer Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <p className="text-sm text-black/40 max-w-2xl">
+              Everything connects. Elements link to where they're mined, which links to
+              when those deposits formed, which links to the geological timescale, which
+              links to what was alive. Follow the threads.
+            </p>
+          </section>
+
         </div>
       </div>
 
@@ -278,10 +282,10 @@ function DataCard({ item }: { item: DataItem }) {
     return (
       <Link
         href={item.href}
-        className="block p-4 md:p-5 bg-white rounded-xl border border-transparent hover:border-black transition-colors group"
+        className="block p-2 md:p-4 bg-[#f5f5f5] rounded-lg hover:bg-[#e5e5e5] transition-colors group"
       >
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="text-base font-medium text-black group-hover:text-[#e6007e] transition-colors">
+          <h3 className="text-base font-medium text-black group-hover:text-black transition-colors">
             {item.title}
           </h3>
           <span className="flex-shrink-0 w-2 h-2 rounded-full bg-green-500 mt-1.5" />
@@ -294,7 +298,7 @@ function DataCard({ item }: { item: DataItem }) {
   }
 
   return (
-    <div className="p-4 md:p-5 bg-[#e5e5e5] rounded-xl">
+    <div className="p-2 md:p-4 bg-[#e5e5e5] rounded-lg">
       <div className="flex items-start justify-between gap-2 mb-1">
         <h3 className="text-base font-medium text-black/40">{item.title}</h3>
         <span className="flex-shrink-0 text-xs text-black/30 mt-0.5">Soon</span>
