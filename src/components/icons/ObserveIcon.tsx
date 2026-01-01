@@ -15,12 +15,8 @@ export default function ObserveIcon({
       fill="currentColor"
       className={className}
     >
-      {/* Outer eye shape */}
-      <path d="M1000,500s-200,300-500,300S0,500,0,500c0,0,200-300,500-300s500,300,500,300Z" />
-      {/* White ring (uses explicit white so it cuts through) */}
-      <circle cx="500" cy="500" r="200" fill="white" />
-      {/* Pupil (uses currentColor so it matches the outer shape) */}
-      <circle cx="500" cy="500" r="100" fill="currentColor" />
+      <path d="M500,200C200,200,0,500,0,500c0,0,200,300,500,300s500-300,500-300c0,0-200-300-500-300ZM500,700c-110.46,0-200-89.54-200-200s89.54-200,200-200,200,89.54,200,200-89.54,200-200,200Z"/>
+      <circle cx="500" cy="500" r="100"/>
     </svg>
   )
 }
