@@ -1,224 +1,301 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import { Zap, Globe2 } from 'lucide-react'
-import Breadcrumb from '@/components/ui/Breadcrumb'
-import InfrastructureStatusBar from '@/components/observe/infrastructure/InfrastructureStatusBar'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Infrastructure | Observe | MXWLL',
-  description: 'The invisible systems that keep civilisation running. Power grids, submarine cables, and connectivity.',
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import Breadcrumb from '@/components/ui/Breadcrumb'
+import { ObserveIcon } from '@/components/icons'
+
+interface InfraData {
+  ukGridDemand: number
+  gridFrequency: number
+  submarineCables: number
+  carbonIntensity: number
+  updatedAt: string
 }
 
 const infraPages = [
   {
-    href: '/observe/infrastructure/power',
     title: 'Power',
-    description: 'Global power grids. Generation mix, demand curves, grid frequency, and carbon intensity.',
-    icon: Zap,
-    status: 'LIVE',
+    description: 'Global power grids, generation mix, demand curves, and carbon intensity',
+    href: '/observe/infrastructure/power',
     available: true,
   },
   {
-    href: '/observe/infrastructure/internet',
     title: 'Internet',
-    description: 'Submarine cables connecting the world. 1.4 million km of fibre across ocean floors.',
-    icon: Globe2,
-    status: 'LIVE',
+    description: 'Submarine cables connecting the world — 1.4 million km of fibre across ocean floors',
+    href: '/observe/infrastructure/internet',
     available: true,
+  },
+  {
+    title: 'Aircraft',
+    description: 'Live flight tracking worldwide',
+    href: '/observe/infrastructure/aircraft',
+    available: false,
+  },
+  {
+    title: 'Ships',
+    description: 'Maritime traffic and shipping routes',
+    href: '/observe/infrastructure/ships',
+    available: false,
   },
 ]
 
-export default function InfrastructurePortalPage() {
+const infraWidgets = [
+  {
+    title: 'UK Energy',
+    description: 'Real-time generation mix and carbon intensity',
+    href: '/observe/dashboard?widget=uk-energy',
+  },
+  {
+    title: 'Grid Frequency',
+    description: 'Live frequency monitoring (50Hz/60Hz)',
+    href: '/observe/dashboard?widget=grid-frequency',
+  },
+  {
+    title: 'Nuclear Reactors',
+    description: 'Status of nuclear power stations',
+    href: '/observe/dashboard?widget=nuclear',
+  },
+]
+
+// VitalSign component
+function InfraVitalSign({
+  value,
+  label,
+  href,
+  loading = false,
+}: {
+  value: string | number
+  label: string
+  href?: string
+  loading?: boolean
+}) {
+  const content = (
+    <div className={`p-2 md:p-4 text-left bg-black rounded-lg ${href ? 'hover:bg-neutral-900 transition-colors' : ''}`}>
+      <div className="text-[10px] md:text-xs text-white/50 uppercase mb-1 md:mb-2">
+        {label}
+      </div>
+      {loading ? (
+        <div className="h-8 md:h-20 bg-white/10 rounded w-20 md:w-36 animate-pulse" />
+      ) : (
+        <div className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums text-white">
+          {typeof value === 'number' ? value.toLocaleString() : value}
+        </div>
+      )}
+    </div>
+  )
+
+  if (href) {
+    return <Link href={href} className="block">{content}</Link>
+  }
+  return content
+}
+
+// Card component
+function InfraCard({
+  title,
+  description,
+  href,
+  available = true,
+}: {
+  title: string
+  description: string
+  href: string
+  available?: boolean
+}) {
+  if (!available) {
+    return (
+      <div className="block p-2 md:p-4 bg-black rounded-lg border border-white/10 opacity-50">
+        <div className="flex items-center gap-3 mb-2">
+          <h2 className="text-2xl md:text-3xl font-light text-white uppercase">
+            {title}
+          </h2>
+          <span className="text-[10px] text-white/40 uppercase tracking-wider">
+            Coming Soon
+          </span>
+        </div>
+        <p className="text-sm text-white/50">
+          {description}
+        </p>
+      </div>
+    )
+  }
+
   return (
-    <main className="min-h-screen bg-[#f5f5f5]">
-      <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Observe', href: '/observe' },
-              { label: 'Infrastructure' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            Infrastructure
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            The invisible systems that keep civilisation running. Power grids balancing
-            supply and demand, submarine cables carrying 99% of intercontinental data.
-          </p>
+    <Link
+      href={href}
+      className="block p-2 md:p-4 bg-black rounded-lg border border-white/10 hover:border-white/30 transition-colors"
+    >
+      <h2 className="text-2xl md:text-3xl font-light text-white uppercase mb-2">
+        {title}
+      </h2>
+      <p className="text-sm text-white/50">
+        {description}
+      </p>
+    </Link>
+  )
+}
+
+export default function InfrastructurePortalPage() {
+  const [data, setData] = useState<InfraData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchInfraData() {
+      try {
+        const res = await fetch('/api/vital-signs')
+        const json = await res.json()
+        setData({
+          ukGridDemand: json.ukGrid?.demand || 0,
+          gridFrequency: 50.0, // Simulated for now
+          submarineCables: 552,
+          carbonIntensity: json.ukGrid?.carbonIntensity || 0,
+          updatedAt: json.updatedAt,
+        })
+      } catch (error) {
+        console.error('Failed to fetch infrastructure data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchInfraData()
+    const interval = setInterval(fetchInfraData, 60000)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <main className="min-h-screen bg-black">
+      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
+
+        {/* Breadcrumb Frame */}
+        <div className="mb-px">
+          <div className="block bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
+            <Breadcrumb
+              items={[
+                { label: 'MXWLL', href: '/' },
+                { label: 'Observe', href: '/observe' },
+                { label: 'Infrastructure' },
+              ]}
+              theme="light"
+            />
+          </div>
         </div>
 
-        {/* Status Bar */}
-        <InfrastructureStatusBar className="mb-8 max-w-3xl" />
+        {/* Frames container */}
+        <div className="flex flex-col gap-px">
 
-        {/* Hero Visualization Placeholder */}
-        <section className="mb-8 max-w-3xl">
-          <div className="bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 rounded-xl aspect-[21/9] flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-black/20" />
-            <div className="text-center z-10 text-white">
-              <Zap size={48} className="mx-auto mb-2" strokeWidth={1} />
-              <p className="text-white/80 text-sm">Power flows continuously</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Section Cards */}
-        <section className="mb-12 max-w-3xl">
-          <h2 className="text-sm font-mono text-black/40 uppercase tracking-wider mb-4">
-            Live Observations
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {infraPages.map((page) => {
-              const Icon = page.icon
-
-              if (!page.available) {
-                return (
-                  <div
-                    key={page.title}
-                    className="bg-white rounded-xl border border-[#e5e5e5] p-6 opacity-60"
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2.5 bg-[#f5f5f5] rounded-lg">
-                        <Icon size={22} className="text-black/30" strokeWidth={1.5} />
-                      </div>
-                      <span className="px-2 py-0.5 bg-black/5 text-black/40 text-xs font-mono rounded">
-                        {page.status}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-medium text-black/50 mb-2">
-                      {page.title}
-                    </h3>
-                    <p className="text-sm text-black/30 leading-relaxed">
-                      {page.description}
-                    </p>
-                  </div>
-                )
-              }
-
-              return (
-                <Link
-                  key={page.href}
-                  href={page.href}
-                  className="bg-white rounded-xl border border-[#e5e5e5] p-6 hover:border-black transition-colors group"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 bg-[#f5f5f5] rounded-lg">
-                      <Icon size={22} className="text-black/50" strokeWidth={1.5} />
-                    </div>
-                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-mono rounded">
-                      {page.status}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-medium text-black mb-2 group-hover:underline">
-                    {page.title}
-                  </h3>
-                  <p className="text-sm text-black/50 leading-relaxed">
-                    {page.description}
-                  </p>
-                </Link>
-              )
-            })}
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className="mb-12 max-w-3xl">
-          <h2 className="text-sm font-mono text-black/40 uppercase tracking-wider mb-4">
-            Global Scale
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-xl p-5 text-center">
-              <p className="text-2xl font-light text-black">29,000</p>
-              <p className="text-xs text-black/50">TWh/year consumed</p>
-            </div>
-            <div className="bg-white rounded-xl p-5 text-center">
-              <p className="text-2xl font-light text-black">552</p>
-              <p className="text-xs text-black/50">submarine cables</p>
-            </div>
-            <div className="bg-white rounded-xl p-5 text-center">
-              <p className="text-2xl font-light text-black">1.4M</p>
-              <p className="text-xs text-black/50">km of fibre</p>
-            </div>
-            <div className="bg-white rounded-xl p-5 text-center">
-              <p className="text-2xl font-light text-black">99%</p>
-              <p className="text-xs text-black/50">of data via cables</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Context Section */}
-        <section className="mb-12 max-w-3xl">
-          <h2 className="text-sm font-mono text-black/40 uppercase tracking-wider mb-4">
-            The Invisible Backbone
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 rounded-full bg-amber-500" />
-                <h3 className="text-sm font-medium text-black">Power Grids</h3>
-              </div>
-              <p className="text-xs text-black/50 leading-relaxed">
-                Electricity grids must balance supply and demand in real-time. Grid frequency
-                (50Hz in UK/Europe, 60Hz in US) is a direct measure of this balance —
-                when demand exceeds supply, frequency drops. Operators constantly adjust
-                generation to maintain stability.
-              </p>
-            </div>
-            <div className="bg-white rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 rounded-full bg-cyan-500" />
-                <h3 className="text-sm font-medium text-black">Submarine Cables</h3>
-              </div>
-              <p className="text-xs text-black/50 leading-relaxed">
-                Despite satellites, 99% of intercontinental internet traffic travels through
-                fibre-optic cables on the ocean floor. These cables are surprisingly thin
-                (about the diameter of a garden hose) yet carry terabits of data per second
-                across thousands of kilometres.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Coming Soon */}
-        <section className="mb-12 max-w-3xl">
-          <h2 className="text-sm font-mono text-black/40 uppercase tracking-wider mb-4">
-            Coming Soon
-          </h2>
-          <div className="bg-white/50 rounded-xl p-5 border border-dashed border-black/20">
-            <p className="text-sm text-black/40">
-              Future additions: Aircraft tracking, shipping routes, satellite constellations
+          {/* Header Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <ObserveIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
+              Infrastructure
+            </h1>
+            <p className="text-base md:text-lg text-black/60 max-w-2xl">
+              The invisible systems that keep civilisation running. Power grids balancing supply and demand, submarine cables carrying 99% of intercontinental data.
             </p>
-          </div>
-        </section>
+          </section>
 
-        {/* Footer */}
-        <footer className="pt-8 border-t border-black/10 max-w-3xl">
-          <div className="flex flex-wrap gap-6">
-            <Link
-              href="/observe"
-              className="text-black/60 hover:text-black transition-colors text-sm"
-            >
-              ← Back to Observe
-            </Link>
-            <Link
-              href="/observe/infrastructure/power"
-              className="text-black/60 hover:text-black transition-colors text-sm"
-            >
-              Power Grids →
-            </Link>
-            <Link
-              href="/observe/infrastructure/internet"
-              className="text-black/60 hover:text-black transition-colors text-sm"
-            >
-              Submarine Cables →
-            </Link>
-          </div>
-        </footer>
+          {/* Vital Signs Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
+              Global Scale
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px">
+              <InfraVitalSign
+                value={data?.ukGridDemand || 0}
+                label="UK Grid Demand (GW)"
+                href="/observe/infrastructure/power"
+                loading={loading}
+              />
+              <InfraVitalSign
+                value={data?.gridFrequency?.toFixed(2) || '—'}
+                label="Grid Frequency (Hz)"
+                href="/observe/infrastructure/power"
+                loading={loading}
+              />
+              <InfraVitalSign
+                value={data?.submarineCables || 0}
+                label="Submarine Cables"
+                href="/observe/infrastructure/internet"
+                loading={loading}
+              />
+              <InfraVitalSign
+                value="1.4M"
+                label="km of Fibre"
+                href="/observe/infrastructure/internet"
+                loading={loading}
+              />
+            </div>
+          </section>
+
+          {/* Observatories Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
+              Observatories
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px">
+              {infraPages.map((page) => (
+                <InfraCard
+                  key={page.href}
+                  title={page.title}
+                  description={page.description}
+                  href={page.href}
+                  available={page.available}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Widgets Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
+              Widgets
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
+              {infraWidgets.map((widget) => (
+                <InfraCard
+                  key={widget.href}
+                  title={widget.title}
+                  description={widget.description}
+                  href={widget.href}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Cross-references Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-sm text-black/40 uppercase tracking-wider mb-3">
+              Related
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/observe/earth"
+                className="text-sm text-black/60 hover:text-black transition-colors"
+              >
+                Earth Monitoring →
+              </Link>
+              <Link
+                href="/data/earth/civilisation"
+                className="text-sm text-black/60 hover:text-black transition-colors"
+              >
+                Civilisation Data →
+              </Link>
+              <Link
+                href="/observe/dashboard"
+                className="text-sm text-black/60 hover:text-black transition-colors"
+              >
+                Dashboard →
+              </Link>
+            </div>
+          </section>
+
+        </div>
       </div>
+
+      {/* Mobile bottom padding */}
+      <div className="h-20 md:hidden" />
     </main>
   )
 }
