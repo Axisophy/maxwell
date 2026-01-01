@@ -107,10 +107,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   key={section.href}
                   href={section.href}
                   onClick={onClose}
-                  className={`
-                    flex items-center gap-3 p-3
-                    ${index !== mainSections.length - 1 ? 'border-b border-black/10' : ''}
-                  `}
+                  className="flex items-center gap-3 p-3"
                 >
                   <Icon className="w-6 h-6 text-black" />
                   <span className="text-sm font-medium text-black uppercase">
@@ -128,10 +125,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 key={link.href}
                 href={link.href}
                 onClick={onClose}
-                className={`
-                  block p-3
-                  ${index !== secondaryLinks.length - 1 ? 'border-b border-black/10' : ''}
-                `}
+                className="block p-3"
               >
                 <span className="text-sm font-medium text-black uppercase">
                   {link.label}
