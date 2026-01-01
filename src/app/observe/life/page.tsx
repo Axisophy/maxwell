@@ -1,208 +1,282 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
-import { PawPrint, Waves, Bird } from 'lucide-react'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Life | Observe | MXWLL',
-  description: 'Wildlife tracking and biological monitoring. GPS-tracked animals, ocean sounds, and bird observations.',
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import Breadcrumb from '@/components/ui/Breadcrumb'
+import { ObserveIcon } from '@/components/icons'
+
+interface LifeData {
+  trackedAnimals: number
+  ebirdObservations: string
+  hydrophoneStations: number
+  updatedAt: string
 }
 
 const lifePages = [
   {
-    href: '/observe/wildlife',
     title: 'Wildlife Tracking',
-    description: 'Where are they now? Live GPS tracking of sharks, whales, turtles, and birds worldwide.',
-    icon: PawPrint,
-    status: 'LIVE',
+    description: 'Live GPS tracking of sharks, whales, turtles, and birds worldwide',
+    href: '/observe/wildlife',
     available: true,
   },
   {
-    href: '/observe/life/ocean',
     title: 'Ocean',
-    description: 'Deep sea cameras, hydrophone networks, and marine life monitoring.',
-    icon: Waves,
-    status: 'COMING SOON',
+    description: 'Deep sea cameras, hydrophone networks, and marine life monitoring',
+    href: '/observe/life/ocean',
     available: false,
   },
   {
-    href: '/observe/life/birds',
     title: 'Birds',
-    description: 'eBird sightings, nest cameras, and migration tracking.',
-    icon: Bird,
-    status: 'COMING SOON',
+    description: 'eBird sightings, nest cameras, and migration tracking',
+    href: '/observe/life/birds',
     available: false,
   },
 ]
 
-export default function LifePortalPage() {
-  return (
-    <main className="min-h-screen bg-[#f5f5f5]">
-      <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-8 md:mb-12">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Observe', href: '/observe' },
-              { label: 'Life' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            Life
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Monitoring the living world. Wildlife tracking, ocean acoustics, and bird observations
-            from researchers and citizen scientists around the globe.
-          </p>
-        </div>
+const lifeWidgets = [
+  {
+    title: 'eBird Live',
+    description: 'Recent bird sightings from citizen scientists',
+    href: '/observe/dashboard?widget=ebird',
+  },
+  {
+    title: 'iNaturalist Live',
+    description: 'Species observations from around the world',
+    href: '/observe/dashboard?widget=inaturalist',
+  },
+  {
+    title: 'Ocean Hydrophones',
+    description: 'Live underwater audio from research stations',
+    href: '/observe/dashboard?widget=hydrophones',
+  },
+]
 
-        {/* Hero Stats */}
-        <div className="bg-white rounded-xl p-6 md:p-8 mb-8 max-w-3xl">
-          <div className="flex items-center gap-6 mb-6">
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-              <PawPrint size={40} className="text-white" strokeWidth={1.5} />
-            </div>
-            <div>
-              <h2 className="text-2xl md:text-3xl font-light text-black mb-2">
-                The Living Planet
-              </h2>
-              <p className="text-sm text-black/50">
-                Real-time data from GPS trackers, acoustic sensors, and citizen science networks.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-[#f5f5f5] rounded-lg">
-              <p className="text-2xl font-light text-black">8.7M</p>
-              <p className="text-xs text-black/50">estimated species</p>
-            </div>
-            <div className="text-center p-4 bg-[#f5f5f5] rounded-lg">
-              <p className="text-2xl font-light text-black">1,000+</p>
-              <p className="text-xs text-black/50">tracked animals</p>
-            </div>
-            <div className="text-center p-4 bg-[#f5f5f5] rounded-lg">
-              <p className="text-2xl font-light text-black">500M+</p>
-              <p className="text-xs text-black/50">eBird observations</p>
-            </div>
-            <div className="text-center p-4 bg-[#f5f5f5] rounded-lg">
-              <p className="text-2xl font-light text-black">70+</p>
-              <p className="text-xs text-black/50">hydrophone stations</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Section Cards */}
-        <section className="mb-12 max-w-3xl">
-          <h2 className="text-sm font-mono text-black/40 uppercase tracking-wider mb-4">
-            Live Observations
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {lifePages.map((page) => {
-              const Icon = page.icon
-
-              if (!page.available) {
-                return (
-                  <div
-                    key={page.title}
-                    className="bg-white rounded-xl border border-[#e5e5e5] p-6 opacity-60"
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2.5 bg-[#f5f5f5] rounded-lg">
-                        <Icon size={22} className="text-black/30" strokeWidth={1.5} />
-                      </div>
-                      <span className="px-2 py-0.5 bg-black/5 text-black/40 text-xs font-mono rounded">
-                        {page.status}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-medium text-black/50 mb-2">
-                      {page.title}
-                    </h3>
-                    <p className="text-sm text-black/30 leading-relaxed">
-                      {page.description}
-                    </p>
-                  </div>
-                )
-              }
-
-              return (
-                <Link
-                  key={page.href}
-                  href={page.href}
-                  className="bg-white rounded-xl border border-[#e5e5e5] p-6 hover:border-black transition-colors group"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 bg-[#f5f5f5] rounded-lg">
-                      <Icon size={22} className="text-black/50" strokeWidth={1.5} />
-                    </div>
-                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-mono rounded">
-                      {page.status}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-medium text-black mb-2 group-hover:underline">
-                    {page.title}
-                  </h3>
-                  <p className="text-sm text-black/50 leading-relaxed">
-                    {page.description}
-                  </p>
-                </Link>
-              )
-            })}
-          </div>
-        </section>
-
-        {/* About Life Monitoring */}
-        <section className="mb-12 max-w-3xl">
-          <h2 className="text-sm font-mono text-black/40 uppercase tracking-wider mb-4">
-            About Life Monitoring
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white rounded-xl p-5">
-              <h3 className="text-sm font-medium text-black mb-3">Satellite Tracking</h3>
-              <p className="text-xs text-black/50 leading-relaxed">
-                GPS and Argos satellite tags transmit locations from animals across the globe.
-                Researchers use this data to understand migration patterns, habitat use, and
-                species behaviour in ways never before possible.
-              </p>
-            </div>
-            <div className="bg-white rounded-xl p-5">
-              <h3 className="text-sm font-medium text-black mb-3">Citizen Science</h3>
-              <p className="text-xs text-black/50 leading-relaxed">
-                Projects like eBird and iNaturalist harness observations from millions of
-                volunteers worldwide, creating unprecedented datasets for understanding
-                biodiversity and environmental change.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="pt-8 border-t border-black/10 max-w-3xl">
-          <div className="flex flex-wrap gap-6">
-            <Link
-              href="/observe"
-              className="text-black/60 hover:text-black transition-colors text-sm"
-            >
-              ← Back to Observe
-            </Link>
-            <Link
-              href="/observe/wildlife"
-              className="text-black/60 hover:text-black transition-colors text-sm"
-            >
-              Wildlife Tracking →
-            </Link>
-            <Link
-              href="/data/earth/life"
-              className="text-black/60 hover:text-black transition-colors text-sm"
-            >
-              Life Data →
-            </Link>
-          </div>
-        </footer>
+// VitalSign component for this page
+function LifeVitalSign({
+  value,
+  label,
+  href,
+  loading = false,
+}: {
+  value: string | number
+  label: string
+  href?: string
+  loading?: boolean
+}) {
+  const content = (
+    <div className={`p-2 md:p-4 text-left bg-black rounded-lg ${href ? 'hover:bg-neutral-900 transition-colors' : ''}`}>
+      <div className="text-[10px] md:text-xs text-white/50 uppercase mb-1 md:mb-2">
+        {label}
       </div>
+      {loading ? (
+        <div className="h-8 md:h-20 bg-white/10 rounded w-20 md:w-36 animate-pulse" />
+      ) : (
+        <div className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums text-white">
+          {typeof value === 'number' ? value.toLocaleString() : value}
+        </div>
+      )}
+    </div>
+  )
+
+  if (href) {
+    return <Link href={href} className="block">{content}</Link>
+  }
+  return content
+}
+
+// Card component
+function LifeCard({
+  title,
+  description,
+  href,
+  available = true,
+}: {
+  title: string
+  description: string
+  href: string
+  available?: boolean
+}) {
+  if (!available) {
+    return (
+      <div className="block p-2 md:p-4 bg-black rounded-lg border border-white/10 opacity-50">
+        <div className="flex items-center gap-3 mb-2">
+          <h2 className="text-2xl md:text-3xl font-light text-white uppercase">
+            {title}
+          </h2>
+          <span className="text-[10px] text-white/40 uppercase tracking-wider">
+            Coming Soon
+          </span>
+        </div>
+        <p className="text-sm text-white/50">
+          {description}
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <Link
+      href={href}
+      className="block p-2 md:p-4 bg-black rounded-lg border border-white/10 hover:border-white/30 transition-colors"
+    >
+      <h2 className="text-2xl md:text-3xl font-light text-white uppercase mb-2">
+        {title}
+      </h2>
+      <p className="text-sm text-white/50">
+        {description}
+      </p>
+    </Link>
+  )
+}
+
+export default function LifePortalPage() {
+  const [data, setData] = useState<LifeData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Simulated data for now - replace with actual API when available
+    const timer = setTimeout(() => {
+      setData({
+        trackedAnimals: 1247,
+        ebirdObservations: '500M+',
+        hydrophoneStations: 73,
+        updatedAt: new Date().toISOString(),
+      })
+      setLoading(false)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <main className="min-h-screen bg-black">
+      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
+
+        {/* Breadcrumb Frame */}
+        <div className="mb-px">
+          <div className="block bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
+            <Breadcrumb
+              items={[
+                { label: 'MXWLL', href: '/' },
+                { label: 'Observe', href: '/observe' },
+                { label: 'Life' },
+              ]}
+              theme="light"
+            />
+          </div>
+        </div>
+
+        {/* Frames container */}
+        <div className="flex flex-col gap-px">
+
+          {/* Header Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <ObserveIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
+              Life
+            </h1>
+            <p className="text-base md:text-lg text-black/60 max-w-2xl">
+              Monitoring the living world. Wildlife tracking, ocean acoustics, and bird observations from researchers and citizen scientists.
+            </p>
+          </section>
+
+          {/* Vital Signs Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
+              The Living Planet
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px">
+              <LifeVitalSign
+                value="8.7M"
+                label="Estimated Species"
+                loading={loading}
+              />
+              <LifeVitalSign
+                value={data?.trackedAnimals || 0}
+                label="Tracked Animals"
+                href="/observe/wildlife"
+                loading={loading}
+              />
+              <LifeVitalSign
+                value={data?.ebirdObservations || '—'}
+                label="eBird Observations"
+                loading={loading}
+              />
+              <LifeVitalSign
+                value={data?.hydrophoneStations || 0}
+                label="Hydrophone Stations"
+                loading={loading}
+              />
+            </div>
+          </section>
+
+          {/* Observatories Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
+              Observatories
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
+              {lifePages.map((page) => (
+                <LifeCard
+                  key={page.href}
+                  title={page.title}
+                  description={page.description}
+                  href={page.href}
+                  available={page.available}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Widgets Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
+              Widgets
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
+              {lifeWidgets.map((widget) => (
+                <LifeCard
+                  key={widget.href}
+                  title={widget.title}
+                  description={widget.description}
+                  href={widget.href}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Cross-references Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-sm text-black/40 uppercase tracking-wider mb-3">
+              Related
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/data/earth/life"
+                className="text-sm text-black/60 hover:text-black transition-colors"
+              >
+                Life Data →
+              </Link>
+              <Link
+                href="/observe/earth"
+                className="text-sm text-black/60 hover:text-black transition-colors"
+              >
+                Earth Monitoring →
+              </Link>
+              <Link
+                href="/observe/dashboard"
+                className="text-sm text-black/60 hover:text-black transition-colors"
+              >
+                Dashboard →
+              </Link>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      {/* Mobile bottom padding */}
+      <div className="h-20 md:hidden" />
     </main>
   )
 }
