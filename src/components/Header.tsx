@@ -10,14 +10,15 @@ import {
   UserButton,
 } from '@clerk/nextjs'
 import Logo from './Logo'
+import { ObserveIcon, PulseIcon, ToolsIcon, DataIcon, VaultIcon, PlayIcon } from '@/components/icons'
 
 const navItems = [
-  { href: '/observe', label: 'Observe' },
-  { href: '/pulse', label: 'Pulse' },
-  { href: '/tools', label: 'Tools' },
-  { href: '/data', label: 'Data' },
-  { href: '/vault', label: 'Vault' },
-  { href: '/play', label: 'Play' },
+  { href: '/observe', label: 'Observe', icon: ObserveIcon },
+  { href: '/pulse', label: 'Pulse', icon: PulseIcon },
+  { href: '/tools', label: 'Tools', icon: ToolsIcon },
+  { href: '/data', label: 'Data', icon: DataIcon },
+  { href: '/vault', label: 'Vault', icon: VaultIcon },
+  { href: '/play', label: 'Play', icon: PlayIcon },
 ]
 
 // Submenus - using category names for DATA
@@ -103,14 +104,17 @@ export default function Header() {
 
             const submenu = submenus[item.href]
 
+            const Icon = item.icon
+
             return (
               <div key={item.href} className="flex-1">
                 <Link
                   href={item.href}
-                  className={`text-sm font-light tracking-wider uppercase cursor-pointer block leading-none ${
+                  className={`flex items-center gap-2 text-sm font-light tracking-wider uppercase cursor-pointer leading-none ${
                     isActive ? 'text-white' : 'text-white'
                   }`}
                 >
+                  <Icon className="w-5 h-5" />
                   {item.label}
                 </Link>
 
@@ -150,8 +154,8 @@ export default function Header() {
         <div className="col-span-2 flex justify-end items-center gap-3">
           <SignedOut>
             <SignInButton mode="modal">
-              <button className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer">
-                Sign In
+              <button className="text-sm text-white/60 hover:text-white transition-colors cursor-pointer uppercase">
+                Sign In / Register
               </button>
             </SignInButton>
           </SignedOut>
