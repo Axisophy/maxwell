@@ -115,12 +115,12 @@ function MoonVisual({ phase, illumination, size = 120 }: MoonVisualProps) {
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      {/* Dark moon base - 700/#404040 grey */}
+      {/* Dark moon base */}
       <circle
         cx={cx}
         cy={cy}
         r={radius}
-        fill="#404040"
+        fill="#171717"
       />
 
       {/* Illuminated portion - yellow #ffdf20 */}

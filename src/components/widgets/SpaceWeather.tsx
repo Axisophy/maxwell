@@ -7,7 +7,6 @@ import { useState, useEffect, useCallback } from 'react'
 // ===========================================
 // Shows current space weather conditions
 // Data: NOAA Space Weather Prediction Center
-// Design: Mission control / monitoring station
 // ===========================================
 
 interface SpaceWeatherData {
@@ -71,9 +70,9 @@ function KpBar({ value }: { value: number }) {
   const percentage = Math.min(100, (value / 9) * 100)
 
   return (
-    <div className="mt-[0.5em]">
+    <div className="mt-2">
       {/* Bar track */}
-      <div className="relative h-[0.5em] bg-white/10 rounded-full overflow-hidden">
+      <div className="relative h-2 bg-white/10 rounded-full overflow-hidden">
         {/* Filled portion */}
         <div
           className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
@@ -81,14 +80,14 @@ function KpBar({ value }: { value: number }) {
         />
         {/* Threshold markers */}
         <div className="absolute inset-0 flex">
-          <div className="w-[33.3%] border-r border-white/20" /> {/* 0-3 */}
-          <div className="w-[22.2%] border-r border-white/20" /> {/* 3-5 */}
-          <div className="w-[22.2%] border-r border-white/20" /> {/* 5-7 */}
-          <div className="flex-1" /> {/* 7-9 */}
+          <div className="w-[33.3%] border-r border-white/20" />
+          <div className="w-[22.2%] border-r border-white/20" />
+          <div className="w-[22.2%] border-r border-white/20" />
+          <div className="flex-1" />
         </div>
       </div>
       {/* Scale labels */}
-      <div className="flex justify-between mt-[0.25em] text-[0.5625em] font-mono text-white/40">
+      <div className="flex justify-between mt-1 text-[10px] font-mono text-white/40">
         <span>0</span>
         <span style={{ marginLeft: '30%' }}>3</span>
         <span style={{ marginLeft: '15%' }}>5</span>
@@ -107,15 +106,15 @@ function KpHistory({ data }: { data: number[] }) {
   const displayData = data.slice(-24)
 
   return (
-    <div>
-      <div className="text-[0.6875em] font-medium text-white/40 uppercase tracking-wider mb-[0.5em]">
+    <div className="bg-[#737373] rounded-lg p-3">
+      <div className="text-[10px] font-medium text-white/60 uppercase tracking-wider mb-2">
         Kp History (72h)
       </div>
-      <div className="flex items-end gap-[0.125em] h-[2em]">
+      <div className="flex items-end gap-0.5 h-8">
         {displayData.map((kp, i) => (
           <div
             key={i}
-            className="flex-1 rounded-t-[0.125em] transition-all duration-300"
+            className="flex-1 rounded-t-sm transition-all duration-300"
             style={{
               height: `${Math.max(8, (kp / 9) * 100)}%`,
               backgroundColor: getKpColor(kp),
@@ -156,9 +155,9 @@ export default function SpaceWeather() {
 
   if (isLoading) {
     return (
-      <div className="bg-[#1a1a1e] p-[1em]">
-        <div className="flex items-center justify-center h-[16em]">
-          <div className="text-white/40 text-[0.875em] font-mono">Loading...</div>
+      <div className="bg-[#404040] p-2 md:p-4">
+        <div className="flex items-center justify-center h-48">
+          <div className="text-white/40 text-sm font-mono">Loading...</div>
         </div>
       </div>
     )
@@ -166,9 +165,9 @@ export default function SpaceWeather() {
 
   if (error || !data) {
     return (
-      <div className="bg-[#1a1a1e] p-[1em]">
-        <div className="flex items-center justify-center h-[16em]">
-          <div className="text-red-400 text-[0.875em]">{error || 'No data available'}</div>
+      <div className="bg-[#404040] p-2 md:p-4">
+        <div className="flex items-center justify-center h-48">
+          <div className="text-red-400 text-sm">{error || 'No data available'}</div>
         </div>
       </div>
     )
@@ -184,38 +183,23 @@ export default function SpaceWeather() {
   const auroraLikely = data.kp.current >= 4
 
   return (
-    <div className="bg-[#1a1a1e] p-[1em]">
-      {/* Geomagnetic Activity Section */}
-      <div className="mb-[1em]">
-        <div className="flex items-center justify-between mb-[0.5em]">
-          <span className="text-[0.6875em] font-medium text-white/40 uppercase tracking-wider">
-            Geomagnetic Activity
-          </span>
-          <div className="flex items-center gap-[0.375em]">
-            <span className="relative flex h-[0.5em] w-[0.5em]">
-              <span
-                className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                style={{ backgroundColor: kpColor }}
-              />
-              <span
-                className="relative inline-flex rounded-full h-full w-full"
-                style={{ backgroundColor: kpColor }}
-              />
-            </span>
-            <span className="text-[0.5625em] font-mono text-white/40">LIVE</span>
-          </div>
+    <div className="bg-[#404040] p-2 md:p-4 space-y-4">
+      {/* Geomagnetic Activity Section - black frame */}
+      <div className="bg-black rounded-lg p-4">
+        <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-2">
+          Geomagnetic Activity
         </div>
 
         {/* Kp Value and Status */}
-        <div className="flex items-baseline gap-[0.5em]">
+        <div className="flex items-baseline gap-2">
           <span
-            className="font-mono text-[2.5em] font-bold leading-none"
+            className="font-mono text-4xl font-bold leading-none"
             style={{ color: kpColor }}
           >
             {data.kp.current.toFixed(1)}
           </span>
           <span
-            className="text-[0.875em] font-medium"
+            className="text-base font-medium"
             style={{ color: kpColor }}
           >
             {kpStatus}
@@ -226,69 +210,66 @@ export default function SpaceWeather() {
         <KpBar value={data.kp.current} />
       </div>
 
-      {/* Solar Wind and X-Ray Grid */}
-      <div className="grid grid-cols-2 gap-[0.75em] mb-[1em]">
+      {/* Solar Wind and X-Ray Grid - black frames with gap-px */}
+      <div className="grid grid-cols-2 gap-px">
         {/* Solar Wind */}
-        <div className="bg-white/5 rounded-[0.375em] p-[0.75em]">
-          <div className="text-[0.5625em] font-medium text-white/40 uppercase tracking-wider mb-[0.25em]">
+        <div className="bg-black rounded-lg p-3">
+          <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-1">
             Solar Wind
           </div>
-          <div className="flex items-baseline gap-[0.25em]">
+          <div className="flex items-baseline gap-1">
             <span
-              className="font-mono text-[1.25em] font-bold"
+              className="font-mono text-xl font-bold"
               style={{ color: windColor }}
             >
               {data.solarWind.speed.toFixed(0)}
             </span>
-            <span className="text-[0.6875em] text-white/40">km/s</span>
+            <span className="text-xs text-white/40">km/s</span>
           </div>
-          <div className="flex items-center gap-[0.25em] mt-[0.25em]">
+          <div className="flex items-center gap-1 mt-1">
             <div
-              className="w-[0.375em] h-[0.375em] rounded-full"
+              className="w-1.5 h-1.5 rounded-full"
               style={{ backgroundColor: windColor }}
             />
-            <span className="text-[0.5625em] text-white/50">
+            <span className="text-[10px] text-white/50">
               {data.solarWind.speed >= 500 ? 'Elevated' : 'Normal'}
             </span>
           </div>
         </div>
 
         {/* X-Ray Flux */}
-        <div className="bg-white/5 rounded-[0.375em] p-[0.75em]">
-          <div className="text-[0.5625em] font-medium text-white/40 uppercase tracking-wider mb-[0.25em]">
+        <div className="bg-black rounded-lg p-3">
+          <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-1">
             X-Ray Flux
           </div>
-          <div className="flex items-baseline gap-[0.25em]">
+          <div className="flex items-baseline gap-1">
             <span
-              className="font-mono text-[1.25em] font-bold"
+              className="font-mono text-xl font-bold"
               style={{ color: xrayColor }}
             >
               {data.xray.class || 'A'}
             </span>
           </div>
-          <div className="flex items-center gap-[0.25em] mt-[0.25em]">
+          <div className="flex items-center gap-1 mt-1">
             <div
-              className="w-[0.375em] h-[0.375em] rounded-full"
+              className="w-1.5 h-1.5 rounded-full"
               style={{ backgroundColor: xrayColor }}
             />
-            <span className="text-[0.5625em] text-white/50">
+            <span className="text-[10px] text-white/50">
               {data.xray.class.startsWith('M') || data.xray.class.startsWith('X') ? 'Flare activity' : 'Low'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Kp History */}
+      {/* Kp History - grey frame */}
       <KpHistory data={data.kp.recent} />
 
       {/* Aurora hint */}
       {(auroraVisible || auroraLikely) && (
-        <div
-          className="mt-[0.75em] text-center py-[0.5em] rounded-[0.375em]"
-          style={{ backgroundColor: auroraVisible ? 'rgba(34, 197, 94, 0.15)' : 'rgba(234, 179, 8, 0.1)' }}
-        >
+        <div className="text-center">
           <span
-            className="text-[0.75em] font-medium"
+            className="text-sm font-medium"
             style={{ color: auroraVisible ? '#22c55e' : '#eab308' }}
           >
             {auroraVisible
@@ -298,13 +279,6 @@ export default function SpaceWeather() {
           </span>
         </div>
       )}
-
-      {/* Source */}
-      <div className="mt-[0.75em] text-center">
-        <span className="text-[0.5625em] font-mono text-white/30">
-          NOAA Space Weather Prediction Center
-        </span>
-      </div>
     </div>
   )
 }
