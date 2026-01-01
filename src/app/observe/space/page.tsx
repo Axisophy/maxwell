@@ -199,9 +199,9 @@ export default function SpacePage() {
                     />
                   </div>
                   {/* Caption frame */}
-                  <div className="bg-white rounded-lg p-2 md:p-3 hover:bg-neutral-100 transition-colors">
-                    <div className="text-sm font-medium text-black">SDO AIA 193Å</div>
-                    <div className="text-xs text-black/50">Solar corona · Updated every 15 minutes</div>
+                  <div className="bg-black rounded-lg p-2 md:p-3 hover:bg-neutral-900 transition-colors">
+                    <div className="text-sm font-medium text-white">SDO AIA 193Å</div>
+                    <div className="text-xs text-white/50">Solar corona · Updated every 15 minutes</div>
                   </div>
                 </div>
               </Link>
@@ -220,9 +220,9 @@ export default function SpacePage() {
                     />
                   </div>
                   {/* Caption frame */}
-                  <div className="bg-white rounded-lg p-2 md:p-3 hover:bg-neutral-100 transition-colors">
-                    <div className="text-sm font-medium text-black">SOHO LASCO C3</div>
-                    <div className="text-xs text-black/50">Coronagraph · Updated every 30 minutes</div>
+                  <div className="bg-black rounded-lg p-2 md:p-3 hover:bg-neutral-900 transition-colors">
+                    <div className="text-sm font-medium text-white">SOHO LASCO C3</div>
+                    <div className="text-xs text-white/50">Coronagraph · Updated every 30 minutes</div>
                   </div>
                 </div>
               </Link>
