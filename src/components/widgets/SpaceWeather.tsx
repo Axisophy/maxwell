@@ -102,26 +102,34 @@ function KpBar({ value }: { value: number }) {
 function KpHistory({ data }: { data: number[] }) {
   if (!data || data.length === 0) return null
 
-  // Take last 24 readings for cleaner display
   const displayData = data.slice(-24)
+  const maxKp = 9 // Kp scale is 0-9
 
   return (
-    <div className="bg-[#737373] rounded-lg p-3">
-      <div className="text-[10px] font-medium text-white/60 uppercase tracking-wider mb-2">
+    <div className="bg-black rounded-lg p-3">
+      <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-3">
         Kp History (72h)
       </div>
-      <div className="flex items-end gap-0.5 h-8">
-        {displayData.map((kp, i) => (
-          <div
-            key={i}
-            className="flex-1 rounded-t-sm transition-all duration-300"
-            style={{
-              height: `${Math.max(8, (kp / 9) * 100)}%`,
-              backgroundColor: getKpColor(kp),
-              opacity: i === displayData.length - 1 ? 1 : 0.6,
-            }}
-          />
-        ))}
+      <div className="bg-[#737373] rounded overflow-hidden">
+        <div className="flex items-end gap-0.5 h-16 p-2">
+          {displayData.map((kp, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-t transition-all duration-300"
+              style={{
+                height: `${(kp / maxKp) * 100}%`,
+                backgroundColor: getKpColor(kp),
+                opacity: i === displayData.length - 1 ? 1 : 0.7,
+                minHeight: kp > 0 ? '2px' : '0',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+      {/* Scale labels */}
+      <div className="flex justify-between mt-1 text-[10px] font-mono text-white/40">
+        <span>0</span>
+        <span>9</span>
       </div>
     </div>
   )

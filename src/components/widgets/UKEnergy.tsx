@@ -367,9 +367,9 @@ export default function UKEnergy() {
 
   if (isLoading) {
     return (
-      <div className="bg-[#404040] p-2 md:p-4">
+      <div className="bg-white p-2 md:p-4">
         <div className="flex items-center justify-center h-48">
-          <div className="text-white/40 text-sm font-mono">Loading...</div>
+          <div className="text-black/40 text-sm font-mono">Loading...</div>
         </div>
       </div>
     )
@@ -377,16 +377,16 @@ export default function UKEnergy() {
 
   if (error || !data) {
     return (
-      <div className="bg-[#404040] p-2 md:p-4">
+      <div className="bg-white p-2 md:p-4">
         <div className="flex items-center justify-center h-48">
-          <div className="text-red-400 text-sm">{error || 'No data available'}</div>
+          <div className="text-red-500 text-sm">{error || 'No data available'}</div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-[#404040] p-2 md:p-4">
+    <div className="bg-white p-2 md:p-4">
       {/* View mode selector */}
       <div className="flex gap-px mb-4">
         {(['now', '24h', 'forecast'] as ViewMode[]).map((mode) => (
@@ -396,7 +396,7 @@ export default function UKEnergy() {
             className={`
               flex-1 px-2 py-2 text-xs font-medium rounded-lg transition-colors uppercase
               ${viewMode === mode
-                ? 'bg-[#ffdf20] text-[#404040]'
+                ? 'bg-[#31c950] text-white'
                 : 'bg-black text-white/60 hover:text-white'
               }
             `}
