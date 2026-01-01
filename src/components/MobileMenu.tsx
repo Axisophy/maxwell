@@ -1,9 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { X } from 'lucide-react'
 import Logo from './Logo'
-import { ObserveIcon, PulseIcon, ToolsIcon, DataIcon, VaultIcon, PlayIcon } from '@/components/icons'
+import { ObserveIcon, PulseIcon, ToolsIcon, DataIcon, VaultIcon, PlayIcon, CloseIcon } from '@/components/icons'
 import {
   SignInButton,
   SignUpButton,
@@ -51,7 +50,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           className="p-2 -m-2"
           aria-label="Close menu"
         >
-          <X className="w-5 h-5 text-white" strokeWidth={1.5} />
+          <CloseIcon size={20} className="text-white" />
         </button>
       </div>
 
