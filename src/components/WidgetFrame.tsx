@@ -55,7 +55,7 @@ export default function WidgetFrame({
             {(description || source) && (
               <button
                 onClick={() => setInfoOpen(!infoOpen)}
-                className={`p-1 rounded transition-opacity ${
+                className={`p-1 rounded transition-opacity text-black ${
                   infoOpen ? 'opacity-100' : 'opacity-40 hover:opacity-100'
                 }`}
                 aria-label="Toggle info panel"
