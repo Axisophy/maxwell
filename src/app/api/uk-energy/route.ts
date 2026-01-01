@@ -6,19 +6,22 @@ import { cachedFetch, TTL } from '@/lib/cache'
 // UK ENERGY API ROUTE
 // ===========================================
 // Fetches live data from Carbon Intensity API
+// Includes: current intensity, generation mix, 24h history, 24h forecast
 // Cache TTL: 5 minutes
 // ===========================================
 
+interface IntensityPeriod {
+  from: string
+  to: string
+  intensity: {
+    forecast: number
+    actual: number | null
+    index: string
+  }
+}
+
 interface CarbonIntensityResponse {
-  data: Array<{
-    from: string
-    to: string
-    intensity: {
-      forecast: number
-      actual: number | null
-      index: string
-    }
-  }>
+  data: IntensityPeriod[]
 }
 
 interface GenerationResponse {
@@ -32,102 +35,139 @@ interface GenerationResponse {
   }
 }
 
+interface IntensityData {
+  from: string
+  to: string
+  forecast: number
+  actual: number | null
+  index: string
+}
+
+interface GenerationMix {
+  fuel: string
+  perc: number
+}
+
 interface UKEnergyData {
   intensity: {
-    actual: number | null
-    forecast: number
+    current: number
     index: string
   }
-  generation: Record<string, number>
+  generation: GenerationMix[]
   renewablePercent: number
   lowCarbonPercent: number
+  history: IntensityData[]
+  forecast: IntensityData[]
   timestamp: string
 }
 
+// Helper to get today's date in YYYY-MM-DD format
+function getTodayDate(): string {
+  return new Date().toISOString().split('T')[0]
+}
+
+// Helper to get current ISO timestamp
+function getCurrentISOTime(): string {
+  return new Date().toISOString()
+}
+
 async function fetchUKEnergyData(): Promise<UKEnergyData> {
-  // Fetch intensity and generation in parallel
-  const [intensityRes, generationRes] = await Promise.all([
+  const today = getTodayDate()
+  const now = getCurrentISOTime()
+
+  // Fetch all data in parallel for reliability
+  const [intensityRes, generationRes, historyRes, forecastRes] = await Promise.allSettled([
     fetchWithTimeout('https://api.carbonintensity.org.uk/intensity', {
       cache: 'no-store',
     }),
     fetchWithTimeout('https://api.carbonintensity.org.uk/generation', {
       cache: 'no-store',
     }),
+    fetchWithTimeout(`https://api.carbonintensity.org.uk/intensity/date/${today}`, {
+      cache: 'no-store',
+    }),
+    fetchWithTimeout(`https://api.carbonintensity.org.uk/intensity/${now}/fw24h`, {
+      cache: 'no-store',
+    }),
   ])
 
-  if (!intensityRes.ok || !generationRes.ok) {
-    throw new Error('API request failed')
+  // Handle current intensity
+  let currentIntensity = { current: 0, index: 'unknown' }
+  if (intensityRes.status === 'fulfilled' && intensityRes.value.ok) {
+    const data: CarbonIntensityResponse = await intensityRes.value.json()
+    const intensity = data.data[0]?.intensity
+    if (intensity) {
+      currentIntensity = {
+        current: intensity.actual ?? intensity.forecast,
+        index: intensity.index,
+      }
+    }
   }
 
-  const intensityData: CarbonIntensityResponse = await intensityRes.json()
-  const generationData: GenerationResponse = await generationRes.json()
-
-  // Extract intensity
-  const intensity = intensityData.data[0]?.intensity || {
-    forecast: 0,
-    actual: null,
-    index: 'unknown',
-  }
-
-  // Build generation mix object
-  const generation: Record<string, number> = {
-    gas: 0,
-    coal: 0,
-    nuclear: 0,
-    wind: 0,
-    solar: 0,
-    hydro: 0,
-    imports: 0,
-    biomass: 0,
-    other: 0,
-  }
-
+  // Handle generation mix
+  let generation: GenerationMix[] = []
   let renewablePercent = 0
   let lowCarbonPercent = 0
 
-  for (const item of generationData.data.generationmix) {
-    const fuel = item.fuel.toLowerCase()
-    const perc = item.perc
+  if (generationRes.status === 'fulfilled' && generationRes.value.ok) {
+    const data: GenerationResponse = await generationRes.value.json()
+    generation = data.data.generationmix.map(item => ({
+      fuel: item.fuel.toLowerCase(),
+      perc: item.perc,
+    }))
 
-    // Map API fuel names to our keys
-    if (fuel === 'gas') generation.gas = perc
-    else if (fuel === 'coal') generation.coal = perc
-    else if (fuel === 'nuclear') generation.nuclear = perc
-    else if (fuel === 'wind') generation.wind = perc
-    else if (fuel === 'solar') generation.solar = perc
-    else if (fuel === 'hydro') generation.hydro = perc
-    else if (fuel === 'imports') generation.imports = perc
-    else if (fuel === 'biomass') generation.biomass = perc
-    else if (fuel === 'other') generation.other = perc
-
-    // Calculate renewable (wind, solar, hydro)
-    if (['wind', 'solar', 'hydro'].includes(fuel)) {
-      renewablePercent += perc
-    }
-
-    // Calculate low carbon (renewable + nuclear + biomass)
-    if (['wind', 'solar', 'hydro', 'nuclear', 'biomass'].includes(fuel)) {
-      lowCarbonPercent += perc
+    // Calculate renewable and low-carbon percentages
+    for (const item of generation) {
+      if (['wind', 'solar', 'hydro'].includes(item.fuel)) {
+        renewablePercent += item.perc
+      }
+      if (['wind', 'solar', 'hydro', 'nuclear', 'biomass'].includes(item.fuel)) {
+        lowCarbonPercent += item.perc
+      }
     }
   }
 
+  // Handle history (past 24h)
+  let history: IntensityData[] = []
+  if (historyRes.status === 'fulfilled' && historyRes.value.ok) {
+    const data: CarbonIntensityResponse = await historyRes.value.json()
+    history = data.data.map(period => ({
+      from: period.from,
+      to: period.to,
+      forecast: period.intensity.forecast,
+      actual: period.intensity.actual,
+      index: period.intensity.index,
+    }))
+  }
+
+  // Handle forecast (next 24h)
+  let forecast: IntensityData[] = []
+  if (forecastRes.status === 'fulfilled' && forecastRes.value.ok) {
+    const data: CarbonIntensityResponse = await forecastRes.value.json()
+    forecast = data.data.map(period => ({
+      from: period.from,
+      to: period.to,
+      forecast: period.intensity.forecast,
+      actual: period.intensity.actual,
+      index: period.intensity.index,
+    }))
+  }
+
   return {
-    intensity: {
-      actual: intensity.actual,
-      forecast: intensity.forecast,
-      index: intensity.index,
-    },
+    intensity: currentIntensity,
     generation,
     renewablePercent,
     lowCarbonPercent,
-    timestamp: intensityData.data[0]?.from || new Date().toISOString(),
+    history,
+    forecast,
+    timestamp: new Date().toISOString(),
   }
 }
 
 export async function GET() {
   try {
     const { data, cacheStatus, cacheAge } = await cachedFetch({
-      key: 'uk-energy',
+      key: 'uk-energy-v2',
       ttl: TTL.MODERATE, // 5 minutes
       fetcher: fetchUKEnergyData,
     })

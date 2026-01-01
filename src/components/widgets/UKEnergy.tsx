@@ -1,92 +1,324 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { format } from 'date-fns'
 
 // ===========================================
 // UK ENERGY WIDGET
 // ===========================================
-// Live data from National Grid ESO showing:
-// - Carbon intensity (gCO₂/kWh)
-// - Generation mix by fuel type
-// - Renewable and low-carbon percentages
-// ===========================================
+
+type ViewMode = 'now' | '24h' | 'forecast'
+
+interface IntensityData {
+  from: string
+  to: string
+  forecast: number
+  actual: number | null
+  index: string
+}
+
+interface GenerationMix {
+  fuel: string
+  perc: number
+}
 
 interface UKEnergyData {
   intensity: {
-    actual: number | null
-    forecast: number
-    index: string // 'very low' | 'low' | 'moderate' | 'high' | 'very high'
+    current: number
+    index: string
   }
-  generation: {
-    gas: number
-    coal: number
-    nuclear: number
-    wind: number
-    solar: number
-    hydro: number
-    imports: number
-    biomass: number
-    other: number
-  }
+  generation: GenerationMix[]
   renewablePercent: number
   lowCarbonPercent: number
-  timestamp: string
+  history: IntensityData[]
+  forecast: IntensityData[]
+  demand?: number
 }
 
-// Fuel type configuration
-const FUELS = [
-  { key: 'wind', label: 'Wind', color: '#22c55e', category: 'renewable' },
-  { key: 'solar', label: 'Solar', color: '#eab308', category: 'renewable' },
-  { key: 'nuclear', label: 'Nuclear', color: '#a855f7', category: 'low-carbon' },
-  { key: 'gas', label: 'Gas', color: '#f97316', category: 'fossil' },
-  { key: 'biomass', label: 'Biomass', color: '#84cc16', category: 'renewable' },
-  { key: 'hydro', label: 'Hydro', color: '#06b6d4', category: 'renewable' },
-  { key: 'imports', label: 'Imports', color: '#3b82f6', category: 'other' },
-  { key: 'coal', label: 'Coal', color: '#6b7280', category: 'fossil' },
-  { key: 'other', label: 'Other', color: '#9ca3af', category: 'other' },
-] as const
+// Fuel colours - refined palette
+const FUEL_COLORS: Record<string, string> = {
+  wind: '#22c55e',
+  solar: '#facc15',
+  nuclear: '#a855f7',
+  hydro: '#06b6d4',
+  biomass: '#84cc16',
+  gas: '#f97316',
+  coal: '#525252',
+  imports: '#3b82f6',
+  other: '#737373',
+}
 
 // Get intensity color
 function getIntensityColor(index: string): string {
-  switch (index) {
-    case 'very low':
-      return '#22c55e'
-    case 'low':
-      return '#84cc16'
-    case 'moderate':
-      return '#eab308'
-    case 'high':
-      return '#f97316'
-    case 'very high':
-      return '#ef4444'
-    default:
-      return '#6b7280'
+  switch (index?.toLowerCase()) {
+    case 'very low': return '#22c55e'
+    case 'low': return '#84cc16'
+    case 'moderate': return '#facc15'
+    case 'high': return '#f97316'
+    case 'very high': return '#ef4444'
+    default: return '#737373'
   }
 }
 
-// Get intensity background (lighter version)
-function getIntensityBg(index: string): string {
-  switch (index) {
-    case 'very low':
-      return '#dcfce7'
-    case 'low':
-      return '#ecfccb'
-    case 'moderate':
-      return '#fef9c3'
-    case 'high':
-      return '#ffedd5'
-    case 'very high':
-      return '#fee2e2'
-    default:
-      return '#f5f5f5'
+// Get intensity label
+function getIntensityLabel(index: string): string {
+  switch (index?.toLowerCase()) {
+    case 'very low': return 'Very Clean'
+    case 'low': return 'Clean'
+    case 'moderate': return 'Moderate'
+    case 'high': return 'Dirty'
+    case 'very high': return 'Very Dirty'
+    default: return 'Unknown'
   }
 }
+
+// ===========================================
+// INTENSITY CHART
+// ===========================================
+
+function IntensityChart({
+  data,
+  showForecast = false
+}: {
+  data: IntensityData[]
+  showForecast?: boolean
+}) {
+  if (!data || data.length === 0) return null
+
+  const maxIntensity = Math.max(...data.map(d => d.forecast || d.actual || 0), 300)
+  const chartHeight = 80
+
+  return (
+    <div className="bg-[#737373] rounded p-2">
+      <div className="flex items-end gap-0.5 h-20">
+        {data.map((point, i) => {
+          const value = showForecast ? point.forecast : (point.actual ?? point.forecast)
+          const height = (value / maxIntensity) * chartHeight
+          const color = getIntensityColor(point.index)
+
+          return (
+            <div
+              key={i}
+              className="flex-1 rounded-t transition-all duration-300"
+              style={{
+                height: `${height}%`,
+                backgroundColor: color,
+                opacity: 0.85,
+              }}
+              title={`${format(new Date(point.from), 'HH:mm')}: ${value} gCO₂/kWh`}
+            />
+          )
+        })}
+      </div>
+      {/* Time labels */}
+      <div className="flex justify-between mt-1 text-[10px] font-mono text-white/40">
+        <span>{format(new Date(data[0]?.from), 'HH:mm')}</span>
+        <span>{showForecast ? '+24h' : 'Now'}</span>
+      </div>
+    </div>
+  )
+}
+
+// ===========================================
+// GENERATION MIX BAR
+// ===========================================
+
+function GenerationMixBar({ generation }: { generation: GenerationMix[] }) {
+  const sorted = [...generation].sort((a, b) => b.perc - a.perc)
+
+  return (
+    <div>
+      {/* Stacked bar */}
+      <div className="h-6 rounded overflow-hidden flex">
+        {sorted.map((fuel) => (
+          <div
+            key={fuel.fuel}
+            className="h-full transition-all duration-500"
+            style={{
+              width: `${fuel.perc}%`,
+              backgroundColor: FUEL_COLORS[fuel.fuel] || '#737373',
+              minWidth: fuel.perc > 0 ? '2px' : '0',
+            }}
+            title={`${fuel.fuel}: ${fuel.perc.toFixed(1)}%`}
+          />
+        ))}
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
+        {sorted.filter(f => f.perc >= 1).map((fuel) => (
+          <div key={fuel.fuel} className="flex items-center gap-1">
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: FUEL_COLORS[fuel.fuel] || '#737373' }}
+            />
+            <span className="text-[10px] text-white/60 uppercase">{fuel.fuel}</span>
+            <span className="text-[10px] font-mono text-white/40">{fuel.perc.toFixed(0)}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ===========================================
+// NOW VIEW
+// ===========================================
+
+function NowView({ data }: { data: UKEnergyData }) {
+  const intensityColor = getIntensityColor(data.intensity.index)
+  const intensityLabel = getIntensityLabel(data.intensity.index)
+
+  return (
+    <div className="space-y-px">
+      {/* Grid Status */}
+      <div className="bg-black rounded-lg p-3">
+        <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-2">
+          Grid Status
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span
+            className="font-mono text-4xl font-bold"
+            style={{ color: intensityColor }}
+          >
+            {data.intensity.current}
+          </span>
+          <span className="text-xs text-white/40">gCO₂/kWh</span>
+        </div>
+        <div
+          className="text-sm font-medium mt-1"
+          style={{ color: intensityColor }}
+        >
+          {intensityLabel}
+        </div>
+      </div>
+
+      {/* Current Generation */}
+      <div className="bg-black rounded-lg p-3">
+        <div className="flex items-baseline justify-between mb-2">
+          <span className="text-[10px] font-medium text-white/40 uppercase tracking-wider">
+            Generation Mix
+          </span>
+          <span className="text-xs text-white/60">
+            <span className="text-green-500 font-mono">{data.renewablePercent.toFixed(0)}%</span>
+            <span className="text-white/40 mx-1">renewable</span>
+          </span>
+        </div>
+        <GenerationMixBar generation={data.generation} />
+      </div>
+
+      {/* Demand (if available) */}
+      {data.demand && (
+        <div className="bg-black rounded-lg p-3">
+          <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-2">
+            Current Demand
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="font-mono text-2xl font-bold text-white">
+              {(data.demand / 1000).toFixed(1)}
+            </span>
+            <span className="text-xs text-white/40">GW</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ===========================================
+// 24H VIEW
+// ===========================================
+
+function HistoryView({ data }: { data: UKEnergyData }) {
+  return (
+    <div className="space-y-px">
+      {/* Carbon Intensity History */}
+      <div className="bg-black rounded-lg p-3">
+        <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-3">
+          Carbon Intensity (Past 24h)
+        </div>
+        <IntensityChart data={data.history} />
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-px">
+        {(() => {
+          const values = data.history.map(h => h.actual ?? h.forecast).filter(Boolean)
+          const min = Math.min(...values)
+          const max = Math.max(...values)
+          const avg = values.reduce((a, b) => a + b, 0) / values.length
+
+          return (
+            <>
+              <div className="bg-black rounded-lg p-3 text-center">
+                <div className="text-[10px] text-white/40 uppercase">Min</div>
+                <div className="font-mono text-lg font-bold text-green-500">{min.toFixed(0)}</div>
+              </div>
+              <div className="bg-black rounded-lg p-3 text-center">
+                <div className="text-[10px] text-white/40 uppercase">Avg</div>
+                <div className="font-mono text-lg font-bold text-white">{avg.toFixed(0)}</div>
+              </div>
+              <div className="bg-black rounded-lg p-3 text-center">
+                <div className="text-[10px] text-white/40 uppercase">Max</div>
+                <div className="font-mono text-lg font-bold text-orange-500">{max.toFixed(0)}</div>
+              </div>
+            </>
+          )
+        })()}
+      </div>
+    </div>
+  )
+}
+
+// ===========================================
+// FORECAST VIEW
+// ===========================================
+
+function ForecastView({ data }: { data: UKEnergyData }) {
+  // Find the cleanest period in forecast
+  const cleanestPeriod = data.forecast.reduce((best, current) =>
+    current.forecast < best.forecast ? current : best
+  , data.forecast[0])
+
+  return (
+    <div className="space-y-px">
+      {/* Forecast Chart */}
+      <div className="bg-black rounded-lg p-3">
+        <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-3">
+          Carbon Intensity (Next 24h)
+        </div>
+        <IntensityChart data={data.forecast} showForecast />
+      </div>
+
+      {/* Best Time */}
+      {cleanestPeriod && (
+        <div className="bg-black rounded-lg p-3">
+          <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-2">
+            Best Time to Use Power
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-mono text-2xl font-bold text-green-500">
+              {format(new Date(cleanestPeriod.from), 'HH:mm')}
+            </span>
+            <span className="text-xs text-white/40">
+              ({cleanestPeriod.forecast} gCO₂/kWh)
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ===========================================
+// MAIN WIDGET
+// ===========================================
 
 export default function UKEnergy() {
+  const [viewMode, setViewMode] = useState<ViewMode>('now')
   const [data, setData] = useState<UKEnergyData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   const fetchData = useCallback(async () => {
     try {
@@ -94,7 +326,6 @@ export default function UKEnergy() {
       if (!response.ok) throw new Error('Failed to fetch')
       const result = await response.json()
       setData(result)
-      setLastUpdated(new Date())
       setError(null)
     } catch (err) {
       console.error('Error fetching UK energy:', err)
@@ -106,162 +337,55 @@ export default function UKEnergy() {
 
   useEffect(() => {
     fetchData()
-    const interval = setInterval(fetchData, 5 * 60 * 1000) // Every 5 minutes
+    const interval = setInterval(fetchData, 5 * 60 * 1000)
     return () => clearInterval(interval)
   }, [fetchData])
 
-  // Loading state
   if (isLoading) {
     return (
-      <div className="p-4 space-y-4 animate-pulse">
-        <div className="h-20 bg-[#e5e5e5] rounded-lg" />
-        <div className="h-6 bg-[#e5e5e5] rounded-full" />
-        <div className="space-y-2">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-4 bg-[#e5e5e5] rounded" />
-          ))}
+      <div className="bg-[#404040] p-2 md:p-4">
+        <div className="flex items-center justify-center h-48">
+          <div className="text-white/40 text-sm font-mono">Loading...</div>
         </div>
       </div>
     )
   }
 
-  // Error state
   if (error || !data) {
     return (
-      <div className="p-4 flex items-center justify-center min-h-[200px]">
-        <div className="text-center">
-          <div className="text-red-500 text-sm mb-2">{error || 'No data available'}</div>
-          <button
-            onClick={fetchData}
-            className="text-sm text-black/50 hover:text-black underline"
-          >
-            Try again
-          </button>
+      <div className="bg-[#404040] p-2 md:p-4">
+        <div className="flex items-center justify-center h-48">
+          <div className="text-red-400 text-sm">{error || 'No data available'}</div>
         </div>
       </div>
     )
-  }
-
-  const intensityValue = data.intensity.actual ?? data.intensity.forecast
-  const intensityColor = getIntensityColor(data.intensity.index)
-  const intensityBg = getIntensityBg(data.intensity.index)
-
-  // Sort fuels by percentage (descending), filter out zeros
-  const sortedFuels = FUELS.map((fuel) => ({
-    ...fuel,
-    value: data.generation[fuel.key as keyof typeof data.generation] || 0,
-  }))
-    .filter((f) => f.value > 0)
-    .sort((a, b) => b.value - a.value)
-
-  // Time since update
-  const getTimeAgo = () => {
-    if (!lastUpdated) return ''
-    const mins = Math.floor((Date.now() - lastUpdated.getTime()) / 60000)
-    if (mins < 1) return 'Just now'
-    if (mins === 1) return '1m ago'
-    return `${mins}m ago`
   }
 
   return (
-    <div className="p-4 space-y-4">
-      {/* Carbon Intensity Hero */}
-      <div
-        className="p-4 rounded-lg text-center"
-        style={{ backgroundColor: intensityBg }}
-      >
-        <div className="text-[10px] text-black/50 uppercase tracking-wide mb-1">
-          Carbon Intensity
-        </div>
-        <div className="flex items-baseline justify-center gap-1">
-          <span
-            className="font-mono text-4xl font-bold"
-            style={{ color: intensityColor }}
+    <div className="bg-[#404040] p-2 md:p-4">
+      {/* View mode selector */}
+      <div className="flex gap-px mb-4">
+        {(['now', '24h', 'forecast'] as ViewMode[]).map((mode) => (
+          <button
+            key={mode}
+            onClick={() => setViewMode(mode)}
+            className={`
+              flex-1 px-2 py-2 text-xs font-medium rounded-lg transition-colors uppercase
+              ${viewMode === mode
+                ? 'bg-[#ffdf20] text-[#404040]'
+                : 'bg-black text-white/60 hover:text-white'
+              }
+            `}
           >
-            {intensityValue}
-          </span>
-          <span className="text-sm text-black/50">gCO₂/kWh</span>
-        </div>
-        <div
-          className="text-sm font-medium capitalize mt-1"
-          style={{ color: intensityColor }}
-        >
-          {data.intensity.index}
-        </div>
-      </div>
-
-      {/* Summary stats row */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="p-3 bg-[#f5f5f5] rounded-lg text-center">
-          <div className="font-mono text-2xl font-bold text-green-600">
-            {data.renewablePercent.toFixed(0)}%
-          </div>
-          <div className="text-[10px] text-black/50 uppercase tracking-wide">
-            Renewable
-          </div>
-        </div>
-        <div className="p-3 bg-[#f5f5f5] rounded-lg text-center">
-          <div className="font-mono text-2xl font-bold text-cyan-600">
-            {data.lowCarbonPercent.toFixed(0)}%
-          </div>
-          <div className="text-[10px] text-black/50 uppercase tracking-wide">
-            Low Carbon
-          </div>
-        </div>
-      </div>
-
-      {/* Generation mix bar */}
-      <div>
-        <div className="text-[10px] text-black/50 uppercase tracking-wide mb-2">
-          Generation Mix
-        </div>
-        <div className="h-4 rounded-full overflow-hidden flex bg-[#e5e5e5]">
-          {sortedFuels.map((fuel) => (
-            <div
-              key={fuel.key}
-              className="h-full transition-all duration-500"
-              style={{
-                width: `${fuel.value}%`,
-                backgroundColor: fuel.color,
-                minWidth: fuel.value > 0 ? '2px' : '0',
-              }}
-              title={`${fuel.label}: ${fuel.value.toFixed(1)}%`}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Fuel breakdown */}
-      <div className="space-y-1.5">
-        {sortedFuels.map((fuel) => (
-          <div key={fuel.key} className="flex items-center gap-2">
-            <div
-              className="w-2.5 h-2.5 rounded-full shrink-0"
-              style={{ backgroundColor: fuel.color }}
-            />
-            <span className="text-sm flex-1">{fuel.label}</span>
-            <span className="font-mono text-sm text-black/70">
-              {fuel.value.toFixed(1)}%
-            </span>
-            {/* Mini bar */}
-            <div className="w-16 h-1.5 bg-[#e5e5e5] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${fuel.value}%`,
-                  backgroundColor: fuel.color,
-                }}
-              />
-            </div>
-          </div>
+            {mode}
+          </button>
         ))}
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between text-[10px] text-black/40 pt-2 border-t border-[#e5e5e5]">
-        <span>National Grid ESO</span>
-        <span>{getTimeAgo()}</span>
-      </div>
+      {/* View content */}
+      {viewMode === 'now' && <NowView data={data} />}
+      {viewMode === '24h' && <HistoryView data={data} />}
+      {viewMode === 'forecast' && <ForecastView data={data} />}
     </div>
   )
 }
