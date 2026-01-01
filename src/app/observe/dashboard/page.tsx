@@ -104,21 +104,19 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          {/* Widgets Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {isClient ? renderWidgets() : (
-                <>
-                  {[...Array(6)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="bg-[#f5f5f5] rounded-lg h-64 animate-pulse"
-                    />
-                  ))}
-                </>
-              )}
-            </div>
-          </section>
+          {/* Widget Grid - directly on black background, no containing frame */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
+            {isClient ? renderWidgets() : (
+              <>
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-lg h-64 animate-pulse"
+                  />
+                ))}
+              </>
+            )}
+          </div>
 
         </div>
       </div>
