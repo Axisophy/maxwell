@@ -26,9 +26,9 @@ interface SolarDiskProps {
   size?: 512 | 1024 | 2048
 }
 
-export default function SolarDisk({ 
+export default function SolarDisk({
   defaultWavelength = '0193',
-  size = 1024 
+  size = 1024
 }: SolarDiskProps) {
   const [wavelength, setWavelength] = useState<WavelengthKey>(defaultWavelength)
   const [isLoading, setIsLoading] = useState(true)
@@ -47,13 +47,13 @@ export default function SolarDisk({
   }, [])
 
   return (
-    <div className="p-[1em]">
+    <div className="p-2 md:p-4">
       {/* Image container - square format, full solar disk visible */}
-      <div className="relative aspect-square bg-black rounded-[0.5em] overflow-hidden">
+      <div className="relative aspect-square bg-black rounded-lg overflow-hidden">
         {/* Loading state */}
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="text-white/50 text-[0.875em] font-mono">Loading...</div>
+            <div className="text-white/50 text-sm font-mono">Loading...</div>
           </div>
         )}
 
@@ -66,26 +66,12 @@ export default function SolarDisk({
           onLoad={() => setIsLoading(false)}
           onError={() => setIsLoading(false)}
         />
-
-        {/* Wavelength indicator overlay */}
-        <div className="absolute bottom-[0.5em] left-[0.5em] bg-black/70 backdrop-blur-sm rounded-[0.25em] px-[0.5em] py-[0.25em]">
-          <span className="text-[0.6875em] font-mono text-white/80">{WAVELENGTHS[wavelength].label}</span>
-        </div>
-
-        {/* Live indicator */}
-        <div className="absolute top-[0.5em] right-[0.5em] flex items-center gap-[0.375em] bg-black/70 backdrop-blur-sm rounded-[0.25em] px-[0.5em] py-[0.25em]">
-          <span className="relative flex h-[0.5em] w-[0.5em]">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-full w-full bg-green-500"></span>
-          </span>
-          <span className="text-[0.5625em] font-mono text-white/60">LIVE</span>
-        </div>
       </div>
 
-      {/* Wavelength selector - two rows for better spacing */}
-      <div className="mt-[0.75em] space-y-[0.25em]">
+      {/* Wavelength selectors - black boxes with gap-px */}
+      <div className="mt-3 space-y-px">
         {/* Corona views (top row) */}
-        <div className="flex bg-[#e5e5e5] rounded-[0.5em] p-[0.25em]">
+        <div className="flex gap-px">
           {(Object.keys(WAVELENGTHS) as WavelengthKey[])
             .filter(key => WAVELENGTHS[key].group === 'corona')
             .map((key) => (
@@ -93,10 +79,10 @@ export default function SolarDisk({
                 key={key}
                 onClick={() => { setWavelength(key); setIsLoading(true) }}
                 className={`
-                  flex-1 px-[0.5em] py-[0.375em] text-[0.6875em] font-medium rounded-[0.375em] transition-colors
-                  ${wavelength === key 
-                    ? 'bg-white text-black shadow-sm' 
-                    : 'text-black/50 hover:text-black'
+                  flex-1 px-2 py-2 text-xs font-medium rounded-lg transition-colors
+                  ${wavelength === key
+                    ? 'bg-[#ff0000] text-white'
+                    : 'bg-black text-white/60 hover:text-white'
                   }
                 `}
               >
@@ -104,9 +90,9 @@ export default function SolarDisk({
               </button>
             ))}
         </div>
-        
+
         {/* Surface views (bottom row) */}
-        <div className="flex bg-[#e5e5e5] rounded-[0.5em] p-[0.25em]">
+        <div className="flex gap-px">
           {(Object.keys(WAVELENGTHS) as WavelengthKey[])
             .filter(key => WAVELENGTHS[key].group === 'surface')
             .map((key) => (
@@ -114,10 +100,10 @@ export default function SolarDisk({
                 key={key}
                 onClick={() => { setWavelength(key); setIsLoading(true) }}
                 className={`
-                  flex-1 px-[0.5em] py-[0.375em] text-[0.6875em] font-medium rounded-[0.375em] transition-colors
-                  ${wavelength === key 
-                    ? 'bg-white text-black shadow-sm' 
-                    : 'text-black/50 hover:text-black'
+                  flex-1 px-2 py-2 text-xs font-medium rounded-lg transition-colors
+                  ${wavelength === key
+                    ? 'bg-[#ff0000] text-white'
+                    : 'bg-black text-white/60 hover:text-white'
                   }
                 `}
               >
@@ -128,18 +114,17 @@ export default function SolarDisk({
       </div>
 
       {/* Description */}
-      <div className="mt-[0.5em] text-center">
-        <p className="text-[0.6875em] text-black/50">
+      <div className="mt-3 text-center">
+        <p className="text-sm text-black">
           {WAVELENGTHS[wavelength].description}
         </p>
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-[#e5e5e5] my-[0.75em]" />
-
-      {/* Info text */}
-      <div className="text-[0.6875em] text-black/40 text-center">
-        Images update every ~15 minutes from NASA SDO
+      {/* Update frequency note */}
+      <div className="mt-2 text-center">
+        <p className="text-xs text-black/40">
+          Images update every ~15 minutes from NASA SDO
+        </p>
       </div>
     </div>
   )
