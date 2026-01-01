@@ -85,8 +85,15 @@ function IntensityChart({
 }) {
   if (!data || data.length === 0) return null
 
-  const maxIntensity = Math.max(...data.map(d => d.forecast || d.actual || 0), 300)
+  const values = data.map(d => d.forecast || d.actual || 0)
+  const maxIntensity = Math.max(...values, 300)
   const chartHeight = 80
+
+  // Safely parse the first date
+  const firstDate = data[0]?.from ? new Date(data[0].from) : null
+  const startTimeLabel = firstDate && !isNaN(firstDate.getTime())
+    ? format(firstDate, 'HH:mm')
+    : '--:--'
 
   return (
     <div className="bg-[#737373] rounded p-2">
@@ -95,6 +102,12 @@ function IntensityChart({
           const value = showForecast ? point.forecast : (point.actual ?? point.forecast)
           const height = (value / maxIntensity) * chartHeight
           const color = getIntensityColor(point.index)
+
+          // Safely format the tooltip time
+          const pointDate = point.from ? new Date(point.from) : null
+          const timeLabel = pointDate && !isNaN(pointDate.getTime())
+            ? format(pointDate, 'HH:mm')
+            : '--:--'
 
           return (
             <div
@@ -105,14 +118,14 @@ function IntensityChart({
                 backgroundColor: color,
                 opacity: 0.85,
               }}
-              title={`${format(new Date(point.from), 'HH:mm')}: ${value} gCO₂/kWh`}
+              title={`${timeLabel}: ${value} gCO₂/kWh`}
             />
           )
         })}
       </div>
       {/* Time labels */}
       <div className="flex justify-between mt-1 text-[10px] font-mono text-white/40">
-        <span>{format(new Date(data[0]?.from), 'HH:mm')}</span>
+        <span>{startTimeLabel}</span>
         <span>{showForecast ? '+24h' : 'Now'}</span>
       </div>
     </div>
@@ -166,8 +179,8 @@ function GenerationMixBar({ generation }: { generation: GenerationMix[] }) {
 // ===========================================
 
 function NowView({ data }: { data: UKEnergyData }) {
-  const intensityColor = getIntensityColor(data.intensity.index)
-  const intensityLabel = getIntensityLabel(data.intensity.index)
+  const intensityColor = getIntensityColor(data.intensity?.index || '')
+  const intensityLabel = getIntensityLabel(data.intensity?.index || '')
 
   return (
     <div className="space-y-px">
@@ -181,7 +194,7 @@ function NowView({ data }: { data: UKEnergyData }) {
             className="font-mono text-4xl font-bold"
             style={{ color: intensityColor }}
           >
-            {data.intensity.current}
+            {data.intensity?.current ?? '—'}
           </span>
           <span className="text-xs text-white/40">gCO₂/kWh</span>
         </div>
@@ -200,11 +213,15 @@ function NowView({ data }: { data: UKEnergyData }) {
             Generation Mix
           </span>
           <span className="text-xs text-white/60">
-            <span className="text-green-500 font-mono">{data.renewablePercent.toFixed(0)}%</span>
+            <span className="text-green-500 font-mono">{(data.renewablePercent ?? 0).toFixed(0)}%</span>
             <span className="text-white/40 mx-1">renewable</span>
           </span>
         </div>
-        <GenerationMixBar generation={data.generation} />
+        {data.generation && data.generation.length > 0 ? (
+          <GenerationMixBar generation={data.generation} />
+        ) : (
+          <div className="text-white/40 text-sm text-center py-2">No generation data</div>
+        )}
       </div>
 
       {/* Demand (if available) */}
@@ -230,6 +247,14 @@ function NowView({ data }: { data: UKEnergyData }) {
 // ===========================================
 
 function HistoryView({ data }: { data: UKEnergyData }) {
+  const values = data.history
+    .map(h => h.actual ?? h.forecast)
+    .filter((v): v is number => v !== null && v !== undefined)
+
+  const min = values.length > 0 ? Math.min(...values) : 0
+  const max = values.length > 0 ? Math.max(...values) : 0
+  const avg = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0
+
   return (
     <div className="space-y-px">
       {/* Carbon Intensity History */}
@@ -237,34 +262,27 @@ function HistoryView({ data }: { data: UKEnergyData }) {
         <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-3">
           Carbon Intensity (Past 24h)
         </div>
-        <IntensityChart data={data.history} />
+        {data.history.length > 0 ? (
+          <IntensityChart data={data.history} />
+        ) : (
+          <div className="text-white/40 text-sm text-center py-4">No history data</div>
+        )}
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-px">
-        {(() => {
-          const values = data.history.map(h => h.actual ?? h.forecast).filter(Boolean)
-          const min = Math.min(...values)
-          const max = Math.max(...values)
-          const avg = values.reduce((a, b) => a + b, 0) / values.length
-
-          return (
-            <>
-              <div className="bg-black rounded-lg p-3 text-center">
-                <div className="text-[10px] text-white/40 uppercase">Min</div>
-                <div className="font-mono text-lg font-bold text-green-500">{min.toFixed(0)}</div>
-              </div>
-              <div className="bg-black rounded-lg p-3 text-center">
-                <div className="text-[10px] text-white/40 uppercase">Avg</div>
-                <div className="font-mono text-lg font-bold text-white">{avg.toFixed(0)}</div>
-              </div>
-              <div className="bg-black rounded-lg p-3 text-center">
-                <div className="text-[10px] text-white/40 uppercase">Max</div>
-                <div className="font-mono text-lg font-bold text-orange-500">{max.toFixed(0)}</div>
-              </div>
-            </>
-          )
-        })()}
+        <div className="bg-black rounded-lg p-3 text-center">
+          <div className="text-[10px] text-white/40 uppercase">Min</div>
+          <div className="font-mono text-lg font-bold text-green-500">{min.toFixed(0)}</div>
+        </div>
+        <div className="bg-black rounded-lg p-3 text-center">
+          <div className="text-[10px] text-white/40 uppercase">Avg</div>
+          <div className="font-mono text-lg font-bold text-white">{avg.toFixed(0)}</div>
+        </div>
+        <div className="bg-black rounded-lg p-3 text-center">
+          <div className="text-[10px] text-white/40 uppercase">Max</div>
+          <div className="font-mono text-lg font-bold text-orange-500">{max.toFixed(0)}</div>
+        </div>
       </div>
     </div>
   )
@@ -276,9 +294,11 @@ function HistoryView({ data }: { data: UKEnergyData }) {
 
 function ForecastView({ data }: { data: UKEnergyData }) {
   // Find the cleanest period in forecast
-  const cleanestPeriod = data.forecast.reduce((best, current) =>
-    current.forecast < best.forecast ? current : best
-  , data.forecast[0])
+  const cleanestPeriod = data.forecast.length > 0
+    ? data.forecast.reduce((best, current) =>
+        current.forecast < best.forecast ? current : best
+      , data.forecast[0])
+    : null
 
   return (
     <div className="space-y-px">
@@ -287,7 +307,11 @@ function ForecastView({ data }: { data: UKEnergyData }) {
         <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-3">
           Carbon Intensity (Next 24h)
         </div>
-        <IntensityChart data={data.forecast} showForecast />
+        {data.forecast.length > 0 ? (
+          <IntensityChart data={data.forecast} showForecast />
+        ) : (
+          <div className="text-white/40 text-sm text-center py-4">No forecast data</div>
+        )}
       </div>
 
       {/* Best Time */}
