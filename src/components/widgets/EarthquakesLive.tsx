@@ -32,11 +32,11 @@ interface EarthquakeData {
 
 // Magnitude colour scale
 function getMagnitudeColor(mag: number): string {
-  if (mag >= 7) return '#7f1d1d'  // Major - dark red
-  if (mag >= 6) return '#dc2626'  // Strong - red
-  if (mag >= 5) return '#ea580c'  // Moderate - orange
-  if (mag >= 4) return '#f59e0b'  // Light - amber
-  return '#84cc16'                 // Minor - lime
+  if (mag >= 7) return '#dc2626'  // Major - red
+  if (mag >= 6) return '#ea580c'  // Strong - orange
+  if (mag >= 5) return '#f59e0b'  // Moderate - amber
+  if (mag >= 4) return '#facc15'  // Light - yellow
+  return '#facc15'                 // Minor - yellow
 }
 
 // Marker size based on magnitude (scaled for 784x458 viewBox)
@@ -58,7 +58,7 @@ function EarthquakeMarkers({ earthquakes }: { earthquakes: Earthquake[] }) {
         const { x, y } = latLonToXY(eq.latitude, eq.longitude)
         const size = getMagnitudeSize(eq.magnitude)
         const color = getMagnitudeColor(eq.magnitude)
-        
+
         return (
           <g key={eq.id}>
             {/* Pulse for M6+ */}
@@ -139,7 +139,7 @@ export default function EarthquakesLive() {
 
   if (isLoading && !data) {
     return (
-      <div className="p-4 flex items-center justify-center h-48 text-text-muted">
+      <div className="p-4 flex items-center justify-center h-48 text-black/50">
         Loading seismic data...
       </div>
     )
@@ -159,45 +159,45 @@ export default function EarthquakesLive() {
     <div className="p-4 space-y-4">
       {/* Period toggle + stats */}
       <div className="flex items-center justify-between">
-        {/* Toggle */}
-        <div className="inline-flex bg-[#e5e5e5] rounded-lg p-1">
+        {/* Toggle - black/red style like SolarDisk */}
+        <div className="flex gap-px">
           <button
             onClick={() => setPeriod('day')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+            className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
               period === 'day'
-                ? 'bg-white text-text-primary shadow-sm'
-                : 'text-text-muted hover:text-text-primary'
+                ? 'bg-[#ff0000] text-white'
+                : 'bg-black text-white/60 hover:text-white'
             }`}
           >
-            24 Hours
+            24 HOURS
           </button>
           <button
             onClick={() => setPeriod('week')}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+            className={`px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
               period === 'week'
-                ? 'bg-white text-text-primary shadow-sm'
-                : 'text-text-muted hover:text-text-primary'
+                ? 'bg-[#ff0000] text-white'
+                : 'bg-black text-white/60 hover:text-white'
             }`}
           >
-            7 Days
+            7 DAYS
           </button>
         </div>
-        
+
         {/* Stats */}
         <div className="flex items-baseline gap-4">
           <div className="text-right">
-            <span className="font-mono text-2xl font-bold">{data.count}</span>
-            <span className="text-xs text-text-muted ml-1">quakes</span>
+            <span className="font-mono text-2xl font-bold text-black">{data.count}</span>
+            <span className="text-xs text-black/50 ml-1">quakes</span>
           </div>
           {data.maxMagnitude > 0 && (
             <div className="text-right">
-              <span 
+              <span
                 className="font-mono text-2xl font-bold"
                 style={{ color: getMagnitudeColor(data.maxMagnitude) }}
               >
                 {data.maxMagnitude.toFixed(1)}
               </span>
-              <span className="text-xs text-text-muted ml-1">max</span>
+              <span className="text-xs text-black/50 ml-1">max</span>
             </div>
           )}
         </div>
@@ -213,54 +213,51 @@ export default function EarthquakesLive() {
       {/* Magnitude legend */}
       <div className="flex justify-center gap-4">
         {[
-          { mag: 4, label: '4+' },
-          { mag: 5, label: '5+' },
-          { mag: 6, label: '6+' },
-          { mag: 7, label: '7+' },
-        ].map(({ mag, label }) => (
+          { mag: 4, label: '4+', color: '#facc15' },
+          { mag: 5, label: '5+', color: '#f59e0b' },
+          { mag: 6, label: '6+', color: '#ea580c' },
+          { mag: 7, label: '7+', color: '#dc2626' },
+        ].map(({ mag, label, color }) => (
           <div key={mag} className="flex items-center gap-1.5">
-            <div 
+            <div
               className="rounded-full"
-              style={{ 
-                backgroundColor: getMagnitudeColor(mag),
+              style={{
+                backgroundColor: color,
                 width: 12,
                 height: 12,
               }}
             />
-            <span className="text-xs text-text-muted">{label}</span>
+            <span className="text-xs text-black/50">{label}</span>
           </div>
         ))}
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-[#e5e5e5]" />
-
       {/* Recent significant quakes */}
       {topQuakes.length > 0 ? (
         <div className="space-y-2">
-          <span className="text-xs text-text-muted uppercase tracking-wide">
+          <span className="text-xs text-black uppercase tracking-wide">
             Recent Significant
           </span>
           <div className="space-y-2">
             {topQuakes.map(eq => (
-              <div 
+              <div
                 key={eq.id}
                 className="flex items-center gap-3"
               >
                 {/* Magnitude badge */}
-                <div 
+                <div
                   className="w-10 h-10 flex items-center justify-center rounded-lg font-mono text-sm font-bold text-white shrink-0"
                   style={{ backgroundColor: getMagnitudeColor(eq.magnitude) }}
                 >
                   {eq.magnitude.toFixed(1)}
                 </div>
-                
-                {/* Details */}
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm truncate">
+
+                {/* Details - vertically centered with badge */}
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  <div className="text-sm text-black truncate">
                     {eq.place}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-text-muted">
+                  <div className="flex items-center gap-2 text-xs text-black/50">
                     <span>{formatDistanceToNow(new Date(eq.time), { addSuffix: true })}</span>
                     <span>·</span>
                     <span>{eq.depth.toFixed(0)} km deep</span>
@@ -277,7 +274,7 @@ export default function EarthquakesLive() {
           </div>
         </div>
       ) : (
-        <div className="text-center py-4 text-text-muted text-sm">
+        <div className="text-center py-4 text-black/50 text-sm">
           No significant earthquakes in this period
         </div>
       )}
