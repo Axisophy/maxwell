@@ -146,9 +146,9 @@ export default function MobileNav() {
                       href={subitem.href}
                       onClick={closeSubmenu}
                       className={`
-                        block px-2 py-2 pl-[52px]
-                        ${isSubActive ? 'bg-black/5 text-black font-medium' : 'text-black/60'}
-                        active:bg-black/10
+                        block px-2 py-1.5 pl-[52px] text-xs
+                        ${isSubActive ? 'text-black font-medium' : 'text-black'}
+                        active:bg-black/5
                       `}
                     >
                       <span className="uppercase">{subitem.label}</span>

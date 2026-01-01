@@ -74,7 +74,7 @@ export default function RootLayout({
             `}
           </Script>
         </head>
-        <body className="min-h-screen flex flex-col font-sans bg-shell-light text-text-primary">
+        <body className="min-h-screen flex flex-col font-sans bg-black text-white">
           {/* Desktop header */}
           <Header />
           
