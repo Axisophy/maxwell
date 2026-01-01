@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import WorldMap, { latLonToXY } from './WorldMap'
 
 // ===========================================
 // ISS TRACKER
@@ -32,8 +33,6 @@ interface ISSData {
 // Constants
 const ISS_LAUNCH_DATE = new Date('1998-11-20T06:40:00Z')
 const ORBIT_PERIOD_MINUTES = 92.68
-const MAP_WIDTH = 800
-const MAP_HEIGHT = 400
 
 const AGENCY_INFO: Record<string, { abbrev: string; color: string }> = {
   'NASA': { abbrev: 'NASA', color: '#0B3D91' },
@@ -53,13 +52,6 @@ const FALLBACK_CREW: CrewMember[] = [
   { name: 'Jeanette Epps', craft: 'ISS', agency: 'NASA', role: 'Flight Engineer' },
   { name: 'Alexander Grebenkin', craft: 'ISS', agency: 'Roscosmos', role: 'Flight Engineer' },
 ]
-
-// Helpers
-function latLonToXY(lat: number, lon: number): { x: number; y: number } {
-  const x = ((lon + 180) / 360) * MAP_WIDTH
-  const y = ((90 - lat) / 180) * MAP_HEIGHT
-  return { x, y }
-}
 
 function getLocationName(lat: number, lon: number): string {
   if (lat > 66) return 'Arctic'
@@ -147,7 +139,7 @@ function ISSMap({ position, groundTrack, sunlit }: ISSMapProps) {
 
   const issPos = latLonToXY(position.latitude, position.longitude)
 
-  // Build ground track path segments
+  // Build ground track path segments (handling date line wrapping)
   const trackSegments: string[] = []
   let currentSegment: string[] = []
   let prevX = 0
@@ -159,7 +151,8 @@ function ISSMap({ position, groundTrack, sunlit }: ISSMapProps) {
     if (i === 0) {
       currentSegment.push(`M ${x} ${y}`)
       prevX = x
-    } else if (Math.abs(x - prevX) > 400) {
+    } else if (Math.abs(x - prevX) > 300) {
+      // Large jump means we crossed the date line - start new segment
       if (currentSegment.length > 0) trackSegments.push(currentSegment.join(' '))
       currentSegment = [`M ${x} ${y}`]
       prevX = x
@@ -171,28 +164,11 @@ function ISSMap({ position, groundTrack, sunlit }: ISSMapProps) {
   if (currentSegment.length > 0) trackSegments.push(currentSegment.join(' '))
 
   return (
-    <svg viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} className="w-full h-full rounded-lg" style={{ backgroundColor: '#0a0a12' }}>
-      {/* Simplified continent outlines */}
-      <g fill="none" stroke="#1e3a5f" strokeWidth="1">
-        <path d="M45,95 L55,80 L85,75 L120,80 L155,95 L175,115 L190,140 L195,170 L180,190 L145,195 L110,185 L85,175 L60,160 L45,130 Z" />
-        <path d="M110,185 L115,195 L125,210 L130,225 L120,230 L115,220 L108,210 L105,195 Z" />
-        <path d="M130,225 L145,230 L165,255 L175,290 L180,330 L170,375 L155,400 L130,410 L115,390 L105,350 L110,310 L115,280 L120,255 L125,235 Z" />
-        <path d="M355,85 L375,75 L400,80 L420,85 L435,95 L445,110 L440,130 L420,140 L395,145 L375,140 L360,130 L355,115 Z" />
-        <path d="M355,155 L380,150 L415,155 L445,170 L470,200 L480,240 L475,290 L455,335 L420,365 L380,375 L350,360 L335,320 L340,275 L345,235 L350,195 Z" />
-        <path d="M445,75 L490,65 L540,60 L600,70 L660,85 L710,100 L740,130 L750,160 L740,190 L710,210 L665,205 L620,195 L570,190 L530,185 L495,175 L465,160 L450,135 L445,110 Z" />
-        <path d="M530,185 L545,195 L560,220 L555,255 L540,280 L520,270 L510,245 L515,215 L525,195 Z" />
-        <path d="M620,320 L670,310 L720,320 L750,345 L755,380 L735,410 L695,425 L650,420 L615,400 L605,365 L610,340 Z" />
-        <path d="M710,130 L725,125 L735,135 L730,150 L720,155 L712,145 Z" />
-        <path d="M350,90 L358,85 L365,90 L362,100 L355,105 L348,98 Z" />
-        <path d="M260,30 L290,25 L320,35 L335,55 L325,80 L295,90 L265,85 L250,65 L255,45 Z" />
-      </g>
-
-      {/* Grid lines */}
-      <g stroke="#111122" strokeWidth="0.5" opacity="0.3">
-        <line x1="0" y1={MAP_HEIGHT * 0.5} x2={MAP_WIDTH} y2={MAP_HEIGHT * 0.5} />
-        <line x1={MAP_WIDTH * 0.5} y1="0" x2={MAP_WIDTH * 0.5} y2={MAP_HEIGHT} />
-      </g>
-
+    <WorldMap
+      className="w-full h-full rounded-lg"
+      oceanColor="#0a0a12"
+      landColor="#1e3a5f"
+    >
       {/* Ground track */}
       {trackSegments.map((segment, i) => (
         <path
@@ -240,7 +216,7 @@ function ISSMap({ position, groundTrack, sunlit }: ISSMapProps) {
         r={4}
         fill={sunlit ? '#fbbf24' : '#3b82f6'}
       />
-    </svg>
+    </WorldMap>
   )
 }
 
