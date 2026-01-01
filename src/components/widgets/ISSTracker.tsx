@@ -275,11 +275,16 @@ export default function ISSTracker() {
   const fetchData = useCallback(async () => {
     try {
       // Try proxy first, then direct API
-      let posData: any
+      let issData: any
+      let crewData: any
+
       try {
         const response = await fetch('/api/iss')
         if (response.ok) {
-          posData = await response.json()
+          const data = await response.json()
+          // API returns { iss: {...}, astronauts: {...} }
+          issData = data.iss
+          crewData = data.astronauts
         } else {
           throw new Error('Proxy failed')
         }
@@ -287,33 +292,31 @@ export default function ISSTracker() {
         // Fallback to direct API call
         const response = await fetch('https://api.wheretheiss.at/v1/satellites/25544')
         if (!response.ok) throw new Error('Position API failed')
-        posData = await response.json()
+        issData = await response.json()
       }
 
       // Validate position data
-      if (!posData || typeof posData.latitude !== 'number' || typeof posData.longitude !== 'number') {
+      if (!issData || typeof issData.latitude !== 'number' || typeof issData.longitude !== 'number') {
         throw new Error('Invalid position data')
       }
 
       const position: ISSPosition = {
-        latitude: posData.latitude,
-        longitude: posData.longitude,
-        altitude: posData.altitude || 420,
-        velocity: posData.velocity || 27600,
-        timestamp: (posData.timestamp || Date.now() / 1000) * 1000
+        latitude: issData.latitude,
+        longitude: issData.longitude,
+        altitude: issData.altitude || 420,
+        velocity: issData.velocity || 27600,
+        timestamp: Date.now()
       }
 
+      // Use crew data from API or fallback
       let crew: CrewMember[] = FALLBACK_CREW
-      try {
-        const crewResponse = await fetch('/api/iss?crew=true')
-        if (crewResponse.ok) {
-          const crewData = await crewResponse.json()
-          if (crewData.people && crewData.people.length > 0) {
-            crew = crewData.people
-          }
-        }
-      } catch {
-        // Use fallback
+      if (crewData?.people && crewData.people.length > 0) {
+        crew = crewData.people.map((p: any) => ({
+          name: p.name,
+          craft: p.craft,
+          agency: p.agency,
+          role: p.role
+        }))
       }
 
       const sunlit = calculateSunlit(position.latitude, position.longitude)
