@@ -13,11 +13,11 @@ export default function MobileHeader() {
     <>
       <header className="fixed top-0 left-0 right-0 z-50 md:hidden">
         {/* Safe area for notched phones */}
-        <div className="bg-shell-light" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-          <div className="flex items-center justify-between px-4 h-14 border-b border-border-light">
+        <div className="bg-black" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+          <div className="flex items-center justify-between px-4 h-14">
             {/* Logo - tap to go home */}
             <Link href="/" className="flex items-center">
-              <Logo className="h-8 w-auto" />
+              <Logo className="h-8 w-auto text-white" />
             </Link>
 
             {/* Menu button */}
