@@ -122,7 +122,7 @@ export default function Header() {
                         <Link
                           key={subItem.label}
                           href={subItem.href}
-                          className={`block text-xs cursor-pointer ${
+                          className={`block text-xs cursor-pointer uppercase ${
                             pathname === subItem.href
                               ? 'text-white font-medium'
                               : 'text-white/60'
@@ -133,7 +133,7 @@ export default function Header() {
                       ) : (
                         <span
                           key={subItem.label}
-                          className="block text-xs text-white/40"
+                          className="block text-xs text-white/40 uppercase"
                         >
                           {subItem.label}
                         </span>

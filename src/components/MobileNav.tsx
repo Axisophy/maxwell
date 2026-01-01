@@ -116,7 +116,7 @@ export default function MobileNav() {
 
       {/* Mobile nav container - fixed at bottom with padding */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 md:hidden px-2 pb-2"
+        className="fixed bottom-0 left-0 right-0 z-50 md:hidden px-2"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 8px)' }}
       >
 
@@ -127,7 +127,7 @@ export default function MobileNav() {
             <Link
               href={activeItem.href}
               onClick={closeSubmenu}
-              className="flex items-center gap-3 p-2 border-b border-black/10"
+              className="flex items-center gap-3 p-2"
             >
               <activeItem.icon className="w-8 h-8 text-black" />
               <span className="text-lg font-light text-black uppercase">
@@ -151,7 +151,7 @@ export default function MobileNav() {
                         active:bg-black/10
                       `}
                     >
-                      {subitem.label}
+                      <span className="uppercase">{subitem.label}</span>
                     </Link>
                   )
                 })}
@@ -169,16 +169,13 @@ export default function MobileNav() {
               onClick={closeSubmenu}
               className={`
                 flex flex-col items-center justify-center
-                w-14 h-full
-                ${pathname === '/' ? 'text-black' : 'text-black/50'}
+                px-2 py-1 mx-1 rounded-lg
+                ${pathname === '/' ? 'bg-black text-white' : 'text-black'}
               `}
             >
               <HomeIcon className="w-5 h-5 mb-0.5" />
               <span className="text-[9px] font-medium uppercase">Home</span>
             </Link>
-
-            {/* Divider */}
-            <div className="w-px h-8 bg-black/10" />
 
             {/* Section items */}
             <div className="flex-1 flex items-center justify-around">
@@ -193,8 +190,8 @@ export default function MobileNav() {
                     onClick={(e) => handleNavClick(item, e)}
                     className={`
                       flex flex-col items-center justify-center
-                      h-full px-1
-                      ${active || isOpen ? 'text-black' : 'text-black/50'}
+                      px-2 py-1 rounded-lg
+                      ${active || isOpen ? 'bg-black text-white' : 'text-black'}
                     `}
                   >
                     <Icon className="w-5 h-5 mb-0.5" />
