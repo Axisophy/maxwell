@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Logo from './Logo'
 import MobileMenu from './MobileMenu'
-import { Menu } from 'lucide-react'
+import { MenuIcon } from '@/components/icons'
 import { useState } from 'react'
 
 export default function MobileHeader() {
@@ -21,12 +21,12 @@ export default function MobileHeader() {
             </Link>
 
             {/* Menu button */}
-            <button 
+            <button
               onClick={() => setIsMenuOpen(true)}
               className="p-2 -m-2"
               aria-label="Open menu"
             >
-              <Menu className="w-5 h-5 text-text-primary" strokeWidth={1.5} />
+              <MenuIcon size={20} className="text-white" />
             </button>
           </div>
         </div>
