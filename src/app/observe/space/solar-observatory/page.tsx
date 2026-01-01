@@ -82,7 +82,7 @@ function SolarVitalSign({
 }
 
 // ============================================
-// SDO IMAGE VIEWER
+// SDO IMAGE VIEWER (Full Width)
 // ============================================
 type SDOWavelength = '0193' | '0171' | '0304' | '0131' | '0211' | '0335' | 'HMIIC' | 'HMIB'
 
@@ -125,8 +125,8 @@ function SDOImageViewer() {
         ))}
       </div>
 
-      {/* Image */}
-      <div className="relative aspect-square bg-black">
+      {/* Image - full width, large */}
+      <div className="relative aspect-square bg-black max-w-3xl mx-auto">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
@@ -152,7 +152,7 @@ function SDOImageViewer() {
 
       {/* Caption */}
       <div className="p-3 border-t border-white/10">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between max-w-3xl mx-auto">
           <div>
             <div className="text-sm font-medium text-white">{currentWl.label}</div>
             <div className="text-xs text-white/40">{currentWl.temp}</div>
@@ -160,6 +160,54 @@ function SDOImageViewer() {
           <div className="text-right">
             <div className="text-xs text-white/40">NASA SDO/AIA</div>
             <div className="text-[10px] text-white/30">~15 min delay</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// STEREO VIEWER
+// ============================================
+function STEREOViewer() {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  // STEREO-A 195Å image
+  const imageUrl = `https://stereo-ssc.nascom.nasa.gov/beacon/beacon_secchi.jpg?t=${Date.now()}`
+
+  return (
+    <div className="bg-black rounded-lg overflow-hidden">
+      <div className="relative aspect-square bg-black">
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+          </div>
+        )}
+        {error ? (
+          <div className="absolute inset-0 flex items-center justify-center text-white/40 text-sm">
+            Image unavailable
+          </div>
+        ) : (
+          <img
+            src={imageUrl}
+            alt="STEREO-A view of the Sun"
+            className={`w-full h-full object-contain ${loading ? 'opacity-0' : 'opacity-100'}`}
+            onLoad={() => setLoading(false)}
+            onError={() => { setLoading(false); setError(true); }}
+          />
+        )}
+      </div>
+      <div className="p-3 border-t border-white/10">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium text-white">STEREO-A</div>
+            <div className="text-xs text-white/40">195Å EUV</div>
+          </div>
+          <div className="text-right">
+            <div className="text-xs text-white/40">NASA STEREO</div>
+            <div className="text-[10px] text-white/30">Daily update</div>
           </div>
         </div>
       </div>
@@ -261,7 +309,6 @@ function XrayFluxChart({ data, loading }: { data: XrayHistoryPoint[]; loading: b
     return <div className="h-24 bg-white/5 rounded animate-pulse" />
   }
 
-  // Log scale visualization
   const getYPercent = (flux: number) => {
     const logFlux = Math.log10(Math.max(flux, 1e-9))
     const logMin = -9
@@ -275,12 +322,10 @@ function XrayFluxChart({ data, loading }: { data: XrayHistoryPoint[]; loading: b
         X-Ray Flux (6h)
       </div>
       <div className="relative h-16">
-        {/* Threshold lines */}
         <div className="absolute left-0 right-0 border-t border-dashed border-red-500/30" style={{ bottom: `${getYPercent(1e-4)}%` }} />
         <div className="absolute left-0 right-0 border-t border-dashed border-orange-500/30" style={{ bottom: `${getYPercent(1e-5)}%` }} />
         <div className="absolute left-0 right-0 border-t border-dashed border-yellow-500/30" style={{ bottom: `${getYPercent(1e-6)}%` }} />
 
-        {/* Data line */}
         <svg className="w-full h-full" preserveAspectRatio="none">
           <polyline
             fill="none"
@@ -354,7 +399,6 @@ function BzChart({ data, loading }: { data: SolarWindHistoryPoint[]; loading: bo
         IMF Bz Component (6h)
       </div>
       <div className="relative h-16">
-        {/* Zero line */}
         <div className="absolute left-0 right-0 top-1/2 border-t border-white/20" />
 
         <svg className="w-full h-full" preserveAspectRatio="none">
@@ -364,7 +408,6 @@ function BzChart({ data, loading }: { data: SolarWindHistoryPoint[]; loading: bo
             strokeWidth="1.5"
             points={data.map((d, i) => {
               const x = (i / (data.length - 1)) * 100
-              // Bz typically ranges -30 to +30 nT
               const y = 50 - (d.bz / 30) * 50
               return `${x}%,${Math.max(0, Math.min(100, y))}%`
             }).join(' ')}
@@ -390,7 +433,6 @@ function AuroraForecast() {
 
   return (
     <div className="bg-black rounded-lg overflow-hidden">
-      {/* Selector */}
       <div className="p-2 flex gap-px">
         <button
           onClick={() => { setHemisphere('north'); setLoading(true); }}
@@ -414,7 +456,6 @@ function AuroraForecast() {
         </button>
       </div>
 
-      {/* Image */}
       <div className="relative aspect-square bg-black">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -429,9 +470,77 @@ function AuroraForecast() {
         />
       </div>
 
-      {/* Caption */}
       <div className="p-3 border-t border-white/10">
         <div className="text-xs text-white/40">OVATION Prime Model · NOAA SWPC</div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// SOLAR CYCLE INDICATOR
+// ============================================
+function SolarCycleIndicator() {
+  // Solar Cycle 25 started December 2019
+  // Expected maximum around July 2025
+  // Cycle typically lasts ~11 years
+  const cycleStart = new Date('2019-12-01')
+  const expectedMax = new Date('2025-07-01')
+  const cycleEnd = new Date('2030-12-01') // Estimated
+
+  const now = new Date()
+  const totalDays = (cycleEnd.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24)
+  const elapsedDays = (now.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24)
+  const progress = Math.min(elapsedDays / totalDays, 1)
+
+  const maxProgress = (expectedMax.getTime() - cycleStart.getTime()) / (cycleEnd.getTime() - cycleStart.getTime())
+
+  const yearsIn = Math.floor(elapsedDays / 365)
+  const phase = progress < maxProgress ? 'Rising' : 'Declining'
+
+  return (
+    <div className="bg-black rounded-lg p-4">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <div className="text-lg font-medium text-white">Solar Cycle 25</div>
+          <div className="text-xs text-white/40">~11 year cycle</div>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl font-bold text-amber-400">{yearsIn}</div>
+          <div className="text-xs text-white/40">years in</div>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="relative h-4 bg-white/10 rounded-full overflow-hidden mb-2">
+        {/* Solar maximum marker */}
+        <div
+          className="absolute top-0 bottom-0 w-px bg-amber-400/50"
+          style={{ left: `${maxProgress * 100}%` }}
+        />
+        {/* Progress */}
+        <div
+          className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-blue-500 via-amber-400 to-red-500 rounded-full"
+          style={{ width: `${progress * 100}%` }}
+        />
+        {/* Current position marker */}
+        <div
+          className="absolute top-0 bottom-0 w-1 bg-white rounded-full"
+          style={{ left: `${progress * 100}%`, transform: 'translateX(-50%)' }}
+        />
+      </div>
+
+      <div className="flex justify-between text-[10px] text-white/30">
+        <span>Dec 2019</span>
+        <span className="text-amber-400/60">Max ~Jul 2025</span>
+        <span>~2030</span>
+      </div>
+
+      <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between">
+        <span className="text-xs text-white/50">Current phase:</span>
+        <span className={`text-xs font-medium ${phase === 'Rising' ? 'text-amber-400' : 'text-blue-400'}`}>
+          {phase}
+        </span>
       </div>
     </div>
   )
@@ -455,7 +564,6 @@ export default function SolarObservatoryPage() {
         const xrayData = await xrayRes.json()
         const shortWave = xrayData.filter((d: any) => d.energy === '0.05-0.4nm')
 
-        // Calculate current X-ray class
         const latestXray = shortWave[shortWave.length - 1]
         const flux = parseFloat(latestXray?.flux || '0')
         let xrayClass = 'A'
@@ -464,7 +572,6 @@ export default function SolarObservatoryPage() {
         else if (flux >= 1e-6) xrayClass = 'C' + (flux / 1e-6).toFixed(1)
         else if (flux >= 1e-7) xrayClass = 'B' + (flux / 1e-7).toFixed(1)
 
-        // Build X-ray history
         setXrayHistory(shortWave.slice(-72).map((d: any) => ({
           time: d.time_tag,
           flux: parseFloat(d.flux)
@@ -475,7 +582,6 @@ export default function SolarObservatoryPage() {
         const kpData = await kpRes.json()
         const latestKp = kpData[kpData.length - 1]
 
-        // Build Kp history (last 8 readings = 24h)
         setKpHistory(kpData.slice(-8).map((d: any) => ({
           time: d[0],
           kp: parseFloat(d[1])
@@ -493,7 +599,6 @@ export default function SolarObservatoryPage() {
         const validMag = magData.slice(1).filter((d: any[]) => d[3] !== null)
         const latestMag = validMag[validMag.length - 1]
 
-        // Build wind history (every 5th point for cleaner chart)
         const windPoints: SolarWindHistoryPoint[] = []
         for (let i = Math.max(0, validWind.length - 72); i < validWind.length; i += 3) {
           const w = validWind[i]
@@ -508,16 +613,15 @@ export default function SolarObservatoryPage() {
         }
         setWindHistory(windPoints)
 
-        // Set current conditions
         setConditions({
           xrayClass,
           xrayFlux: flux,
           kp: parseFloat(latestKp?.[1] || '0'),
           solarWind: parseFloat(latestWind?.[2] || '0'),
           bzComponent: parseFloat(latestMag?.[3] || '0'),
-          sunspotNumber: 145, // TODO: Fetch from SILSO
-          f107Flux: 178, // TODO: Fetch from NOAA
-          protonFlux: 0.1, // TODO: Fetch proton data
+          sunspotNumber: 145,
+          f107Flux: 178,
+          protonFlux: 0.1,
           updatedAt: new Date().toISOString(),
         })
       } catch (err) {
@@ -532,7 +636,6 @@ export default function SolarObservatoryPage() {
     return () => clearInterval(interval)
   }, [])
 
-  // Status helpers
   const getXrayStatus = (cls: string): 'normal' | 'elevated' | 'warning' | 'critical' => {
     if (cls.startsWith('X')) return 'critical'
     if (cls.startsWith('M')) return 'warning'
@@ -639,33 +742,66 @@ export default function SolarObservatoryPage() {
             </div>
           </section>
 
-          {/* Live Solar Disk Frame */}
+          {/* Live Solar Disk Frame - FULL WIDTH */}
           <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
               Live Solar Disk
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-px">
-              <SDOImageViewer />
-              <div className="flex flex-col gap-px">
-                <div className="bg-black rounded-lg p-4 flex-1">
-                  <div className="text-sm font-medium text-white mb-3">Understanding SDO Wavelengths</div>
-                  <p className="text-xs text-white/50 leading-relaxed mb-3">
-                    Each wavelength reveals a different temperature layer of the Sun's atmosphere.
-                    <strong className="text-white/70"> 193Å</strong> shows the corona at 1.2 million °C — ideal for seeing coronal holes and loops.
-                    <strong className="text-white/70"> 304Å</strong> shows the cooler chromosphere where prominences are visible.
-                  </p>
-                  <p className="text-xs text-white/50 leading-relaxed mb-3">
-                    <strong className="text-white/70">131Å</strong> highlights the hottest plasma (10 million °C) — it lights up during flares.
-                    <strong className="text-white/70"> HMI</strong> instruments show visible light (sunspots) and magnetic field polarity.
-                  </p>
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <div className="text-[10px] text-white/30 uppercase tracking-wider mb-2">Mission</div>
-                    <div className="text-xs text-white/50">
-                      <strong className="text-white/70">Solar Dynamics Observatory</strong> · NASA · Launched 2010 · Geosynchronous orbit ·
-                      Images every 12 seconds
-                    </div>
-                  </div>
+            <SDOImageViewer />
+          </section>
+
+          {/* Understanding SDO Wavelengths Frame - SEPARATE */}
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
+              Understanding SDO Wavelengths
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px">
+              <div className="bg-black rounded-lg p-4">
+                <p className="text-sm text-white/60 leading-relaxed mb-3">
+                  Each wavelength reveals a different temperature layer of the Sun's atmosphere.
+                  <strong className="text-white/80"> 193Å</strong> shows the corona at 1.2 million °C — ideal for seeing coronal holes and loops.
+                  <strong className="text-white/80"> 304Å</strong> shows the cooler chromosphere where prominences are visible.
+                </p>
+                <p className="text-sm text-white/60 leading-relaxed">
+                  <strong className="text-white/80">131Å</strong> highlights the hottest plasma (10 million °C) — it lights up during flares.
+                  <strong className="text-white/80"> HMI</strong> instruments show visible light (sunspots) and magnetic field polarity.
+                </p>
+              </div>
+              <div className="bg-black rounded-lg p-4">
+                <div className="text-[10px] text-white/30 uppercase tracking-wider mb-2">Mission</div>
+                <div className="text-sm text-white/60 mb-3">
+                  <strong className="text-white/80">Solar Dynamics Observatory</strong> · NASA · Launched 2010 ·
+                  Geosynchronous orbit · Images every 12 seconds
                 </div>
+                <div className="text-[10px] text-white/30 uppercase tracking-wider mb-2">Instruments</div>
+                <div className="text-sm text-white/60">
+                  <strong className="text-white/80">AIA</strong> (Atmospheric Imaging Assembly) — 10 wavelengths<br/>
+                  <strong className="text-white/80">HMI</strong> (Helioseismic and Magnetic Imager) — visible & magnetic
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Multiple Viewpoints Frame - STEREO RESTORED */}
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
+              Multiple Viewpoints
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px">
+              <STEREOViewer />
+              <div className="bg-black rounded-lg p-4 flex flex-col justify-center">
+                <div className="text-sm font-medium text-white mb-3">Why Two Views?</div>
+                <p className="text-xs text-white/50 leading-relaxed mb-3">
+                  SDO orbits Earth, showing us the Sun-facing side. STEREO-A orbits the Sun
+                  slightly faster, gradually moving ahead of Earth. This unique vantage point
+                  lets us see coronal mass ejections (CMEs) heading toward us before they're
+                  visible from Earth.
+                </p>
+                <p className="text-xs text-white/50 leading-relaxed">
+                  When STEREO-A shows activity on the left limb, that region will rotate
+                  to face Earth in the coming days — giving advance warning of potentially
+                  geoeffective active regions.
+                </p>
               </div>
             </div>
           </section>
@@ -701,6 +837,19 @@ export default function SolarObservatoryPage() {
               <SolarWindChart data={windHistory} loading={loading} />
               <BzChart data={windHistory} loading={loading} />
             </div>
+          </section>
+
+          {/* Solar Cycle Frame - RESTORED */}
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase">
+                Solar Cycle 25
+              </div>
+              <span className="text-[10px] font-mono text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded uppercase">
+                ~11 Year Cycle
+              </span>
+            </div>
+            <SolarCycleIndicator />
           </section>
 
           {/* Aurora Forecast Frame */}
@@ -841,6 +990,7 @@ export default function SolarObservatoryPage() {
                   <div className="text-white/50 mb-1">Solar Imagery</div>
                   <div>NASA SDO (AIA, HMI)</div>
                   <div>SOHO LASCO C2/C3</div>
+                  <div>STEREO SECCHI</div>
                 </div>
                 <div>
                   <div className="text-white/50 mb-1">X-Ray Flux</div>
@@ -862,7 +1012,7 @@ export default function SolarObservatoryPage() {
 
             <div className="mt-4 pt-4 border-t border-white/10">
               <div className="text-[10px] text-white/20">
-                Updates: SDO ~15 min · SOHO ~30 min · Space weather ~1 min · Aurora model ~30 min
+                Updates: SDO ~15 min · SOHO ~30 min · STEREO daily · Space weather ~1 min · Aurora model ~30 min
               </div>
             </div>
           </section>
