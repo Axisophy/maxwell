@@ -3,71 +3,25 @@
 import Link from 'next/link'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import { DataIcon } from '@/components/icons'
-import KeyNumber from './components/KeyNumber'
 
 // ============================================================================
-// KEY NUMBERS - Fundamental constants and counts
+// KEY NUMBERS - Fundamental constants and counts (VitalSign style)
 // ============================================================================
 
 const keyNumbers = [
-  {
-    value: '299,792,458',
-    unit: 'm/s',
-    context: 'speed of light',
-    href: '/data/constants',
-  },
-  {
-    value: '118',
-    unit: 'elements',
-    context: 'periodic table',
-    href: '/data/elements',
-  },
-  {
-    value: '3,352',
-    unit: 'nuclides',
-    context: 'known isotopes',
-    href: '/data/nuclides',
-  },
-  {
-    value: '8',
-    unit: 'planets',
-    context: '+ 5 dwarf planets',
-    href: '/data/solar-system',
-  },
-  {
-    value: '88',
-    unit: 'constellations',
-    context: 'official IAU',
-    href: '/data/constellations',
-  },
-  {
-    value: '4.54',
-    unit: 'billion years',
-    context: "Earth's age",
-    href: '/data/time',
-  },
-  {
-    value: '6.022×10<sup>23</sup>',
-    unit: 'mol⁻¹',
-    context: "Avogadro's number",
-    href: '/data/constants',
-  },
-  {
-    value: '~8.7',
-    unit: 'million',
-    context: 'estimated species',
-    href: '/data/bestiary',
-  },
-  {
-    value: '110',
-    unit: 'objects',
-    context: 'Messier catalogue',
-    href: '/data/messier',
-  },
+  { value: '299,792,458', label: 'Speed of light (m/s)', href: '/data/constants' },
+  { value: '118', label: 'Elements', href: '/data/elements' },
+  { value: '3,352', label: 'Known nuclides', href: '/data/nuclides' },
+  { value: '8', label: 'Planets', href: '/data/solar-system' },
+  { value: '88', label: 'Constellations', href: '/data/constellations' },
+  { value: '4.54 Bn', label: "Earth's age (years)", href: '/data/time' },
+  { value: '6.022×10²³', label: "Avogadro's number", href: '/data/constants' },
+  { value: '~8.7 M', label: 'Estimated species', href: '/data/bestiary' },
+  { value: '110', label: 'Messier objects', href: '/data/messier' },
 ]
 
 // ============================================================================
-// DATA SECTION - 6 CATEGORIES
+// DATA CATEGORIES
 // ============================================================================
 
 interface DataItem {
@@ -212,7 +166,7 @@ export default function DataPage() {
             </p>
           </section>
 
-          {/* Key Numbers Frame */}
+          {/* Key Numbers Frame - VitalSign style */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
               Key Numbers
@@ -220,13 +174,18 @@ export default function DataPage() {
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-px">
               {keyNumbers.map((num) => (
-                <KeyNumber
+                <Link
                   key={num.href + num.value}
-                  value={num.value}
-                  unit={num.unit}
-                  context={num.context}
                   href={num.href}
-                />
+                  className="block p-2 md:p-4 text-left bg-black rounded-lg hover:bg-neutral-900 transition-colors"
+                >
+                  <div className="text-[10px] md:text-xs text-white/50 uppercase mb-1 md:mb-2">
+                    {num.label}
+                  </div>
+                  <div className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums text-white">
+                    {num.value}
+                  </div>
+                </Link>
               ))}
             </div>
           </section>
@@ -244,7 +203,7 @@ export default function DataPage() {
                 </p>
               </div>
 
-              {/* Items Grid */}
+              {/* Items Grid - PortalCard style */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
                 {category.items.map((item) => (
                   <DataCard key={item.href} item={item} />
@@ -255,7 +214,7 @@ export default function DataPage() {
 
           {/* Footer Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
-            <p className="text-sm text-black/40 max-w-2xl">
+            <p className="text-sm text-black/50 max-w-2xl">
               Everything connects. Elements link to where they're mined, which links to
               when those deposits formed, which links to the geological timescale, which
               links to what was alive. Follow the threads.
@@ -272,7 +231,7 @@ export default function DataPage() {
 }
 
 // ============================================================================
-// Data Card Component
+// Data Card Component - PortalCard style (black frame on white background)
 // ============================================================================
 
 function DataCard({ item }: { item: DataItem }) {
@@ -282,29 +241,29 @@ function DataCard({ item }: { item: DataItem }) {
     return (
       <Link
         href={item.href}
-        className="block p-2 md:p-4 bg-[#f5f5f5] rounded-lg hover:bg-[#e5e5e5] transition-colors group"
+        className="block p-2 md:p-4 bg-black rounded-lg border border-white/10 hover:border-white/30 transition-colors"
       >
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="text-base font-medium text-black group-hover:text-black transition-colors">
-            {item.title}
-          </h3>
-          <span className="flex-shrink-0 w-2 h-2 rounded-full bg-green-500 mt-1.5" />
-        </div>
+        <h3 className="text-2xl md:text-3xl font-light text-white uppercase mb-2">
+          {item.title}
+        </h3>
         {item.description && (
-          <p className="text-sm text-black/50">{item.description}</p>
+          <p className="text-sm text-white/50">{item.description}</p>
         )}
       </Link>
     )
   }
 
+  // Coming soon - muted black frame
   return (
-    <div className="p-2 md:p-4 bg-[#e5e5e5] rounded-lg">
-      <div className="flex items-start justify-between gap-2 mb-1">
-        <h3 className="text-base font-medium text-black/40">{item.title}</h3>
-        <span className="flex-shrink-0 text-xs text-black/30 mt-0.5">Soon</span>
+    <div className="p-2 md:p-4 bg-black/50 rounded-lg">
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h3 className="text-2xl md:text-3xl font-light text-white/40 uppercase">
+          {item.title}
+        </h3>
+        <span className="flex-shrink-0 text-xs text-white/30 uppercase mt-2">Soon</span>
       </div>
       {item.description && (
-        <p className="text-sm text-black/30">{item.description}</p>
+        <p className="text-sm text-white/30">{item.description}</p>
       )}
     </div>
   )

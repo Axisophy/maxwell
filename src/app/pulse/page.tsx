@@ -45,41 +45,41 @@ export default function PulsePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-px">
 
-              {/* Status Card */}
-              <div className="p-4 md:p-6 bg-[#f5f5f5] rounded-lg">
-                <h2 className="text-xl md:text-2xl font-light text-black mb-3">
+              {/* Status Card - Black frame (PortalCard style) */}
+              <div className="p-2 md:p-4 bg-black rounded-lg">
+                <h2 className="text-2xl md:text-3xl font-light text-white uppercase mb-2">
                   The Pulse is warming up
                 </h2>
-                <p className="text-sm md:text-base text-black/60 leading-relaxed mb-4">
-                  We're building something special here — a curated stream of science news,
-                  partner discoveries, and MXWLL updates. Think of it as your morning briefing
+                <p className="text-sm text-white/50 mb-4">
+                  We're building a curated stream of science news,
+                  partner discoveries, and MXWLL updates. Your morning briefing
                   for the scientifically curious.
                 </p>
-                <p className="text-sm text-black/40">
-                  Want to be notified when we launch?{' '}
-                  <Link href="/about/contact" className="text-black underline underline-offset-4 hover:no-underline">
+                <p className="text-sm text-white/50">
+                  Want to be notified?{' '}
+                  <Link href="/about/contact" className="text-white underline underline-offset-4 hover:no-underline">
                     Get in touch
                   </Link>
                 </p>
               </div>
 
-              {/* What to Expect Card */}
-              <div className="p-4 md:p-6 bg-[#f5f5f5] rounded-lg">
-                <h2 className="text-lg font-medium text-black mb-4 uppercase">
+              {/* What to Expect Card - Black frame (PortalCard style) */}
+              <div className="p-2 md:p-4 bg-black rounded-lg">
+                <h2 className="text-2xl md:text-3xl font-light text-white uppercase mb-4">
                   What to expect
                 </h2>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
-                    <p className="text-sm font-medium text-black mb-1">Latest Discoveries</p>
-                    <p className="text-sm text-black/50">Curated science news from trusted sources, beautifully presented.</p>
+                    <p className="text-sm font-medium text-white uppercase mb-1">Latest Discoveries</p>
+                    <p className="text-sm text-white/50">Curated science news from trusted sources.</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-black mb-1">Partner Highlights</p>
-                    <p className="text-sm text-black/50">Featured research and data from our institutional partners.</p>
+                    <p className="text-sm font-medium text-white uppercase mb-1">Partner Highlights</p>
+                    <p className="text-sm text-white/50">Featured research from institutional partners.</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-black mb-1">MXWLL Updates</p>
-                    <p className="text-sm text-black/50">New widgets, features, and content as they launch.</p>
+                    <p className="text-sm font-medium text-white uppercase mb-1">MXWLL Updates</p>
+                    <p className="text-sm text-white/50">New widgets, features, and content.</p>
                   </div>
                 </div>
               </div>
@@ -87,14 +87,14 @@ export default function PulsePage() {
             </div>
           </section>
 
-          {/* In the meantime Frame - Dark */}
+          {/* In the meantime Frame - Black frame */}
           <section className="bg-black rounded-lg p-2 md:p-4 border border-white/10">
-            <div className="text-xs text-white/50 uppercase tracking-wider mb-3">
+            <div className="text-[10px] md:text-xs text-white/50 uppercase mb-2">
               In the meantime
             </div>
-            <p className="text-lg font-light text-white/90 mb-4">
-              Check out what's already live on MXWLL:
-            </p>
+            <div className="text-2xl md:text-3xl font-light text-white uppercase mb-4">
+              Explore what's live
+            </div>
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/observe"
@@ -112,7 +112,7 @@ export default function PulsePage() {
                 href="/vault"
                 className="px-4 py-2 bg-white/10 rounded text-sm text-white hover:bg-white/20 transition-colors"
               >
-                The Vault →
+                Vault →
               </Link>
               <Link
                 href="/data"
