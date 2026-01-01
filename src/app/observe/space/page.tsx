@@ -2,16 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 
 interface SpaceData {
   solarWind: { speed: number; density: number }
   kpIndex: { value: number; status: string }
   solarFlares: { today: number; class: string }
-  moonPhase: { illumination: number; phase: string }
-  issPosition: { lat: number; lon: number; altitude: number }
-  nextLaunch: { name: string; date: string; provider: string }
-  nearestAsteroid: { name: string; distance: number; date: string }
+  nearestAsteroid: { name: string; distance: number }
   updatedAt: string
 }
 
@@ -56,59 +54,44 @@ const spaceWidgets = [
   },
 ]
 
-function SpaceMetric({
+// Inverted VitalSign for white background frames
+function SpaceVitalSign({
   value,
   label,
-  unit,
+  href,
   loading = false,
 }: {
   value: string | number
   label: string
-  unit?: string
+  href: string
   loading?: boolean
 }) {
-  return (
-    <div className="bg-black rounded-lg p-3">
-      <div className="text-[10px] text-white/40 uppercase tracking-wider mb-1">
-        {label}
+  if (loading) {
+    return (
+      <div className="p-2 md:p-4 bg-white rounded-lg animate-pulse">
+        <div className="h-3 md:h-4 bg-black/10 rounded w-16 md:w-24 mb-1 md:mb-2" />
+        <div className="h-8 md:h-20 bg-black/10 rounded w-20 md:w-36" />
       </div>
-      {loading ? (
-        <div className="h-7 bg-white/10 rounded animate-pulse" />
-      ) : (
-        <div className="font-mono text-lg font-bold text-white">
-          {value}
-          {unit && <span className="text-white/60 text-sm ml-1">{unit}</span>}
-        </div>
-      )}
-    </div>
-  )
-}
+    )
+  }
 
-function PageCard({
-  title,
-  description,
-  href,
-}: {
-  title: string
-  description: string
-  href: string
-}) {
   return (
     <Link
       href={href}
-      className="block bg-black rounded-lg p-4 hover:bg-black/80 transition-colors group"
+      className="block p-2 md:p-4 text-left bg-white rounded-lg hover:bg-neutral-100 transition-colors"
     >
-      <h3 className="text-lg font-medium text-white mb-1 group-hover:text-white/90">
-        {title}
-      </h3>
-      <p className="text-sm text-white/50">
-        {description}
-      </p>
+      <div className="text-[10px] md:text-xs text-black/50 uppercase mb-1 md:mb-2">
+        {label}
+      </div>
+      <div className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums text-black">
+        {typeof value === 'number' ? value.toLocaleString() : value}
+      </div>
     </Link>
   )
 }
 
-function WidgetCard({
+// Inverted PortalCard for white background
+function SpaceCard({
   title,
   description,
   href,
@@ -120,11 +103,11 @@ function WidgetCard({
   return (
     <Link
       href={href}
-      className="block bg-black/5 rounded-lg p-4 hover:bg-black/10 transition-colors border border-transparent hover:border-black/20"
+      className="block p-2 md:p-4 bg-white rounded-lg border border-black/10 hover:border-black/30 transition-colors"
     >
-      <h3 className="text-base font-medium text-black mb-1">
+      <h2 className="text-2xl md:text-3xl font-light text-black uppercase mb-2">
         {title}
-      </h3>
+      </h2>
       <p className="text-sm text-black/50">
         {description}
       </p>
@@ -139,17 +122,13 @@ export default function SpacePage() {
   useEffect(() => {
     async function fetchSpaceData() {
       try {
-        // Fetch from vital-signs API (or create a dedicated space API)
         const res = await fetch('/api/vital-signs')
         const json = await res.json()
         setData({
           solarWind: json.solarWind || { speed: 0, density: 0 },
           kpIndex: json.kpIndex || { value: 0, status: 'quiet' },
           solarFlares: json.solarFlares || { today: 0, class: 'none' },
-          moonPhase: { illumination: 0, phase: 'waxing' }, // TODO: Add to API
-          issPosition: { lat: 0, lon: 0, altitude: 408 }, // TODO: Add to API
-          nextLaunch: { name: 'TBD', date: '', provider: '' }, // TODO: Add to API
-          nearestAsteroid: json.nearestAsteroid || { name: '', distance: 0, date: '' },
+          nearestAsteroid: json.nearestAsteroid || { name: '', distance: 0 },
           updatedAt: json.updatedAt,
         })
       } catch (error) {
@@ -164,7 +143,6 @@ export default function SpacePage() {
     return () => clearInterval(interval)
   }, [])
 
-  // Determine Kp status styling
   const kpValue = data?.kpIndex?.value || 0
   const kpStatusText = kpValue >= 5 ? 'Storm' : kpValue >= 4 ? 'Active' : 'Quiet'
 
@@ -199,42 +177,95 @@ export default function SpacePage() {
             </p>
           </section>
 
+          {/* Live Imagery Frame */}
+          <section className="bg-black rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
+              Live Imagery
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px">
+              {/* SDO Solar Image */}
+              <Link
+                href="/observe/space/solar-observatory"
+                className="block bg-white rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
+              >
+                <div className="aspect-square relative bg-black">
+                  <Image
+                    src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_512_0193.jpg"
+                    alt="SDO AIA 193Å - Solar corona"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
+                <div className="p-3">
+                  <div className="text-sm font-medium text-black">SDO AIA 193Å</div>
+                  <div className="text-xs text-black/50">Solar corona · Updated every 15 minutes</div>
+                </div>
+              </Link>
+
+              {/* SOHO LASCO C3 */}
+              <Link
+                href="/observe/space/solar-observatory"
+                className="block bg-white rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
+              >
+                <div className="aspect-square relative bg-black">
+                  <Image
+                    src="https://soho.nascom.nasa.gov/data/realtime/c3/512/latest.jpg"
+                    alt="SOHO LASCO C3 - Solar coronagraph"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
+                <div className="p-3">
+                  <div className="text-sm font-medium text-black">SOHO LASCO C3</div>
+                  <div className="text-xs text-black/50">Coronagraph · Updated every 30 minutes</div>
+                </div>
+              </Link>
+            </div>
+          </section>
+
           {/* Space Metrics Frame */}
-          <section className="bg-[#404040] rounded-lg p-2 md:p-4">
+          <section className="bg-black rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
+              Current Conditions
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-px">
-              <SpaceMetric
+              <SpaceVitalSign
                 value={data?.solarWind?.speed || 0}
-                label="Solar Wind"
-                unit="km/s"
+                label="Solar Wind (km/s)"
+                href="/observe/space/solar-observatory"
                 loading={loading}
               />
-              <SpaceMetric
+              <SpaceVitalSign
                 value={kpValue}
                 label={`Kp Index · ${kpStatusText}`}
+                href="/observe/space/aurora"
                 loading={loading}
               />
-              <SpaceMetric
+              <SpaceVitalSign
                 value={data?.solarFlares?.today || 0}
                 label="Solar Flares (24h)"
+                href="/observe/space/solar-observatory"
                 loading={loading}
               />
-              <SpaceMetric
+              <SpaceVitalSign
                 value={data?.nearestAsteroid?.distance?.toFixed(1) || '—'}
-                label="Nearest Asteroid"
-                unit="LD"
+                label="Nearest Asteroid (LD)"
+                href="/observe/dashboard?widget=asteroids"
                 loading={loading}
               />
             </div>
           </section>
 
-          {/* Observatory Pages Frame */}
+          {/* Observatories Frame */}
           <section className="bg-black rounded-lg p-2 md:p-4">
-            <div className="text-sm text-white/40 uppercase tracking-wider mb-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
               Observatories
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
               {spacePages.map((page) => (
-                <PageCard
+                <SpaceCard
                   key={page.href}
                   title={page.title}
                   description={page.description}
@@ -245,13 +276,13 @@ export default function SpacePage() {
           </section>
 
           {/* Widgets Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4 border border-black/10">
-            <div className="text-sm text-black/40 uppercase tracking-wider mb-4">
+          <section className="bg-black rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
               Widgets
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px">
               {spaceWidgets.map((widget) => (
-                <WidgetCard
+                <SpaceCard
                   key={widget.href}
                   title={widget.title}
                   description={widget.description}
