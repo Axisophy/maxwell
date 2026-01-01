@@ -7,6 +7,8 @@ import { WIDGET_REGISTRY } from '@/lib/dashboard/widget-registry'
 import { getSetById, getDefaultSet } from '@/lib/dashboard/widget-sets'
 import { WIDGET_COMPONENTS } from '@/lib/dashboard/widget-components'
 import { getSelectedSetId } from '@/lib/dashboard/storage'
+import Breadcrumb from '@/components/ui/Breadcrumb'
+import { ObserveIcon } from '@/components/icons'
 
 export default function DashboardPage() {
   const [currentSetId, setCurrentSetId] = useState<string>('default')
@@ -55,45 +57,69 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-shell-light">
-      {/* Mobile top padding */}
-      <div className="h-14 md:hidden" />
+    <main className="min-h-screen bg-black">
+      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
 
-      <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Page header */}
-        <div className="mb-6 md:mb-8">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-text-primary mb-3">
-            Dashboard
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Live data from space agencies, research stations, and sensors worldwide. 
-            Switch between curated collections or register to build your own.
-          </p>
-        </div>
-
-        {/* Dashboard selector */}
-        <div className="mb-8 md:mb-10 max-w-sm">
-          {isClient && (
-            <DashboardSelector 
-              onSetChange={handleSetChange}
-              isRegistered={false} // TODO: Wire up to Clerk auth via useUser()
+        {/* Breadcrumb Frame */}
+        <div className="mb-px">
+          <div className="block bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
+            <Breadcrumb
+              items={[
+                { label: 'MXWLL', href: '/' },
+                { label: 'Observe', href: '/observe' },
+                { label: 'Dashboard' },
+              ]}
+              theme="light"
             />
-          )}
+          </div>
         </div>
 
-        {/* Widget grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {isClient ? renderWidgets() : (
-            // Loading state - show placeholder cards
-            <>
-              {[...Array(6)].map((_, i) => (
-                <div 
-                  key={i} 
-                  className="bg-white rounded-xl h-64 animate-pulse"
+        {/* Frames container */}
+        <div className="flex flex-col gap-px">
+
+          {/* Header Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <ObserveIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
+              Dashboard
+            </h1>
+            <p className="text-base md:text-lg text-black/60 max-w-2xl">
+              Live data from space agencies, research stations, and sensors worldwide.
+              Switch between curated collections or register to build your own.
+            </p>
+          </section>
+
+          {/* Selector Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
+              Viewing
+            </div>
+            <div className="max-w-sm">
+              {isClient && (
+                <DashboardSelector
+                  onSetChange={handleSetChange}
+                  isRegistered={false}
                 />
-              ))}
-            </>
-          )}
+              )}
+            </div>
+          </section>
+
+          {/* Widgets Frame */}
+          <section className="bg-white rounded-lg p-2 md:p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {isClient ? renderWidgets() : (
+                <>
+                  {[...Array(6)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-[#f5f5f5] rounded-lg h-64 animate-pulse"
+                    />
+                  ))}
+                </>
+              )}
+            </div>
+          </section>
+
         </div>
       </div>
 
