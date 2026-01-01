@@ -3,32 +3,34 @@
 import Link from 'next/link'
 import Logo from './Logo'
 import { useEffect, useState } from 'react'
+import { ObserveIcon, PulseIcon, ToolsIcon, DataIcon, VaultIcon, PlayIcon } from '@/components/icons'
 
-const footerLinks = {
-  explore: [
-    { href: '/observe', label: 'Observe' },
-    { href: '/pulse', label: 'Pulse' },
-    { href: '/tools', label: 'Tools' },
-    { href: '/data', label: 'Data' },
-    { href: '/vault', label: 'Vault' },
-    { href: '/play', label: 'Play' },
-  ],
-  about: [
-    { href: '/about', label: 'About MXWLL' },
-    { href: '/about/contact', label: 'Contact' },
-    { href: '/collaborations', label: 'Collaborations' },
-  ],
-  partners: [
-    { href: '/about/partnerships', label: 'Institutions' },
-    { href: '/about/investment', label: 'Investors' },
-    { href: '/about/advertising', label: 'Advertising' },
-    { href: '/store', label: 'Store' },
-  ],
-  legal: [
-    { href: '/privacy', label: 'Privacy' },
-    { href: '/terms', label: 'Terms' },
-  ],
-}
+const exploreLinks = [
+  { href: '/observe', label: 'Observe', icon: ObserveIcon },
+  { href: '/pulse', label: 'Pulse', icon: PulseIcon },
+  { href: '/tools', label: 'Tools', icon: ToolsIcon },
+  { href: '/data', label: 'Data', icon: DataIcon },
+  { href: '/vault', label: 'Vault', icon: VaultIcon },
+  { href: '/play', label: 'Play', icon: PlayIcon },
+]
+
+const aboutLinks = [
+  { href: '/about', label: 'About MXWLL' },
+  { href: '/about/contact', label: 'Contact' },
+  { href: '/collaborations', label: 'Collaborations' },
+]
+
+const partnersLinks = [
+  { href: '/about/partnerships', label: 'Institutions' },
+  { href: '/about/investment', label: 'Investors' },
+  { href: '/about/advertising', label: 'Advertising' },
+  { href: '/store', label: 'Store' },
+]
+
+const legalLinks = [
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/terms', label: 'Terms' },
+]
 
 export default function Footer() {
   const [utcTime, setUtcTime] = useState<string>('')
@@ -68,21 +70,25 @@ export default function Footer() {
 
           {/* Links - cols 6-12 */}
           <div className="col-span-7 grid grid-cols-4 gap-8">
-            {/* Explore */}
+            {/* Explore - with icons */}
             <div>
               <h4 className="text-xs font-medium text-white/40 uppercase tracking-wider mb-4">
                 Explore
               </h4>
               <div className="flex flex-col gap-2">
-                {footerLinks.explore.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="text-sm text-white/60 hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {exploreLinks.map((link) => {
+                  const Icon = link.icon
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors uppercase"
+                    >
+                      <Icon className="w-4 h-4" />
+                      {link.label}
+                    </Link>
+                  )
+                })}
               </div>
             </div>
 
@@ -92,11 +98,11 @@ export default function Footer() {
                 About
               </h4>
               <div className="flex flex-col gap-2">
-                {footerLinks.about.map((link) => (
+                {aboutLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-sm text-white/60 hover:text-white transition-colors"
+                    className="text-sm text-white/60 hover:text-white transition-colors uppercase"
                   >
                     {link.label}
                   </Link>
@@ -110,11 +116,11 @@ export default function Footer() {
                 Partners
               </h4>
               <div className="flex flex-col gap-2">
-                {footerLinks.partners.map((link) => (
+                {partnersLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-sm text-white/60 hover:text-white transition-colors"
+                    className="text-sm text-white/60 hover:text-white transition-colors uppercase"
                   >
                     {link.label}
                   </Link>
@@ -128,11 +134,11 @@ export default function Footer() {
                 Legal
               </h4>
               <div className="flex flex-col gap-2">
-                {footerLinks.legal.map((link) => (
+                {legalLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="text-sm text-white/60 hover:text-white transition-colors"
+                    className="text-sm text-white/60 hover:text-white transition-colors uppercase"
                   >
                     {link.label}
                   </Link>
@@ -146,10 +152,10 @@ export default function Footer() {
       {/* Bottom bar with live time */}
       <div className="px-4 md:px-8 lg:px-12 py-4 border-t border-white/10">
         <div className="flex items-center justify-between">
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-white/40 uppercase">
             © {new Date().getFullYear()} MXWLL. All rights reserved.
           </p>
-          
+
           {/* Live UTC time */}
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
