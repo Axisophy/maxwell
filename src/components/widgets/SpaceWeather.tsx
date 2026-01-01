@@ -103,14 +103,14 @@ function KpHistory({ data }: { data: number[] }) {
   if (!data || data.length === 0) return null
 
   const displayData = data.slice(-24)
-  const maxKp = 9 // Kp scale is 0-9
+  const maxKp = 9
 
   return (
     <div className="bg-black rounded-lg p-3">
       <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-3">
         Kp History (72h)
       </div>
-      <div className="bg-[#737373] rounded overflow-hidden">
+      <div className="bg-[#404040] rounded overflow-hidden">
         <div className="flex items-end gap-0.5 h-16 p-2">
           {displayData.map((kp, i) => (
             <div
@@ -125,11 +125,6 @@ function KpHistory({ data }: { data: number[] }) {
             />
           ))}
         </div>
-      </div>
-      {/* Scale labels */}
-      <div className="flex justify-between mt-1 text-[10px] font-mono text-white/40">
-        <span>0</span>
-        <span>9</span>
       </div>
     </div>
   )

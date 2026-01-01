@@ -1,19 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 // ===========================================
 // ISS TRACKER
-// ===========================================
-// Real-time International Space Station tracking
-// with ground track, crew info, and orbital data
-//
-// Data: wheretheiss.at API + Open Notify
-//
-// Design notes:
-// - NO title/live dot/source (WidgetFrame handles those)
-// - NO emojis (use styled elements)
-// - Self-contained inline SVG map
 // ===========================================
 
 interface ISSPosition {
@@ -39,27 +29,21 @@ interface ISSData {
   region: string
 }
 
-// ===========================================
-// CONSTANTS & HELPERS
-// ===========================================
-
+// Constants
 const ISS_LAUNCH_DATE = new Date('1998-11-20T06:40:00Z')
 const ORBIT_PERIOD_MINUTES = 92.68
 const MAP_WIDTH = 800
 const MAP_HEIGHT = 400
 
-// Agency colors/abbreviations
 const AGENCY_INFO: Record<string, { abbrev: string; color: string }> = {
   'NASA': { abbrev: 'NASA', color: '#0B3D91' },
   'Roscosmos': { abbrev: 'RSA', color: '#E4181C' },
   'JAXA': { abbrev: 'JAXA', color: '#1E4D8C' },
   'ESA': { abbrev: 'ESA', color: '#003399' },
   'CSA': { abbrev: 'CSA', color: '#FF0000' },
-  'CNSA': { abbrev: 'CNSA', color: '#DE2910' },
   'SpaceX': { abbrev: 'SpX', color: '#005288' },
 }
 
-// Fallback crew data
 const FALLBACK_CREW: CrewMember[] = [
   { name: 'Oleg Kononenko', craft: 'ISS', agency: 'Roscosmos', role: 'Commander' },
   { name: 'Nikolai Chub', craft: 'ISS', agency: 'Roscosmos', role: 'Flight Engineer' },
@@ -70,14 +54,13 @@ const FALLBACK_CREW: CrewMember[] = [
   { name: 'Alexander Grebenkin', craft: 'ISS', agency: 'Roscosmos', role: 'Flight Engineer' },
 ]
 
-// Convert lat/lon to SVG coordinates
+// Helpers
 function latLonToXY(lat: number, lon: number): { x: number; y: number } {
   const x = ((lon + 180) / 360) * MAP_WIDTH
   const y = ((90 - lat) / 180) * MAP_HEIGHT
   return { x, y }
 }
 
-// Get location name from coordinates
 function getLocationName(lat: number, lon: number): string {
   if (lat > 66) return 'Arctic'
   if (lat < -66) return 'Antarctica'
@@ -94,7 +77,6 @@ function getLocationName(lat: number, lon: number): string {
   return 'International Waters'
 }
 
-// Calculate if ISS is in sunlight
 function calculateSunlit(lat: number, lon: number): boolean {
   const now = new Date()
   const dayOfYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000)
@@ -108,19 +90,16 @@ function calculateSunlit(lat: number, lon: number): boolean {
   return distance < 90
 }
 
-// Calculate orbit number since launch
 function getOrbitNumber(): number {
   const minutesSinceLaunch = (Date.now() - ISS_LAUNCH_DATE.getTime()) / 60000
   return Math.floor(minutesSinceLaunch / ORBIT_PERIOD_MINUTES)
 }
 
-// Calculate progress through current orbit (0-1)
 function getOrbitProgress(): number {
   const minutesSinceLaunch = (Date.now() - ISS_LAUNCH_DATE.getTime()) / 60000
   return (minutesSinceLaunch % ORBIT_PERIOD_MINUTES) / ORBIT_PERIOD_MINUTES
 }
 
-// Generate ground track
 function generateGroundTrack(currentLat: number, currentLon: number): Array<{ lat: number; lon: number }> {
   const track: Array<{ lat: number; lon: number }> = []
   const orbitalInclination = 51.6
@@ -138,7 +117,6 @@ function generateGroundTrack(currentLat: number, currentLon: number): Array<{ la
   return track
 }
 
-// Format coordinate
 function formatCoord(value: number, isLat: boolean): string {
   const abs = Math.abs(value)
   const dir = isLat ? (value >= 0 ? 'N' : 'S') : (value >= 0 ? 'E' : 'W')
@@ -146,7 +124,7 @@ function formatCoord(value: number, isLat: boolean): string {
 }
 
 // ===========================================
-// INLINE SVG MAP COMPONENT
+// MAP COMPONENT
 // ===========================================
 
 interface ISSMapProps {
@@ -166,14 +144,6 @@ function ISSMap({ position, groundTrack, sunlit }: ISSMapProps) {
   const pulsePhase = (tick % 20) / 20
   const pulseOpacity = 0.6 - pulsePhase * 0.6
   const pulseSize = 6 + pulsePhase * 12
-
-  if (!isFinite(position.latitude) || !isFinite(position.longitude)) {
-    return (
-      <div className="w-full h-full bg-[#0f1419] flex items-center justify-center rounded-[0.5em]">
-        <span className="text-white/40 text-[0.875em]">Loading map...</span>
-      </div>
-    )
-  }
 
   const issPos = latLonToXY(position.latitude, position.longitude)
 
@@ -201,30 +171,19 @@ function ISSMap({ position, groundTrack, sunlit }: ISSMapProps) {
   if (currentSegment.length > 0) trackSegments.push(currentSegment.join(' '))
 
   return (
-    <svg viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} className="w-full h-full rounded-[0.5em]" style={{ backgroundColor: '#0a0a12' }}>
+    <svg viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`} className="w-full h-full rounded-lg" style={{ backgroundColor: '#0a0a12' }}>
       {/* Simplified continent outlines */}
       <g fill="none" stroke="#1e3a5f" strokeWidth="1">
-        {/* North America */}
         <path d="M45,95 L55,80 L85,75 L120,80 L155,95 L175,115 L190,140 L195,170 L180,190 L145,195 L110,185 L85,175 L60,160 L45,130 Z" />
-        {/* Central America */}
         <path d="M110,185 L115,195 L125,210 L130,225 L120,230 L115,220 L108,210 L105,195 Z" />
-        {/* South America */}
         <path d="M130,225 L145,230 L165,255 L175,290 L180,330 L170,375 L155,400 L130,410 L115,390 L105,350 L110,310 L115,280 L120,255 L125,235 Z" />
-        {/* Europe */}
         <path d="M355,85 L375,75 L400,80 L420,85 L435,95 L445,110 L440,130 L420,140 L395,145 L375,140 L360,130 L355,115 Z" />
-        {/* Africa */}
         <path d="M355,155 L380,150 L415,155 L445,170 L470,200 L480,240 L475,290 L455,335 L420,365 L380,375 L350,360 L335,320 L340,275 L345,235 L350,195 Z" />
-        {/* Asia */}
         <path d="M445,75 L490,65 L540,60 L600,70 L660,85 L710,100 L740,130 L750,160 L740,190 L710,210 L665,205 L620,195 L570,190 L530,185 L495,175 L465,160 L450,135 L445,110 Z" />
-        {/* India */}
         <path d="M530,185 L545,195 L560,220 L555,255 L540,280 L520,270 L510,245 L515,215 L525,195 Z" />
-        {/* Australia */}
         <path d="M620,320 L670,310 L720,320 L750,345 L755,380 L735,410 L695,425 L650,420 L615,400 L605,365 L610,340 Z" />
-        {/* Japan */}
         <path d="M710,130 L725,125 L735,135 L730,150 L720,155 L712,145 Z" />
-        {/* UK */}
         <path d="M350,90 L358,85 L365,90 L362,100 L355,105 L348,98 Z" />
-        {/* Greenland */}
         <path d="M260,30 L290,25 L320,35 L335,55 L325,80 L295,90 L265,85 L250,65 L255,45 Z" />
       </g>
 
@@ -286,7 +245,7 @@ function ISSMap({ position, groundTrack, sunlit }: ISSMapProps) {
 }
 
 // ===========================================
-// AGENCY BADGE COMPONENT
+// AGENCY BADGE
 // ===========================================
 
 function AgencyBadge({ agency }: { agency?: string }) {
@@ -295,7 +254,7 @@ function AgencyBadge({ agency }: { agency?: string }) {
 
   return (
     <span
-      className="text-[0.625em] font-medium px-[0.5em] py-[0.125em] rounded-[0.25em]"
+      className="text-[10px] font-medium px-1.5 py-0.5 rounded"
       style={{ backgroundColor: info.color, color: 'white' }}
     >
       {info.abbrev}
@@ -304,7 +263,7 @@ function AgencyBadge({ agency }: { agency?: string }) {
 }
 
 // ===========================================
-// MAIN WIDGET COMPONENT
+// MAIN WIDGET
 // ===========================================
 
 export default function ISSTracker() {
@@ -312,23 +271,10 @@ export default function ISSTracker() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [crewExpanded, setCrewExpanded] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [baseFontSize, setBaseFontSize] = useState(16)
 
-  // Scale widget based on container size
-  useEffect(() => {
-    if (!containerRef.current) return
-    const observer = new ResizeObserver((entries) => {
-      const width = entries[0]?.contentRect.width || 400
-      setBaseFontSize(width / 25)
-    })
-    observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [])
-
-  // Fetch ISS data
   const fetchData = useCallback(async () => {
     try {
+      // Try proxy first, then direct API
       let posData: any
       try {
         const response = await fetch('/api/iss')
@@ -338,17 +284,23 @@ export default function ISSTracker() {
           throw new Error('Proxy failed')
         }
       } catch {
+        // Fallback to direct API call
         const response = await fetch('https://api.wheretheiss.at/v1/satellites/25544')
         if (!response.ok) throw new Error('Position API failed')
         posData = await response.json()
       }
 
+      // Validate position data
+      if (!posData || typeof posData.latitude !== 'number' || typeof posData.longitude !== 'number') {
+        throw new Error('Invalid position data')
+      }
+
       const position: ISSPosition = {
         latitude: posData.latitude,
         longitude: posData.longitude,
-        altitude: posData.altitude,
-        velocity: posData.velocity,
-        timestamp: posData.timestamp * 1000
+        altitude: posData.altitude || 420,
+        velocity: posData.velocity || 27600,
+        timestamp: (posData.timestamp || Date.now() / 1000) * 1000
       }
 
       let crew: CrewMember[] = FALLBACK_CREW
@@ -369,11 +321,11 @@ export default function ISSTracker() {
       const groundTrack = generateGroundTrack(position.latitude, position.longitude)
 
       setData({ position, crew, groundTrack, sunlit, region })
-      setLoading(false)
       setError(null)
     } catch (err) {
       console.error('ISS data fetch error:', err)
       setError('Unable to fetch ISS data')
+    } finally {
       setLoading(false)
     }
   }, [])
@@ -391,135 +343,129 @@ export default function ISSTracker() {
 
   if (loading) {
     return (
-      <div
-        ref={containerRef}
-        className="flex items-center justify-center h-full bg-[#1a1a1e] p-[1em]"
-        style={{ fontSize: `${baseFontSize}px` }}
-      >
-        <div className="text-[0.875em] text-white/50">Loading ISS data...</div>
+      <div className="bg-[#404040] p-2 md:p-4">
+        <div className="flex items-center justify-center h-48">
+          <div className="text-sm text-white/50 font-mono">Loading ISS data...</div>
+        </div>
       </div>
     )
   }
 
   if (error || !data) {
     return (
-      <div
-        ref={containerRef}
-        className="flex items-center justify-center h-full bg-[#1a1a1e] p-[1em]"
-        style={{ fontSize: `${baseFontSize}px` }}
-      >
-        <div className="text-[0.875em] text-red-400">{error || 'No data'}</div>
+      <div className="bg-[#404040] p-2 md:p-4">
+        <div className="flex items-center justify-center h-48">
+          <div className="text-sm text-red-400">{error || 'No data'}</div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="bg-[#1a1a1e] p-[1em] h-full overflow-hidden flex flex-col"
-      style={{ fontSize: `${baseFontSize}px` }}
-    >
-      {/* Header - location and sunlit status */}
-      <div className="flex items-start justify-between mb-[0.5em]">
-        <div>
-          <p className="text-[0.6875em] text-white/40 uppercase tracking-wider mb-[0.125em]">
-            Currently over
-          </p>
-          <h3 className="text-[1.125em] text-white font-medium leading-tight">
-            {data.region}
-          </h3>
-        </div>
-        <div className="flex items-center gap-[0.375em]">
-          <div className={`w-[0.5em] h-[0.5em] rounded-full ${data.sunlit ? 'bg-amber-400' : 'bg-blue-400'}`} />
-          <span className={`text-[0.75em] font-medium ${data.sunlit ? 'text-amber-400' : 'text-blue-400'}`}>
-            {data.sunlit ? 'Sunlit' : 'Shadow'}
-          </span>
+    <div className="bg-[#404040] p-2 md:p-4 space-y-px">
+      {/* Location & Status */}
+      <div className="bg-black rounded-lg p-3">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="text-[10px] font-medium text-white/40 uppercase tracking-wider mb-1">
+              Currently over
+            </div>
+            <div className="text-base font-medium text-white">
+              {data.region}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${data.sunlit ? 'bg-amber-400' : 'bg-blue-400'}`} />
+            <span className={`text-xs font-medium ${data.sunlit ? 'text-amber-400' : 'text-blue-400'}`}>
+              {data.sunlit ? 'Sunlit' : 'Shadow'}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Map container */}
-      <div className="relative rounded-[0.5em] overflow-hidden mb-[0.5em]" style={{ height: '9em' }}>
-        {/* Orbit progress bar overlay */}
-        <div className="absolute top-0 left-0 right-0 z-10 px-[0.5em] pt-[0.375em]">
-          <div className="flex items-center justify-between text-[0.625em] text-white/60 mb-[0.125em]">
-            <span>Orbit #{orbitNumber.toLocaleString()}</span>
-            <span>{Math.round(orbitProgress * 100)}%</span>
-          </div>
-          <div className="h-[0.1875em] bg-white/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-500 rounded-full transition-all duration-1000"
-              style={{ width: `${orbitProgress * 100}%` }}
-            />
-          </div>
+      {/* Map */}
+      <div className="bg-black rounded-lg p-3">
+        {/* Orbit progress */}
+        <div className="flex items-center justify-between text-[10px] text-white/40 mb-2">
+          <span>Orbit #{orbitNumber.toLocaleString()}</span>
+          <span>{Math.round(orbitProgress * 100)}%</span>
+        </div>
+        <div className="h-1 bg-white/10 rounded-full overflow-hidden mb-3">
+          <div
+            className="h-full bg-blue-500 rounded-full transition-all duration-1000"
+            style={{ width: `${orbitProgress * 100}%` }}
+          />
         </div>
 
-        <ISSMap
-          position={data.position}
-          groundTrack={data.groundTrack}
-          sunlit={data.sunlit}
-        />
-
-        {/* Coordinates overlay */}
-        <div className="absolute bottom-[0.375em] right-[0.375em] text-[0.625em] font-mono text-white/50 bg-black/50 px-[0.375em] py-[0.125em] rounded-[0.25em]">
-          {formatCoord(data.position.latitude, true)} · {formatCoord(data.position.longitude, false)}
+        {/* Map */}
+        <div className="relative rounded-lg overflow-hidden" style={{ aspectRatio: '2/1' }}>
+          <ISSMap
+            position={data.position}
+            groundTrack={data.groundTrack}
+            sunlit={data.sunlit}
+          />
+          {/* Coordinates */}
+          <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white/50 bg-black/50 px-2 py-1 rounded">
+            {formatCoord(data.position.latitude, true)} · {formatCoord(data.position.longitude, false)}
+          </div>
         </div>
       </div>
 
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-[0.375em] mb-[0.5em]">
-        <div className="bg-white/5 rounded-[0.375em] p-[0.5em] text-center">
-          <p className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.125em]">Altitude</p>
-          <p className="text-[1em] text-white font-medium font-mono">
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-px">
+        <div className="bg-black rounded-lg p-3 text-center">
+          <div className="text-[10px] text-white/40 uppercase mb-1">Altitude</div>
+          <div className="font-mono text-lg font-bold text-white">
             {Math.round(data.position.altitude)}
-            <span className="text-[0.625em] text-white/50 ml-[0.125em]">km</span>
-          </p>
+            <span className="text-xs text-white/40 ml-1">km</span>
+          </div>
         </div>
-        <div className="bg-white/5 rounded-[0.375em] p-[0.5em] text-center">
-          <p className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.125em]">Velocity</p>
-          <p className="text-[1em] text-white font-medium font-mono">
+        <div className="bg-black rounded-lg p-3 text-center">
+          <div className="text-[10px] text-white/40 uppercase mb-1">Velocity</div>
+          <div className="font-mono text-lg font-bold text-white">
             {(data.position.velocity / 1000).toFixed(1)}
-            <span className="text-[0.625em] text-white/50 ml-[0.125em]">km/s</span>
-          </p>
+            <span className="text-xs text-white/40 ml-1">km/s</span>
+          </div>
         </div>
-        <div className="bg-white/5 rounded-[0.375em] p-[0.5em] text-center">
-          <p className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.125em]">Speed</p>
-          <p className="text-[1em] text-white font-medium font-mono">
+        <div className="bg-black rounded-lg p-3 text-center">
+          <div className="text-[10px] text-white/40 uppercase mb-1">Speed</div>
+          <div className="font-mono text-lg font-bold text-white">
             {Math.round(data.position.velocity / 343)}×
-            <span className="text-[0.625em] text-white/50 ml-[0.125em]">Mach</span>
-          </p>
+            <span className="text-xs text-white/40 ml-1">Mach</span>
+          </div>
         </div>
       </div>
 
-      {/* Crew section - collapsible */}
-      <div className="bg-white/5 rounded-[0.375em] overflow-hidden">
+      {/* Crew */}
+      <div className="bg-black rounded-lg overflow-hidden">
         <button
           onClick={() => setCrewExpanded(!crewExpanded)}
-          className="w-full flex items-center justify-between p-[0.5em] hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-between p-3 hover:bg-white/5 transition-colors"
         >
-          <span className="text-[0.875em] text-white">
+          <span className="text-sm text-white">
             {issCrew.length} aboard ISS
             {otherCrew.length > 0 && (
-              <span className="text-white/40 ml-[0.375em]">
+              <span className="text-white/40 ml-2">
                 (+{otherCrew.length} other)
               </span>
             )}
           </span>
-          <span className={`text-white/40 text-[0.75em] transition-transform ${crewExpanded ? 'rotate-180' : ''}`}>
+          <span className={`text-white/40 text-xs transition-transform ${crewExpanded ? 'rotate-180' : ''}`}>
             ▼
           </span>
         </button>
 
         {crewExpanded && (
-          <div className="border-t border-white/10 p-[0.5em]">
-            <div className="space-y-[0.25em]">
+          <div className="border-t border-white/10 p-3">
+            <div className="space-y-2">
               {issCrew.map((member, i) => (
-                <div key={i} className="flex items-center justify-between text-[0.75em]">
-                  <div className="flex items-center gap-[0.375em]">
+                <div key={i} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
                     <AgencyBadge agency={member.agency} />
                     <span className="text-white">{member.name}</span>
                   </div>
                   {member.role && (
-                    <span className="text-white/40 text-[0.875em]">{member.role}</span>
+                    <span className="text-white/40">{member.role}</span>
                   )}
                 </div>
               ))}
@@ -527,14 +473,14 @@ export default function ISSTracker() {
 
             {otherCrew.length > 0 && (
               <>
-                <div className="border-t border-white/10 my-[0.375em]" />
-                <p className="text-[0.625em] text-white/40 uppercase tracking-wider mb-[0.25em]">
+                <div className="border-t border-white/10 my-2" />
+                <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">
                   Other Spacecraft
-                </p>
-                <div className="space-y-[0.25em]">
+                </div>
+                <div className="space-y-2">
                   {otherCrew.map((member, i) => (
-                    <div key={i} className="flex items-center justify-between text-[0.75em]">
-                      <div className="flex items-center gap-[0.375em]">
+                    <div key={i} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
                         <AgencyBadge agency={member.agency} />
                         <span className="text-white">{member.name}</span>
                       </div>
@@ -546,16 +492,6 @@ export default function ISSTracker() {
             )}
           </div>
         )}
-      </div>
-
-      {/* Footer */}
-      <div className="flex items-center justify-between pt-[0.5em] mt-auto border-t border-white/10">
-        <span className="text-[0.625em] text-white/40">
-          Updated every 10s
-        </span>
-        <span className="text-[0.625em] font-mono text-white/40">
-          {ORBIT_PERIOD_MINUTES.toFixed(0)} min orbit
-        </span>
       </div>
     </div>
   )

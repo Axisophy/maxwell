@@ -96,7 +96,7 @@ function IntensityChart({
     : '--:--'
 
   return (
-    <div className="bg-[#737373] rounded p-2">
+    <div className="bg-[#404040] rounded p-2">
       <div className="flex items-end gap-0.5 h-20">
         {data.map((point, i) => {
           const value = showForecast ? point.forecast : (point.actual ?? point.forecast)
