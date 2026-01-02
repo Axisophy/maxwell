@@ -21,11 +21,6 @@ const spacePages = [
     href: '/observe/space/solar-observatory',
   },
   {
-    title: 'Satellite Tracker',
-    description: '3D globe with real-time positions of thousands of satellites',
-    href: '/observe/space/satellites',
-  },
-  {
     title: 'Lunar Atlas',
     description: 'Interactive Moon map and phase tracker',
     href: '/observe/space/lunar-atlas',
@@ -34,6 +29,11 @@ const spacePages = [
     title: 'Aurora',
     description: 'Northern and southern lights forecast',
     href: '/observe/space/aurora',
+  },
+  {
+    title: 'Satellite Tracker',
+    description: '3D globe with real-time positions of thousands of satellites',
+    href: '/observe/space/satellites',
   },
 ]
 
