@@ -33,7 +33,7 @@ export default function FundamentalForcesPage() {
               Fundamental Forces
             </h1>
             <p className="text-sm md:text-base text-black/60 max-w-2xl">
-              The four fundamental interactions that govern all phenomena in the universe —
+              The four fundamental interactions that govern all phenomena in the universe -
               from quarks to galaxies. Three are described by the Standard Model; gravity remains separate.
             </p>
           </section>
@@ -186,7 +186,7 @@ export default function FundamentalForcesPage() {
             <div className="max-w-3xl">
               <h2 className="text-xl font-light text-black uppercase mb-3">Why Four Forces?</h2>
               <p className="text-sm text-black/60 mb-4">
-                Everything we observe — from nuclear reactions to planetary orbits — is governed by just
+                Everything we observe - from nuclear reactions to planetary orbits - is governed by just
                 four fundamental interactions. Each force has a characteristic <strong className="text-black">strength</strong>,
                 <strong className="text-black"> range</strong>, and <strong className="text-black">carrier particle</strong>.
               </p>
@@ -195,7 +195,7 @@ export default function FundamentalForcesPage() {
               <p className="text-sm text-black/60 mb-4">
                 The Standard Model successfully unifies the electromagnetic and weak forces
                 (into the <strong className="text-black">electroweak</strong> force above ~100 GeV) and describes
-                the strong force via Quantum Chromodynamics (QCD). But gravity remains stubbornly outside —
+                the strong force via Quantum Chromodynamics (QCD). But gravity remains stubbornly outside -
                 described by General Relativity rather than quantum field theory.
               </p>
 

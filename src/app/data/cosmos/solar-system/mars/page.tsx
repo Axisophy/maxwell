@@ -7,12 +7,12 @@ import ActiveMissionsGrid from '@/components/data/mars/ActiveMissionsGrid'
 
 export const metadata: Metadata = {
   title: 'Mars | MXWLL',
-  description: 'The Red Planet — target of humanity\'s next giant leap. Rovers, geology, water, and the search for life.',
+  description: 'The Red Planet -target of humanity\'s next giant leap. Rovers, geology, water, and the search for life.',
 }
 
 const surfaceFeatures = [
-  { name: 'Olympus Mons', type: 'Shield Volcano', fact: '21.9 km high — 2.5× Everest' },
-  { name: 'Valles Marineris', type: 'Canyon System', fact: '4,000 km long — would span USA' },
+  { name: 'Olympus Mons', type: 'Shield Volcano', fact: '21.9 km high -2.5× Everest' },
+  { name: 'Valles Marineris', type: 'Canyon System', fact: '4,000 km long -would span USA' },
   { name: 'Hellas Planitia', type: 'Impact Basin', fact: '2,300 km wide, 7 km deep' },
   { name: 'Jezero Crater', type: 'Ancient Lake', fact: 'Perseverance landing site' },
   { name: 'Gale Crater', type: 'Impact Crater', fact: 'Curiosity location' },
@@ -38,7 +38,7 @@ export default function MarsPage() {
             Mars
           </h1>
           <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            The Red Planet — target of humanity&apos;s next giant leap. More explored than any
+            The Red Planet -target of humanity&apos;s next giant leap. More explored than any
             world beyond Earth, yet still full of mysteries.
           </p>
         </div>
@@ -158,17 +158,17 @@ export default function MarsPage() {
               <h3 className="text-lg font-medium text-black mb-3">Valles Marineris</h3>
               <p className="text-black/60 leading-relaxed mb-4">
                 A canyon system that would stretch from New York to Los Angeles. Up to 7 km deep
-                and 200 km wide — the Grand Canyon would be a side tributary.
+                and 200 km wide -the Grand Canyon would be a side tributary.
               </p>
               <div className="bg-[#f5f5f5] rounded-lg p-4">
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-3 bg-black/20 rounded" />
-                    <span className="text-xs text-black/50">Grand Canyon — 446 km</span>
+                    <span className="text-xs text-black/50">Grand Canyon -446 km</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-full h-3 bg-[#C1440E] rounded" />
-                    <span className="text-xs text-black/50 whitespace-nowrap">Valles Marineris — 4,000 km</span>
+                    <span className="text-xs text-black/50 whitespace-nowrap">Valles Marineris -4,000 km</span>
                   </div>
                 </div>
               </div>
@@ -233,7 +233,7 @@ export default function MarsPage() {
                 </div>
               </div>
               <p className="text-xs text-black/40 mt-4">
-                Surface pressure: 0.6% of Earth — too thin to breathe, too thin for liquid water
+                Surface pressure: 0.6% of Earth -too thin to breathe, too thin for liquid water
               </p>
             </div>
             <div className="bg-white rounded-xl p-6">
@@ -253,7 +253,7 @@ export default function MarsPage() {
                 <div>
                   <p className="text-sm text-black/50 mb-1">Dust devils</p>
                   <p className="text-sm text-black/70">
-                    Common across Mars. Some reach 8 km high — much taller than Earth&apos;s.
+                    Common across Mars. Some reach 8 km high -much taller than Earth&apos;s.
                   </p>
                 </div>
               </div>
@@ -321,7 +321,7 @@ export default function MarsPage() {
             Exploration History
           </h2>
           <p className="text-black/60 mb-6 max-w-2xl">
-            60 years of Mars missions — with a success rate of about 50%. Mars is hard.
+            60 years of Mars missions -with a success rate of about 50%. Mars is hard.
           </p>
           <ExplorationTimeline />
         </section>
@@ -343,7 +343,7 @@ export default function MarsPage() {
             <div className="bg-white rounded-xl p-6">
               <h3 className="font-medium text-black mb-3">Past Habitability</h3>
               <p className="text-black/60 leading-relaxed">
-                Ancient Mars had liquid water, energy sources, and organic molecules — all the
+                Ancient Mars had liquid water, energy sources, and organic molecules -all the
                 ingredients for life as we know it. The question isn&apos;t whether Mars
                 could have supported life; it&apos;s whether life actually emerged.
               </p>
@@ -353,7 +353,7 @@ export default function MarsPage() {
               <p className="text-black/60 leading-relaxed">
                 Perseverance is collecting and caching samples for a future mission to bring
                 back to Earth. This will be the first time we&apos;ve returned samples from
-                another planet — potentially containing evidence of ancient life.
+                another planet -potentially containing evidence of ancient life.
               </p>
             </div>
           </div>
@@ -377,7 +377,7 @@ export default function MarsPage() {
               </div>
               <div className="bg-white/5 rounded-lg p-4">
                 <p className="text-white/50 text-sm mb-1">Gravity</p>
-                <p className="font-mono">38% — long-term effects unknown</p>
+                <p className="font-mono">38% -long-term effects unknown</p>
               </div>
               <div className="bg-white/5 rounded-lg p-4">
                 <p className="text-white/50 text-sm mb-1">Resources</p>

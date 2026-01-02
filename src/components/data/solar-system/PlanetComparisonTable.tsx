@@ -80,7 +80,7 @@ export default function PlanetComparisonTable() {
               <td className="px-3 py-3 text-sm text-black/70">{planet.dayLength}</td>
               <td className="px-3 py-3 text-sm text-black/70">{planet.yearLength}</td>
               <td className="px-3 py-3 text-sm font-mono text-black/70">{planet.moons}</td>
-              <td className="px-3 py-3 text-sm text-black/70">{planet.rings ? 'Yes' : '—'}</td>
+              <td className="px-3 py-3 text-sm text-black/70">{planet.rings ? 'Yes' : '-'}</td>
             </tr>
           ))}
         </tbody>

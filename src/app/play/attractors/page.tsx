@@ -67,7 +67,7 @@ export default function AttractorsPage() {
           {/* Aizawa Attractor */}
           <WidgetFrame
             title="Aizawa Attractor"
-            description="Discovered by Yoji Aizawa. Creates toroidal chaotic patterns that twist and fold through three-dimensional space. Six parameters control its behavior."
+            description="Discovered by Yoji Aizawa. Creates toroidal chaotic patterns that twist and fold through three-dimensional space. Six parameters control its behaviour."
             source="Mathematical simulation"
             status="ok"
           >

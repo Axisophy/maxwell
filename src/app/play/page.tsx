@@ -270,7 +270,7 @@ export default function PlayPage() {
             <div className="max-w-2xl space-y-3 text-sm text-black/60">
               <p>
                 Every visualisation here treats mathematics as a design medium. These aren't
-                educational toys or simplified demonstrations — they're the real equations,
+                educational toys or simplified demonstrations -they're the real equations,
                 rendered with the same care you'd expect from a design object.
               </p>
               <p>

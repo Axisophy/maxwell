@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 // FRACTAL EXPLORER
 // ===========================================
 // Interactive Mandelbrot and Julia set exploration
-// Design: Warm analog aesthetic
+// Design: Warm analogue aesthetic
 // ===========================================
 
 export default function FractalExplorer() {

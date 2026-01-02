@@ -130,7 +130,7 @@ export default function LightningTab() {
           When lightning strikes, it produces a radio signal that travels at the speed of light.
           Multiple receiving stations record when they detect the signal, and triangulation
           determines the exact location. Global networks can detect strikes within milliseconds
-          of occurrence with accuracy of a few hundred meters.
+          of occurrence with accuracy of a few hundred metres.
         </p>
       </div>
     </div>

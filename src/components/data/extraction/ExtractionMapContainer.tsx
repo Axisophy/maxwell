@@ -130,7 +130,7 @@ const ExtractionMapContainer = forwardRef<ExtractionMapHandle, ExtractionMapCont
 
         map.current.on('click', () => setSelectedSite(null));
       } catch (error) {
-        console.error('Failed to initialize Mapbox:', error);
+        console.error('Failed to initialise Mapbox:', error);
       }
 
       return () => {

@@ -43,7 +43,7 @@ const items: DataItem[] = [
     title: 'Geological Timescale',
     href: '/data/earth/timescale',
     status: 'coming-soon',
-    description: '4.5 billion years of Earth history — eons, eras, periods, and epochs',
+    description: '4.5 billion years of Earth history -eons, eras, periods, and epochs',
     stat: '4.54B',
     statLabel: 'years',
   },
@@ -51,7 +51,7 @@ const items: DataItem[] = [
     title: 'Extraction Map',
     href: '/data/earth/extraction',
     status: 'ready',
-    description: 'Where we mine the elements — global resource extraction',
+    description: 'Where we mine the elements -global resource extraction',
   },
   {
     title: 'Tectonic Plates',
@@ -65,7 +65,7 @@ const items: DataItem[] = [
     title: 'Atmosphere',
     href: '/data/earth/atmosphere',
     status: 'coming-soon',
-    description: 'Troposphere to exosphere — layers, composition, and dynamics',
+    description: 'Troposphere to exosphere -layers, composition, and dynamics',
   },
   {
     title: 'Oceans',
@@ -153,7 +153,7 @@ export default function EarthDataPage() {
           {/* Context Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-sm text-black/50 max-w-2xl leading-relaxed">
-              Earth is geologically active — plates move, mountains rise, volcanoes erupt.
+              Earth is geologically active -plates move, mountains rise, volcanoes erupt.
               The climate system circulates heat from tropics to poles. Ice ages come and go.
               Five mass extinctions have reset the trajectory of life. This section documents
               what we know about the planet we live on.

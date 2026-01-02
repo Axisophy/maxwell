@@ -384,7 +384,7 @@ function DetailPanel({
               </div>
               <div className="bg-neutral-100 rounded-lg p-3">
                 <p className="text-[10px] text-black/50 uppercase tracking-wider mb-1">Band</p>
-                <p className="text-lg font-bold">{landmarkBand?.shortName || '—'}</p>
+                <p className="text-lg font-bold">{landmarkBand?.shortName || '-'}</p>
               </div>
             </div>
 

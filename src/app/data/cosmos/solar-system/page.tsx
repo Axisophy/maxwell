@@ -8,7 +8,7 @@ import PlanetComparisonTable from '@/components/data/solar-system/PlanetComparis
 
 export const metadata: Metadata = {
   title: 'The Solar System | MXWLL',
-  description: 'Eight planets, hundreds of moons, and one star — explore our cosmic neighborhood.',
+  description: 'Eight planets, hundreds of moons, and one star -explore our cosmic neighborhood.',
 }
 
 export default function SolarSystemPage() {
@@ -30,7 +30,7 @@ export default function SolarSystemPage() {
             The Solar System
           </h1>
           <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Eight planets, hundreds of moons, and one star we call home —
+            Eight planets, hundreds of moons, and one star we call home -
             4.6 billion years in the making.
           </p>
         </div>
@@ -87,11 +87,11 @@ export default function SolarSystemPage() {
               If the Sun were a basketball (24 cm)...
             </p>
             <div className="space-y-3 text-sm">
-              <DistanceRow planet="Mercury" object="a pinhead" distance="10 meters away" />
-              <DistanceRow planet="Earth" object="a peppercorn" distance="26 meters away" />
-              <DistanceRow planet="Jupiter" object="a marble" distance="134 meters away" />
-              <DistanceRow planet="Saturn" object="a smaller marble" distance="247 meters away" />
-              <DistanceRow planet="Neptune" object="a small bead" distance="773 meters away" />
+              <DistanceRow planet="Mercury" object="a pinhead" distance="10 metres away" />
+              <DistanceRow planet="Earth" object="a peppercorn" distance="26 metres away" />
+              <DistanceRow planet="Jupiter" object="a marble" distance="134 metres away" />
+              <DistanceRow planet="Saturn" object="a smaller marble" distance="247 metres away" />
+              <DistanceRow planet="Neptune" object="a small bead" distance="773 metres away" />
               <DistanceRow planet="Nearest star" object="another basketball" distance="6,900 km away" />
             </div>
           </div>

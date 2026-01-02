@@ -82,7 +82,7 @@ export default function LunarAtlas({ layerGroups, onFeatureClick }: LunarAtlasPr
       maxBounds: [[-90, -180], [90, 180]],
       maxBoundsViscosity: 1.0,
       attributionControl: false,
-      worldCopyJump: false,  // Ensure no world copy behavior
+      worldCopyJump: false,  // Ensure no world copy behaviour
     });
 
     mapInstanceRef.current = map;

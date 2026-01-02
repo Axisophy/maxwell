@@ -39,7 +39,7 @@ export default function FeaturedJourneys({ animals, onSelectAnimal }: FeaturedJo
               <p className="text-sm font-medium text-black">
                 {animal.journey.totalDistanceKm.toLocaleString()} km
               </p>
-              <p className="text-xs text-black/40">traveled</p>
+              <p className="text-xs text-black/40">travelled</p>
             </div>
           </button>
         ))}

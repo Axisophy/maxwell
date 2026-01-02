@@ -22,7 +22,7 @@ const infraPages = [
   },
   {
     title: 'Internet',
-    description: 'Submarine cables connecting the world — 1.4 million km of fibre across ocean floors',
+    description: 'Submarine cables connecting the world -1.4 million km of fibre across ocean floors',
     href: '/observe/infrastructure/internet',
     available: true,
   },
@@ -209,7 +209,7 @@ export default function InfrastructurePortalPage() {
                 loading={loading}
               />
               <InfraVitalSign
-                value={data?.gridFrequency?.toFixed(2) || '—'}
+                value={data?.gridFrequency?.toFixed(2) || '-'}
                 label="Grid Frequency (Hz)"
                 href="/observe/infrastructure/power"
                 loading={loading}

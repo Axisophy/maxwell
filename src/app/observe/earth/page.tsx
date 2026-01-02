@@ -254,7 +254,7 @@ export default function EarthPage() {
                 loading={loading}
               />
               <EarthVitalSign
-                value={data?.seaIce?.extent?.toFixed(1) || '—'}
+                value={data?.seaIce?.extent?.toFixed(1) || '-'}
                 label="Arctic Sea Ice (M km²)"
                 href="/data/earth/climate"
                 loading={loading}

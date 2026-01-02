@@ -96,7 +96,7 @@ export default function MoonDataPage() {
             </h2>
             <p className="text-base md:text-lg text-black/80 leading-relaxed mb-6">
               Twelve people have walked on the Moon, all American astronauts during
-              NASA&apos;s Apollo program between 1969 and 1972. They spent a combined
+              NASA&apos;s Apollo programme between 1969 and 1972. They spent a combined
               80 hours on the surface and brought back 382 kg of lunar samples.
             </p>
 

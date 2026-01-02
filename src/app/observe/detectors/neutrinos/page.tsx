@@ -166,7 +166,7 @@ export default function NeutrinosPage() {
                   <p className="text-sm text-white/60">
                     When a high-energy neutrino interacts with ice, it produces a charged
                     particle that travels faster than light in the medium. This creates
-                    Cherenkov radiation — a blue glow detected by optical sensors.
+                    Cherenkov radiation - a blue glow detected by optical sensors.
                   </p>
                 </div>
               </div>

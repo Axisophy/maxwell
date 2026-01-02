@@ -84,7 +84,7 @@ export default function AnimalDetailPanel({ animal, onClose }: AnimalDetailPanel
           <p className="text-xs text-black/40 uppercase tracking-wider mb-3">Journey Stats</p>
           <div className="grid grid-cols-2 gap-4">
             <Stat
-              label="Distance traveled"
+              label="Distance travelled"
               value={`${animal.journey.totalDistanceKm.toLocaleString()} km`}
             />
             <Stat

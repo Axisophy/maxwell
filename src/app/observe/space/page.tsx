@@ -254,7 +254,7 @@ export default function SpacePage() {
                 loading={loading}
               />
               <SpaceVitalSign
-                value={data?.nearestAsteroid?.distance?.toFixed(1) || '—'}
+                value={data?.nearestAsteroid?.distance?.toFixed(1) || '-'}
                 label="Nearest Asteroid (LD)"
                 href="/observe/dashboard?widget=asteroids"
                 loading={loading}

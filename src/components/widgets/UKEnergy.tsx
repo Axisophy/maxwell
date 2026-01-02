@@ -194,7 +194,7 @@ function NowView({ data }: { data: UKEnergyData }) {
             className="font-mono text-4xl font-bold"
             style={{ color: intensityColor }}
           >
-            {data.intensity?.current ?? '—'}
+            {data.intensity?.current ?? '-'}
           </span>
           <span className="text-xs text-white/40">gCO₂/kWh</span>
         </div>

@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 // ===========================================
 // LIGHT TRAVEL WIDGET
 // ===========================================
-// Real-time distance light has traveled since
+// Real-time distance light has travelled since
 // opening the widget, with milestone tracking
 // Pure client-side calculation, no API needed
 // ===========================================

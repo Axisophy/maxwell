@@ -125,7 +125,7 @@ export default function AuroraPage() {
               <div>
                 <p className="text-xs text-white/40 mb-1">Kp Index</p>
                 <p className={`text-3xl font-mono font-bold ${data ? getKpColor(data.kpIndex) : 'text-white/20'}`}>
-                  {data?.kpIndex.toFixed(0) || '—'}
+                  {data?.kpIndex.toFixed(0) || '-'}
                 </p>
                 <p className="text-xs text-white/40">{data?.kpText || 'Loading...'}</p>
               </div>
@@ -134,7 +134,7 @@ export default function AuroraPage() {
               <div>
                 <p className="text-xs text-white/40 mb-1">Solar Wind</p>
                 <p className="text-3xl font-mono font-bold text-cyan-400">
-                  {data?.solarWind.toFixed(0) || '—'}
+                  {data?.solarWind.toFixed(0) || '-'}
                 </p>
                 <p className="text-xs text-white/40">km/s</p>
               </div>
@@ -143,7 +143,7 @@ export default function AuroraPage() {
               <div>
                 <p className="text-xs text-white/40 mb-1">IMF Bz</p>
                 <p className={`text-3xl font-mono font-bold ${data ? getBzColor(data.bz) : 'text-white/20'}`}>
-                  {data?.bz.toFixed(1) || '—'}
+                  {data?.bz.toFixed(1) || '-'}
                 </p>
                 <p className="text-xs text-white/40">nT {data && data.bz < 0 ? '(southward)' : '(northward)'}</p>
               </div>
@@ -152,7 +152,7 @@ export default function AuroraPage() {
               <div>
                 <p className="text-xs text-white/40 mb-1">Aurora Chance</p>
                 <p className="text-3xl font-mono font-bold text-purple-400">
-                  {data ? (data.kpIndex >= 5 ? 'High' : data.kpIndex >= 3 ? 'Moderate' : 'Low') : '—'}
+                  {data ? (data.kpIndex >= 5 ? 'High' : data.kpIndex >= 3 ? 'Moderate' : 'Low') : '-'}
                 </p>
                 <p className="text-xs text-white/40">at high latitudes</p>
               </div>

@@ -355,7 +355,7 @@ export function SolarCyclePosition() {
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-mono font-bold text-amber-400">
-              {currentSsn !== null ? Math.round(currentSsn) : '—'}
+              {currentSsn !== null ? Math.round(currentSsn) : '-'}
             </span>
             <span className={`text-xs ${activity.color}`}>
               {activity.level}
@@ -368,7 +368,7 @@ export function SolarCyclePosition() {
             Cycle Phase
           </div>
           <div className="text-lg font-medium text-white">
-            {cyclePhase?.phase || '—'}
+            {cyclePhase?.phase || '-'}
           </div>
           <div className="text-xs text-white/40">
             Toward {cyclePhase?.approaching}
@@ -466,7 +466,7 @@ export function SolarCyclePosition() {
               </span>
               <div>
                 <span className="text-white/70">{event.name}</span>
-                <span className="text-white/40 ml-1">— {event.desc}</span>
+                <span className="text-white/40 ml-1">- {event.desc}</span>
               </div>
             </div>
           ))}

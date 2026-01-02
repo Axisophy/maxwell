@@ -43,7 +43,7 @@ const items: DataItem[] = [
     title: 'Chart of Nuclides',
     href: '/data/elements/nuclides',
     status: 'ready',
-    description: 'Every known isotope — stable, radioactive, and synthetic',
+    description: 'Every known isotope -stable, radioactive, and synthetic',
     stat: '3,352',
     statLabel: 'nuclides',
   },
@@ -157,7 +157,7 @@ export default function ElementsPage() {
           {/* Context Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-sm text-black/50 max-w-2xl leading-relaxed">
-              Everything you can touch is made of elements — 94 occur naturally,
+              Everything you can touch is made of elements -94 occur naturally,
               the rest synthesised in laboratories. Elements combine into molecules,
               molecules arrange into materials, and materials are engineered into
               the structures and technologies of civilisation.

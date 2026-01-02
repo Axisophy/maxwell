@@ -3,7 +3,7 @@ import Link from 'next/link'
 const bodies = [
   {
     name: 'Sun',
-    tagline: 'The star at the center',
+    tagline: 'The star at the centre',
     stat: '99.86% of system mass',
     href: '/data/solar-system/sun',
     color: '#FDB813',

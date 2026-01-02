@@ -49,7 +49,7 @@ const items: DataItem[] = [
     title: 'Famous Equations',
     href: '/data/mathematics/equations',
     status: 'coming-soon',
-    description: "The equations that changed everything — from Euler's identity to Einstein's field equations",
+    description: "The equations that changed everything -from Euler's identity to Einstein's field equations",
   },
   {
     title: 'Topology',

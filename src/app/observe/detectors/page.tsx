@@ -17,7 +17,7 @@ interface DetectorsData {
 const detectorPages = [
   {
     title: 'LHC',
-    description: 'The Large Hadron Collider — 27km of superconducting magnets colliding protons at 99.9999991% light speed',
+    description: 'The Large Hadron Collider - 27km of superconducting magnets colliding protons at 99.9999991% light speed',
     href: '/observe/detectors/lhc',
   },
   {
@@ -27,12 +27,12 @@ const detectorPages = [
   },
   {
     title: 'Neutrinos',
-    description: 'Ghost particles from the cosmos — IceCube, Super-Kamiokande, and supernova detection',
+    description: 'Ghost particles from the cosmos - IceCube, Super-Kamiokande, and supernova detection',
     href: '/observe/detectors/neutrinos',
   },
   {
     title: 'Cosmic Rays',
-    description: 'High-energy particles from supernovae and black holes — global neutron monitor network',
+    description: 'High-energy particles from supernovae and black holes - global neutron monitor network',
     href: '/observe/detectors/cosmic-rays',
   },
 ]

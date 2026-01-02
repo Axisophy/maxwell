@@ -46,7 +46,7 @@ export default function NeptunePage() {
         {/* Hero Image Placeholder */}
         <section className="mb-8 md:mb-12">
           <div className="bg-[#0f172a] rounded-xl aspect-[21/9] flex items-center justify-center">
-            <p className="text-white/30 text-sm">Neptune — Voyager 2, August 1989</p>
+            <p className="text-white/30 text-sm">Neptune -Voyager 2, August 1989</p>
           </div>
         </section>
 
@@ -112,12 +112,12 @@ export default function NeptunePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-xl p-6">
               <p className="text-black/60 leading-relaxed mb-4">
-                Neptune is an &quot;ice giant&quot; — different from the gas giants Jupiter and Saturn.
+                Neptune is an &quot;ice giant&quot; -different from the gas giants Jupiter and Saturn.
                 While gas giants are mostly hydrogen and helium, ice giants have a thick mantle
                 of water, ammonia, and methane in hot, dense fluid form.
               </p>
               <p className="text-black/60 leading-relaxed">
-                The &quot;ice&quot; isn&apos;t frozen — it&apos;s superheated fluid under extreme pressure.
+                The &quot;ice&quot; isn&apos;t frozen -it&apos;s superheated fluid under extreme pressure.
                 Temperatures reach thousands of degrees, but the pressure is so intense the
                 materials can&apos;t evaporate.
               </p>
@@ -159,7 +159,7 @@ export default function NeptunePage() {
                   Neptune is more vividly blue than Uranus, which also has methane.
                 </p>
                 <p className="text-black/60 leading-relaxed">
-                  Something else must be contributing — possibly different haze particles or
+                  Something else must be contributing -possibly different haze particles or
                   methane rain. It&apos;s an active research question.
                 </p>
               </div>
@@ -195,14 +195,14 @@ export default function NeptunePage() {
               <p className="text-3xl font-mono font-bold text-black mb-2">2,100 km/h</p>
               <p className="text-sm text-black/60 leading-relaxed">
                 The fastest sustained winds in the solar system. 5× stronger than the worst
-                Earth hurricanes. And they blow backwards — opposite to Neptune&apos;s rotation.
+                Earth hurricanes. And they blow backwards -opposite to Neptune&apos;s rotation.
               </p>
             </div>
             <div className="bg-white rounded-xl p-6">
               <h3 className="font-medium text-black mb-3">The Paradox</h3>
               <p className="text-sm text-black/60 leading-relaxed">
                 Neptune receives 900× less solar energy than Earth, yet has the most violent
-                weather in the solar system. Internal heat must drive the storms — but we
+                weather in the solar system. Internal heat must drive the storms -but we
                 don&apos;t know why Neptune has so much internal heat.
               </p>
             </div>
@@ -212,7 +212,7 @@ export default function NeptunePage() {
             <p className="text-sm text-white/60 leading-relaxed">
               When Voyager 2 arrived in 1989, it observed an Earth-sized storm called the Great
               Dark Spot. But when Hubble looked in 1994, it was gone. Neptune&apos;s storms are
-              temporary — they come and go over years, unlike Jupiter&apos;s permanent Red Spot.
+              temporary -they come and go over years, unlike Jupiter&apos;s permanent Red Spot.
             </p>
           </div>
         </section>
@@ -224,7 +224,7 @@ export default function NeptunePage() {
           </h2>
           <div className="bg-white rounded-xl p-6">
             <p className="text-black/60 leading-relaxed mb-6">
-              Neptune has five main rings — faint, dusty, and only visible in backlit images
+              Neptune has five main rings -faint, dusty, and only visible in backlit images
               from Voyager 2. The Adams ring has unusual clumpy arcs named Liberté, Égalité,
               Fraternité, and Courage.
             </p>
@@ -275,7 +275,7 @@ export default function NeptunePage() {
             The Moons
           </h2>
           <p className="text-black/60 mb-6 max-w-2xl">
-            16 known moons — but Triton contains 99.5% of all moon mass. The rest are
+            16 known moons -but Triton contains 99.5% of all moon mass. The rest are
             small, irregular bodies.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -314,7 +314,7 @@ export default function NeptunePage() {
               telescope at Le Verrier&apos;s coordinates and found Neptune within 1° of the prediction.
             </p>
             <p className="text-sm text-black/50">
-              It was a triumph of Newtonian physics — using gravity to predict the existence
+              It was a triumph of Newtonian physics -using gravity to predict the existence
               of an unseen world.
             </p>
           </div>
@@ -329,7 +329,7 @@ export default function NeptunePage() {
             <p className="text-2xl font-mono font-bold mb-2">August 25, 1989</p>
             <p className="text-white/60 mb-6">
               The only spacecraft visit. Closest approach: 4,951 km above the cloud tops.
-              Just 9 hours of close observation — then onward to interstellar space.
+              Just 9 hours of close observation -then onward to interstellar space.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-white/5 rounded-lg p-4">

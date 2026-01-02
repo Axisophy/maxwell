@@ -30,7 +30,7 @@ const EXPERIMENTS = [
   {
     name: 'ALICE',
     fullName: 'A Large Ion Collider Experiment',
-    description: 'Specialized for heavy-ion collisions, studying quark-gluon plasma — matter as it existed microseconds after the Big Bang.',
+    description: 'Specialised for heavy-ion collisions, studying quark-gluon plasma - matter as it existed microseconds after the Big Bang.',
     status: 'Taking data',
   },
   {
@@ -146,28 +146,28 @@ export default function LHCPage() {
               <div className="bg-white/5 rounded-lg p-4 text-center">
                 <p className="text-xs text-white/40 mb-1">Beam Energy</p>
                 <p className="text-2xl font-mono font-bold text-purple-400">
-                  {data ? (data.beamEnergy / 1000).toFixed(1) : '—'}
+                  {data ? (data.beamEnergy / 1000).toFixed(1) : '-'}
                 </p>
                 <p className="text-xs text-white/30">TeV per beam</p>
               </div>
               <div className="bg-white/5 rounded-lg p-4 text-center">
                 <p className="text-xs text-white/40 mb-1">Collision Energy</p>
                 <p className="text-2xl font-mono font-bold text-white">
-                  {data ? (data.beamEnergy * 2 / 1000).toFixed(1) : '—'}
+                  {data ? (data.beamEnergy * 2 / 1000).toFixed(1) : '-'}
                 </p>
                 <p className="text-xs text-white/30">TeV</p>
               </div>
               <div className="bg-white/5 rounded-lg p-4 text-center">
                 <p className="text-xs text-white/40 mb-1">Fill Number</p>
                 <p className="text-2xl font-mono font-bold text-white">
-                  {data?.fillNumber || '—'}
+                  {data?.fillNumber || '-'}
                 </p>
                 <p className="text-xs text-white/30">{data?.fillDuration || ''}</p>
               </div>
               <div className="bg-white/5 rounded-lg p-4 text-center">
                 <p className="text-xs text-white/40 mb-1">Luminosity</p>
                 <p className="text-2xl font-mono font-bold text-cyan-400">
-                  {data?.luminosity || '—'}
+                  {data?.luminosity || '-'}
                 </p>
                 <p className="text-xs text-white/30">×10³⁴ cm⁻²s⁻¹</p>
               </div>
@@ -187,7 +187,7 @@ export default function LHCPage() {
                 <span className="text-white/40 text-sm">clockwise</span>
               </div>
               <p className="text-3xl font-mono font-bold text-white">
-                {data?.beam1Intensity ? `${(data.beam1Intensity / 100).toFixed(1)}×10¹³` : '—'}
+                {data?.beam1Intensity ? `${(data.beam1Intensity / 100).toFixed(1)}×10¹³` : '-'}
               </p>
               <p className="text-xs text-white/40">protons</p>
             </div>
@@ -197,7 +197,7 @@ export default function LHCPage() {
                 <span className="text-white/40 text-sm">counter-clockwise</span>
               </div>
               <p className="text-3xl font-mono font-bold text-white">
-                {data?.beam2Intensity ? `${(data.beam2Intensity / 100).toFixed(1)}×10¹³` : '—'}
+                {data?.beam2Intensity ? `${(data.beam2Intensity / 100).toFixed(1)}×10¹³` : '-'}
               </p>
               <p className="text-xs text-white/40">protons</p>
             </div>

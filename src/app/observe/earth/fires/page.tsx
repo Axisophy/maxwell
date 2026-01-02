@@ -198,7 +198,7 @@ export default function ActiveFiresPage() {
               </div>
               <div className="bg-white rounded-xl p-5">
                 <p className="text-3xl font-light text-orange-500">
-                  {data.largestFire?.frp.toFixed(1) || '—'} MW
+                  {data.largestFire?.frp.toFixed(1) || '-'} MW
                 </p>
                 <p className="text-sm text-black/50">Highest FRP</p>
               </div>

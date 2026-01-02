@@ -206,7 +206,7 @@ function TodayView({ moonData, moonTimes, nextFullMoon, nextNewMoon }: TodayView
             Moonrise
           </div>
           <div className="font-mono text-base font-medium text-white mt-1">
-            {moonTimes?.rise ? format(moonTimes.rise, 'HH:mm') : '—'}
+            {moonTimes?.rise ? format(moonTimes.rise, 'HH:mm') : '-'}
           </div>
         </div>
 
@@ -216,7 +216,7 @@ function TodayView({ moonData, moonTimes, nextFullMoon, nextNewMoon }: TodayView
             Moonset
           </div>
           <div className="font-mono text-base font-medium text-white mt-1">
-            {moonTimes?.set ? format(moonTimes.set, 'HH:mm') : '—'}
+            {moonTimes?.set ? format(moonTimes.set, 'HH:mm') : '-'}
           </div>
         </div>
 

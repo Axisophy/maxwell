@@ -72,7 +72,7 @@ function ParticleDetail({
           </div>
           <div className="bg-black rounded-lg p-3">
             <p className="text-[10px] text-white/50 uppercase mb-1">Generation</p>
-            <p className="text-lg font-mono font-bold text-white">{particle.generation || '—'}</p>
+            <p className="text-lg font-mono font-bold text-white">{particle.generation || '-'}</p>
           </div>
         </div>
 
@@ -98,7 +98,7 @@ function ParticleDetail({
         {/* Discovery */}
         <div className="mt-3 p-3 bg-black/50 rounded-lg">
           <p className="text-[10px] text-white/50 uppercase mb-1">Discovery</p>
-          <p className="text-sm text-white">{particle.discoveredYear} — {particle.discoveredAt}</p>
+          <p className="text-sm text-white">{particle.discoveredYear} -{particle.discoveredAt}</p>
           {particle.discoveredBy && (
             <p className="text-xs text-white/40 mt-1">{particle.discoveredBy}</p>
           )}
@@ -161,7 +161,7 @@ function LedgerSection() {
     <div className="bg-[#1d1d1d] rounded-lg overflow-hidden">
       <div className="px-4 py-3 border-b border-white/10">
         <h2 className="text-xl font-light text-white uppercase">Particle Ledger</h2>
-        <p className="text-sm text-white/50 mt-1">All 17 particles — click headers to sort</p>
+        <p className="text-sm text-white/50 mt-1">All 17 particles -click headers to sort</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -225,7 +225,7 @@ function TimelineSection() {
     <div className="bg-[#1d1d1d] rounded-lg overflow-hidden">
       <div className="px-4 py-3 border-b border-white/10">
         <h2 className="text-xl font-light text-white uppercase">Discovery Timeline</h2>
-        <p className="text-sm text-white/50 mt-1">1897–2012 — 115 years of discovery</p>
+        <p className="text-sm text-white/50 mt-1">1897–2012 -115 years of discovery</p>
       </div>
 
       <div className="p-4">
@@ -348,7 +348,7 @@ export default function StandardModelPage() {
 
             <h2 className="text-xl font-light text-white uppercase mb-3 mt-6">The Three Generations</h2>
             <p className="text-sm text-white/60 mb-4">
-              Fermions come in three <strong className="text-white">generations</strong> — identical
+              Fermions come in three <strong className="text-white">generations</strong> -identical
               except for mass. Only generation I particles are stable; heavier generations decay almost
               instantly. All ordinary matter is made entirely of first-generation particles: up quarks,
               down quarks, and electrons.

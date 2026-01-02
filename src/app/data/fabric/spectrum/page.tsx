@@ -33,7 +33,7 @@ export default function EMSpectrumPage() {
               Electromagnetic Spectrum
             </h1>
             <p className="text-sm md:text-base text-black/60 max-w-2xl">
-              From gamma rays to radio waves — 19 orders of magnitude of electromagnetic radiation.
+              From gamma rays to radio waves -19 orders of magnitude of electromagnetic radiation.
               The visible spectrum we evolved to see represents less than 0.0035% of what's out there.
             </p>
           </section>
@@ -184,7 +184,7 @@ export default function EMSpectrumPage() {
             <div className="max-w-3xl">
               <h2 className="text-xl font-light text-black uppercase mb-3">You're Nearly Blind</h2>
               <p className="text-sm text-black/60 mb-4">
-                The visible spectrum — everything you can see — represents less than <strong className="text-black">0.0035%</strong> of
+                The visible spectrum -everything you can see -represents less than <strong className="text-black">0.0035%</strong> of
                 the electromagnetic spectrum. The rest is invisible: radio waves carrying your WiFi and phone calls,
                 infrared from everything warm, ultraviolet from the Sun, X-rays passing through walls,
                 gamma rays from distant supernovas. Your eyes show you almost nothing of what's really there.
@@ -192,7 +192,7 @@ export default function EMSpectrumPage() {
 
               <h2 className="text-xl font-light text-black uppercase mb-3 mt-6">One Speed, Many Frequencies</h2>
               <p className="text-sm text-black/60">
-                All electromagnetic radiation — from radio waves to gamma rays — travels at exactly the same speed in vacuum:
+                All electromagnetic radiation -from radio waves to gamma rays -travels at exactly the same speed in vacuum:
                 <strong className="text-black font-mono"> c = 299,792,458 m/s</strong>. What distinguishes a radio wave from a gamma ray
                 is only the wavelength and frequency. Shorter wavelengths mean higher frequencies and more energy per photon.
                 A gamma ray photon carries about 10 trillion times more energy than a radio wave photon.

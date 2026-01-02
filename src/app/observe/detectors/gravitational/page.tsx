@@ -202,7 +202,7 @@ export default function GravitationalWavesPage() {
             <div className="bg-[#0f0f14] rounded-xl p-5">
               <h3 className="text-sm font-medium text-white mb-3">Incredible Precision</h3>
               <p className="text-xs text-white/50 leading-relaxed">
-                LIGO can detect length changes of 10⁻¹⁸ meters — one ten-thousandth the
+                LIGO can detect length changes of 10⁻¹⁸ metres - one ten-thousandth the
                 diameter of a proton. This is equivalent to measuring the distance to the
                 nearest star to the width of a human hair.
               </p>

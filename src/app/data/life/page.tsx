@@ -71,7 +71,7 @@ const items: DataItem[] = [
     title: 'Anatomical Systems',
     href: '/data/life/anatomy',
     status: 'coming-soon',
-    description: 'Human body systems — nervous, cardiovascular, skeletal, and more',
+    description: 'Human body systems -nervous, cardiovascular, skeletal, and more',
     stat: '11',
     statLabel: 'systems',
   },
@@ -161,7 +161,7 @@ export default function LifePage() {
             <div className="text-sm text-black/50 max-w-2xl leading-relaxed">
               Life is chemistry that replicates. From the genetic code that stores
               information to the metabolic pathways that power cells, from single-celled
-              organisms to complex ecosystems — life has colonised nearly every environment
+              organisms to complex ecosystems -life has colonised nearly every environment
               on Earth over 3.8 billion years.
             </div>
           </section>

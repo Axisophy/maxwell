@@ -152,7 +152,7 @@ export default function GamesPage() {
               create intrinsic motivation, and make abstract concepts tangible.
             </p>
             <p>
-              Each game here is designed to teach something real — whether it&apos;s the
+              Each game here is designed to teach something real -whether it&apos;s the
               factual knowledge in Ptolemy, the strategic thinking in game theory, or
               the intuitive physics of orbital mechanics.
             </p>

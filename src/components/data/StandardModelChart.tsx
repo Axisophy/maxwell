@@ -147,7 +147,7 @@ export default function StandardModelChart({
           The Standard Model of Particle Physics
         </h2>
         <p className="text-sm text-white/50 mt-1">
-          17 fundamental particles — Click any particle to explore
+          17 fundamental particles -Click any particle to explore
         </p>
       </div>
 
@@ -158,7 +158,7 @@ export default function StandardModelChart({
           {/* Fermions (Quarks + Leptons) */}
           <div className="flex-1">
             <div className="text-[10px] text-white/40 uppercase tracking-wider mb-3">
-              Fermions — Matter particles (spin ½)
+              Fermions -Matter particles (spin ½)
             </div>
 
             <div className="flex gap-4 md:gap-6">
@@ -223,7 +223,7 @@ export default function StandardModelChart({
           {/* Bosons */}
           <div className="lg:w-56">
             <div className="text-[10px] text-white/40 uppercase tracking-wider mb-3">
-              Bosons — Force carriers (spin 0, 1)
+              Bosons -Force carriers (spin 0, 1)
             </div>
 
             {/* Gauge bosons */}

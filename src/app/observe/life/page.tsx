@@ -198,7 +198,7 @@ export default function LifePortalPage() {
                 loading={loading}
               />
               <LifeVitalSign
-                value={data?.ebirdObservations || '—'}
+                value={data?.ebirdObservations || '-'}
                 label="eBird Observations"
                 loading={loading}
               />

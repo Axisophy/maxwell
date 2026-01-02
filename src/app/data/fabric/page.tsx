@@ -51,7 +51,7 @@ const items: DataItem[] = [
     title: 'Fundamental Constants',
     href: '/data/fabric/constants',
     status: 'ready',
-    description: 'The numbers the universe is built on — c, G, h, and more',
+    description: 'The numbers the universe is built on -c, G, h, and more',
     stat: '22',
     statLabel: 'constants',
   },
@@ -59,7 +59,7 @@ const items: DataItem[] = [
     title: 'EM Spectrum',
     href: '/data/fabric/spectrum',
     status: 'ready',
-    description: 'From radio waves to gamma rays — the full electromagnetic spectrum',
+    description: 'From radio waves to gamma rays -the full electromagnetic spectrum',
     stat: '10²⁵',
     statLabel: 'Hz range',
   },
@@ -169,8 +169,8 @@ export default function FabricPage() {
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-sm text-black/50 max-w-2xl leading-relaxed">
               The fabric of reality is described by quantum field theory and general relativity.
-              At its most fundamental level, the universe consists of fields — the electron field,
-              the electromagnetic field, the Higgs field — and particles are excitations of these fields.
+              At its most fundamental level, the universe consists of fields -the electron field,
+              the electromagnetic field, the Higgs field -and particles are excitations of these fields.
               The constants on this page determine the strength of interactions, the size of atoms,
               and the speed limit of the cosmos.
             </div>

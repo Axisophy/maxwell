@@ -87,7 +87,7 @@ export default function CosmicRaysPage() {
             </h2>
             <div className="mb-4">
               <span className="text-6xl md:text-7xl font-light text-white">
-                {data?.globalAverage.count.toLocaleString() || '—'}
+                {data?.globalAverage.count.toLocaleString() || '-'}
               </span>
               <span className="text-xl text-white/40 ml-2">counts/min</span>
             </div>
@@ -187,8 +187,8 @@ export default function CosmicRaysPage() {
               <h3 className="text-sm font-medium text-white mb-3">Forbush Decreases</h3>
               <p className="text-xs text-white/50 leading-relaxed mb-3">
                 During solar storms (CMEs), the enhanced magnetic field sweeps cosmic rays
-                away from Earth. This causes a sudden drop in neutron counts — a Forbush
-                decrease — that can last for days.
+                away from Earth. This causes a sudden drop in neutron counts - a Forbush
+                decrease - that can last for days.
               </p>
               <div className="bg-white/5 rounded p-3">
                 <p className="text-xs text-white/40">Typical drop: 3-20%</p>

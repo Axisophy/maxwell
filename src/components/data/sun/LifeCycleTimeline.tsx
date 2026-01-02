@@ -53,7 +53,7 @@ const lifeCycleStages = [
     name: 'Horizontal Branch',
     time: '+7 billion years',
     duration: '~100 million years',
-    description: 'A stable phase of helium core fusion. The Sun will shrink slightly and stabilize before exhausting its helium.',
+    description: 'A stable phase of helium core fusion. The Sun will shrink slightly and stabilise before exhausting its helium.',
     status: 'future',
     position: 91,
   },

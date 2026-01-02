@@ -14,7 +14,7 @@ const heroImages = [
     url: 'https://sdo.gsfc.nasa.gov/assets/img/browse/2012/08/31/20120831_003612_4096_0304.jpg',
     title: 'Magnificent Filament Eruption',
     date: 'August 31, 2012',
-    description: 'One of the most spectacular eruptions ever recorded - a filament stretching hundreds of thousands of kilometers.',
+    description: 'One of the most spectacular eruptions ever recorded - a filament stretching hundreds of thousands of kilometres.',
     credit: 'NASA/SDO',
   },
   {

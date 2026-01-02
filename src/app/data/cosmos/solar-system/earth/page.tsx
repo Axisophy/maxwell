@@ -4,7 +4,7 @@ import Breadcrumb from '@/components/ui/Breadcrumb'
 
 export const metadata: Metadata = {
   title: 'Earth | Solar System | MXWLL',
-  description: 'The third planet from the Sun — our pale blue dot. The only known world with liquid water, atmosphere, and life.',
+  description: 'The third planet from the Sun -our pale blue dot. The only known world with liquid water, atmosphere, and life.',
 }
 
 const orbitalFacts = [
@@ -53,7 +53,7 @@ export default function EarthPage() {
             Earth
           </h1>
           <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            The third planet from the Sun — our pale blue dot. The only known world
+            The third planet from the Sun -our pale blue dot. The only known world
             with liquid water on its surface, a protective atmosphere, and life.
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function EarthPage() {
               ))}
             </div>
             <p className="text-sm text-black/60 mt-4">
-              Earth orbits in the &quot;Goldilocks zone&quot; — not too hot, not too cold — where
+              Earth orbits in the &quot;Goldilocks zone&quot; -not too hot, not too cold -where
               liquid water can exist on the surface. This habitable zone is key to life as we know it.
             </p>
           </div>
@@ -176,7 +176,7 @@ export default function EarthPage() {
               <div className="text-2xl mb-2">🌫️</div>
               <h3 className="font-medium text-black mb-2">Atmosphere</h3>
               <p className="text-sm text-black/60">
-                78% nitrogen, 21% oxygen — breathable and dense enough to trap heat
+                78% nitrogen, 21% oxygen -breathable and dense enough to trap heat
                 but thin enough for sunlight to reach the surface.
               </p>
             </div>
@@ -200,7 +200,7 @@ export default function EarthPage() {
               <div className="text-2xl mb-2">🧬</div>
               <h3 className="font-medium text-black mb-2">Life</h3>
               <p className="text-sm text-black/60">
-                The only known world where life exists — from deep-sea vents to mountain
+                The only known world where life exists -from deep-sea vents to mountain
                 peaks, from bacteria to blue whales.
               </p>
             </div>
@@ -288,7 +288,7 @@ export default function EarthPage() {
                 </div>
               </div>
               <p className="text-sm text-black/60 leading-relaxed">
-                Earth&apos;s Moon is unusually large compared to its host planet — larger relative
+                Earth&apos;s Moon is unusually large compared to its host planet -larger relative
                 to Earth than any other moon relative to its planet. This makes the Earth-Moon
                 system almost a double planet. The Moon likely formed from debris after a
                 Mars-sized body collided with early Earth around 4.5 billion years ago.

@@ -284,7 +284,7 @@ export default function InternetPage() {
               <h3 className="text-sm font-medium text-white mb-3">Construction</h3>
               <p className="text-xs text-white/50 leading-relaxed">
                 Despite carrying the world&apos;s internet traffic, submarine cables are
-                surprisingly thin — about the diameter of a garden hose. They contain
+                surprisingly thin -about the diameter of a garden hose. They contain
                 pairs of optical fibres wrapped in protective layers of steel, copper,
                 and polyethylene.
               </p>

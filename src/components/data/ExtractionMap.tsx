@@ -338,7 +338,7 @@ export default function ExtractionMapStunning({ accessToken }: ExtractionMapProp
       map.current.on('click', () => setSelectedSite(null));
       map.current.on('error', (e) => console.error('Mapbox error:', e));
     } catch (error) {
-      console.error('Failed to initialize Mapbox:', error);
+      console.error('Failed to initialise Mapbox:', error);
     }
 
     return () => {

@@ -9,25 +9,25 @@ import { DataIcon } from '@/components/icons'
 // ============================================================================
 
 const keyNumbers = [
-  // Row 1 — Fundamental physics
+  // Row 1 -Fundamental physics
   { value: '299,792,458', label: 'Speed of light (m/s)', href: '/data/fabric/constants' },
   { value: '13.787 Bn', label: 'Age of universe (years)', href: '/data/fabric/cosmology' },
   { value: '1.616×10⁻³⁵', label: 'Planck length (m)', href: '/data/fabric/scale' },
   { value: '2.725', label: 'CMB temperature (K)', href: '/data/fabric/cosmology' },
 
-  // Row 2 — Constants & matter
+  // Row 2 -Constants & matter
   { value: '1/137.036', label: 'Fine structure constant', href: '/data/fabric/constants' },
   { value: '6.674×10⁻¹¹', label: 'Gravitational constant', href: '/data/fabric/constants' },
   { value: '118', label: 'Elements', href: '/data/elements' },
   { value: '3,352', label: 'Known nuclides', href: '/data/elements/nuclides' },
 
-  // Row 3 — Chemistry & life
+  // Row 3 -Chemistry & life
   { value: '6.022×10²³', label: 'Avogadro\'s number', href: '/data/fabric/constants' },
   { value: '~8.7 M', label: 'Estimated species', href: '/data/life' },
   { value: '3.2 Bn', label: 'Human genome (base pairs)', href: '/data/life/genome' },
   { value: '4.543 Bn', label: 'Earth\'s age (years)', href: '/data/earth/timescale' },
 
-  // Row 4 — The cosmos
+  // Row 4 -The cosmos
   { value: '~2 T', label: 'Observable galaxies', href: '/data/cosmos/galaxies' },
   { value: '5,700+', label: 'Confirmed exoplanets', href: '/data/cosmos/exoplanets' },
   { value: '4.246', label: 'Light years to Proxima', href: '/data/cosmos/stars' },
@@ -58,7 +58,7 @@ const categories: Category[] = [
   {
     id: 'fabric',
     title: 'The Fabric',
-    description: 'What reality is woven from — particles, forces, constants, and the structure of the universe.',
+    description: 'What reality is woven from -particles, forces, constants, and the structure of the universe.',
     href: '/data/fabric',
     items: [
       { title: 'Standard Model', href: '/data/fabric/particles', status: 'ready', description: 'The particles of matter' },
@@ -73,7 +73,7 @@ const categories: Category[] = [
   {
     id: 'elements',
     title: 'Elements',
-    description: 'Chemistry and matter — elements, isotopes, molecules, materials, and how things are made.',
+    description: 'Chemistry and matter -elements, isotopes, molecules, materials, and how things are made.',
     href: '/data/elements',
     items: [
       { title: 'Periodic Table', href: '/data/elements/periodic-table', status: 'coming-soon', description: 'The 118 elements' },
@@ -88,7 +88,7 @@ const categories: Category[] = [
   {
     id: 'life',
     title: 'Life',
-    description: 'Living systems — from genetic code to ecosystems, metabolism to species.',
+    description: 'Living systems -from genetic code to ecosystems, metabolism to species.',
     href: '/data/life',
     items: [
       { title: 'Genetic Code', href: '/data/life/genetic-code', status: 'coming-soon', description: 'Codons and amino acids' },
@@ -103,7 +103,7 @@ const categories: Category[] = [
   {
     id: 'earth',
     title: 'Earth',
-    description: 'Our planet — geology, climate, tectonics, and the systems that shape it.',
+    description: 'Our planet -geology, climate, tectonics, and the systems that shape it.',
     href: '/data/earth',
     items: [
       { title: 'Climate Data Centre', href: '/data/earth/climate', status: 'ready', description: '38 climate datasets' },
@@ -117,7 +117,7 @@ const categories: Category[] = [
   {
     id: 'cosmos',
     title: 'The Cosmos',
-    description: 'Everything beyond Earth — the Solar System, stars, galaxies, and the distant universe.',
+    description: 'Everything beyond Earth -the Solar System, stars, galaxies, and the distant universe.',
     href: '/data/cosmos',
     items: [
       { title: 'Solar System', href: '/data/cosmos/solar-system', status: 'ready', description: 'The Sun, planets, and moons' },
@@ -131,7 +131,7 @@ const categories: Category[] = [
   {
     id: 'mathematics',
     title: 'Mathematics',
-    description: 'Abstract structures — numbers, geometry, equations, and topology.',
+    description: 'Abstract structures -numbers, geometry, equations, and topology.',
     href: '/data/mathematics',
     items: [
       { title: 'Number Sequences', href: '/data/mathematics/sequences', status: 'coming-soon', description: 'Primes, Fibonacci, and more' },
@@ -143,7 +143,7 @@ const categories: Category[] = [
   {
     id: 'society',
     title: 'Society',
-    description: 'Human systems — psychology, anthropology, linguistics, and economics.',
+    description: 'Human systems -psychology, anthropology, linguistics, and economics.',
     href: '/data/society',
     comingSoon: true,
     items: [

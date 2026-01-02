@@ -189,7 +189,7 @@ function SDOImageViewer() {
       {/* Source Attribution Frame */}
       <div className="bg-black rounded-lg p-3 flex items-center justify-between">
         <div>
-          <div className="text-sm font-medium text-white">{currentWl.label} — {currentWl.desc}</div>
+          <div className="text-sm font-medium text-white">{currentWl.label} -{currentWl.desc}</div>
         </div>
         <div className="text-right">
           <div className="text-xs text-white/40">NASA SDO/AIA</div>
@@ -244,7 +244,7 @@ function Proba2SwapViewer() {
       {/* Info Frame */}
       <div className="bg-black rounded-lg p-3 flex items-center justify-between">
         <div>
-          <div className="text-sm font-medium text-white">174Å EUV — Corona at 1 million °C</div>
+          <div className="text-sm font-medium text-white">174Å EUV -Corona at 1 million °C</div>
           <div className="text-xs text-white/40 mt-1">Wide field of view captures CMEs and coronal holes</div>
         </div>
         <div className="text-right">
@@ -305,7 +305,7 @@ function STEREOViewer() {
       {/* Info Frame */}
       <div className="bg-black rounded-lg p-3 flex items-center justify-between">
         <div>
-          <div className="text-sm font-medium text-white">STEREO-A — 195Å EUV</div>
+          <div className="text-sm font-medium text-white">STEREO-A -195Å EUV</div>
           <div className="text-xs text-white/40 mt-1">Viewing from ahead of Earth in its orbit</div>
         </div>
         <div className="text-right">
@@ -326,8 +326,8 @@ function CoronagraphViewer() {
   const [error, setError] = useState(false)
 
   const config = {
-    c2: { label: 'LASCO C2', fov: '2–6 R☉', desc: 'Inner corona — Tracks CMEs close to the Sun' },
-    c3: { label: 'LASCO C3', fov: '3.7–30 R☉', desc: 'Outer corona — Views CMEs traveling toward Earth' },
+    c2: { label: 'LASCO C2', fov: '2–6 R☉', desc: 'Inner corona -Tracks CMEs close to the Sun' },
+    c3: { label: 'LASCO C3', fov: '3.7–30 R☉', desc: 'Outer corona -Views CMEs travelling toward Earth' },
   }
 
   const info = config[instrument]
@@ -783,38 +783,38 @@ export default function SolarObservatoryPage() {
             <div className="text-[10px] md:text-xs text-white/50 uppercase mb-3">Current Conditions</div>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-px">
               <SolarVitalSign
-                value={solarData?.xray.class || '—'}
+                value={solarData?.xray.class || '-'}
                 label="X-Ray Class"
                 status={solarData ? getXrayStatus(solarData.xray.class) : 'normal'}
                 loading={loading}
               />
               <SolarVitalSign
-                value={solarData?.kp.current ?? '—'}
+                value={solarData?.kp.current ?? '-'}
                 label="Kp Index"
                 status={solarData ? getKpStatus(solarData.kp.current) : 'normal'}
                 loading={loading}
               />
               <SolarVitalSign
-                value={solarData?.solarWind.speed ?? '—'}
+                value={solarData?.solarWind.speed ?? '-'}
                 label="Solar Wind"
                 unit="km/s"
                 loading={loading}
               />
               <SolarVitalSign
-                value={solarData?.solarWind.bz?.toFixed(1) ?? '—'}
+                value={solarData?.solarWind.bz?.toFixed(1) ?? '-'}
                 label="Bz (IMF)"
                 unit="nT"
                 status={solarData && solarData.solarWind.bz < -5 ? 'elevated' : 'normal'}
                 loading={loading}
               />
               <SolarVitalSign
-                value={solarData?.solarWind.density?.toFixed(1) ?? '—'}
+                value={solarData?.solarWind.density?.toFixed(1) ?? '-'}
                 label="Density"
                 unit="p/cm³"
                 loading={loading}
               />
               <SolarVitalSign
-                value={solarData?.solarWind.bt?.toFixed(1) ?? '—'}
+                value={solarData?.solarWind.bt?.toFixed(1) ?? '-'}
                 label="Bt (IMF)"
                 unit="nT"
                 loading={loading}
@@ -837,7 +837,7 @@ export default function SolarObservatoryPage() {
                 <div className="text-sm font-medium text-white mb-2">Understanding SDO Wavelengths</div>
                 <p className="text-xs text-white/60 leading-relaxed">
                   The Solar Dynamics Observatory captures the Sun at different wavelengths of extreme ultraviolet light.
-                  Each wavelength reveals structures at different temperatures — from the relatively cool chromosphere
+                  Each wavelength reveals structures at different temperatures -from the relatively cool chromosphere
                   (50,000 °C in 304Å) to the hottest flaring regions (10 million °C in 131Å). The visible light and
                   magnetogram channels show sunspots and magnetic field structure.
                 </p>
@@ -846,7 +846,7 @@ export default function SolarObservatoryPage() {
                 <div className="text-sm font-medium text-white mb-2">NASA SDO Mission</div>
                 <p className="text-xs text-white/60 leading-relaxed">
                   Launched in 2010, the Solar Dynamics Observatory captures a full-disk image of the Sun every 12 seconds
-                  in 10 different wavelengths. It has generated over 425 million images — more than any other NASA mission.
+                  in 10 different wavelengths. It has generated over 425 million images -more than any other NASA mission.
                   SDO orbits Earth in a geosynchronous orbit, allowing nearly continuous observation.
                 </p>
               </div>
@@ -886,7 +886,7 @@ export default function SolarObservatoryPage() {
               <p className="text-xs text-white/60 leading-relaxed">
                 ESA's Proba-2 orbits Earth and provides a wider field of view than SDO, capturing coronal mass ejections
                 as they leave the Sun. NASA's STEREO-A spacecraft orbits the Sun ahead of Earth, giving us a different
-                angle on solar activity. Together with Earth-based observations, these provide stereo vision of the Sun —
+                angle on solar activity. Together with Earth-based observations, these provide stereo vision of the Sun -
                 essential for tracking space weather that could affect Earth.
               </p>
             </div>
@@ -907,7 +907,7 @@ export default function SolarObservatoryPage() {
               <p className="text-xs text-white/60 leading-relaxed">
                 Coronagraphs use an occulting disk to block the bright solar disk, revealing the faint outer atmosphere (corona).
                 SOHO's LASCO C2 shows the inner corona from 2-6 solar radii, while C3 shows the outer corona from 3.7-30 solar radii.
-                These instruments are crucial for detecting coronal mass ejections (CMEs) — billion-ton clouds of solar plasma
+                These instruments are crucial for detecting coronal mass ejections (CMEs) -billion-ton clouds of solar plasma
                 that can trigger geomagnetic storms if Earth-directed.
               </p>
             </div>
@@ -950,13 +950,13 @@ export default function SolarObservatoryPage() {
                   <div className="grid grid-cols-2 gap-4 mt-3">
                     <div>
                       <div className="text-[10px] text-white/40 uppercase">Kp Now</div>
-                      <div className="text-2xl font-bold text-white">{solarData?.kp.current ?? '—'}</div>
+                      <div className="text-2xl font-bold text-white">{solarData?.kp.current ?? '-'}</div>
                       <div className="text-[10px] text-white/30 mt-1">{solarData?.kp.status}</div>
                     </div>
                     <div>
                       <div className="text-[10px] text-white/40 uppercase">Bz Component</div>
                       <div className={`text-2xl font-bold ${solarData && solarData.solarWind.bz < 0 ? 'text-green-400' : 'text-white'}`}>
-                        {solarData?.solarWind.bz?.toFixed(1) ?? '—'} nT
+                        {solarData?.solarWind.bz?.toFixed(1) ?? '-'} nT
                       </div>
                       <div className="text-[10px] text-white/30 mt-1">
                         {solarData?.solarWind.bzStatus === 'south' ? 'Southward (favorable)' :
