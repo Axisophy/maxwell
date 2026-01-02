@@ -83,17 +83,17 @@ function ParticleTile({
     <button
       onClick={onClick}
       className={`
-        aspect-square rounded-lg flex flex-col items-center justify-center
+        w-full h-full rounded-lg flex flex-col items-center justify-center
         transition-all duration-150
         ${colors.bg} ${colors.text}
         ${isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-[#1d1d1d]' : ''}
         hover:brightness-95
       `}
     >
-      <span className="font-math text-4xl leading-none">
+      <span className="font-math text-5xl leading-none">
         {particle.symbol}
       </span>
-      <span className="text-xs mt-1 opacity-70">
+      <span className="text-sm mt-2 opacity-70">
         {particle.name}
       </span>
     </button>
@@ -118,7 +118,7 @@ export default function StandardModelChart({ className = '' }: { className?: str
       )?.[0];
 
       gridCells.push(
-        <div key={`${row}-${col}`} className="aspect-square">
+        <div key={`${row}-${col}`} className="aspect-[2/5]">
           {particleId && (
             <ParticleTile
               id={particleId}
@@ -141,8 +141,8 @@ export default function StandardModelChart({ className = '' }: { className?: str
       </div>
 
       {/* Grid */}
-      <div className="p-6">
-        <div className="grid grid-cols-7 gap-3 max-w-3xl mx-auto">
+      <div className="p-4">
+        <div className="grid grid-cols-7 gap-3">
           {gridCells}
         </div>
       </div>
