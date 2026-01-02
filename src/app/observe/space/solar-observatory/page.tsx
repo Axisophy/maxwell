@@ -533,12 +533,13 @@ function XrayFluxChart({ data, loading }: { data: XrayHistoryPoint[]; loading: b
         <div className="absolute left-0 right-0 border-t border-dashed border-orange-500/30" style={{ bottom: `${getYPercent(1e-5)}%` }} />
         <div className="absolute left-0 right-0 border-t border-dashed border-yellow-500/30" style={{ bottom: `${getYPercent(1e-6)}%` }} />
 
-        <svg className="w-full h-full" preserveAspectRatio="none">
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
           <polyline
             fill="none"
             stroke="white"
             strokeWidth="1.5"
-            points={data.map((d, i) => `${(i / (data.length - 1)) * 100}%,${100 - getYPercent(d.flux)}%`).join(' ')}
+            vectorEffect="non-scaling-stroke"
+            points={data.map((d, i) => `${(i / (data.length - 1)) * 100},${100 - getYPercent(d.flux)}`).join(' ')}
           />
         </svg>
       </div>
@@ -569,15 +570,16 @@ function SolarWindChart({ data, loading }: { data: Array<{ time: string; speed: 
         Solar Wind Speed (24h)
       </div>
       <div className="relative h-20">
-        <svg className="w-full h-full" preserveAspectRatio="none">
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
           <polyline
             fill="none"
             stroke="#3b82f6"
             strokeWidth="1.5"
+            vectorEffect="non-scaling-stroke"
             points={data.map((d, i) => {
               const x = (i / (data.length - 1)) * 100
               const y = 100 - ((d.speed - min) / (max - min || 1)) * 100
-              return `${x}%,${y}%`
+              return `${x},${y}`
             }).join(' ')}
           />
         </svg>
@@ -607,16 +609,17 @@ function BzChart({ data, loading }: { data: Array<{ time: string; bz: number; bt
         {/* Zero line */}
         <div className="absolute left-0 right-0 border-t border-white/20" style={{ top: '50%' }} />
 
-        <svg className="w-full h-full" preserveAspectRatio="none">
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
           <polyline
             fill="none"
             stroke="#a855f7"
             strokeWidth="1.5"
+            vectorEffect="non-scaling-stroke"
             points={data.map((d, i) => {
               const x = (i / (data.length - 1)) * 100
               const clampedBz = Math.max(min, Math.min(max, d.bz))
               const y = 100 - ((clampedBz - min) / (max - min)) * 100
-              return `${x}%,${y}%`
+              return `${x},${y}`
             }).join(' ')}
           />
         </svg>
