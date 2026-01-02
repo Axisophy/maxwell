@@ -42,7 +42,7 @@ const items: DataItem[] = [
   {
     title: 'Fundamental Forces',
     href: '/data/fabric/forces',
-    status: 'coming-soon',
+    status: 'ready',
     description: 'Gravity, electromagnetism, and the strong and weak nuclear forces',
     stat: '4',
     statLabel: 'forces',
