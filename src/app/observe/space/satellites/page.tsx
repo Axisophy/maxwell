@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import Breadcrumb from '@/components/ui/Breadcrumb'
@@ -13,7 +13,7 @@ import SatelliteInfoPanel, { SatelliteVitalSign } from '@/components/satellites/
 const SatelliteGlobe = dynamic(() => import('@/components/satellites/SatelliteGlobe'), {
   ssr: false,
   loading: () => (
-    <div className="w-full aspect-[4/3] bg-black rounded-lg flex items-center justify-center">
+    <div className="w-full h-full bg-black rounded-lg flex items-center justify-center">
       <div className="text-center">
         <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mx-auto mb-3" />
         <div className="text-sm text-white/40">Loading globe...</div>
@@ -26,13 +26,26 @@ export default function SatelliteTrackerPage() {
   // Default to Weather satellites (moderate count, interesting)
   const [activeGroups, setActiveGroups] = useState<ConstellationGroup[]>(['weather', 'stations'])
   const [isMobile, setIsMobile] = useState(false)
+  const [globeDimensions, setGlobeDimensions] = useState({ width: 800, height: 450 })
+  const globeContainerRef = useRef<HTMLDivElement>(null)
 
-  // Detect mobile
+  // Detect mobile and measure globe container
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    const updateDimensions = () => {
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+
+      if (globeContainerRef.current) {
+        const rect = globeContainerRef.current.getBoundingClientRect()
+        // Use fixed height on mobile to allow scrolling
+        const height = mobile ? 300 : Math.min(rect.width * 0.5625, 500)
+        setGlobeDimensions({ width: rect.width, height })
+      }
+    }
+
+    updateDimensions()
+    window.addEventListener('resize', updateDimensions)
+    return () => window.removeEventListener('resize', updateDimensions)
   }, [])
 
   // Fetch satellite data
@@ -137,7 +150,7 @@ export default function SatelliteTrackerPage() {
             </div>
 
             {error ? (
-              <div className="w-full aspect-[4/3] bg-black rounded-lg flex items-center justify-center">
+              <div className="w-full h-[300px] md:h-[450px] bg-black rounded-lg flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-red-400 mb-2">Failed to load satellite data</div>
                   <button
@@ -149,20 +162,26 @@ export default function SatelliteTrackerPage() {
                 </div>
               </div>
             ) : (
-              <div className="w-full aspect-[4/3] md:aspect-[16/9]">
+              <div
+                ref={globeContainerRef}
+                className="w-full bg-black rounded-lg overflow-hidden"
+                style={{ height: isMobile ? 300 : 450 }}
+              >
                 <SatelliteGlobe
                   satelliteRecords={satelliteRecords}
                   selectedSatellite={selectedSatellite}
                   onSelectSatellite={selectSatellite}
+                  width={globeDimensions.width}
+                  height={globeDimensions.height}
                 />
               </div>
             )}
 
             {/* Instructions */}
             <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-white/40">
-              <span>🖱️ Drag to rotate</span>
-              <span>🔍 Scroll to zoom</span>
-              <span>👆 Click satellite for details</span>
+              <span>Drag to rotate</span>
+              <span>Scroll to zoom</span>
+              <span>Click satellite for details</span>
             </div>
           </section>
 
