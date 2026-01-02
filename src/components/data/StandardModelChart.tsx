@@ -2,31 +2,39 @@
 
 import React, { useState } from 'react';
 
-// Particle data - minimal for now
-const PARTICLES: Record<string, { symbol: string; name: string; type: string }> = {
+// Particle data with full details
+const PARTICLES: Record<string, {
+  symbol: string;
+  name: string;
+  type: string;
+  mass: string;
+  charge: string;
+  spin: string;
+  discovered: string;
+}> = {
   // Quarks
-  'up':       { symbol: 'u', name: 'up', type: 'quark' },
-  'charm':    { symbol: 'c', name: 'charm', type: 'quark' },
-  'top':      { symbol: 't', name: 'top', type: 'quark' },
-  'down':     { symbol: 'd', name: 'down', type: 'quark' },
-  'strange':  { symbol: 's', name: 'strange', type: 'quark' },
-  'bottom':   { symbol: 'b', name: 'bottom', type: 'quark' },
+  'up':       { symbol: 'u', name: 'up', type: 'quark', mass: '2.2 MeV', charge: '+⅔', spin: '½', discovered: '1968' },
+  'charm':    { symbol: 'c', name: 'charm', type: 'quark', mass: '1.27 GeV', charge: '+⅔', spin: '½', discovered: '1974' },
+  'top':      { symbol: 't', name: 'top', type: 'quark', mass: '173 GeV', charge: '+⅔', spin: '½', discovered: '1995' },
+  'down':     { symbol: 'd', name: 'down', type: 'quark', mass: '4.7 MeV', charge: '−⅓', spin: '½', discovered: '1968' },
+  'strange':  { symbol: 's', name: 'strange', type: 'quark', mass: '95 MeV', charge: '−⅓', spin: '½', discovered: '1968' },
+  'bottom':   { symbol: 'b', name: 'bottom', type: 'quark', mass: '4.2 GeV', charge: '−⅓', spin: '½', discovered: '1977' },
   // Leptons
-  'electron':      { symbol: 'e', name: 'electron', type: 'lepton' },
-  'muon':          { symbol: 'μ', name: 'muon', type: 'lepton' },
-  'tau':           { symbol: 'τ', name: 'tau', type: 'lepton' },
-  'electron-nu':   { symbol: 'νe', name: 'e neutrino', type: 'lepton' },
-  'muon-nu':       { symbol: 'νμ', name: 'μ neutrino', type: 'lepton' },
-  'tau-nu':        { symbol: 'ντ', name: 'τ neutrino', type: 'lepton' },
+  'electron':      { symbol: 'e', name: 'electron', type: 'lepton', mass: '0.511 MeV', charge: '−1', spin: '½', discovered: '1897' },
+  'muon':          { symbol: 'μ', name: 'muon', type: 'lepton', mass: '106 MeV', charge: '−1', spin: '½', discovered: '1936' },
+  'tau':           { symbol: 'τ', name: 'tau', type: 'lepton', mass: '1.78 GeV', charge: '−1', spin: '½', discovered: '1975' },
+  'electron-nu':   { symbol: 'νe', name: 'e neutrino', type: 'lepton', mass: '<2.2 eV', charge: '0', spin: '½', discovered: '1956' },
+  'muon-nu':       { symbol: 'νμ', name: 'μ neutrino', type: 'lepton', mass: '<0.17 MeV', charge: '0', spin: '½', discovered: '1962' },
+  'tau-nu':        { symbol: 'ντ', name: 'τ neutrino', type: 'lepton', mass: '<15.5 MeV', charge: '0', spin: '½', discovered: '2000' },
   // Gauge bosons
-  'gluon':   { symbol: 'g', name: 'gluon', type: 'gauge' },
-  'photon':  { symbol: 'γ', name: 'photon', type: 'gauge' },
-  'w-boson': { symbol: 'W', name: 'W boson', type: 'gauge' },
-  'z-boson': { symbol: 'Z', name: 'Z boson', type: 'gauge' },
+  'gluon':   { symbol: 'g', name: 'gluon', type: 'gauge', mass: '0', charge: '0', spin: '1', discovered: '1979' },
+  'photon':  { symbol: 'γ', name: 'photon', type: 'gauge', mass: '0', charge: '0', spin: '1', discovered: '1905' },
+  'w-boson': { symbol: 'W', name: 'W boson', type: 'gauge', mass: '80.4 GeV', charge: '±1', spin: '1', discovered: '1983' },
+  'z-boson': { symbol: 'Z', name: 'Z boson', type: 'gauge', mass: '91.2 GeV', charge: '0', spin: '1', discovered: '1983' },
   // Scalar boson
-  'higgs':    { symbol: 'H', name: 'higgs', type: 'higgs' },
+  'higgs':    { symbol: 'H', name: 'Higgs', type: 'higgs', mass: '125 GeV', charge: '0', spin: '0', discovered: '2012' },
   // Theoretical
-  'graviton': { symbol: 'G', name: 'graviton', type: 'graviton' },
+  'graviton': { symbol: 'G', name: 'graviton', type: 'graviton', mass: '0', charge: '0', spin: '2', discovered: 'predicted' },
 };
 
 // Grid positions: [row, col] (0-indexed)
@@ -56,54 +64,47 @@ const GRID_POSITIONS: Record<string, [number, number]> = {
 };
 
 // Type colours
-const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  'quark':    { bg: 'bg-fuchsia-400', text: 'text-fuchsia-950' },
-  'lepton':   { bg: 'bg-emerald-400', text: 'text-emerald-950' },
-  'gauge':    { bg: 'bg-orange-300', text: 'text-orange-950' },
-  'higgs':    { bg: 'bg-amber-300', text: 'text-amber-950' },
-  'graviton': { bg: 'bg-neutral-400', text: 'text-neutral-900' },
+const TYPE_COLORS: Record<string, { bg: string; bgDark: string; text: string }> = {
+  'quark':    { bg: 'bg-fuchsia-400', bgDark: 'bg-fuchsia-600', text: 'text-fuchsia-950' },
+  'lepton':   { bg: 'bg-emerald-400', bgDark: 'bg-emerald-600', text: 'text-emerald-950' },
+  'gauge':    { bg: 'bg-orange-300', bgDark: 'bg-orange-500', text: 'text-orange-950' },
+  'higgs':    { bg: 'bg-amber-300', bgDark: 'bg-amber-500', text: 'text-amber-950' },
+  'graviton': { bg: 'bg-neutral-400', bgDark: 'bg-neutral-600', text: 'text-neutral-900' },
 };
 
 // Which particles are affected by each interaction
-const INTERACTIONS: Record<string, { particles: string[]; color: string; description: string }> = {
+const INTERACTIONS: Record<string, { particles: string[]; description: string }> = {
   'strong': {
     particles: ['up', 'charm', 'top', 'down', 'strange', 'bottom', 'gluon'],
-    color: 'bg-red-500/30',
     description: 'Binds quarks into hadrons. Carried by gluons. Confined to nuclear scales.',
   },
   'electromagnetic': {
     particles: ['up', 'charm', 'top', 'down', 'strange', 'bottom', 'electron', 'muon', 'tau', 'w-boson', 'photon'],
-    color: 'bg-blue-500/30',
     description: 'Acts on electric charge. Carried by the photon. Infinite range.',
   },
   'weak': {
     particles: ['up', 'charm', 'top', 'down', 'strange', 'bottom', 'electron', 'muon', 'tau', 'electron-nu', 'muon-nu', 'tau-nu', 'w-boson', 'z-boson'],
-    color: 'bg-yellow-500/30',
     description: 'Changes particle flavour. Carried by W± and Z. Very short range.',
   },
   'higgs': {
     particles: ['up', 'charm', 'top', 'down', 'strange', 'bottom', 'electron', 'muon', 'tau', 'w-boson', 'z-boson', 'higgs'],
-    color: 'bg-purple-500/30',
     description: 'Gives mass to particles. All massive particles couple to the Higgs field.',
   },
   'gravity': {
-    particles: Object.keys(PARTICLES), // Everything
-    color: 'bg-white/20',
+    particles: Object.keys(PARTICLES),
     description: 'Acts on all mass-energy. Carried by the graviton (theoretical). Infinite range.',
   },
 };
 
-// Particle tile
+// Particle tile with flip animation
 function ParticleTile({
   id,
-  isSelected,
-  isHighlighted,
+  isFlipped,
   isDimmed,
   onClick
 }: {
   id: string;
-  isSelected: boolean;
-  isHighlighted: boolean;
+  isFlipped: boolean;
   isDimmed: boolean;
   onClick: () => void;
 }) {
@@ -113,34 +114,88 @@ function ParticleTile({
   const colors = TYPE_COLORS[particle.type];
 
   return (
-    <button
+    <div
+      className="w-full h-full cursor-pointer"
+      style={{ perspective: '1000px' }}
       onClick={onClick}
-      className={`
-        w-full h-full rounded-lg flex flex-col items-center justify-center
-        transition-all duration-200
-        ${colors.bg} ${colors.text}
-        ${isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-[#1d1d1d] scale-105' : ''}
-        ${isDimmed ? 'opacity-30' : ''}
-        hover:brightness-95
-      `}
     >
-      <span className="font-math text-3xl md:text-4xl lg:text-5xl leading-none">
-        {particle.symbol}
-      </span>
-      <span className="text-xs md:text-sm mt-1 md:mt-2 opacity-70">
-        {particle.name}
-      </span>
-    </button>
+      <div
+        className={`
+          relative w-full h-full transition-transform duration-500
+          ${isDimmed ? 'opacity-30' : ''}
+        `}
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+        }}
+      >
+        {/* Front face */}
+        <div
+          className={`
+            absolute inset-0 rounded-lg flex flex-col items-center justify-center
+            ${colors.bg} ${colors.text}
+          `}
+          style={{ backfaceVisibility: 'hidden' }}
+        >
+          <span className="font-math text-3xl md:text-4xl lg:text-5xl leading-none">
+            {particle.symbol}
+          </span>
+          <span className="text-xs md:text-sm mt-1 md:mt-2 opacity-70">
+            {particle.name}
+          </span>
+        </div>
+
+        {/* Back face */}
+        <div
+          className={`
+            absolute inset-0 rounded-lg p-2 md:p-3 flex flex-col justify-between
+            ${colors.bgDark} ${colors.text}
+          `}
+          style={{
+            backfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+          }}
+        >
+          <div className="text-center">
+            <span className="font-math text-xl md:text-2xl leading-none">
+              {particle.symbol}
+            </span>
+            <span className="text-[10px] md:text-xs block opacity-70 mt-0.5">
+              {particle.name}
+            </span>
+          </div>
+
+          <div className="space-y-0.5 text-[9px] md:text-[10px]">
+            <div className="flex justify-between">
+              <span className="opacity-60">Mass</span>
+              <span className="font-mono">{particle.mass}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="opacity-60">Charge</span>
+              <span className="font-mono">{particle.charge}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="opacity-60">Spin</span>
+              <span className="font-mono">{particle.spin}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="opacity-60">Found</span>
+              <span className="font-mono">{particle.discovered}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
 // Main chart
 export default function StandardModelChart({ className = '' }: { className?: string }) {
-  const [selectedParticle, setSelectedParticle] = useState<string | null>(null);
+  const [flippedParticle, setFlippedParticle] = useState<string | null>(null);
   const [activeInteraction, setActiveInteraction] = useState<string | null>(null);
 
   const handleParticleClick = (id: string) => {
-    setSelectedParticle(current => current === id ? null : id);
+    setFlippedParticle(current => current === id ? null : id);
   };
 
   const handleInteractionClick = (id: string) => {
@@ -156,21 +211,18 @@ export default function StandardModelChart({ className = '' }: { className?: str
   const gridCells = [];
   for (let row = 0; row < 4; row++) {
     for (let col = 0; col < 7; col++) {
-      // Find particle at this position
       const particleId = Object.entries(GRID_POSITIONS).find(
         ([_, pos]) => pos[0] === row && pos[1] === col
       )?.[0];
 
-      const isHighlighted = particleId ? highlightedParticles.includes(particleId) : false;
-      const isDimmed = activeInteraction !== null && !isHighlighted;
+      const isDimmed = !!(activeInteraction !== null && particleId && !highlightedParticles.includes(particleId));
 
       gridCells.push(
-        <div key={`${row}-${col}`} className="aspect-[2/3]">
+        <div key={`${row}-${col}`} className="aspect-square">
           {particleId && (
             <ParticleTile
               id={particleId}
-              isSelected={selectedParticle === particleId}
-              isHighlighted={isHighlighted}
+              isFlipped={flippedParticle === particleId}
               isDimmed={isDimmed}
               onClick={() => handleParticleClick(particleId)}
             />
@@ -189,8 +241,21 @@ export default function StandardModelChart({ className = '' }: { className?: str
         </h2>
       </div>
 
+      {/* Generation labels */}
+      <div className="px-4 pt-4">
+        <div className="grid grid-cols-7 gap-3">
+          <div className="text-center text-sm text-white/50">1st</div>
+          <div className="text-center text-sm text-white/50">2nd</div>
+          <div className="text-center text-sm text-white/50">3rd</div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+
       {/* Grid */}
-      <div className="p-4">
+      <div className="p-4 pt-2">
         <div className="grid grid-cols-7 gap-3">
           {gridCells}
         </div>
@@ -226,7 +291,7 @@ export default function StandardModelChart({ className = '' }: { className?: str
           Highlight by interaction
         </div>
         <div className="flex flex-wrap gap-2">
-          {Object.entries(INTERACTIONS).map(([id, interaction]) => (
+          {Object.entries(INTERACTIONS).map(([id]) => (
             <button
               key={id}
               onClick={() => handleInteractionClick(id)}
