@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useMemo, useState, useEffect, useCallback } from 'react'
-import { Canvas, useFrame, useThree, ThreeEvent } from '@react-three/fiber'
+import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber'
 import { OrbitControls, Stars, useTexture, Line } from '@react-three/drei'
 import * as THREE from 'three'
 import {
@@ -10,9 +10,6 @@ import {
   latLonAltToVector3,
 } from '@/lib/satellites/propagate'
 import { CONSTELLATION_COLORS, ConstellationGroup } from '@/lib/satellites/types'
-
-// Raycaster threshold for point selection (smaller = more precise)
-const CLICK_THRESHOLD = 0.01
 
 interface SatelliteGlobeProps {
   satellites: SatellitePosition[]
@@ -27,12 +24,11 @@ function Earth() {
   const meshRef = useRef<THREE.Mesh>(null)
 
   // NASA Blue Marble texture (public domain)
-  // Using a reliable CDN source
   const texture = useTexture(
     'https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg'
   )
 
-  // Rotate Earth slowly (once per day = very slow)
+  // Rotate Earth slowly
   useFrame((_, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.01
@@ -62,144 +58,98 @@ function Atmosphere() {
   )
 }
 
-// Satellite points visualization
-function SatellitePoints({
+// Satellite instances - uses InstancedMesh for reliable click detection
+function SatelliteInstances({
   satellites,
-  selectedSatellite,
   onSelect,
 }: {
   satellites: SatellitePosition[]
-  selectedSatellite: SatellitePosition | null
   onSelect: (sat: SatellitePosition | null) => void
 }) {
-  const pointsRef = useRef<THREE.Points>(null)
-  const [hoveredId, setHoveredId] = useState<string | null>(null)
-  const { raycaster } = useThree()
+  const meshRef = useRef<THREE.InstancedMesh>(null)
+  const [hovered, setHovered] = useState<string | null>(null)
 
-  // Set raycaster threshold for points (crucial for accurate selection)
-  useEffect(() => {
-    raycaster.params.Points = { threshold: CLICK_THRESHOLD }
-  }, [raycaster])
-
-  // Create geometry from positions
-  const { geometry, satelliteMap, indexToId } = useMemo(() => {
-    const positions: number[] = []
-    const colors: number[] = []
-    const sizes: number[] = []
-    const map: Map<string, { sat: SatellitePosition; index: number }> = new Map()
-    const idxToId: Map<number, string> = new Map()
-
-    satellites.forEach((sat, index) => {
-      const pos = latLonAltToVector3(sat.latitude, sat.longitude, sat.altitude)
-      positions.push(pos.x, pos.y, pos.z)
-
-      // Color based on group - use shared constants
-      const color = new THREE.Color(CONSTELLATION_COLORS[sat.group as ConstellationGroup] || '#ffffff')
-      colors.push(color.r, color.g, color.b)
-
-      // Size based on importance - larger dots for visibility
-      const size = sat.group === 'stations' ? 0.04 : 0.02
-      sizes.push(size)
-
-      map.set(sat.noradId, { sat, index })
-      idxToId.set(index, sat.noradId)
-    })
-
-    const geo = new THREE.BufferGeometry()
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
-    geo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1))
-
-    return { geometry: geo, satelliteMap: map, indexToId: idxToId }
+  // Map instance index to satellite
+  const indexToSat = useMemo(() => {
+    const map = new Map<number, SatellitePosition>()
+    satellites.forEach((sat, i) => map.set(i, sat))
+    return map
   }, [satellites])
 
-  // Find satellite under pointer using event intersections
-  const getSatelliteAtPointer = useCallback(
-    (event: ThreeEvent<PointerEvent | MouseEvent>) => {
-      if (!pointsRef.current) return null
+  // Update instance matrices and colors
+  useEffect(() => {
+    if (!meshRef.current) return
 
-      const intersects = event.intersections.filter((i) => i.object === pointsRef.current)
-      if (intersects.length > 0 && intersects[0].index !== undefined) {
-        const noradId = indexToId.get(intersects[0].index)
-        if (noradId) {
-          return satelliteMap.get(noradId)?.sat || null
+    const dummy = new THREE.Object3D()
+    const color = new THREE.Color()
+
+    satellites.forEach((sat, i) => {
+      // Position
+      const pos = latLonAltToVector3(sat.latitude, sat.longitude, sat.altitude)
+      dummy.position.set(pos.x, pos.y, pos.z)
+
+      // Scale - stations larger
+      const scale = sat.group === 'stations' ? 0.012 : 0.006
+      dummy.scale.setScalar(scale)
+
+      dummy.updateMatrix()
+      meshRef.current!.setMatrixAt(i, dummy.matrix)
+
+      // Color
+      color.set(CONSTELLATION_COLORS[sat.group as ConstellationGroup] || '#ffffff')
+      meshRef.current!.setColorAt(i, color)
+    })
+
+    meshRef.current.instanceMatrix.needsUpdate = true
+    if (meshRef.current.instanceColor) {
+      meshRef.current.instanceColor.needsUpdate = true
+    }
+  }, [satellites])
+
+  // Handle pointer events
+  const handlePointerOver = useCallback(
+    (e: ThreeEvent<PointerEvent>) => {
+      e.stopPropagation()
+      if (e.instanceId !== undefined) {
+        const sat = indexToSat.get(e.instanceId)
+        if (sat) {
+          setHovered(sat.noradId)
+          document.body.style.cursor = 'pointer'
         }
       }
-      return null
     },
-    [indexToId, satelliteMap]
+    [indexToSat]
   )
 
-  // Handle click
-  const handleClick = useCallback(
-    (event: ThreeEvent<MouseEvent>) => {
-      event.stopPropagation()
-      const sat = getSatelliteAtPointer(event)
-      onSelect(sat)
-    },
-    [getSatelliteAtPointer, onSelect]
-  )
-
-  // Handle hover
-  const handlePointerMove = useCallback(
-    (event: ThreeEvent<PointerEvent>) => {
-      const sat = getSatelliteAtPointer(event)
-      const newId = sat?.noradId || null
-
-      if (newId !== hoveredId) {
-        setHoveredId(newId)
-        document.body.style.cursor = newId ? 'pointer' : 'auto'
-      }
-    },
-    [getSatelliteAtPointer, hoveredId]
-  )
-
-  const handlePointerLeave = useCallback(() => {
-    setHoveredId(null)
+  const handlePointerOut = useCallback(() => {
+    setHovered(null)
     document.body.style.cursor = 'auto'
   }, [])
 
-  // Custom shader for better point rendering
-  const material = useMemo(
-    () =>
-      new THREE.ShaderMaterial({
-        uniforms: {},
-        vertexShader: `
-          attribute float size;
-          attribute vec3 color;
-          varying vec3 vColor;
-          void main() {
-            vColor = color;
-            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-            gl_PointSize = size * (500.0 / -mvPosition.z);
-            gl_PointSize = max(gl_PointSize, 4.0);
-            gl_Position = projectionMatrix * mvPosition;
-          }
-        `,
-        fragmentShader: `
-          varying vec3 vColor;
-          void main() {
-            float dist = length(gl_PointCoord - vec2(0.5));
-            if (dist > 0.5) discard;
-            float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
-            gl_FragColor = vec4(vColor, alpha);
-          }
-        `,
-        transparent: true,
-        depthWrite: false,
-      }),
-    []
+  const handleClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation()
+      if (e.instanceId !== undefined) {
+        const sat = indexToSat.get(e.instanceId)
+        onSelect(sat || null)
+      }
+    },
+    [indexToSat, onSelect]
   )
 
+  if (satellites.length === 0) return null
+
   return (
-    <points
-      ref={pointsRef}
-      geometry={geometry}
-      material={material}
+    <instancedMesh
+      ref={meshRef}
+      args={[undefined, undefined, satellites.length]}
       onClick={handleClick}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
-    />
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
+      <sphereGeometry args={[1, 8, 8]} />
+      <meshBasicMaterial transparent opacity={0.9} />
+    </instancedMesh>
   )
 }
 
@@ -287,9 +237,8 @@ function Scene({
 
       {/* Satellites */}
       {satellites.length > 0 && (
-        <SatellitePoints
+        <SatelliteInstances
           satellites={satellites}
-          selectedSatellite={selectedSatellite}
           onSelect={onSelectSatellite}
         />
       )}
@@ -303,7 +252,7 @@ function Scene({
       {/* Loading indicator */}
       {isLoading && <LoadingIndicator />}
 
-      {/* Camera controls - makeDefault=false to not capture all events */}
+      {/* Camera controls */}
       <OrbitControls
         enablePan={false}
         minDistance={1.5}
