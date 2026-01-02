@@ -96,6 +96,13 @@ const INTERACTIONS: Record<string, { particles: string[]; description: string }>
   },
 };
 
+// Type groups for filtering
+const TYPE_GROUPS: Record<string, { types: string[]; label: string }> = {
+  'quarks': { types: ['quark'], label: 'Quarks' },
+  'leptons': { types: ['lepton'], label: 'Leptons' },
+  'bosons': { types: ['gauge', 'higgs', 'graviton'], label: 'Bosons' },
+};
+
 // Particle tile with flip animation
 function ParticleTile({
   id,
@@ -193,6 +200,7 @@ function ParticleTile({
 export default function StandardModelChart({ className = '' }: { className?: string }) {
   const [flippedParticle, setFlippedParticle] = useState<string | null>(null);
   const [activeInteraction, setActiveInteraction] = useState<string | null>(null);
+  const [activeType, setActiveType] = useState<string | null>(null);
 
   const handleParticleClick = (id: string) => {
     setFlippedParticle(current => current === id ? null : id);
@@ -200,6 +208,12 @@ export default function StandardModelChart({ className = '' }: { className?: str
 
   const handleInteractionClick = (id: string) => {
     setActiveInteraction(current => current === id ? null : id);
+    setActiveType(null); // Clear type filter when selecting interaction
+  };
+
+  const handleTypeClick = (type: string) => {
+    setActiveType(current => current === type ? null : type);
+    setActiveInteraction(null); // Clear interaction filter when selecting type
   };
 
   // Get highlighted particles for current interaction
@@ -215,7 +229,17 @@ export default function StandardModelChart({ className = '' }: { className?: str
         ([_, pos]) => pos[0] === row && pos[1] === col
       )?.[0];
 
-      const isDimmed = !!(activeInteraction !== null && particleId && !highlightedParticles.includes(particleId));
+      let isDimmed = false;
+      if (activeInteraction && particleId && !highlightedParticles.includes(particleId)) {
+        isDimmed = true;
+      }
+      if (activeType && particleId) {
+        const particle = PARTICLES[particleId];
+        const allowedTypes = TYPE_GROUPS[activeType]?.types || [];
+        if (!allowedTypes.includes(particle.type)) {
+          isDimmed = true;
+        }
+      }
 
       gridCells.push(
         <div key={`${row}-${col}`} className="aspect-square">
@@ -285,35 +309,62 @@ export default function StandardModelChart({ className = '' }: { className?: str
         </div>
       </div>
 
-      {/* Interaction controls */}
-      <div className="px-4 pb-4">
-        <div className="text-xs text-white/40 uppercase tracking-wider mb-2">
-          Highlight by interaction
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(INTERACTIONS).map(([id]) => (
-            <button
-              key={id}
-              onClick={() => handleInteractionClick(id)}
-              className={`
-                px-3 py-1.5 text-sm rounded-lg transition-colors capitalize
-                ${activeInteraction === id
-                  ? 'bg-[#ffdf20] text-black font-medium'
-                  : 'bg-white/10 text-white/60 hover:bg-white/15 hover:text-white'
-                }
-              `}
-            >
-              {id}
-            </button>
-          ))}
+      {/* Filter controls */}
+      <div className="px-4 pb-4 space-y-4">
+        {/* Type filter */}
+        <div>
+          <div className="text-xs text-white/40 uppercase tracking-wider mb-2">
+            Highlight by type
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(TYPE_GROUPS).map(([id, group]) => (
+              <button
+                key={id}
+                onClick={() => handleTypeClick(id)}
+                className={`
+                  px-3 py-1.5 text-sm rounded-lg transition-colors
+                  ${activeType === id
+                    ? 'bg-[#ffdf20] text-black font-medium'
+                    : 'bg-white/10 text-white/60 hover:bg-white/15 hover:text-white'
+                  }
+                `}
+              >
+                {group.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Interaction description */}
-        {activeInteraction && (
-          <p className="mt-3 text-sm text-white/50">
-            {INTERACTIONS[activeInteraction].description}
-          </p>
-        )}
+        {/* Interaction filter */}
+        <div>
+          <div className="text-xs text-white/40 uppercase tracking-wider mb-2">
+            Highlight by interaction
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(INTERACTIONS).map(([id]) => (
+              <button
+                key={id}
+                onClick={() => handleInteractionClick(id)}
+                className={`
+                  px-3 py-1.5 text-sm rounded-lg transition-colors capitalize
+                  ${activeInteraction === id
+                    ? 'bg-[#ffdf20] text-black font-medium'
+                    : 'bg-white/10 text-white/60 hover:bg-white/15 hover:text-white'
+                  }
+                `}
+              >
+                {id}
+              </button>
+            ))}
+          </div>
+
+          {/* Interaction description */}
+          {activeInteraction && (
+            <p className="mt-3 text-sm text-white/50">
+              {INTERACTIONS[activeInteraction].description}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
