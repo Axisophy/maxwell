@@ -125,7 +125,8 @@ export function useSatelliteData({
         line2: sat.line2,
         group: sat.group,
       }
-      const path = calculateOrbitPath(tle, 90, 180)
+      // Calculate full orbit with more points for smoothness
+      const path = calculateOrbitPath(tle, undefined, 360)
       setOrbitPath(path)
     } else {
       setOrbitPath([])

@@ -9,6 +9,7 @@ import {
   OrbitPoint,
   latLonAltToVector3,
 } from '@/lib/satellites/propagate'
+import { CONSTELLATION_COLORS, ConstellationGroup } from '@/lib/satellites/types'
 
 interface SatelliteGlobeProps {
   satellites: SatellitePosition[]
@@ -70,16 +71,7 @@ function SatellitePoints({
 }) {
   const pointsRef = useRef<THREE.Points>(null)
   const { camera, raycaster, pointer } = useThree()
-
-  // Group colors
-  const groupColors: Record<string, string> = {
-    stations: '#ff6b6b', // Red for space stations (ISS etc)
-    gps: '#4ecdc4', // Teal for GPS
-    weather: '#45b7d1', // Blue for weather
-    science: '#f7dc6f', // Yellow for science
-    starlink: '#95a5a6', // Grey for Starlink
-    active: '#9b59b6', // Purple for other active
-  }
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   // Create geometry from positions
   const { geometry, satelliteMap } = useMemo(() => {
@@ -92,12 +84,12 @@ function SatellitePoints({
       const pos = latLonAltToVector3(sat.latitude, sat.longitude, sat.altitude)
       positions.push(pos.x, pos.y, pos.z)
 
-      // Color based on group
-      const color = new THREE.Color(groupColors[sat.group] || '#ffffff')
+      // Color based on group - use shared constants
+      const color = new THREE.Color(CONSTELLATION_COLORS[sat.group as ConstellationGroup] || '#ffffff')
       colors.push(color.r, color.g, color.b)
 
-      // Size based on importance
-      const size = sat.group === 'stations' ? 0.02 : 0.008
+      // Size based on importance - larger dots for visibility
+      const size = sat.group === 'stations' ? 0.04 : 0.02
       sizes.push(size)
 
       map.set(index, sat)
@@ -145,7 +137,7 @@ function SatellitePoints({
         void main() {
           vColor = color;
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = size * (300.0 / -mvPosition.z);
+          gl_PointSize = size * (500.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -164,8 +156,38 @@ function SatellitePoints({
     []
   )
 
+  // Handle hover for pointer cursor
+  const handlePointerMove = useCallback(
+    (event: ThreeEvent<PointerEvent>) => {
+      event.stopPropagation()
+      if (!pointsRef.current) return
+      raycaster.setFromCamera(pointer, camera)
+      const intersects = raycaster.intersectObject(pointsRef.current)
+      if (intersects.length > 0 && intersects[0].index !== undefined) {
+        setHoveredIndex(intersects[0].index)
+        document.body.style.cursor = 'pointer'
+      } else {
+        setHoveredIndex(null)
+        document.body.style.cursor = 'default'
+      }
+    },
+    [camera, raycaster, pointer]
+  )
+
+  const handlePointerLeave = useCallback(() => {
+    setHoveredIndex(null)
+    document.body.style.cursor = 'default'
+  }, [])
+
   return (
-    <points ref={pointsRef} geometry={geometry} material={material} onClick={handleClick} />
+    <points
+      ref={pointsRef}
+      geometry={geometry}
+      material={material}
+      onClick={handleClick}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+    />
   )
 }
 

@@ -114,22 +114,48 @@ export function getCurrentPosition(tle: TLEData): SatellitePosition | null {
 }
 
 /**
+ * Get orbital period in minutes from TLE mean motion
+ * Mean motion is in revolutions per day
+ */
+export function getOrbitalPeriod(tle: TLEData): number {
+  const satrec = createSatelliteRecord(tle)
+  if (!satrec) return 90 // Default to 90 minutes
+
+  // Mean motion is in radians per minute in SGP4
+  // Convert to period: period = 2*PI / meanMotion
+  const meanMotion = satrec.no // radians per minute
+  if (meanMotion <= 0) return 90
+
+  const periodMinutes = (2 * Math.PI) / meanMotion
+  return periodMinutes
+}
+
+/**
  * Calculate orbit path for a satellite
+ * If durationMinutes is not provided, calculates one full orbit
+ * Path starts from half an orbit ago to show where it's been
  */
 export function calculateOrbitPath(
   tle: TLEData,
-  durationMinutes: number = 90,
-  numPoints: number = 180
+  durationMinutes?: number,
+  numPoints: number = 360
 ): OrbitPoint[] {
   const satrec = createSatelliteRecord(tle)
   if (!satrec) return []
 
+  // If no duration provided, use full orbital period
+  const orbitalPeriod = getOrbitalPeriod(tle)
+  const actualDuration = durationMinutes ?? orbitalPeriod
+
   const points: OrbitPoint[] = []
   const now = new Date()
-  const intervalMs = (durationMinutes * 60 * 1000) / numPoints
+  const intervalMs = (actualDuration * 60 * 1000) / numPoints
+
+  // Start from half an orbit ago to show where it's been
+  const startTime = now.getTime() - (actualDuration * 60 * 1000 / 2)
 
   for (let i = 0; i < numPoints; i++) {
-    const time = new Date(now.getTime() + i * intervalMs)
+    const time = new Date(startTime + i * intervalMs)
     const position = propagateSatellite(satrec, time)
 
     if (position) {

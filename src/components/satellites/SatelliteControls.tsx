@@ -1,6 +1,6 @@
 'use client'
 
-import { ConstellationGroup, CONSTELLATION_INFO } from '@/lib/satellites/types'
+import { ConstellationGroup, CONSTELLATION_INFO, CONSTELLATION_COLORS } from '@/lib/satellites/types'
 
 interface SatelliteControlsProps {
   activeGroups: ConstellationGroup[]
@@ -36,12 +36,13 @@ export default function SatelliteControls({
                 px-3 py-2 text-xs font-medium rounded-lg transition-colors
                 flex items-center gap-2
                 ${isActive
-                  ? 'bg-[#ffdf20] text-black'
+                  ? 'text-black'
                   : isDisabled
                     ? 'bg-white/5 text-white/20 cursor-not-allowed'
                     : 'bg-white/10 text-white/60 hover:bg-white/15 hover:text-white'
                 }
               `}
+              style={isActive ? { backgroundColor: CONSTELLATION_COLORS[constellation.id] } : undefined}
               title={isDisabled ? 'Too many satellites for mobile' : constellation.description}
             >
               <span

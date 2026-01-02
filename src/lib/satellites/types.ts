@@ -30,6 +30,16 @@ export interface OrbitPoint {
 
 export type ConstellationGroup = 'stations' | 'gps' | 'weather' | 'science' | 'starlink' | 'active'
 
+// Shared colour constants for consistent styling across components
+export const CONSTELLATION_COLORS: Record<ConstellationGroup, string> = {
+  stations: '#ff6b6b',  // Red
+  gps: '#4ecdc4',       // Teal
+  weather: '#45b7d1',   // Blue
+  science: '#f7dc6f',   // Yellow
+  starlink: '#95a5a6',  // Grey
+  active: '#9b59b6',    // Purple
+}
+
 export interface ConstellationInfo {
   id: ConstellationGroup
   name: string
