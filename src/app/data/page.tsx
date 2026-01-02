@@ -9,15 +9,29 @@ import { DataIcon } from '@/components/icons'
 // ============================================================================
 
 const keyNumbers = [
-  { value: '299,792,458', label: 'Speed of light (m/s)', href: '/data/fabric' },
+  // Row 1 — Fundamental physics
+  { value: '299,792,458', label: 'Speed of light (m/s)', href: '/data/fabric/constants' },
+  { value: '13.787 Bn', label: 'Age of universe (years)', href: '/data/fabric/cosmology' },
+  { value: '1.616×10⁻³⁵', label: 'Planck length (m)', href: '/data/fabric/scale' },
+  { value: '2.725', label: 'CMB temperature (K)', href: '/data/fabric/cosmology' },
+
+  // Row 2 — Constants & matter
+  { value: '1/137.036', label: 'Fine structure constant', href: '/data/fabric/constants' },
+  { value: '6.674×10⁻¹¹', label: 'Gravitational constant', href: '/data/fabric/constants' },
   { value: '118', label: 'Elements', href: '/data/elements' },
   { value: '3,352', label: 'Known nuclides', href: '/data/elements/nuclides' },
-  { value: '8', label: 'Planets', href: '/data/cosmos/solar-system' },
-  { value: '88', label: 'Constellations', href: '/data/cosmos' },
-  { value: '4.54 Bn', label: "Earth's age (years)", href: '/data/earth' },
-  { value: '6.022×10²³', label: "Avogadro's number", href: '/data/fabric/constants' },
+
+  // Row 3 — Chemistry & life
+  { value: '6.022×10²³', label: 'Avogadro\'s number', href: '/data/fabric/constants' },
   { value: '~8.7 M', label: 'Estimated species', href: '/data/life' },
-  { value: '110', label: 'Messier objects', href: '/data/cosmos' },
+  { value: '3.2 Bn', label: 'Human genome (base pairs)', href: '/data/life/genome' },
+  { value: '4.543 Bn', label: 'Earth\'s age (years)', href: '/data/earth/timescale' },
+
+  // Row 4 — The cosmos
+  { value: '~2 T', label: 'Observable galaxies', href: '/data/cosmos/galaxies' },
+  { value: '5,700+', label: 'Confirmed exoplanets', href: '/data/cosmos/exoplanets' },
+  { value: '4.246', label: 'Light years to Proxima', href: '/data/cosmos/stars' },
+  { value: '93 Bn', label: 'Observable universe diameter (ly)', href: '/data/fabric/scale' },
 ]
 
 // ============================================================================
@@ -195,7 +209,7 @@ export default function DataPage() {
               Key Numbers
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-px">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px">
               {keyNumbers.map((num) => (
                 <Link
                   key={num.href + num.value}
@@ -205,7 +219,7 @@ export default function DataPage() {
                   <div className="text-[10px] md:text-xs text-white/50 uppercase mb-1 md:mb-2">
                     {num.label}
                   </div>
-                  <div className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums text-white">
+                  <div className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-[-0.03em] tabular-nums text-white">
                     {num.value}
                   </div>
                 </Link>
