@@ -8,16 +8,42 @@ import { ObserveIcon } from '@/components/icons'
 // ============================================
 // TYPES
 // ============================================
-interface SolarConditions {
-  xrayClass: string
-  xrayFlux: number
-  kp: number
-  solarWind: number
-  bzComponent: number
-  sunspotNumber: number
-  f107Flux: number
-  protonFlux: number
-  updatedAt: string
+interface SolarApiData {
+  kp: {
+    current: number
+    status: string
+    forecast: Array<{
+      time: string
+      value: number
+      type: 'observed' | 'estimated' | 'predicted'
+      scale: string | null
+    }>
+    recent: Array<{ time: string; value: number }>
+  }
+  solarWind: {
+    speed: number
+    density: number
+    bz: number
+    bt: number
+    bzStatus: 'north' | 'south' | 'neutral'
+  }
+  xray: {
+    flux: string
+    class: string
+    peakTime: string | null
+  }
+  aurora: {
+    maxNorth: number
+    maxSouth: number
+    forecastTime: string | null
+    visibilityLatitude: number | null
+  }
+  charts: {
+    solarWind: Array<{ time: string; speed: number; density: number }>
+    bz: Array<{ time: string; bz: number; bt: number }>
+    kp: Array<{ time: string; kp: number }>
+  }
+  timestamp: string
 }
 
 interface KpHistoryPoint {
@@ -528,20 +554,19 @@ function XrayFluxChart({ data, loading }: { data: XrayHistoryPoint[]; loading: b
   )
 }
 
-function SolarWindChart({ loading }: { loading: boolean }) {
-  if (loading) {
+function SolarWindChart({ data, loading }: { data: Array<{ time: string; speed: number; density: number }>; loading: boolean }) {
+  if (loading || data.length === 0) {
     return <div className="h-24 bg-white/5 rounded animate-pulse" />
   }
 
-  // Simulated data for display - would be from API
-  const data = Array.from({ length: 72 }, (_, i) => 350 + Math.sin(i / 10) * 50 + Math.random() * 30)
-  const max = Math.max(...data)
-  const min = Math.min(...data)
+  const speeds = data.map(d => d.speed).filter(s => s > 0)
+  const max = Math.max(...speeds, 400)
+  const min = Math.min(...speeds, 300)
 
   return (
     <div className="bg-black rounded-lg p-3">
       <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">
-        Solar Wind Speed (6h)
+        Solar Wind Speed (24h)
       </div>
       <div className="relative h-20">
         <svg className="w-full h-full" preserveAspectRatio="none">
@@ -551,34 +576,32 @@ function SolarWindChart({ loading }: { loading: boolean }) {
             strokeWidth="1.5"
             points={data.map((d, i) => {
               const x = (i / (data.length - 1)) * 100
-              const y = 100 - ((d - min) / (max - min)) * 100
+              const y = 100 - ((d.speed - min) / (max - min || 1)) * 100
               return `${x}%,${y}%`
             }).join(' ')}
           />
         </svg>
       </div>
       <div className="flex justify-between mt-1 text-[10px] text-white/30">
-        <span>6h ago</span>
+        <span>24h ago</span>
         <span>Now</span>
       </div>
     </div>
   )
 }
 
-function BzChart({ loading }: { loading: boolean }) {
-  if (loading) {
+function BzChart({ data, loading }: { data: Array<{ time: string; bz: number; bt: number }>; loading: boolean }) {
+  if (loading || data.length === 0) {
     return <div className="h-24 bg-white/5 rounded animate-pulse" />
   }
 
-  // Simulated data for display - would be from API
-  const data = Array.from({ length: 72 }, (_, i) => Math.sin(i / 8) * 5 + Math.random() * 3 - 1.5)
   const max = 10
   const min = -10
 
   return (
     <div className="bg-black rounded-lg p-3">
       <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">
-        IMF Bz Component (6h)
+        IMF Bz Component (24h)
       </div>
       <div className="relative h-20">
         {/* Zero line */}
@@ -591,7 +614,8 @@ function BzChart({ loading }: { loading: boolean }) {
             strokeWidth="1.5"
             points={data.map((d, i) => {
               const x = (i / (data.length - 1)) * 100
-              const y = 100 - ((d - min) / (max - min)) * 100
+              const clampedBz = Math.max(min, Math.min(max, d.bz))
+              const y = 100 - ((clampedBz - min) / (max - min)) * 100
               return `${x}%,${y}%`
             }).join(' ')}
           />
@@ -665,42 +689,43 @@ function SolarCycleIndicator() {
 // MAIN PAGE COMPONENT
 // ============================================
 export default function SolarObservatoryPage() {
-  const [conditions, setConditions] = useState<SolarConditions | null>(null)
+  const [solarData, setSolarData] = useState<SolarApiData | null>(null)
   const [kpHistory, setKpHistory] = useState<KpHistoryPoint[]>([])
   const [xrayHistory, setXrayHistory] = useState<XrayHistoryPoint[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Simulate loading data - replace with actual API calls
-    const timer = setTimeout(() => {
-      setConditions({
-        xrayClass: 'C2.1',
-        xrayFlux: 2.1e-6,
-        kp: 3,
-        solarWind: 385,
-        bzComponent: -2.3,
-        sunspotNumber: 142,
-        f107Flux: 165,
-        protonFlux: 0.1,
-        updatedAt: new Date().toISOString(),
-      })
+    async function fetchSolarData() {
+      try {
+        const response = await fetch('/api/solar')
+        if (response.ok) {
+          const data: SolarApiData = await response.json()
+          setSolarData(data)
 
-      // Generate sample Kp history
-      setKpHistory(Array.from({ length: 8 }, (_, i) => ({
-        time: new Date(Date.now() - (7 - i) * 3 * 60 * 60 * 1000).toISOString(),
-        kp: Math.floor(Math.random() * 5) + 1,
-      })))
+          // Use Kp chart data from API
+          if (data.charts.kp.length > 0) {
+            setKpHistory(data.charts.kp.map(p => ({
+              time: p.time,
+              kp: p.kp,
+            })))
+          }
 
-      // Generate sample X-ray history
-      setXrayHistory(Array.from({ length: 72 }, (_, i) => ({
-        time: new Date(Date.now() - (71 - i) * 5 * 60 * 1000).toISOString(),
-        flux: 1e-6 + Math.random() * 5e-6,
-      })))
+          // For X-ray history, use simulated data until we add more endpoints
+          setXrayHistory(Array.from({ length: 72 }, (_, i) => ({
+            time: new Date(Date.now() - (71 - i) * 5 * 60 * 1000).toISOString(),
+            flux: 1e-6 + Math.random() * 5e-6,
+          })))
+        }
+      } catch (error) {
+        console.error('Failed to fetch solar data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-      setLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
+    fetchSolarData()
+    const interval = setInterval(fetchSolarData, 60000) // Refresh every minute
+    return () => clearInterval(interval)
   }, [])
 
   const getXrayStatus = (xrayClass: string): 'normal' | 'elevated' | 'warning' | 'critical' => {
@@ -759,39 +784,40 @@ export default function SolarObservatoryPage() {
             <div className="text-[10px] md:text-xs text-white/50 uppercase mb-3">Current Conditions</div>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-px">
               <SolarVitalSign
-                value={conditions?.xrayClass || '—'}
+                value={solarData?.xray.class || '—'}
                 label="X-Ray Class"
-                status={conditions ? getXrayStatus(conditions.xrayClass) : 'normal'}
+                status={solarData ? getXrayStatus(solarData.xray.class) : 'normal'}
                 loading={loading}
               />
               <SolarVitalSign
-                value={conditions?.kp ?? '—'}
+                value={solarData?.kp.current ?? '—'}
                 label="Kp Index"
-                status={conditions ? getKpStatus(conditions.kp) : 'normal'}
+                status={solarData ? getKpStatus(solarData.kp.current) : 'normal'}
                 loading={loading}
               />
               <SolarVitalSign
-                value={conditions?.solarWind ?? '—'}
+                value={solarData?.solarWind.speed ?? '—'}
                 label="Solar Wind"
                 unit="km/s"
                 loading={loading}
               />
               <SolarVitalSign
-                value={conditions?.bzComponent?.toFixed(1) ?? '—'}
+                value={solarData?.solarWind.bz?.toFixed(1) ?? '—'}
                 label="Bz (IMF)"
                 unit="nT"
-                status={conditions && conditions.bzComponent < -5 ? 'elevated' : 'normal'}
+                status={solarData && solarData.solarWind.bz < -5 ? 'elevated' : 'normal'}
                 loading={loading}
               />
               <SolarVitalSign
-                value={conditions?.sunspotNumber ?? '—'}
-                label="Sunspot #"
+                value={solarData?.solarWind.density?.toFixed(1) ?? '—'}
+                label="Density"
+                unit="p/cm³"
                 loading={loading}
               />
               <SolarVitalSign
-                value={conditions?.protonFlux?.toFixed(1) ?? '—'}
-                label="Proton Flux"
-                unit="pfu"
+                value={solarData?.solarWind.bt?.toFixed(1) ?? '—'}
+                label="Bt (IMF)"
+                unit="nT"
                 loading={loading}
               />
             </div>
@@ -896,8 +922,8 @@ export default function SolarObservatoryPage() {
             <div className="grid md:grid-cols-2 gap-px">
               <XrayFluxChart data={xrayHistory} loading={loading} />
               <KpHistoryChart data={kpHistory} loading={loading} />
-              <SolarWindChart loading={loading} />
-              <BzChart loading={loading} />
+              <SolarWindChart data={solarData?.charts.solarWind || []} loading={loading} />
+              <BzChart data={solarData?.charts.bz || []} loading={loading} />
             </div>
           </section>
 
@@ -925,12 +951,17 @@ export default function SolarObservatoryPage() {
                   <div className="grid grid-cols-2 gap-4 mt-3">
                     <div>
                       <div className="text-[10px] text-white/40 uppercase">Kp Now</div>
-                      <div className="text-2xl font-bold text-white">{conditions?.kp ?? '—'}</div>
+                      <div className="text-2xl font-bold text-white">{solarData?.kp.current ?? '—'}</div>
+                      <div className="text-[10px] text-white/30 mt-1">{solarData?.kp.status}</div>
                     </div>
                     <div>
                       <div className="text-[10px] text-white/40 uppercase">Bz Component</div>
-                      <div className={`text-2xl font-bold ${conditions && conditions.bzComponent < 0 ? 'text-green-400' : 'text-white'}`}>
-                        {conditions?.bzComponent?.toFixed(1) ?? '—'} nT
+                      <div className={`text-2xl font-bold ${solarData && solarData.solarWind.bz < 0 ? 'text-green-400' : 'text-white'}`}>
+                        {solarData?.solarWind.bz?.toFixed(1) ?? '—'} nT
+                      </div>
+                      <div className="text-[10px] text-white/30 mt-1">
+                        {solarData?.solarWind.bzStatus === 'south' ? 'Southward (favorable)' :
+                         solarData?.solarWind.bzStatus === 'north' ? 'Northward' : 'Neutral'}
                       </div>
                     </div>
                   </div>
