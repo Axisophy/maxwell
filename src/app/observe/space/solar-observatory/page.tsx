@@ -766,17 +766,13 @@ export default function SolarObservatoryPage() {
 
           {/* Header Section */}
           <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
-            <div className="flex items-start gap-3 mb-3">
-              <ObserveIcon className="w-8 h-8 md:w-10 md:h-10 text-white flex-shrink-0" />
-              <div>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-white uppercase">
-                  Solar Observatory
-                </h1>
-                <p className="text-sm text-white/50 mt-2 max-w-2xl">
-                  Real-time solar imagery and space weather conditions from NASA, ESA, and NOAA observatories.
-                </p>
-              </div>
-            </div>
+            <ObserveIcon className="text-white mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-white uppercase mb-3">
+              Solar Observatory
+            </h1>
+            <p className="text-base md:text-lg text-white/60 max-w-2xl">
+              Real-time solar imagery and space weather conditions from NASA, ESA, and NOAA observatories.
+            </p>
           </section>
 
           {/* Current Conditions */}
