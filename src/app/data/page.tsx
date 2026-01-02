@@ -9,15 +9,15 @@ import { DataIcon } from '@/components/icons'
 // ============================================================================
 
 const keyNumbers = [
-  { value: '299,792,458', label: 'Speed of light (m/s)', href: '/data/constants' },
+  { value: '299,792,458', label: 'Speed of light (m/s)', href: '/data/fabric' },
   { value: '118', label: 'Elements', href: '/data/elements' },
-  { value: '3,352', label: 'Known nuclides', href: '/data/nuclides' },
-  { value: '8', label: 'Planets', href: '/data/solar-system' },
-  { value: '88', label: 'Constellations', href: '/data/constellations' },
-  { value: '4.54 Bn', label: "Earth's age (years)", href: '/data/time' },
-  { value: '6.022×10²³', label: "Avogadro's number", href: '/data/constants' },
-  { value: '~8.7 M', label: 'Estimated species', href: '/data/bestiary' },
-  { value: '110', label: 'Messier objects', href: '/data/messier' },
+  { value: '3,352', label: 'Known nuclides', href: '/data/elements/nuclides' },
+  { value: '8', label: 'Planets', href: '/data/cosmos/solar-system' },
+  { value: '88', label: 'Constellations', href: '/data/cosmos' },
+  { value: '4.54 Bn', label: "Earth's age (years)", href: '/data/earth' },
+  { value: '6.022×10²³', label: "Avogadro's number", href: '/data/fabric/constants' },
+  { value: '~8.7 M', label: 'Estimated species', href: '/data/life' },
+  { value: '110', label: 'Messier objects', href: '/data/cosmos' },
 ]
 
 // ============================================================================
@@ -35,85 +35,108 @@ interface Category {
   id: string
   title: string
   description: string
+  href: string
   items: DataItem[]
+  comingSoon?: boolean
 }
 
 const categories: Category[] = [
   {
-    id: 'cosmos',
-    title: 'The Cosmos',
-    description: 'The universe at every scale — from fundamental constants to the solar system.',
+    id: 'fabric',
+    title: 'The Fabric',
+    description: 'What reality is woven from — particles, forces, constants, and the structure of the universe.',
+    href: '/data/fabric',
     items: [
-      { title: 'Solar System', href: '/data/solar-system', status: 'ready', description: 'The Sun, eight planets, and everything in between' },
-      { title: 'Scale of the Universe', href: '/data/scale', status: 'coming-soon', description: 'Powers of 10, from quarks to cosmos' },
-      { title: 'Fundamental Constants', href: '/data/constants', status: 'ready', description: 'The numbers the universe is built on' },
-      { title: 'EM Spectrum', href: '/data/spectrum', status: 'ready', description: 'Radio waves to gamma rays' },
-      { title: 'Permissible Universe', href: '/data/permissible-universe', status: 'ready', description: 'Mass-radius diagram of everything' },
-      { title: 'Standard Model', href: '/data/particles', status: 'ready', description: 'The particles of matter' },
+      { title: 'Standard Model', href: '/data/fabric/particles', status: 'ready', description: 'The particles of matter' },
+      { title: 'Fundamental Forces', href: '/data/fabric/forces', status: 'coming-soon', description: 'The four forces' },
+      { title: 'Fundamental Constants', href: '/data/fabric/constants', status: 'ready', description: 'The numbers reality runs on' },
+      { title: 'EM Spectrum', href: '/data/fabric/spectrum', status: 'ready', description: 'Radio waves to gamma rays' },
+      { title: 'Scale of the Universe', href: '/data/fabric/scale', status: 'coming-soon', description: 'Powers of 10, quarks to cosmos' },
+      { title: 'Permissible Universe', href: '/data/fabric/permissible-universe', status: 'ready', description: 'Mass-radius diagram of everything' },
+      { title: 'Big Bang & Cosmology', href: '/data/fabric/cosmology', status: 'coming-soon', description: 'Origin and structure of the universe' },
     ],
   },
   {
-    id: 'matter',
-    title: 'Matter',
-    description: 'What everything is made of — elements, isotopes, molecules, and materials.',
+    id: 'elements',
+    title: 'Elements',
+    description: 'Chemistry and matter — elements, isotopes, molecules, materials, and how things are made.',
+    href: '/data/elements',
     items: [
-      { title: 'Periodic Table', href: '/data/elements', status: 'coming-soon', description: 'The 118 elements' },
-      { title: 'Chart of Nuclides', href: '/data/nuclides', status: 'ready', description: 'Every known isotope' },
-      { title: 'Crystal Systems', href: '/data/crystals', status: 'coming-soon', description: 'The 7 crystal systems and 14 Bravais lattices' },
-      { title: 'Chemical Bonds', href: '/data/bonds', status: 'coming-soon', description: 'How atoms connect' },
-      { title: 'Molecules', href: '/data/molecules', status: 'coming-soon', description: 'Common molecular structures' },
-      { title: 'Materials', href: '/data/materials', status: 'coming-soon', description: 'Steel, concrete, polymers, and more' },
+      { title: 'Periodic Table', href: '/data/elements/periodic-table', status: 'coming-soon', description: 'The 118 elements' },
+      { title: 'Chart of Nuclides', href: '/data/elements/nuclides', status: 'ready', description: 'Every known isotope' },
+      { title: 'Molecules', href: '/data/elements/molecules', status: 'coming-soon', description: 'Common molecular structures' },
+      { title: 'Materials', href: '/data/elements/materials', status: 'coming-soon', description: 'Steel, concrete, polymers, and more' },
+      { title: 'Crystal Systems', href: '/data/elements/crystals', status: 'coming-soon', description: 'The 7 crystal systems' },
+      { title: 'Chemical Bonds', href: '/data/elements/bonds', status: 'coming-soon', description: 'How atoms connect' },
+      { title: 'Engineering', href: '/data/elements/engineering', status: 'coming-soon', description: 'Structures, systems, technologies' },
     ],
   },
   {
     id: 'life',
     title: 'Life',
-    description: 'Biology from molecules to ecosystems — genetics, metabolism, and species.',
+    description: 'Living systems — from genetic code to ecosystems, metabolism to species.',
+    href: '/data/life',
     items: [
-      { title: 'Genetic Code', href: '/data/genetic-code', status: 'coming-soon', description: 'Codons and amino acids' },
-      { title: 'Genome Explorer', href: '/data/genome', status: 'coming-soon', description: 'Chromosomes, genes, and variants' },
-      { title: 'Metabolic Pathways', href: '/data/metabolism', status: 'coming-soon', description: 'Glycolysis, Krebs cycle, and more' },
-      { title: 'Tree of Life', href: '/data/tree-of-life', status: 'coming-soon', description: 'Phylogenetic relationships' },
-      { title: 'Bestiary', href: '/data/bestiary', status: 'coming-soon', description: 'Species database' },
-      { title: 'Anatomical Systems', href: '/data/anatomy', status: 'coming-soon', description: 'Human body systems' },
-      { title: 'Proteins', href: '/data/proteins', status: 'coming-soon', description: '3D protein structures' },
+      { title: 'Genetic Code', href: '/data/life/genetic-code', status: 'coming-soon', description: 'Codons and amino acids' },
+      { title: 'Genome Explorer', href: '/data/life/genome', status: 'coming-soon', description: 'Chromosomes, genes, and variants' },
+      { title: 'Metabolic Pathways', href: '/data/life/metabolism', status: 'coming-soon', description: 'Glycolysis, Krebs cycle, and more' },
+      { title: 'Tree of Life', href: '/data/life/tree-of-life', status: 'coming-soon', description: 'Phylogenetic relationships' },
+      { title: 'Bestiary', href: '/data/life/bestiary', status: 'coming-soon', description: 'Species database' },
+      { title: 'Anatomical Systems', href: '/data/life/anatomy', status: 'coming-soon', description: 'Human body systems' },
+      { title: 'Proteins', href: '/data/life/proteins', status: 'coming-soon', description: '3D protein structures' },
     ],
   },
   {
     id: 'earth',
     title: 'Earth',
-    description: 'Our planet — climate, geology, tectonics, and the systems that shape it.',
+    description: 'Our planet — geology, climate, tectonics, and the systems that shape it.',
+    href: '/data/earth',
     items: [
-      { title: 'Climate Data Centre', href: '/data/climate', status: 'ready', description: '38 climate datasets' },
-      { title: 'Unrest', href: '/data/unrest', status: 'ready', description: 'Earthquakes, volcanoes, and storms' },
-      { title: 'Geological Timescale', href: '/data/time', status: 'coming-soon', description: '4.5 billion years of Earth history' },
-      { title: 'Extraction Map', href: '/data/extraction', status: 'ready', description: 'Where we mine the earth' },
-      { title: 'Tectonic Plates', href: '/data/tectonics', status: 'coming-soon', description: 'Plate boundaries and motion' },
-      { title: 'Atmosphere', href: '/data/atmosphere', status: 'coming-soon', description: 'Layers of air' },
-      { title: 'Oceans', href: '/data/oceans', status: 'coming-soon', description: 'Zones, currents, and chemistry' },
+      { title: 'Climate Data Centre', href: '/data/earth/climate', status: 'ready', description: '38 climate datasets' },
+      { title: 'Geological Timescale', href: '/data/earth/timescale', status: 'coming-soon', description: '4.5 billion years of history' },
+      { title: 'Extraction Map', href: '/data/earth/extraction', status: 'ready', description: 'Where we mine the earth' },
+      { title: 'Tectonic Plates', href: '/data/earth/tectonics', status: 'coming-soon', description: 'Plate boundaries and motion' },
+      { title: 'Atmosphere', href: '/data/earth/atmosphere', status: 'coming-soon', description: 'Layers of air' },
+      { title: 'Oceans', href: '/data/earth/oceans', status: 'coming-soon', description: 'Zones, currents, and chemistry' },
+    ],
+  },
+  {
+    id: 'cosmos',
+    title: 'The Cosmos',
+    description: 'Everything beyond Earth — the Solar System, stars, galaxies, and the distant universe.',
+    href: '/data/cosmos',
+    items: [
+      { title: 'Solar System', href: '/data/cosmos/solar-system', status: 'ready', description: 'The Sun, planets, and moons' },
+      { title: 'Stellar Classification', href: '/data/cosmos/stars', status: 'coming-soon', description: 'OBAFGKM and the HR diagram' },
+      { title: 'Constellations', href: '/data/cosmos/constellations', status: 'coming-soon', description: 'All 88 official constellations' },
+      { title: 'Messier Objects', href: '/data/cosmos/messier', status: 'coming-soon', description: '110 deep-sky objects' },
+      { title: 'Galaxies', href: '/data/cosmos/galaxies', status: 'coming-soon', description: 'Types, Local Group, and beyond' },
+      { title: 'Exoplanets', href: '/data/cosmos/exoplanets', status: 'coming-soon', description: 'Worlds around other stars' },
     ],
   },
   {
     id: 'mathematics',
     title: 'Mathematics',
-    description: 'Pure mathematics — numbers, geometry, equations, and topology.',
+    description: 'Abstract structures — numbers, geometry, equations, and topology.',
+    href: '/data/mathematics',
     items: [
-      { title: 'Number Sequences', href: '/data/sequences', status: 'coming-soon', description: 'Primes, Fibonacci, and more' },
-      { title: 'Geometry', href: '/data/geometry', status: 'coming-soon', description: 'Platonic solids and tessellations' },
-      { title: 'Famous Equations', href: '/data/equations', status: 'coming-soon', description: 'The equations that changed everything' },
-      { title: 'Topology', href: '/data/topology', status: 'coming-soon', description: 'Surfaces, manifolds, and knots' },
+      { title: 'Number Sequences', href: '/data/mathematics/sequences', status: 'coming-soon', description: 'Primes, Fibonacci, and more' },
+      { title: 'Geometry', href: '/data/mathematics/geometry', status: 'coming-soon', description: 'Platonic solids and tessellations' },
+      { title: 'Famous Equations', href: '/data/mathematics/equations', status: 'coming-soon', description: 'The equations that changed everything' },
+      { title: 'Topology', href: '/data/mathematics/topology', status: 'coming-soon', description: 'Surfaces, manifolds, and knots' },
     ],
   },
   {
-    id: 'deep-sky',
-    title: 'Deep Sky',
-    description: 'Beyond the Solar System — stars, galaxies, and the distant universe.',
+    id: 'society',
+    title: 'Society',
+    description: 'Human systems — psychology, anthropology, linguistics, and economics.',
+    href: '/data/society',
+    comingSoon: true,
     items: [
-      { title: 'Constellations', href: '/data/constellations', status: 'coming-soon', description: 'All 88 official constellations' },
-      { title: 'Messier Objects', href: '/data/messier', status: 'coming-soon', description: '110 deep-sky objects' },
-      { title: 'Stellar Classification', href: '/data/stars', status: 'coming-soon', description: 'OBAFGKM and the HR diagram' },
-      { title: 'Galaxies', href: '/data/galaxies', status: 'coming-soon', description: 'Types, Local Group, and beyond' },
-      { title: 'Exoplanets', href: '/data/exoplanets', status: 'coming-soon', description: 'Worlds around other stars' },
+      { title: 'Psychology', href: '/data/society/psychology', status: 'coming-soon', description: 'Mind and behaviour' },
+      { title: 'Anthropology', href: '/data/society/anthropology', status: 'coming-soon', description: 'Human cultures and evolution' },
+      { title: 'Linguistics', href: '/data/society/linguistics', status: 'coming-soon', description: 'Language structures' },
+      { title: 'Economics', href: '/data/society/economics', status: 'coming-soon', description: 'Systems of exchange' },
     ],
   },
 ]
@@ -158,11 +181,11 @@ export default function DataPage() {
               Data
             </h1>
             <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Reference datasets, interactive visualizations, and tools. The raw material
-              of science, presented properly.
+              Reference datasets, interactive visualisations, and encyclopaedic coverage.
+              The raw material of science, presented properly.
             </p>
             <p className="text-sm text-black/40 mt-2">
-              {stats.ready} ready · {stats.comingSoon} coming soon
+              {stats.ready} datasets ready · {stats.comingSoon} coming soon
             </p>
           </section>
 
@@ -192,12 +215,30 @@ export default function DataPage() {
 
           {/* Categories - Each category gets its own frame */}
           {categories.map((category) => (
-            <section key={category.id} id={category.id} className="bg-white rounded-lg p-2 md:p-4">
-              {/* Category Header */}
+            <section
+              key={category.id}
+              id={category.id}
+              className={`bg-white rounded-lg p-2 md:p-4 ${category.comingSoon ? 'opacity-50' : ''}`}
+            >
+              {/* Category Header - Links to section landing page */}
               <div className="mb-4 md:mb-6">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-2">
-                  {category.title}
-                </h2>
+                <div className="flex items-center gap-3 mb-2">
+                  {category.comingSoon ? (
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-black/50 uppercase">
+                      {category.title}
+                    </h2>
+                  ) : (
+                    <Link
+                      href={category.href}
+                      className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase hover:text-black/70 transition-colors"
+                    >
+                      {category.title} →
+                    </Link>
+                  )}
+                  {category.comingSoon && (
+                    <span className="text-xs text-black/30 uppercase">Coming Soon</span>
+                  )}
+                </div>
                 <p className="text-sm text-black/50">
                   {category.description}
                 </p>

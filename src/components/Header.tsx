@@ -43,15 +43,15 @@ const toolsSubmenu = [
   { href: '#', label: 'Explore', active: false },
 ]
 
-// Data submenu
+// Data submenu - section landing pages
 const dataSubmenu = [
-  { href: '/data/elements', label: 'Elements', active: false },
-  { href: '/data/particles', label: 'Particles', active: true },
-  { href: '/data/constants', label: 'Constants', active: true },
-  { href: '/data/spectrum', label: 'Spectrum', active: true },
+  { href: '/data/fabric', label: 'The Fabric', active: true },
+  { href: '/data/elements', label: 'Elements', active: true },
+  { href: '/data/life', label: 'Life', active: true },
   { href: '/data/earth', label: 'Earth', active: true },
-  { href: '/data/solar-system', label: 'Solar System', active: true },
-  { href: '/data/time', label: 'Time', active: false },
+  { href: '/data/cosmos', label: 'The Cosmos', active: true },
+  { href: '/data/mathematics', label: 'Mathematics', active: true },
+  { href: '/data/society', label: 'Society', active: false },
 ]
 
 const vaultSubmenu = [

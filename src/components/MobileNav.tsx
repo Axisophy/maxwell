@@ -41,12 +41,12 @@ const navItems = [
     icon: DataIcon,
     matchPaths: ['/data'],
     submenu: [
+      { href: '/data/fabric', label: 'The Fabric' },
       { href: '/data/elements', label: 'Elements' },
-      { href: '/data/particles', label: 'Particles' },
-      { href: '/data/constants', label: 'Constants' },
-      { href: '/data/spectrum', label: 'Spectrum' },
+      { href: '/data/life', label: 'Life' },
       { href: '/data/earth', label: 'Earth' },
-      { href: '/data/solar-system', label: 'Solar System' },
+      { href: '/data/cosmos', label: 'The Cosmos' },
+      { href: '/data/mathematics', label: 'Mathematics' },
     ]
   },
   {
