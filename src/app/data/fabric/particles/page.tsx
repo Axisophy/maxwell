@@ -10,6 +10,14 @@ import {
   type Particle,
 } from '@/components/data/standardModelData';
 
+// Type-based colours (matching chart)
+const TYPE_COLORS: Record<string, { bg: string; dot: string; text: string }> = {
+  'quark': { bg: 'bg-fuchsia-500/20', dot: 'bg-fuchsia-500', text: 'text-fuchsia-400' },
+  'lepton': { bg: 'bg-emerald-500/20', dot: 'bg-emerald-500', text: 'text-emerald-400' },
+  'gauge-boson': { bg: 'bg-rose-400/20', dot: 'bg-rose-400', text: 'text-rose-400' },
+  'scalar-boson': { bg: 'bg-amber-400/20', dot: 'bg-amber-400', text: 'text-amber-400' },
+};
+
 // Dark theme breadcrumb
 function Breadcrumb({ items }: { items: { label: string; href?: string }[] }) {
   return (
@@ -30,19 +38,87 @@ function Breadcrumb({ items }: { items: { label: string; href?: string }[] }) {
   );
 }
 
-// Particle detail panel (appears when particle selected)
-function ParticleDetail({
-  particle,
-  onClose
+// Interaction filter panel (left column)
+function InteractionPanel({
+  activeFilter,
+  onFilterChange,
 }: {
-  particle: Particle;
+  activeFilter: string | null;
+  onFilterChange: (filter: string | null) => void;
+}) {
+  const interactions = [
+    { id: 'electromagnetic', label: 'Electromagnetic', color: 'bg-blue-500', description: 'Photon-mediated' },
+    { id: 'weak', label: 'Weak', color: 'bg-amber-500', description: 'W/Z-mediated' },
+    { id: 'strong', label: 'Strong', color: 'bg-red-500', description: 'Gluon-mediated' },
+    { id: 'higgs', label: 'Higgs', color: 'bg-purple-500', description: 'Mass coupling' },
+  ];
+
+  return (
+    <div className="bg-[#1d1d1d] rounded-lg overflow-hidden h-full">
+      <div className="px-4 py-3 border-b border-white/10">
+        <h3 className="text-lg font-light text-white uppercase">Interactions</h3>
+        <p className="text-xs text-white/50 mt-1">Filter by force</p>
+      </div>
+      <div className="p-4 space-y-2">
+        {interactions.map((int) => (
+          <button
+            key={int.id}
+            onClick={() => onFilterChange(activeFilter === int.id ? null : int.id)}
+            className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all ${
+              activeFilter === int.id
+                ? 'bg-white/10 ring-1 ring-white/20'
+                : 'bg-black/30 hover:bg-black/50'
+            }`}
+          >
+            <span className={`w-3 h-3 rounded-full ${int.color}`} />
+            <div className="text-left">
+              <div className="text-sm text-white">{int.label}</div>
+              <div className="text-[10px] text-white/40">{int.description}</div>
+            </div>
+          </button>
+        ))}
+        {activeFilter && (
+          <button
+            onClick={() => onFilterChange(null)}
+            className="w-full text-center text-xs text-white/40 hover:text-white py-2 transition-colors"
+          >
+            Clear filter
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Selected particle panel (right column)
+function SelectedParticlePanel({
+  particle,
+  onClose,
+}: {
+  particle: Particle | null;
   onClose: () => void;
 }) {
+  if (!particle) {
+    return (
+      <div className="bg-[#1d1d1d] rounded-lg overflow-hidden h-full">
+        <div className="px-4 py-3 border-b border-white/10">
+          <h3 className="text-lg font-light text-white uppercase">Selected Particle</h3>
+          <p className="text-xs text-white/50 mt-1">Click a particle above</p>
+        </div>
+        <div className="p-4 flex items-center justify-center h-48">
+          <p className="text-sm text-white/30">No particle selected</p>
+        </div>
+      </div>
+    );
+  }
+
+  const typeColors = TYPE_COLORS[particle.type] || TYPE_COLORS['quark'];
+
   return (
-    <div className="bg-[#1d1d1d] rounded-lg overflow-hidden">
+    <div className="bg-[#1d1d1d] rounded-lg overflow-hidden h-full">
       <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-3xl font-math text-white">{particle.symbol}</span>
+          <span className={`text-3xl font-math ${typeColors.text}`}>{particle.symbol}</span>
           <div>
             <h3 className="text-lg font-light text-white">{particle.name}</h3>
             <p className="text-xs text-white/50 capitalize">{particle.type.replace('-', ' ')}</p>
@@ -57,7 +133,7 @@ function ParticleDetail({
       </div>
 
       <div className="p-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px">
+        <div className="grid grid-cols-2 gap-px mb-3">
           <div className="bg-black rounded-lg p-3">
             <p className="text-[10px] text-white/50 uppercase mb-1">Mass</p>
             <p className="text-lg font-mono font-bold text-white">{particle.massDisplay}</p>
@@ -77,11 +153,11 @@ function ParticleDetail({
         </div>
 
         {/* Interactions */}
-        <div className="mt-3 p-3 bg-black/50 rounded-lg">
+        <div className="p-3 bg-black/50 rounded-lg mb-3">
           <p className="text-[10px] text-white/50 uppercase mb-2">Interactions</p>
           <div className="flex flex-wrap gap-2">
             {particle.electromagnetic && (
-              <span className="px-2 py-1 text-xs bg-blue-500/20 text-blue-400 rounded">Electromagnetic</span>
+              <span className="px-2 py-1 text-xs bg-blue-500/20 text-blue-400 rounded">EM</span>
             )}
             {particle.weak && (
               <span className="px-2 py-1 text-xs bg-amber-500/20 text-amber-400 rounded">Weak</span>
@@ -96,30 +172,40 @@ function ParticleDetail({
         </div>
 
         {/* Discovery */}
-        <div className="mt-3 p-3 bg-black/50 rounded-lg">
+        <div className="p-3 bg-black/50 rounded-lg">
           <p className="text-[10px] text-white/50 uppercase mb-1">Discovery</p>
-          <p className="text-sm text-white">{particle.discoveredYear} -{particle.discoveredAt}</p>
+          <p className="text-sm text-white">{particle.discoveredYear} - {particle.discoveredAt}</p>
           {particle.discoveredBy && (
             <p className="text-xs text-white/40 mt-1">{particle.discoveredBy}</p>
           )}
         </div>
-
-        {/* Notes */}
-        {particle.notes && (
-          <p className="mt-3 text-sm text-white/60">{particle.notes}</p>
-        )}
       </div>
     </div>
   );
 }
 
 // Ledger section
-function LedgerSection() {
+function LedgerSection({ filterInteraction }: { filterInteraction: string | null }) {
   const [sortBy, setSortBy] = useState<'name' | 'mass' | 'charge' | 'type' | 'year'>('type');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const sortedParticles = useMemo(() => {
-    const sorted = [...PARTICLES].sort((a, b) => {
+    let filtered = [...PARTICLES];
+
+    // Filter by interaction if active
+    if (filterInteraction) {
+      filtered = filtered.filter((p) => {
+        switch (filterInteraction) {
+          case 'electromagnetic': return p.electromagnetic;
+          case 'weak': return p.weak;
+          case 'strong': return p.strong;
+          case 'higgs': return p.higgs;
+          default: return true;
+        }
+      });
+    }
+
+    const sorted = filtered.sort((a, b) => {
       switch (sortBy) {
         case 'name': return a.name.localeCompare(b.name);
         case 'mass': return a.mass - b.mass;
@@ -130,22 +216,15 @@ function LedgerSection() {
       }
     });
     return sortDir === 'desc' ? sorted.reverse() : sorted;
-  }, [sortBy, sortDir]);
+  }, [sortBy, sortDir, filterInteraction]);
 
   const handleSort = (col: typeof sortBy) => {
     if (sortBy === col) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     } else {
       setSortBy(col);
       setSortDir('asc');
     }
-  };
-
-  const typeColors: Record<string, string> = {
-    'quark': 'bg-red-500',
-    'lepton': 'bg-blue-500',
-    'gauge-boson': 'bg-green-500',
-    'scalar-boson': 'bg-amber-500',
   };
 
   const SortHeader = ({ col, label }: { col: typeof sortBy; label: string }) => (
@@ -161,7 +240,11 @@ function LedgerSection() {
     <div className="bg-[#1d1d1d] rounded-lg overflow-hidden">
       <div className="px-4 py-3 border-b border-white/10">
         <h2 className="text-xl font-light text-white uppercase">Particle Ledger</h2>
-        <p className="text-sm text-white/50 mt-1">All 17 particles -click headers to sort</p>
+        <p className="text-sm text-white/50 mt-1">
+          {filterInteraction
+            ? `Showing ${sortedParticles.length} particles with ${filterInteraction} interaction`
+            : 'All 17 particles - click headers to sort'}
+        </p>
       </div>
 
       <div className="overflow-x-auto">
@@ -184,34 +267,37 @@ function LedgerSection() {
             </tr>
           </thead>
           <tbody>
-            {sortedParticles.map(p => (
-              <tr key={p.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                <td className="px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl font-math text-white">{p.symbol}</span>
-                    <span className="text-white/60">{p.name}</span>
-                  </div>
-                </td>
-                <td className="px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${typeColors[p.type]}`} />
-                    <span className="text-white/60 capitalize">{p.type.replace('-', ' ')}</span>
-                  </div>
-                </td>
-                <td className="px-3 py-2 font-mono text-white/80">{p.massDisplay}</td>
-                <td className="px-3 py-2 font-mono text-white/80">{p.chargeDisplay}</td>
-                <td className="px-3 py-2 font-mono text-white/80">{p.spinDisplay}</td>
-                <td className="px-3 py-2 font-mono text-white/60">{p.discoveredYear}</td>
-                <td className="px-3 py-2">
-                  <div className="flex gap-1">
-                    {p.strong && <span className="w-2 h-2 rounded-full bg-red-500" title="Strong" />}
-                    {p.electromagnetic && <span className="w-2 h-2 rounded-full bg-blue-500" title="EM" />}
-                    {p.weak && <span className="w-2 h-2 rounded-full bg-amber-500" title="Weak" />}
-                    {p.higgs && <span className="w-2 h-2 rounded-full bg-purple-500" title="Higgs" />}
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {sortedParticles.map((p) => {
+              const typeColors = TYPE_COLORS[p.type] || TYPE_COLORS['quark'];
+              return (
+                <tr key={p.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xl font-math ${typeColors.text}`}>{p.symbol}</span>
+                      <span className="text-white/60">{p.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${typeColors.dot}`} />
+                      <span className="text-white/60 capitalize">{p.type.replace('-', ' ')}</span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-2 font-mono text-white/80">{p.massDisplay}</td>
+                  <td className="px-3 py-2 font-mono text-white/80">{p.chargeDisplay}</td>
+                  <td className="px-3 py-2 font-mono text-white/80">{p.spinDisplay}</td>
+                  <td className="px-3 py-2 font-mono text-white/60">{p.discoveredYear}</td>
+                  <td className="px-3 py-2">
+                    <div className="flex gap-1">
+                      {p.strong && <span className="w-2 h-2 rounded-full bg-red-500" title="Strong" />}
+                      {p.electromagnetic && <span className="w-2 h-2 rounded-full bg-blue-500" title="EM" />}
+                      {p.weak && <span className="w-2 h-2 rounded-full bg-amber-500" title="Weak" />}
+                      {p.higgs && <span className="w-2 h-2 rounded-full bg-purple-500" title="Higgs" />}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -219,21 +305,123 @@ function LedgerSection() {
   );
 }
 
-// Timeline section
+// Timeline section with expanded details
 function TimelineSection() {
+  // Extended timeline data with full discovery details
+  const timelineData = [
+    {
+      year: 1897,
+      particles: ['electron'],
+      event: 'Electron discovered',
+      details: 'J.J. Thomson at Cavendish Laboratory, Cambridge',
+      significance: 'First subatomic particle - cathode ray experiments',
+    },
+    {
+      year: 1932,
+      particles: ['positron'],
+      event: 'Positron discovered',
+      details: 'Carl Anderson at Caltech',
+      significance: 'First antimatter particle - cosmic ray tracks',
+    },
+    {
+      year: 1936,
+      particles: ['muon'],
+      event: 'Muon discovered',
+      details: 'Anderson & Neddermeyer in cosmic rays',
+      significance: '"Who ordered that?" - unexpectedly heavy lepton',
+    },
+    {
+      year: 1956,
+      particles: ['electron-neutrino'],
+      event: 'Electron neutrino detected',
+      details: 'Cowan & Reines at Savannah River',
+      significance: 'Confirmed Pauli\'s 1930 prediction',
+    },
+    {
+      year: 1962,
+      particles: ['muon-neutrino'],
+      event: 'Muon neutrino discovered',
+      details: 'Lederman, Schwartz, Steinberger at Brookhaven',
+      significance: 'Proved two types of neutrinos exist',
+    },
+    {
+      year: 1964,
+      particles: ['up', 'down', 'strange'],
+      event: 'Quark model proposed',
+      details: 'Gell-Mann & Zweig independently',
+      significance: 'Theoretical framework for hadrons',
+    },
+    {
+      year: 1974,
+      particles: ['charm'],
+      event: 'Charm quark discovered',
+      details: 'J/ψ meson at SLAC and Brookhaven',
+      significance: '"November Revolution" - confirmed quark model',
+    },
+    {
+      year: 1975,
+      particles: ['tau'],
+      event: 'Tau lepton discovered',
+      details: 'Martin Perl at SLAC',
+      significance: 'Third generation lepton found',
+    },
+    {
+      year: 1977,
+      particles: ['bottom'],
+      event: 'Bottom quark discovered',
+      details: 'Leon Lederman at Fermilab (Υ meson)',
+      significance: 'Third generation quark confirmed',
+    },
+    {
+      year: 1979,
+      particles: ['gluon'],
+      event: 'Gluon discovered',
+      details: 'PETRA collider at DESY, Hamburg',
+      significance: 'Three-jet events proved gluon existence',
+    },
+    {
+      year: 1983,
+      particles: ['w-boson', 'z-boson'],
+      event: 'W and Z bosons discovered',
+      details: 'UA1/UA2 experiments at CERN SPS',
+      significance: 'Electroweak unification confirmed',
+    },
+    {
+      year: 1995,
+      particles: ['top'],
+      event: 'Top quark discovered',
+      details: 'CDF and D0 at Fermilab Tevatron',
+      significance: 'Heaviest elementary particle at 173 GeV',
+    },
+    {
+      year: 2000,
+      particles: ['tau-neutrino'],
+      event: 'Tau neutrino detected',
+      details: 'DONUT experiment at Fermilab',
+      significance: 'Final fermion of the Standard Model',
+    },
+    {
+      year: 2012,
+      particles: ['higgs'],
+      event: 'Higgs boson discovered',
+      details: 'ATLAS and CMS at LHC, CERN',
+      significance: 'Completes the Standard Model - mass origin',
+    },
+  ];
+
   return (
     <div className="bg-[#1d1d1d] rounded-lg overflow-hidden">
       <div className="px-4 py-3 border-b border-white/10">
         <h2 className="text-xl font-light text-white uppercase">Discovery Timeline</h2>
-        <p className="text-sm text-white/50 mt-1">1897–2012 -115 years of discovery</p>
+        <p className="text-sm text-white/50 mt-1">1897-2012 - 115 years of discovery</p>
       </div>
 
       <div className="p-4">
-        {/* Timeline visualization */}
+        {/* Timeline visualization bar */}
         <div className="relative mb-6">
           <div className="h-2 bg-white/10 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 via-green-500 via-amber-500 to-[#e6007e]"
+              className="h-full bg-gradient-to-r from-emerald-500 via-fuchsia-500 via-rose-400 to-amber-400"
               style={{ width: '100%' }}
             />
           </div>
@@ -247,25 +435,36 @@ function TimelineSection() {
 
         {/* Timeline entries */}
         <div className="space-y-2">
-          {DISCOVERY_TIMELINE.map((event, i) => {
-            // Get particle symbols for this event
-            const particleSymbols = event.particles
-              .map(id => getParticle(id)?.symbol)
-              .filter(Boolean)
-              .join(', ');
+          {timelineData.map((event, i) => {
+            // Get particle symbols and colours for this event
+            const particleInfo = event.particles.map((id) => {
+              const p = getParticle(id);
+              return p ? { symbol: p.symbol, type: p.type } : null;
+            }).filter(Boolean) as { symbol: string; type: string }[];
 
             return (
               <div
                 key={i}
-                className="flex items-start gap-4 p-3 bg-black/30 rounded-lg hover:bg-black/40 transition-colors"
+                className="p-3 bg-black/30 rounded-lg hover:bg-black/40 transition-colors"
               >
-                <div className="text-sm font-mono text-white/50 w-12 flex-shrink-0">
-                  {event.year}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-math text-white">{particleSymbols}</span>
-                    <span className="text-sm text-white/70">{event.event}</span>
+                <div className="flex items-start gap-4">
+                  <div className="text-sm font-mono text-white/50 w-12 flex-shrink-0 pt-0.5">
+                    {event.year}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      {particleInfo.map((p, j) => {
+                        const typeColors = TYPE_COLORS[p.type] || TYPE_COLORS['quark'];
+                        return (
+                          <span key={j} className={`text-lg font-math ${typeColors.text}`}>
+                            {p.symbol}
+                          </span>
+                        );
+                      })}
+                      <span className="text-sm text-white/70">{event.event}</span>
+                    </div>
+                    <p className="text-xs text-white/50">{event.details}</p>
+                    <p className="text-xs text-white/30 mt-1 italic">{event.significance}</p>
                   </div>
                 </div>
               </div>
@@ -280,6 +479,7 @@ function TimelineSection() {
 // Main page
 export default function StandardModelPage() {
   const [selectedParticle, setSelectedParticle] = useState<Particle | null>(null);
+  const [interactionFilter, setInteractionFilter] = useState<string | null>(null);
 
   return (
     <main className="min-h-screen bg-black">
@@ -312,22 +512,27 @@ export default function StandardModelPage() {
 
         {/* Chart Frame - Hero */}
         <div className="mb-px">
-          <StandardModelChart onSelectParticle={setSelectedParticle} />
+          <StandardModelChart
+            onSelectParticle={setSelectedParticle}
+            selectedParticle={selectedParticle}
+          />
         </div>
 
-        {/* Selected particle detail */}
-        {selectedParticle && (
-          <div className="mb-px">
-            <ParticleDetail
-              particle={selectedParticle}
-              onClose={() => setSelectedParticle(null)}
-            />
-          </div>
-        )}
+        {/* Two-column panel: Interactions + Selected Particle */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px mb-px">
+          <InteractionPanel
+            activeFilter={interactionFilter}
+            onFilterChange={setInteractionFilter}
+          />
+          <SelectedParticlePanel
+            particle={selectedParticle}
+            onClose={() => setSelectedParticle(null)}
+          />
+        </div>
 
         {/* Ledger Section */}
         <div className="mb-px">
-          <LedgerSection />
+          <LedgerSection filterInteraction={interactionFilter} />
         </div>
 
         {/* Timeline Section */}
@@ -342,13 +547,13 @@ export default function StandardModelPage() {
             <p className="text-sm text-white/60 mb-4">
               The Standard Model is a <strong className="text-white">quantum field theory</strong> that
               describes the electromagnetic, weak, and strong nuclear forces, and classifies all known
-              elementary particles. Developed between 1961–1979, it has survived every experimental
+              elementary particles. Developed between 1961-1979, it has survived every experimental
               test since.
             </p>
 
             <h2 className="text-xl font-light text-white uppercase mb-3 mt-6">The Three Generations</h2>
             <p className="text-sm text-white/60 mb-4">
-              Fermions come in three <strong className="text-white">generations</strong> -identical
+              Fermions come in three <strong className="text-white">generations</strong> - identical
               except for mass. Only generation I particles are stable; heavier generations decay almost
               instantly. All ordinary matter is made entirely of first-generation particles: up quarks,
               down quarks, and electrons.
