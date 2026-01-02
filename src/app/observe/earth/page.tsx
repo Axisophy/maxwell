@@ -309,7 +309,7 @@ export default function EarthPage() {
                 Earth Reference →
               </Link>
               <Link
-                href="/data/solar-system/earth"
+                href="/data/cosmos/solar-system/earth"
                 className="text-sm text-white/60 hover:text-white transition-colors"
               >
                 Earth in Solar System →

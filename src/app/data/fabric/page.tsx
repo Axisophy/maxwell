@@ -5,16 +5,16 @@ import Breadcrumb from '@/components/ui/Breadcrumb'
 import { DataIcon } from '@/components/icons'
 
 // ============================================================================
-// KEY NUMBERS
+// KEY NUMBERS - Fundamental constants as hero display
 // ============================================================================
 
 const keyNumbers = [
-  { value: '4.54', label: 'Age (Billion Years)', href: '/data/earth/timescale' },
-  { value: '12,742', label: 'Diameter (km)', href: '/data/cosmos/solar-system' },
-  { value: '15', label: 'Tectonic Plates', href: '/data/earth/tectonics' },
-  { value: '5', label: 'Mass Extinctions', href: '/data/earth/timescale' },
-  { value: '71%', label: 'Ocean Coverage', href: '/data/earth/oceans' },
-  { value: '421', label: 'CO₂ ppm (2024)', href: '/data/earth/climate' },
+  { value: 'c', numericValue: '299,792,458', label: 'Speed of Light (m/s)', href: '/data/fabric/constants' },
+  { value: 'G', numericValue: '6.674×10⁻¹¹', label: 'Gravitational Constant', href: '/data/fabric/constants' },
+  { value: 'h', numericValue: '6.626×10⁻³⁴', label: 'Planck Constant (J·s)', href: '/data/fabric/constants' },
+  { value: 'α', numericValue: '1/137', label: 'Fine Structure Constant', href: '/data/fabric/constants' },
+  { value: '4', numericValue: '4', label: 'Fundamental Forces', href: '/data/fabric/forces' },
+  { value: '17', numericValue: '17', label: 'Standard Model Particles', href: '/data/fabric/particles' },
 ]
 
 // ============================================================================
@@ -32,48 +32,58 @@ interface DataItem {
 
 const items: DataItem[] = [
   {
-    title: 'Climate Data Centre',
-    href: '/data/earth/climate',
+    title: 'Standard Model',
+    href: '/data/fabric/particles',
     status: 'ready',
-    description: 'Temperature records, ice cores, sea level, and atmospheric composition',
-    stat: '38',
-    statLabel: 'datasets',
+    description: 'The 17 fundamental particles of matter and their interactions',
+    stat: '17',
+    statLabel: 'particles',
   },
   {
-    title: 'Geological Timescale',
-    href: '/data/earth/timescale',
+    title: 'Fundamental Forces',
+    href: '/data/fabric/forces',
     status: 'coming-soon',
-    description: '4.5 billion years of Earth history — eons, eras, periods, and epochs',
-    stat: '4.54B',
-    statLabel: 'years',
+    description: 'Gravity, electromagnetism, and the strong and weak nuclear forces',
+    stat: '4',
+    statLabel: 'forces',
   },
   {
-    title: 'Extraction Map',
-    href: '/data/earth/extraction',
+    title: 'Fundamental Constants',
+    href: '/data/fabric/constants',
     status: 'ready',
-    description: 'Where we mine the elements — global resource extraction',
+    description: 'The numbers the universe is built on — c, G, h, and more',
+    stat: '22',
+    statLabel: 'constants',
   },
   {
-    title: 'Tectonic Plates',
-    href: '/data/earth/tectonics',
-    status: 'coming-soon',
-    description: 'Plate boundaries, motion vectors, and geological consequences',
-    stat: '15',
-    statLabel: 'major plates',
+    title: 'EM Spectrum',
+    href: '/data/fabric/spectrum',
+    status: 'ready',
+    description: 'From radio waves to gamma rays — the full electromagnetic spectrum',
+    stat: '10²⁵',
+    statLabel: 'Hz range',
   },
   {
-    title: 'Atmosphere',
-    href: '/data/earth/atmosphere',
+    title: 'Scale of the Universe',
+    href: '/data/fabric/scale',
     status: 'coming-soon',
-    description: 'Troposphere to exosphere — layers, composition, and dynamics',
+    description: 'Powers of 10 from the Planck length to the observable universe',
+    stat: '10⁶²',
+    statLabel: 'orders of magnitude',
   },
   {
-    title: 'Oceans',
-    href: '/data/earth/oceans',
+    title: 'Permissible Universe',
+    href: '/data/fabric/permissible-universe',
+    status: 'ready',
+    description: 'Mass-radius diagram showing what can exist at every scale',
+  },
+  {
+    title: 'Big Bang & Cosmology',
+    href: '/data/fabric/cosmology',
     status: 'coming-soon',
-    description: 'Ocean zones, currents, chemistry, and deep-sea features',
-    stat: '71%',
-    statLabel: 'of surface',
+    description: 'The origin, structure, and fate of the universe',
+    stat: '13.8',
+    statLabel: 'billion years',
   },
 ]
 
@@ -81,7 +91,7 @@ const items: DataItem[] = [
 // PAGE COMPONENT
 // ============================================================================
 
-export default function EarthDataPage() {
+export default function FabricPage() {
   return (
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
@@ -93,7 +103,7 @@ export default function EarthDataPage() {
               items={[
                 { label: 'MXWLL', href: '/' },
                 { label: 'Data', href: '/data' },
-                { label: 'Earth' },
+                { label: 'The Fabric' },
               ]}
               theme="light"
             />
@@ -107,18 +117,18 @@ export default function EarthDataPage() {
           <section className="bg-white rounded-lg p-2 md:p-4">
             <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Earth
+              The Fabric
             </h1>
             <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Our planet. Geology, climate, tectonics, and the systems that have shaped
-              Earth over 4.5 billion years.
+              What reality is woven from. The fundamental particles, forces, and constants
+              that determine how the universe works at every scale.
             </p>
           </section>
 
           {/* Key Numbers Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
-              By The Numbers
+              Fundamental Constants
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-px">
               {keyNumbers.map((num) => (
@@ -130,8 +140,13 @@ export default function EarthDataPage() {
                   <div className="text-[10px] md:text-xs text-white/50 uppercase mb-1 md:mb-2">
                     {num.label}
                   </div>
-                  <div className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums text-white">
-                    {num.value}
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl md:text-5xl lg:text-6xl font-math italic text-white/40">
+                      {num.value}
+                    </span>
+                    <span className="text-lg md:text-2xl font-mono font-bold text-white">
+                      {num.numericValue}
+                    </span>
                   </div>
                 </Link>
               ))}
@@ -153,10 +168,11 @@ export default function EarthDataPage() {
           {/* Context Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-sm text-black/50 max-w-2xl leading-relaxed">
-              Earth is geologically active — plates move, mountains rise, volcanoes erupt.
-              The climate system circulates heat from tropics to poles. Ice ages come and go.
-              Five mass extinctions have reset the trajectory of life. This section documents
-              what we know about the planet we live on.
+              The fabric of reality is described by quantum field theory and general relativity.
+              At its most fundamental level, the universe consists of fields — the electron field,
+              the electromagnetic field, the Higgs field — and particles are excitations of these fields.
+              The constants on this page determine the strength of interactions, the size of atoms,
+              and the speed limit of the cosmos.
             </div>
           </section>
 
@@ -167,22 +183,28 @@ export default function EarthDataPage() {
             </div>
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/observe/earth"
+                href="/data/elements"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Live Earth Monitoring →
+                Elements →
               </Link>
               <Link
-                href="/data/cosmos/solar-system"
+                href="/data/cosmos"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Earth in the Solar System →
+                The Cosmos →
               </Link>
               <Link
-                href="/data/life"
+                href="/data/mathematics"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Life →
+                Mathematics →
+              </Link>
+              <Link
+                href="/observe/detectors"
+                className="text-sm text-black/60 hover:text-black transition-colors"
+              >
+                Particle Detectors →
               </Link>
             </div>
           </section>
@@ -233,6 +255,7 @@ function DataCard({ item }: { item: DataItem }) {
     )
   }
 
+  // Coming soon
   return (
     <div className="p-2 md:p-4 bg-black/50 rounded-lg">
       <div className="flex items-start justify-between gap-4">

@@ -9,12 +9,12 @@ import { DataIcon } from '@/components/icons'
 // ============================================================================
 
 const keyNumbers = [
-  { value: '4.54', label: 'Age (Billion Years)', href: '/data/earth/timescale' },
-  { value: '12,742', label: 'Diameter (km)', href: '/data/cosmos/solar-system' },
-  { value: '15', label: 'Tectonic Plates', href: '/data/earth/tectonics' },
-  { value: '5', label: 'Mass Extinctions', href: '/data/earth/timescale' },
-  { value: '71%', label: 'Ocean Coverage', href: '/data/earth/oceans' },
-  { value: '421', label: 'CO₂ ppm (2024)', href: '/data/earth/climate' },
+  { value: 'π', numericValue: '3.14159...', label: 'Pi', href: '/data/mathematics/sequences' },
+  { value: 'e', numericValue: '2.71828...', label: "Euler's Number", href: '/data/mathematics/sequences' },
+  { value: 'φ', numericValue: '1.61803...', label: 'Golden Ratio', href: '/data/mathematics/sequences' },
+  { value: '∞', numericValue: 'ℵ₀, ℵ₁...', label: 'Infinities', href: '/data/mathematics/sequences' },
+  { value: '5', label: 'Platonic Solids', href: '/data/mathematics/geometry' },
+  { value: '17', label: 'Wallpaper Groups', href: '/data/mathematics/geometry' },
 ]
 
 // ============================================================================
@@ -32,48 +32,30 @@ interface DataItem {
 
 const items: DataItem[] = [
   {
-    title: 'Climate Data Centre',
-    href: '/data/earth/climate',
-    status: 'ready',
-    description: 'Temperature records, ice cores, sea level, and atmospheric composition',
-    stat: '38',
-    statLabel: 'datasets',
-  },
-  {
-    title: 'Geological Timescale',
-    href: '/data/earth/timescale',
+    title: 'Number Sequences',
+    href: '/data/mathematics/sequences',
     status: 'coming-soon',
-    description: '4.5 billion years of Earth history — eons, eras, periods, and epochs',
-    stat: '4.54B',
-    statLabel: 'years',
+    description: 'Primes, Fibonacci, triangular numbers, and the patterns that emerge',
   },
   {
-    title: 'Extraction Map',
-    href: '/data/earth/extraction',
-    status: 'ready',
-    description: 'Where we mine the elements — global resource extraction',
-  },
-  {
-    title: 'Tectonic Plates',
-    href: '/data/earth/tectonics',
+    title: 'Geometry',
+    href: '/data/mathematics/geometry',
     status: 'coming-soon',
-    description: 'Plate boundaries, motion vectors, and geological consequences',
-    stat: '15',
-    statLabel: 'major plates',
+    description: 'Platonic solids, tessellations, wallpaper groups, and spatial structures',
+    stat: '5',
+    statLabel: 'platonic solids',
   },
   {
-    title: 'Atmosphere',
-    href: '/data/earth/atmosphere',
+    title: 'Famous Equations',
+    href: '/data/mathematics/equations',
     status: 'coming-soon',
-    description: 'Troposphere to exosphere — layers, composition, and dynamics',
+    description: "The equations that changed everything — from Euler's identity to Einstein's field equations",
   },
   {
-    title: 'Oceans',
-    href: '/data/earth/oceans',
+    title: 'Topology',
+    href: '/data/mathematics/topology',
     status: 'coming-soon',
-    description: 'Ocean zones, currents, chemistry, and deep-sea features',
-    stat: '71%',
-    statLabel: 'of surface',
+    description: 'Surfaces, manifolds, knots, and the properties that survive continuous deformation',
   },
 ]
 
@@ -81,7 +63,7 @@ const items: DataItem[] = [
 // PAGE COMPONENT
 // ============================================================================
 
-export default function EarthDataPage() {
+export default function MathematicsPage() {
   return (
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
@@ -93,7 +75,7 @@ export default function EarthDataPage() {
               items={[
                 { label: 'MXWLL', href: '/' },
                 { label: 'Data', href: '/data' },
-                { label: 'Earth' },
+                { label: 'Mathematics' },
               ]}
               theme="light"
             />
@@ -107,18 +89,18 @@ export default function EarthDataPage() {
           <section className="bg-white rounded-lg p-2 md:p-4">
             <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Earth
+              Mathematics
             </h1>
             <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Our planet. Geology, climate, tectonics, and the systems that have shaped
-              Earth over 4.5 billion years.
+              Pure mathematics. Numbers, sequences, geometry, topology, and the abstract
+              structures that underpin all of science.
             </p>
           </section>
 
           {/* Key Numbers Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
-              By The Numbers
+              Mathematical Constants
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-px">
               {keyNumbers.map((num) => (
@@ -130,8 +112,15 @@ export default function EarthDataPage() {
                   <div className="text-[10px] md:text-xs text-white/50 uppercase mb-1 md:mb-2">
                     {num.label}
                   </div>
-                  <div className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums text-white">
-                    {num.value}
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl md:text-5xl lg:text-6xl font-math italic text-white/40">
+                      {num.value}
+                    </span>
+                    {num.numericValue && (
+                      <span className="text-lg md:text-2xl font-mono font-bold text-white">
+                        {num.numericValue}
+                      </span>
+                    )}
                   </div>
                 </Link>
               ))}
@@ -153,10 +142,10 @@ export default function EarthDataPage() {
           {/* Context Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-sm text-black/50 max-w-2xl leading-relaxed">
-              Earth is geologically active — plates move, mountains rise, volcanoes erupt.
-              The climate system circulates heat from tropics to poles. Ice ages come and go.
-              Five mass extinctions have reset the trajectory of life. This section documents
-              what we know about the planet we live on.
+              Mathematics is the language of science. The same equations describe planetary
+              orbits and electron shells. The same topology appears in DNA and cosmic strings.
+              Prime numbers secure your bank transactions. Group theory classifies crystals.
+              This section explores the pure structures themselves.
             </div>
           </section>
 
@@ -167,22 +156,22 @@ export default function EarthDataPage() {
             </div>
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/observe/earth"
+                href="/data/fabric"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Live Earth Monitoring →
+                The Fabric →
               </Link>
               <Link
-                href="/data/cosmos/solar-system"
+                href="/play"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Earth in the Solar System →
+                Play (Fractals, Attractors) →
               </Link>
               <Link
-                href="/data/life"
+                href="/vault"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Life →
+                Vault (Euclid, Newton) →
               </Link>
             </div>
           </section>

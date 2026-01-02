@@ -52,6 +52,9 @@ const config: Config = {
         // Book covers (KNOWLEDGE section)
         'trade-gothic': ['"trade-gothic-next"', 'sans-serif'],
         'trade-gothic-compressed': ['"trade-gothic-next-compressed"', 'sans-serif'],
+
+        // Math font - for mathematical symbols and equations
+        'math': ['"STIX Two Text"', 'serif'],
       },
       fontWeight: {
         thin: '200',

@@ -123,7 +123,7 @@ export default function SunDataPage() {
               Solar Observatory →
             </Link>
             <Link
-              href="/data/solar-system"
+              href="/data/cosmos/solar-system"
               className="text-sm text-black/60 hover:text-black transition-colors"
             >
               Solar System →

@@ -9,12 +9,12 @@ import { DataIcon } from '@/components/icons'
 // ============================================================================
 
 const keyNumbers = [
-  { value: '4.54', label: 'Age (Billion Years)', href: '/data/earth/timescale' },
-  { value: '12,742', label: 'Diameter (km)', href: '/data/cosmos/solar-system' },
-  { value: '15', label: 'Tectonic Plates', href: '/data/earth/tectonics' },
-  { value: '5', label: 'Mass Extinctions', href: '/data/earth/timescale' },
-  { value: '71%', label: 'Ocean Coverage', href: '/data/earth/oceans' },
-  { value: '421', label: 'CO₂ ppm (2024)', href: '/data/earth/climate' },
+  { value: '118', label: 'Elements', href: '/data/elements/periodic-table' },
+  { value: '3,352', label: 'Known Nuclides', href: '/data/elements/nuclides' },
+  { value: '94', label: 'Naturally Occurring', href: '/data/elements/periodic-table' },
+  { value: '7', label: 'Crystal Systems', href: '/data/elements/crystals' },
+  { value: '14', label: 'Bravais Lattices', href: '/data/elements/crystals' },
+  { value: '~10M', label: 'Known Compounds', href: '/data/elements/molecules' },
 ]
 
 // ============================================================================
@@ -32,48 +32,52 @@ interface DataItem {
 
 const items: DataItem[] = [
   {
-    title: 'Climate Data Centre',
-    href: '/data/earth/climate',
+    title: 'Periodic Table',
+    href: '/data/elements/periodic-table',
+    status: 'coming-soon',
+    description: 'Interactive periodic table with properties, electron configurations, and applications',
+    stat: '118',
+    statLabel: 'elements',
+  },
+  {
+    title: 'Chart of Nuclides',
+    href: '/data/elements/nuclides',
     status: 'ready',
-    description: 'Temperature records, ice cores, sea level, and atmospheric composition',
-    stat: '38',
-    statLabel: 'datasets',
+    description: 'Every known isotope — stable, radioactive, and synthetic',
+    stat: '3,352',
+    statLabel: 'nuclides',
   },
   {
-    title: 'Geological Timescale',
-    href: '/data/earth/timescale',
+    title: 'Molecules',
+    href: '/data/elements/molecules',
     status: 'coming-soon',
-    description: '4.5 billion years of Earth history — eons, eras, periods, and epochs',
-    stat: '4.54B',
-    statLabel: 'years',
+    description: 'Common molecular structures and their properties',
   },
   {
-    title: 'Extraction Map',
-    href: '/data/earth/extraction',
-    status: 'ready',
-    description: 'Where we mine the elements — global resource extraction',
-  },
-  {
-    title: 'Tectonic Plates',
-    href: '/data/earth/tectonics',
+    title: 'Materials',
+    href: '/data/elements/materials',
     status: 'coming-soon',
-    description: 'Plate boundaries, motion vectors, and geological consequences',
-    stat: '15',
-    statLabel: 'major plates',
+    description: 'Steel, concrete, polymers, ceramics, and composites',
   },
   {
-    title: 'Atmosphere',
-    href: '/data/earth/atmosphere',
+    title: 'Crystal Systems',
+    href: '/data/elements/crystals',
     status: 'coming-soon',
-    description: 'Troposphere to exosphere — layers, composition, and dynamics',
+    description: 'The 7 crystal systems and 14 Bravais lattices',
+    stat: '7',
+    statLabel: 'systems',
   },
   {
-    title: 'Oceans',
-    href: '/data/earth/oceans',
+    title: 'Chemical Bonds',
+    href: '/data/elements/bonds',
     status: 'coming-soon',
-    description: 'Ocean zones, currents, chemistry, and deep-sea features',
-    stat: '71%',
-    statLabel: 'of surface',
+    description: 'Ionic, covalent, metallic, and van der Waals bonds',
+  },
+  {
+    title: 'Engineering',
+    href: '/data/elements/engineering',
+    status: 'coming-soon',
+    description: 'Structures, systems, and technologies',
   },
 ]
 
@@ -81,7 +85,7 @@ const items: DataItem[] = [
 // PAGE COMPONENT
 // ============================================================================
 
-export default function EarthDataPage() {
+export default function ElementsPage() {
   return (
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
@@ -93,7 +97,7 @@ export default function EarthDataPage() {
               items={[
                 { label: 'MXWLL', href: '/' },
                 { label: 'Data', href: '/data' },
-                { label: 'Earth' },
+                { label: 'Elements' },
               ]}
               theme="light"
             />
@@ -107,11 +111,11 @@ export default function EarthDataPage() {
           <section className="bg-white rounded-lg p-2 md:p-4">
             <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Earth
+              Elements
             </h1>
             <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Our planet. Geology, climate, tectonics, and the systems that have shaped
-              Earth over 4.5 billion years.
+              Chemistry and matter. The 118 elements, their isotopes, molecules they form,
+              and the materials we make from them.
             </p>
           </section>
 
@@ -153,10 +157,10 @@ export default function EarthDataPage() {
           {/* Context Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-sm text-black/50 max-w-2xl leading-relaxed">
-              Earth is geologically active — plates move, mountains rise, volcanoes erupt.
-              The climate system circulates heat from tropics to poles. Ice ages come and go.
-              Five mass extinctions have reset the trajectory of life. This section documents
-              what we know about the planet we live on.
+              Everything you can touch is made of elements — 94 occur naturally,
+              the rest synthesised in laboratories. Elements combine into molecules,
+              molecules arrange into materials, and materials are engineered into
+              the structures and technologies of civilisation.
             </div>
           </section>
 
@@ -167,16 +171,16 @@ export default function EarthDataPage() {
             </div>
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/observe/earth"
+                href="/data/fabric"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Live Earth Monitoring →
+                The Fabric →
               </Link>
               <Link
-                href="/data/cosmos/solar-system"
+                href="/data/earth/extraction"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Earth in the Solar System →
+                Extraction Map →
               </Link>
               <Link
                 href="/data/life"

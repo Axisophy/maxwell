@@ -203,13 +203,13 @@ export default function MoonDataPage() {
                 Dashboard
               </Link>
               <Link
-                href="/data/spectrum"
+                href="/data/fabric/spectrum"
                 className="px-3 py-1.5 bg-white border border-neutral-200 rounded-lg text-sm hover:border-black transition-colors"
               >
                 EM Spectrum
               </Link>
               <Link
-                href="/data/constants"
+                href="/data/fabric/constants"
                 className="px-3 py-1.5 bg-white border border-neutral-200 rounded-lg text-sm hover:border-black transition-colors"
               >
                 Constants

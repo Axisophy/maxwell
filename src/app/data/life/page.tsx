@@ -9,12 +9,12 @@ import { DataIcon } from '@/components/icons'
 // ============================================================================
 
 const keyNumbers = [
-  { value: '4.54', label: 'Age (Billion Years)', href: '/data/earth/timescale' },
-  { value: '12,742', label: 'Diameter (km)', href: '/data/cosmos/solar-system' },
-  { value: '15', label: 'Tectonic Plates', href: '/data/earth/tectonics' },
-  { value: '5', label: 'Mass Extinctions', href: '/data/earth/timescale' },
-  { value: '71%', label: 'Ocean Coverage', href: '/data/earth/oceans' },
-  { value: '421', label: 'CO₂ ppm (2024)', href: '/data/earth/climate' },
+  { value: '~8.7M', label: 'Estimated Species', href: '/data/life/bestiary' },
+  { value: '~2.1M', label: 'Named Species', href: '/data/life/bestiary' },
+  { value: '64', label: 'Genetic Codons', href: '/data/life/genetic-code' },
+  { value: '20', label: 'Amino Acids', href: '/data/life/genetic-code' },
+  { value: '~20,000', label: 'Human Genes', href: '/data/life/genome' },
+  { value: '3.2B', label: 'Base Pairs (Human)', href: '/data/life/genome' },
 ]
 
 // ============================================================================
@@ -32,48 +32,54 @@ interface DataItem {
 
 const items: DataItem[] = [
   {
-    title: 'Climate Data Centre',
-    href: '/data/earth/climate',
-    status: 'ready',
-    description: 'Temperature records, ice cores, sea level, and atmospheric composition',
-    stat: '38',
-    statLabel: 'datasets',
-  },
-  {
-    title: 'Geological Timescale',
-    href: '/data/earth/timescale',
+    title: 'Genetic Code',
+    href: '/data/life/genetic-code',
     status: 'coming-soon',
-    description: '4.5 billion years of Earth history — eons, eras, periods, and epochs',
-    stat: '4.54B',
-    statLabel: 'years',
+    description: 'The 64 codons and the 20 amino acids they encode',
+    stat: '64',
+    statLabel: 'codons',
   },
   {
-    title: 'Extraction Map',
-    href: '/data/earth/extraction',
-    status: 'ready',
-    description: 'Where we mine the elements — global resource extraction',
-  },
-  {
-    title: 'Tectonic Plates',
-    href: '/data/earth/tectonics',
+    title: 'Genome Explorer',
+    href: '/data/life/genome',
     status: 'coming-soon',
-    description: 'Plate boundaries, motion vectors, and geological consequences',
-    stat: '15',
-    statLabel: 'major plates',
+    description: 'Chromosomes, genes, and genetic variants',
+    stat: '~20k',
+    statLabel: 'human genes',
   },
   {
-    title: 'Atmosphere',
-    href: '/data/earth/atmosphere',
+    title: 'Metabolic Pathways',
+    href: '/data/life/metabolism',
     status: 'coming-soon',
-    description: 'Troposphere to exosphere — layers, composition, and dynamics',
+    description: 'Glycolysis, Krebs cycle, oxidative phosphorylation, and more',
   },
   {
-    title: 'Oceans',
-    href: '/data/earth/oceans',
+    title: 'Tree of Life',
+    href: '/data/life/tree-of-life',
     status: 'coming-soon',
-    description: 'Ocean zones, currents, chemistry, and deep-sea features',
-    stat: '71%',
-    statLabel: 'of surface',
+    description: 'Phylogenetic relationships across all domains of life',
+  },
+  {
+    title: 'Bestiary',
+    href: '/data/life/bestiary',
+    status: 'coming-soon',
+    description: 'Species database with taxonomy, distribution, and conservation status',
+    stat: '~8.7M',
+    statLabel: 'species',
+  },
+  {
+    title: 'Anatomical Systems',
+    href: '/data/life/anatomy',
+    status: 'coming-soon',
+    description: 'Human body systems — nervous, cardiovascular, skeletal, and more',
+    stat: '11',
+    statLabel: 'systems',
+  },
+  {
+    title: 'Proteins',
+    href: '/data/life/proteins',
+    status: 'coming-soon',
+    description: '3D protein structures and their functions',
   },
 ]
 
@@ -81,7 +87,7 @@ const items: DataItem[] = [
 // PAGE COMPONENT
 // ============================================================================
 
-export default function EarthDataPage() {
+export default function LifePage() {
   return (
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
@@ -93,7 +99,7 @@ export default function EarthDataPage() {
               items={[
                 { label: 'MXWLL', href: '/' },
                 { label: 'Data', href: '/data' },
-                { label: 'Earth' },
+                { label: 'Life' },
               ]}
               theme="light"
             />
@@ -107,11 +113,11 @@ export default function EarthDataPage() {
           <section className="bg-white rounded-lg p-2 md:p-4">
             <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Earth
+              Life
             </h1>
             <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Our planet. Geology, climate, tectonics, and the systems that have shaped
-              Earth over 4.5 billion years.
+              Living systems from molecules to ecosystems. Genetics, metabolism,
+              species diversity, and the structures that make biology work.
             </p>
           </section>
 
@@ -153,10 +159,10 @@ export default function EarthDataPage() {
           {/* Context Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-sm text-black/50 max-w-2xl leading-relaxed">
-              Earth is geologically active — plates move, mountains rise, volcanoes erupt.
-              The climate system circulates heat from tropics to poles. Ice ages come and go.
-              Five mass extinctions have reset the trajectory of life. This section documents
-              what we know about the planet we live on.
+              Life is chemistry that replicates. From the genetic code that stores
+              information to the metabolic pathways that power cells, from single-celled
+              organisms to complex ecosystems — life has colonised nearly every environment
+              on Earth over 3.8 billion years.
             </div>
           </section>
 
@@ -167,22 +173,22 @@ export default function EarthDataPage() {
             </div>
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/observe/earth"
+                href="/data/elements"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Live Earth Monitoring →
+                Elements →
               </Link>
               <Link
-                href="/data/cosmos/solar-system"
+                href="/data/earth"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Earth in the Solar System →
+                Earth →
               </Link>
               <Link
-                href="/data/life"
+                href="/observe/life"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Life →
+                Live Wildlife Tracking →
               </Link>
             </div>
           </section>

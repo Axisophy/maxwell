@@ -292,7 +292,7 @@ export default function LHCPage() {
               Gravitational Waves →
             </Link>
             <Link
-              href="/data/particles"
+              href="/data/fabric/particles"
               className="text-white/60 hover:text-white transition-colors text-sm"
             >
               Particle Data →

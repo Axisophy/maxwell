@@ -9,12 +9,12 @@ import { DataIcon } from '@/components/icons'
 // ============================================================================
 
 const keyNumbers = [
-  { value: '4.54', label: 'Age (Billion Years)', href: '/data/earth/timescale' },
-  { value: '12,742', label: 'Diameter (km)', href: '/data/cosmos/solar-system' },
-  { value: '15', label: 'Tectonic Plates', href: '/data/earth/tectonics' },
-  { value: '5', label: 'Mass Extinctions', href: '/data/earth/timescale' },
-  { value: '71%', label: 'Ocean Coverage', href: '/data/earth/oceans' },
-  { value: '421', label: 'CO₂ ppm (2024)', href: '/data/earth/climate' },
+  { value: '8', label: 'Planets', href: '/data/cosmos/solar-system' },
+  { value: '~200', label: 'Known Moons', href: '/data/cosmos/solar-system' },
+  { value: '88', label: 'Constellations', href: '/data/cosmos/constellations' },
+  { value: '110', label: 'Messier Objects', href: '/data/cosmos/messier' },
+  { value: '~5,000', label: 'Confirmed Exoplanets', href: '/data/cosmos/exoplanets' },
+  { value: '13.8B', label: 'Age of Universe (years)', href: '/data/fabric/cosmology' },
 ]
 
 // ============================================================================
@@ -32,48 +32,48 @@ interface DataItem {
 
 const items: DataItem[] = [
   {
-    title: 'Climate Data Centre',
-    href: '/data/earth/climate',
+    title: 'Solar System',
+    href: '/data/cosmos/solar-system',
     status: 'ready',
-    description: 'Temperature records, ice cores, sea level, and atmospheric composition',
-    stat: '38',
-    statLabel: 'datasets',
+    description: 'The Sun, planets, moons, asteroids, and comets of our solar system',
+    stat: '8',
+    statLabel: 'planets',
   },
   {
-    title: 'Geological Timescale',
-    href: '/data/earth/timescale',
+    title: 'Stellar Classification',
+    href: '/data/cosmos/stars',
     status: 'coming-soon',
-    description: '4.5 billion years of Earth history — eons, eras, periods, and epochs',
-    stat: '4.54B',
-    statLabel: 'years',
+    description: 'OBAFGKM spectral types, the HR diagram, and stellar evolution',
   },
   {
-    title: 'Extraction Map',
-    href: '/data/earth/extraction',
-    status: 'ready',
-    description: 'Where we mine the elements — global resource extraction',
-  },
-  {
-    title: 'Tectonic Plates',
-    href: '/data/earth/tectonics',
+    title: 'Constellations',
+    href: '/data/cosmos/constellations',
     status: 'coming-soon',
-    description: 'Plate boundaries, motion vectors, and geological consequences',
-    stat: '15',
-    statLabel: 'major plates',
+    description: 'All 88 official constellations with star patterns and mythology',
+    stat: '88',
+    statLabel: 'constellations',
   },
   {
-    title: 'Atmosphere',
-    href: '/data/earth/atmosphere',
+    title: 'Messier Objects',
+    href: '/data/cosmos/messier',
     status: 'coming-soon',
-    description: 'Troposphere to exosphere — layers, composition, and dynamics',
+    description: '110 deep-sky objects — nebulae, galaxies, and star clusters',
+    stat: '110',
+    statLabel: 'objects',
   },
   {
-    title: 'Oceans',
-    href: '/data/earth/oceans',
+    title: 'Galaxies',
+    href: '/data/cosmos/galaxies',
     status: 'coming-soon',
-    description: 'Ocean zones, currents, chemistry, and deep-sea features',
-    stat: '71%',
-    statLabel: 'of surface',
+    description: 'Galaxy types, the Local Group, and the cosmic web',
+  },
+  {
+    title: 'Exoplanets',
+    href: '/data/cosmos/exoplanets',
+    status: 'coming-soon',
+    description: 'Worlds around other stars — hot Jupiters, super-Earths, and habitable zones',
+    stat: '~5,000',
+    statLabel: 'confirmed',
   },
 ]
 
@@ -81,7 +81,7 @@ const items: DataItem[] = [
 // PAGE COMPONENT
 // ============================================================================
 
-export default function EarthDataPage() {
+export default function CosmosPage() {
   return (
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
@@ -93,7 +93,7 @@ export default function EarthDataPage() {
               items={[
                 { label: 'MXWLL', href: '/' },
                 { label: 'Data', href: '/data' },
-                { label: 'Earth' },
+                { label: 'The Cosmos' },
               ]}
               theme="light"
             />
@@ -107,11 +107,11 @@ export default function EarthDataPage() {
           <section className="bg-white rounded-lg p-2 md:p-4">
             <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Earth
+              The Cosmos
             </h1>
             <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Our planet. Geology, climate, tectonics, and the systems that have shaped
-              Earth over 4.5 billion years.
+              Everything beyond Earth. The Solar System, stars, galaxies,
+              and the structure of the universe at the largest scales.
             </p>
           </section>
 
@@ -153,10 +153,10 @@ export default function EarthDataPage() {
           {/* Context Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">
             <div className="text-sm text-black/50 max-w-2xl leading-relaxed">
-              Earth is geologically active — plates move, mountains rise, volcanoes erupt.
-              The climate system circulates heat from tropics to poles. Ice ages come and go.
-              Five mass extinctions have reset the trajectory of life. This section documents
-              what we know about the planet we live on.
+              The observable universe contains roughly 200 billion galaxies, each with
+              hundreds of billions of stars. Our Solar System orbits in the Orion Arm
+              of the Milky Way, one of trillions of planetary systems in our galaxy alone.
+              This section catalogues what we&apos;ve discovered about the cosmos.
             </div>
           </section>
 
@@ -167,22 +167,22 @@ export default function EarthDataPage() {
             </div>
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/observe/earth"
+                href="/observe/space"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Live Earth Monitoring →
+                Live Space Monitoring →
               </Link>
               <Link
-                href="/data/cosmos/solar-system"
+                href="/data/fabric"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Earth in the Solar System →
+                The Fabric →
               </Link>
               <Link
-                href="/data/life"
+                href="/data/earth"
                 className="text-sm text-black/60 hover:text-black transition-colors"
               >
-                Life →
+                Earth →
               </Link>
             </div>
           </section>

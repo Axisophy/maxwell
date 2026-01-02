@@ -396,13 +396,13 @@ export default function EarthPage() {
         <footer className="pt-8 border-t border-black/10">
           <div className="flex flex-wrap gap-6">
             <Link
-              href="/data/solar-system"
+              href="/data/cosmos/solar-system"
               className="text-sm text-black/60 hover:text-black transition-colors"
             >
               ← Solar System
             </Link>
             <Link
-              href="/data/solar-system/mars"
+              href="/data/cosmos/solar-system/mars"
               className="text-sm text-black/60 hover:text-black transition-colors"
             >
               Mars →

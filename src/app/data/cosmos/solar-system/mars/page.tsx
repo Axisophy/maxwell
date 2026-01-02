@@ -399,19 +399,19 @@ export default function MarsPage() {
         <footer className="pt-8 border-t border-black/10">
           <div className="flex flex-wrap gap-6">
             <Link
-              href="/data/solar-system"
+              href="/data/cosmos/solar-system"
               className="text-sm text-black/60 hover:text-black transition-colors"
             >
               ← Solar System
             </Link>
             <Link
-              href="/data/solar-system/sun"
+              href="/data/cosmos/solar-system/sun"
               className="text-sm text-black/60 hover:text-black transition-colors"
             >
               The Sun →
             </Link>
             <Link
-              href="/data/solar-system/neptune"
+              href="/data/cosmos/solar-system/neptune"
               className="text-sm text-black/60 hover:text-black transition-colors"
             >
               Neptune →

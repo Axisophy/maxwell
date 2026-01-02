@@ -324,7 +324,7 @@ export default function DetectorsPortalPage() {
             </div>
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/data/particles"
+                href="/data/fabric/particles"
                 className="text-sm text-white/60 hover:text-white transition-colors"
               >
                 Particle Data →
