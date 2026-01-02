@@ -11,6 +11,9 @@ import {
 } from '@/lib/satellites/propagate'
 import { CONSTELLATION_COLORS, ConstellationGroup } from '@/lib/satellites/types'
 
+// Raycaster threshold for point selection (smaller = more precise)
+const CLICK_THRESHOLD = 0.01
+
 interface SatelliteGlobeProps {
   satellites: SatellitePosition[]
   selectedSatellite: SatellitePosition | null
@@ -70,15 +73,21 @@ function SatellitePoints({
   onSelect: (sat: SatellitePosition | null) => void
 }) {
   const pointsRef = useRef<THREE.Points>(null)
-  const { camera, raycaster, pointer } = useThree()
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const { raycaster } = useThree()
+
+  // Set raycaster threshold for points (crucial for accurate selection)
+  useEffect(() => {
+    raycaster.params.Points = { threshold: CLICK_THRESHOLD }
+  }, [raycaster])
 
   // Create geometry from positions
-  const { geometry, satelliteMap } = useMemo(() => {
+  const { geometry, satelliteMap, indexToId } = useMemo(() => {
     const positions: number[] = []
     const colors: number[] = []
     const sizes: number[] = []
-    const map: Map<number, SatellitePosition> = new Map()
+    const map: Map<string, { sat: SatellitePosition; index: number }> = new Map()
+    const idxToId: Map<number, string> = new Map()
 
     satellites.forEach((sat, index) => {
       const pos = latLonAltToVector3(sat.latitude, sat.longitude, sat.altitude)
@@ -92,7 +101,8 @@ function SatellitePoints({
       const size = sat.group === 'stations' ? 0.04 : 0.02
       sizes.push(size)
 
-      map.set(index, sat)
+      map.set(sat.noradId, { sat, index })
+      idxToId.set(index, sat.noradId)
     })
 
     const geo = new THREE.BufferGeometry()
@@ -100,84 +110,86 @@ function SatellitePoints({
     geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
     geo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1))
 
-    return { geometry: geo, satelliteMap: map }
+    return { geometry: geo, satelliteMap: map, indexToId: idxToId }
   }, [satellites])
 
-  // Handle click on satellites
+  // Find satellite under pointer using event intersections
+  const getSatelliteAtPointer = useCallback(
+    (event: ThreeEvent<PointerEvent | MouseEvent>) => {
+      if (!pointsRef.current) return null
+
+      const intersects = event.intersections.filter((i) => i.object === pointsRef.current)
+      if (intersects.length > 0 && intersects[0].index !== undefined) {
+        const noradId = indexToId.get(intersects[0].index)
+        if (noradId) {
+          return satelliteMap.get(noradId)?.sat || null
+        }
+      }
+      return null
+    },
+    [indexToId, satelliteMap]
+  )
+
+  // Handle click
   const handleClick = useCallback(
     (event: ThreeEvent<MouseEvent>) => {
       event.stopPropagation()
+      const sat = getSatelliteAtPointer(event)
+      onSelect(sat)
+    },
+    [getSatelliteAtPointer, onSelect]
+  )
 
-      if (!pointsRef.current) return
+  // Handle hover
+  const handlePointerMove = useCallback(
+    (event: ThreeEvent<PointerEvent>) => {
+      const sat = getSatelliteAtPointer(event)
+      const newId = sat?.noradId || null
 
-      raycaster.setFromCamera(pointer, camera)
-      const intersects = raycaster.intersectObject(pointsRef.current)
-
-      if (intersects.length > 0 && intersects[0].index !== undefined) {
-        const sat = satelliteMap.get(intersects[0].index)
-        if (sat) {
-          onSelect(sat)
-        }
+      if (newId !== hoveredId) {
+        setHoveredId(newId)
+        document.body.style.cursor = newId ? 'pointer' : 'auto'
       }
     },
-    [camera, raycaster, pointer, satelliteMap, onSelect]
+    [getSatelliteAtPointer, hoveredId]
   )
+
+  const handlePointerLeave = useCallback(() => {
+    setHoveredId(null)
+    document.body.style.cursor = 'auto'
+  }, [])
 
   // Custom shader for better point rendering
   const material = useMemo(
     () =>
       new THREE.ShaderMaterial({
-        uniforms: {
-          selectedId: { value: -1 },
-        },
+        uniforms: {},
         vertexShader: `
-        attribute float size;
-        attribute vec3 color;
-        varying vec3 vColor;
-        void main() {
-          vColor = color;
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          gl_PointSize = size * (500.0 / -mvPosition.z);
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
+          attribute float size;
+          attribute vec3 color;
+          varying vec3 vColor;
+          void main() {
+            vColor = color;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = size * (500.0 / -mvPosition.z);
+            gl_PointSize = max(gl_PointSize, 4.0);
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `,
         fragmentShader: `
-        varying vec3 vColor;
-        void main() {
-          float dist = length(gl_PointCoord - vec2(0.5));
-          if (dist > 0.5) discard;
-          float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
-          gl_FragColor = vec4(vColor, alpha);
-        }
-      `,
+          varying vec3 vColor;
+          void main() {
+            float dist = length(gl_PointCoord - vec2(0.5));
+            if (dist > 0.5) discard;
+            float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
+            gl_FragColor = vec4(vColor, alpha);
+          }
+        `,
         transparent: true,
         depthWrite: false,
       }),
     []
   )
-
-  // Handle hover for pointer cursor
-  const handlePointerMove = useCallback(
-    (event: ThreeEvent<PointerEvent>) => {
-      event.stopPropagation()
-      if (!pointsRef.current) return
-      raycaster.setFromCamera(pointer, camera)
-      const intersects = raycaster.intersectObject(pointsRef.current)
-      if (intersects.length > 0 && intersects[0].index !== undefined) {
-        setHoveredIndex(intersects[0].index)
-        document.body.style.cursor = 'pointer'
-      } else {
-        setHoveredIndex(null)
-        document.body.style.cursor = 'default'
-      }
-    },
-    [camera, raycaster, pointer]
-  )
-
-  const handlePointerLeave = useCallback(() => {
-    setHoveredIndex(null)
-    document.body.style.cursor = 'default'
-  }, [])
 
   return (
     <points
@@ -291,7 +303,7 @@ function Scene({
       {/* Loading indicator */}
       {isLoading && <LoadingIndicator />}
 
-      {/* Camera controls */}
+      {/* Camera controls - makeDefault=false to not capture all events */}
       <OrbitControls
         enablePan={false}
         minDistance={1.5}
@@ -299,6 +311,7 @@ function Scene({
         enableDamping
         dampingFactor={0.05}
         rotateSpeed={0.5}
+        makeDefault={false}
       />
     </>
   )
@@ -306,12 +319,19 @@ function Scene({
 
 // Main exported component
 export default function SatelliteGlobe(props: SatelliteGlobeProps) {
+  const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null)
+
   return (
-    <div className="w-full h-full bg-black rounded-lg overflow-hidden">
+    <div
+      ref={setContainerRef}
+      className="w-full h-full bg-black rounded-lg overflow-hidden"
+    >
       <Canvas
         camera={{ position: [0, 0, 3], fov: 45 }}
         gl={{ antialias: true, alpha: false }}
         style={{ background: '#000' }}
+        eventSource={containerRef || undefined}
+        eventPrefix="client"
       >
         <Scene {...props} />
       </Canvas>
