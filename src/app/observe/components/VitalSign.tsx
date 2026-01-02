@@ -40,13 +40,13 @@ export default function VitalSign({
       className="block p-2 md:p-4 text-left bg-black rounded-lg hover:bg-neutral-900 transition-colors"
     >
       {/* Label - above the number */}
-      <div className="text-[10px] md:text-xs text-white/50 uppercase mb-1 md:mb-2">
+      <div className="text-[9px] md:text-[10px] lg:text-xs text-white/50 uppercase mb-1 md:mb-2">
         {label}
       </div>
 
       {/* Primary number */}
       <div className={`
-        text-2xl md:text-5xl lg:text-6xl font-bold tracking-[-0.03em] tabular-nums
+        text-lg md:text-3xl lg:text-5xl font-bold tracking-[-0.03em] tabular-nums
         ${statusColors[status]}
       `}>
         {typeof value === 'number' ? value.toLocaleString() : value}

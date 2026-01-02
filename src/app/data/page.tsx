@@ -216,10 +216,10 @@ export default function DataPage() {
                   href={num.href}
                   className="block p-2 md:p-4 text-left bg-black rounded-lg hover:bg-neutral-900 transition-colors"
                 >
-                  <div className="text-[10px] md:text-xs text-white/50 uppercase mb-1 md:mb-2">
+                  <div className="text-[9px] md:text-[10px] lg:text-xs text-white/50 uppercase mb-1 md:mb-2">
                     {num.label}
                   </div>
-                  <div className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-[-0.03em] tabular-nums text-white">
+                  <div className="text-lg md:text-3xl lg:text-4xl font-bold tracking-[-0.03em] tabular-nums text-white">
                     {num.value}
                   </div>
                 </Link>
