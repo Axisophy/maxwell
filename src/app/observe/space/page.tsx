@@ -34,6 +34,7 @@ const spacePages = [
     title: 'Satellite Tracker',
     description: '3D globe with real-time positions of thousands of satellites',
     href: '/observe/space/satellites',
+    comingSoon: true,
   },
 ]
 
@@ -101,11 +102,29 @@ function SpaceCard({
   title,
   description,
   href,
+  comingSoon = false,
 }: {
   title: string
   description: string
   href: string
+  comingSoon?: boolean
 }) {
+  if (comingSoon) {
+    return (
+      <div className="p-2 md:p-4 bg-black/50 rounded-lg">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h2 className="text-2xl md:text-3xl font-light text-white/40 uppercase">
+            {title}
+          </h2>
+          <span className="flex-shrink-0 text-xs text-white/30 uppercase mt-2">Soon</span>
+        </div>
+        <p className="text-sm text-white/30">
+          {description}
+        </p>
+      </div>
+    )
+  }
+
   return (
     <Link
       href={href}
@@ -279,6 +298,7 @@ export default function SpacePage() {
                   title={page.title}
                   description={page.description}
                   href={page.href}
+                  comingSoon={page.comingSoon}
                 />
               ))}
             </div>
