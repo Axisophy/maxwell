@@ -232,7 +232,7 @@ export default function DataPage() {
                       href={category.href}
                       className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase hover:text-black/70 transition-colors"
                     >
-                      {category.title} →
+                      {category.title}
                     </Link>
                   )}
                   {category.comingSoon && (
