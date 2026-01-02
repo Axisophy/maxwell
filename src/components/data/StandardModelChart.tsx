@@ -64,14 +64,47 @@ const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   'graviton': { bg: 'bg-neutral-400', text: 'text-neutral-900' },
 };
 
+// Which particles are affected by each interaction
+const INTERACTIONS: Record<string, { particles: string[]; color: string; description: string }> = {
+  'strong': {
+    particles: ['up', 'charm', 'top', 'down', 'strange', 'bottom', 'gluon'],
+    color: 'bg-red-500/30',
+    description: 'Binds quarks into hadrons. Carried by gluons. Confined to nuclear scales.',
+  },
+  'electromagnetic': {
+    particles: ['up', 'charm', 'top', 'down', 'strange', 'bottom', 'electron', 'muon', 'tau', 'w-boson', 'photon'],
+    color: 'bg-blue-500/30',
+    description: 'Acts on electric charge. Carried by the photon. Infinite range.',
+  },
+  'weak': {
+    particles: ['up', 'charm', 'top', 'down', 'strange', 'bottom', 'electron', 'muon', 'tau', 'electron-nu', 'muon-nu', 'tau-nu', 'w-boson', 'z-boson'],
+    color: 'bg-yellow-500/30',
+    description: 'Changes particle flavour. Carried by W± and Z. Very short range.',
+  },
+  'higgs': {
+    particles: ['up', 'charm', 'top', 'down', 'strange', 'bottom', 'electron', 'muon', 'tau', 'w-boson', 'z-boson', 'higgs'],
+    color: 'bg-purple-500/30',
+    description: 'Gives mass to particles. All massive particles couple to the Higgs field.',
+  },
+  'gravity': {
+    particles: Object.keys(PARTICLES), // Everything
+    color: 'bg-white/20',
+    description: 'Acts on all mass-energy. Carried by the graviton (theoretical). Infinite range.',
+  },
+};
+
 // Particle tile
 function ParticleTile({
   id,
   isSelected,
+  isHighlighted,
+  isDimmed,
   onClick
 }: {
   id: string;
   isSelected: boolean;
+  isHighlighted: boolean;
+  isDimmed: boolean;
   onClick: () => void;
 }) {
   const particle = PARTICLES[id];
@@ -84,16 +117,17 @@ function ParticleTile({
       onClick={onClick}
       className={`
         w-full h-full rounded-lg flex flex-col items-center justify-center
-        transition-all duration-150
+        transition-all duration-200
         ${colors.bg} ${colors.text}
-        ${isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-[#1d1d1d]' : ''}
+        ${isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-[#1d1d1d] scale-105' : ''}
+        ${isDimmed ? 'opacity-30' : ''}
         hover:brightness-95
       `}
     >
-      <span className="font-math text-5xl leading-none">
+      <span className="font-math text-3xl md:text-4xl lg:text-5xl leading-none">
         {particle.symbol}
       </span>
-      <span className="text-sm mt-2 opacity-70">
+      <span className="text-xs md:text-sm mt-1 md:mt-2 opacity-70">
         {particle.name}
       </span>
     </button>
@@ -103,10 +137,20 @@ function ParticleTile({
 // Main chart
 export default function StandardModelChart({ className = '' }: { className?: string }) {
   const [selectedParticle, setSelectedParticle] = useState<string | null>(null);
+  const [activeInteraction, setActiveInteraction] = useState<string | null>(null);
 
-  const handleClick = (id: string) => {
+  const handleParticleClick = (id: string) => {
     setSelectedParticle(current => current === id ? null : id);
   };
+
+  const handleInteractionClick = (id: string) => {
+    setActiveInteraction(current => current === id ? null : id);
+  };
+
+  // Get highlighted particles for current interaction
+  const highlightedParticles = activeInteraction
+    ? INTERACTIONS[activeInteraction].particles
+    : [];
 
   // Build grid cells
   const gridCells = [];
@@ -117,13 +161,18 @@ export default function StandardModelChart({ className = '' }: { className?: str
         ([_, pos]) => pos[0] === row && pos[1] === col
       )?.[0];
 
+      const isHighlighted = particleId ? highlightedParticles.includes(particleId) : false;
+      const isDimmed = activeInteraction !== null && !isHighlighted;
+
       gridCells.push(
-        <div key={`${row}-${col}`} className="aspect-[2/5]">
+        <div key={`${row}-${col}`} className="aspect-[2/3]">
           {particleId && (
             <ParticleTile
               id={particleId}
               isSelected={selectedParticle === particleId}
-              onClick={() => handleClick(particleId)}
+              isHighlighted={isHighlighted}
+              isDimmed={isDimmed}
+              onClick={() => handleParticleClick(particleId)}
             />
           )}
         </div>
@@ -145,6 +194,61 @@ export default function StandardModelChart({ className = '' }: { className?: str
         <div className="grid grid-cols-7 gap-3">
           {gridCells}
         </div>
+
+        {/* Column labels */}
+        <div className="grid grid-cols-7 gap-3 mt-3">
+          <div className="col-span-3 text-center">
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Three Generations
+            </span>
+          </div>
+          <div className="col-span-2 text-center">
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Gauge Bosons
+            </span>
+          </div>
+          <div className="col-span-1 text-center">
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Scalar
+            </span>
+          </div>
+          <div className="col-span-1 text-center">
+            <span className="text-xs text-white/40 uppercase tracking-wider">
+              Predicted
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Interaction controls */}
+      <div className="px-4 pb-4">
+        <div className="text-xs text-white/40 uppercase tracking-wider mb-2">
+          Highlight by interaction
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(INTERACTIONS).map(([id, interaction]) => (
+            <button
+              key={id}
+              onClick={() => handleInteractionClick(id)}
+              className={`
+                px-3 py-1.5 text-sm rounded-lg transition-colors capitalize
+                ${activeInteraction === id
+                  ? 'bg-[#ffdf20] text-black font-medium'
+                  : 'bg-white/10 text-white/60 hover:bg-white/15 hover:text-white'
+                }
+              `}
+            >
+              {id}
+            </button>
+          ))}
+        </div>
+
+        {/* Interaction description */}
+        {activeInteraction && (
+          <p className="mt-3 text-sm text-white/50">
+            {INTERACTIONS[activeInteraction].description}
+          </p>
+        )}
       </div>
     </div>
   );
