@@ -62,7 +62,7 @@ const categories: Category[] = [
     href: '/data/fabric',
     items: [
       { title: 'Standard Model', href: '/data/fabric/particles', status: 'ready', description: 'The particles of matter' },
-      { title: 'Fundamental Forces', href: '/data/fabric/forces', status: 'coming-soon', description: 'The four forces' },
+      { title: 'Fundamental Forces', href: '/data/fabric/forces', status: 'ready', description: 'The four forces' },
       { title: 'Fundamental Constants', href: '/data/fabric/constants', status: 'ready', description: 'The numbers reality runs on' },
       { title: 'EM Spectrum', href: '/data/fabric/spectrum', status: 'ready', description: 'Radio waves to gamma rays' },
       { title: 'Scale of the Universe', href: '/data/fabric/scale', status: 'coming-soon', description: 'Powers of 10, quarks to cosmos' },
