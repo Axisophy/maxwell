@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import * as satellite from 'satellite.js'
+import * as THREE from 'three'
 
 // Dynamic import to avoid SSR issues
 const Globe = dynamic(() => import('react-globe.gl'), {
@@ -17,12 +18,12 @@ const Globe = dynamic(() => import('react-globe.gl'), {
 const EARTH_RADIUS_KM = 6371
 
 // Constellation colors
-const CONSTELLATION_COLORS: Record<string, string> = {
-  stations: '#ff6b6b',
-  gps: '#4ecdc4',
-  weather: '#45b7d1',
-  science: '#f7dc6f',
-  starlink: '#95a5a6',
+const CONSTELLATION_COLORS: Record<string, number> = {
+  stations: 0xff6b6b,
+  gps: 0x4ecdc4,
+  weather: 0x45b7d1,
+  science: 0xf7dc6f,
+  starlink: 0x95a5a6,
 }
 
 interface SatelliteRecord {
@@ -33,20 +34,20 @@ interface SatelliteRecord {
   line2: string
 }
 
-interface SatelliteData {
+interface SatellitePosition {
   name: string
   noradId: string
   group: string
   satrec: satellite.SatRec
-  lat?: number
-  lng?: number
-  alt?: number
+  lat: number
+  lng: number
+  alt: number
 }
 
 interface SatelliteGlobeProps {
   satelliteRecords: SatelliteRecord[]
-  onSelectSatellite: (sat: SatelliteData | null) => void
-  selectedSatellite: SatelliteData | null
+  onSelectSatellite: (sat: SatellitePosition | null) => void
+  selectedSatellite: SatellitePosition | null
   width: number
   height: number
 }
@@ -68,7 +69,6 @@ export default function SatelliteGlobe({
       .map((rec) => {
         try {
           const satrec = satellite.twoline2satrec(rec.line1, rec.line2)
-          // Test propagation
           const testPos = satellite.propagate(satrec, new Date())
           if (!testPos || typeof testPos.position === 'boolean' || !testPos.position) return null
 
@@ -82,7 +82,7 @@ export default function SatelliteGlobe({
           return null
         }
       })
-      .filter((d): d is SatelliteData => d !== null)
+      .filter((d): d is { name: string; noradId: string; group: string; satrec: satellite.SatRec } => d !== null)
   }, [satelliteRecords])
 
   // Update positions every second
@@ -93,8 +93,8 @@ export default function SatelliteGlobe({
     return () => clearInterval(interval)
   }, [])
 
-  // Calculate current positions - use pointsData format
-  const pointsData = useMemo(() => {
+  // Calculate current positions
+  const satellitePositions = useMemo(() => {
     return satData
       .map((sat) => {
         const posVel = satellite.propagate(sat.satrec, time)
@@ -107,14 +107,12 @@ export default function SatelliteGlobe({
           ...sat,
           lat: satellite.degreesLat(geo.latitude),
           lng: satellite.degreesLong(geo.longitude),
-          altitude: geo.height / EARTH_RADIUS_KM, // Normalized to globe radius
-          color: CONSTELLATION_COLORS[sat.group] || '#ffffff',
-          radius: sat.group === 'stations' ? 0.4 : 0.15,
+          alt: geo.height / EARTH_RADIUS_KM,
         }
       })
       .filter(
-        (d): d is SatelliteData & { lat: number; lng: number; altitude: number; color: string; radius: number } =>
-          d !== null && !isNaN(d.lat!) && !isNaN(d.lng!) && !isNaN(d.altitude!)
+        (d): d is SatellitePosition =>
+          d !== null && !isNaN(d.lat) && !isNaN(d.lng) && !isNaN(d.alt)
       )
   }, [satData, time])
 
@@ -122,14 +120,10 @@ export default function SatelliteGlobe({
   const pathsData = useMemo(() => {
     if (!selectedSatellite?.satrec) return []
 
-    const points: Array<[number, number, number]> = []
+    const points: Array<{ lat: number; lng: number; alt: number }> = []
     const now = time.getTime()
-
-    // Get orbital period
-    const meanMotion = selectedSatellite.satrec.no // rad/min
+    const meanMotion = selectedSatellite.satrec.no
     const periodMs = ((2 * Math.PI) / meanMotion) * 60 * 1000
-
-    // Calculate full orbit, starting half orbit ago
     const steps = 180
     const startTime = now - periodMs / 2
 
@@ -141,15 +135,15 @@ export default function SatelliteGlobe({
         const gmst = satellite.gstime(t)
         const geo = satellite.eciToGeodetic(posVel.position, gmst)
 
-        points.push([
-          satellite.degreesLong(geo.longitude),
-          satellite.degreesLat(geo.latitude),
-          geo.height / EARTH_RADIUS_KM,
-        ])
+        points.push({
+          lat: satellite.degreesLat(geo.latitude),
+          lng: satellite.degreesLong(geo.longitude),
+          alt: geo.height / EARTH_RADIUS_KM,
+        })
       }
     }
 
-    return [points]
+    return [{ points }]
   }, [selectedSatellite, time])
 
   // Globe initialization
@@ -161,20 +155,44 @@ export default function SatelliteGlobe({
     }
   }, [globeReady])
 
+  // Custom object creator - small spheres for satellites
+  const createSatelliteObject = useCallback((d: object) => {
+    const sat = d as SatellitePosition
+    const size = sat.group === 'stations' ? 1.5 : 0.6
+    const geometry = new THREE.SphereGeometry(size, 8, 8)
+    const material = new THREE.MeshBasicMaterial({
+      color: CONSTELLATION_COLORS[sat.group] || 0xffffff,
+      transparent: true,
+      opacity: 0.9,
+    })
+    return new THREE.Mesh(geometry, material)
+  }, [])
+
+  // Update satellite positions
+  const updateSatellitePosition = useCallback((obj: THREE.Object3D, d: object) => {
+    const sat = d as SatellitePosition
+    if (globeRef.current) {
+      const coords = globeRef.current.getCoords(sat.lat, sat.lng, sat.alt)
+      if (coords) {
+        obj.position.set(coords.x, coords.y, coords.z)
+      }
+    }
+  }, [])
+
   // Click handler
-  const handlePointClick = useCallback(
-    (point: object | null) => {
+  const handleClick = useCallback(
+    (d: object | null) => {
       if (globeRef.current) {
         globeRef.current.controls().autoRotate = false
       }
-      onSelectSatellite(point as SatelliteData | null)
+      onSelectSatellite(d as SatellitePosition | null)
     },
     [onSelectSatellite]
   )
 
-  // Hover handler - change cursor
-  const handlePointHover = useCallback((point: object | null) => {
-    document.body.style.cursor = point ? 'pointer' : 'auto'
+  // Hover handler
+  const handleHover = useCallback((d: object | null) => {
+    document.body.style.cursor = d ? 'pointer' : 'auto'
   }, [])
 
   return (
@@ -183,32 +201,26 @@ export default function SatelliteGlobe({
       width={width}
       height={height}
       onGlobeReady={() => setGlobeReady(true)}
-      // Globe appearance
       globeImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg"
       bumpImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png"
       backgroundImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png"
-      // Points (satellites) - simpler API than customLayer
-      pointsData={pointsData}
-      pointLat="lat"
-      pointLng="lng"
-      pointAltitude="altitude"
-      pointColor="color"
-      pointRadius="radius"
-      pointsMerge={false}
-      onPointClick={handlePointClick}
-      onPointHover={handlePointHover}
-      // Paths (orbit)
+      // Custom layer for satellites (spheres at altitude)
+      customLayerData={satellitePositions}
+      customThreeObject={createSatelliteObject}
+      customThreeObjectUpdate={updateSatellitePosition}
+      onCustomLayerClick={handleClick}
+      onCustomLayerHover={handleHover}
+      // Orbit paths
       pathsData={pathsData}
-      pathPoints={(d: any) => d}
-      pathPointLat={(p: any) => p[1]}
-      pathPointLng={(p: any) => p[0]}
-      pathPointAlt={(p: any) => p[2]}
+      pathPoints="points"
+      pathPointLat="lat"
+      pathPointLng="lng"
+      pathPointAlt="alt"
       pathColor={() => '#ffdf20'}
       pathStroke={2}
       pathDashLength={0.01}
       pathDashGap={0.004}
       pathDashAnimateTime={100000}
-      // Interaction
       enablePointerInteraction={true}
     />
   )
