@@ -23,12 +23,13 @@ interface UseSatelliteDataOptions {
 
 interface UseSatelliteDataResult {
   satellites: SatellitePosition[]
+  satelliteRecords: TLEData[]  // Raw TLE records for Globe component
   totalCount: Record<string, number>
-  selectedSatellite: SatellitePosition | null
+  selectedSatellite: any | null  // Can be SatellitePosition or Globe's SatelliteData
   orbitPath: OrbitPoint[]
   isLoading: boolean
   error: string | null
-  selectSatellite: (sat: SatellitePosition | null) => void
+  selectSatellite: (sat: any | null) => void
   refresh: () => void
 }
 
@@ -161,6 +162,7 @@ export function useSatelliteData({
 
   return {
     satellites,
+    satelliteRecords: tleData,
     totalCount,
     selectedSatellite,
     orbitPath,

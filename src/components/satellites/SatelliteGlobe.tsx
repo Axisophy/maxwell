@@ -1,289 +1,221 @@
 'use client'
 
-import { useRef, useMemo, useState, useEffect, useCallback } from 'react'
-import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber'
-import { OrbitControls, Stars, useTexture, Line } from '@react-three/drei'
-import * as THREE from 'three'
-import {
-  SatellitePosition,
-  OrbitPoint,
-  latLonAltToVector3,
-} from '@/lib/satellites/propagate'
-import { CONSTELLATION_COLORS, ConstellationGroup } from '@/lib/satellites/types'
+import { useRef, useState, useEffect, useMemo, useCallback } from 'react'
+import dynamic from 'next/dynamic'
+import * as satellite from 'satellite.js'
+
+// Dynamic import to avoid SSR issues
+const Globe = dynamic(() => import('react-globe.gl'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-black flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+    </div>
+  ),
+})
+
+const EARTH_RADIUS_KM = 6371
+
+// Constellation colors
+const CONSTELLATION_COLORS: Record<string, string> = {
+  stations: '#ff6b6b',
+  gps: '#4ecdc4',
+  weather: '#45b7d1',
+  science: '#f7dc6f',
+  starlink: '#95a5a6',
+}
+
+interface SatelliteRecord {
+  name: string
+  noradId: string
+  group: string
+  line1: string
+  line2: string
+}
+
+interface SatelliteData {
+  name: string
+  noradId: string
+  group: string
+  satrec: satellite.SatRec
+  lat?: number
+  lng?: number
+  alt?: number
+}
 
 interface SatelliteGlobeProps {
-  satellites: SatellitePosition[]
-  selectedSatellite: SatellitePosition | null
-  orbitPath: OrbitPoint[]
-  onSelectSatellite: (sat: SatellitePosition | null) => void
-  isLoading?: boolean
+  satelliteRecords: SatelliteRecord[]
+  onSelectSatellite: (sat: SatelliteData | null) => void
+  selectedSatellite: SatelliteData | null
 }
 
-// Earth component with texture
-function Earth() {
-  const meshRef = useRef<THREE.Mesh>(null)
+export default function SatelliteGlobe({
+  satelliteRecords,
+  onSelectSatellite,
+  selectedSatellite,
+}: SatelliteGlobeProps) {
+  const globeRef = useRef<any>(null)
+  const [time, setTime] = useState(new Date())
+  const [globeReady, setGlobeReady] = useState(false)
 
-  // NASA Blue Marble texture (public domain)
-  const texture = useTexture(
-    'https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg'
-  )
+  // Initialize satellite records with SGP4
+  const satData = useMemo(() => {
+    return satelliteRecords
+      .map((rec) => {
+        try {
+          const satrec = satellite.twoline2satrec(rec.line1, rec.line2)
+          // Test propagation
+          const testPos = satellite.propagate(satrec, new Date())
+          if (!testPos || typeof testPos.position === 'boolean' || !testPos.position) return null
 
-  // Rotate Earth slowly
-  useFrame((_, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.01
-    }
-  })
-
-  return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[1, 64, 64]} />
-      <meshStandardMaterial map={texture} roughness={1} metalness={0} />
-    </mesh>
-  )
-}
-
-// Atmosphere glow effect
-function Atmosphere() {
-  return (
-    <mesh scale={[1.015, 1.015, 1.015]}>
-      <sphereGeometry args={[1, 32, 32]} />
-      <meshBasicMaterial
-        color="#4d9fff"
-        transparent
-        opacity={0.1}
-        side={THREE.BackSide}
-      />
-    </mesh>
-  )
-}
-
-// Satellite instances - uses InstancedMesh for reliable click detection
-function SatelliteInstances({
-  satellites,
-  onSelect,
-}: {
-  satellites: SatellitePosition[]
-  onSelect: (sat: SatellitePosition | null) => void
-}) {
-  const meshRef = useRef<THREE.InstancedMesh>(null)
-  const [hovered, setHovered] = useState<string | null>(null)
-
-  // Map instance index to satellite
-  const indexToSat = useMemo(() => {
-    const map = new Map<number, SatellitePosition>()
-    satellites.forEach((sat, i) => map.set(i, sat))
-    return map
-  }, [satellites])
-
-  // Update instance matrices and colors
-  useEffect(() => {
-    if (!meshRef.current) return
-
-    const dummy = new THREE.Object3D()
-    const color = new THREE.Color()
-
-    satellites.forEach((sat, i) => {
-      // Position
-      const pos = latLonAltToVector3(sat.latitude, sat.longitude, sat.altitude)
-      dummy.position.set(pos.x, pos.y, pos.z)
-
-      // Scale - stations larger
-      const scale = sat.group === 'stations' ? 0.012 : 0.006
-      dummy.scale.setScalar(scale)
-
-      dummy.updateMatrix()
-      meshRef.current!.setMatrixAt(i, dummy.matrix)
-
-      // Color
-      color.set(CONSTELLATION_COLORS[sat.group as ConstellationGroup] || '#ffffff')
-      meshRef.current!.setColorAt(i, color)
-    })
-
-    meshRef.current.instanceMatrix.needsUpdate = true
-    if (meshRef.current.instanceColor) {
-      meshRef.current.instanceColor.needsUpdate = true
-    }
-  }, [satellites])
-
-  // Handle pointer events
-  const handlePointerOver = useCallback(
-    (e: ThreeEvent<PointerEvent>) => {
-      e.stopPropagation()
-      if (e.instanceId !== undefined) {
-        const sat = indexToSat.get(e.instanceId)
-        if (sat) {
-          setHovered(sat.noradId)
-          document.body.style.cursor = 'pointer'
+          return {
+            name: rec.name,
+            noradId: rec.noradId,
+            group: rec.group,
+            satrec,
+          }
+        } catch {
+          return null
         }
-      }
-    },
-    [indexToSat]
-  )
+      })
+      .filter((d): d is SatelliteData => d !== null)
+  }, [satelliteRecords])
 
-  const handlePointerOut = useCallback(() => {
-    setHovered(null)
-    document.body.style.cursor = 'auto'
+  // Update positions every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date())
+    }, 1000)
+    return () => clearInterval(interval)
   }, [])
 
-  const handleClick = useCallback(
-    (e: ThreeEvent<MouseEvent>) => {
-      e.stopPropagation()
-      if (e.instanceId !== undefined) {
-        const sat = indexToSat.get(e.instanceId)
-        onSelect(sat || null)
+  // Calculate current positions
+  const particlesData = useMemo(() => {
+    return satData
+      .map((sat) => {
+        const posVel = satellite.propagate(sat.satrec, time)
+        if (!posVel || typeof posVel.position === 'boolean' || !posVel.position) return null
+
+        const gmst = satellite.gstime(time)
+        const geo = satellite.eciToGeodetic(posVel.position, gmst)
+
+        return {
+          ...sat,
+          lat: satellite.degreesLat(geo.latitude),
+          lng: satellite.degreesLong(geo.longitude),
+          alt: geo.height / EARTH_RADIUS_KM, // Normalized to globe radius
+        }
+      })
+      .filter(
+        (d): d is SatelliteData & { lat: number; lng: number; alt: number } =>
+          d !== null && !isNaN(d.lat!) && !isNaN(d.lng!) && !isNaN(d.alt!)
+      )
+  }, [satData, time])
+
+  // Calculate orbit path for selected satellite
+  const orbitPath = useMemo(() => {
+    if (!selectedSatellite) return []
+
+    const points: Array<{ lat: number; lng: number; alt: number }> = []
+    const now = time.getTime()
+
+    // Get orbital period
+    const meanMotion = selectedSatellite.satrec.no // rad/min
+    const periodMs = ((2 * Math.PI) / meanMotion) * 60 * 1000
+
+    // Calculate full orbit, starting half orbit ago
+    const steps = 180
+    const startTime = now - periodMs / 2
+
+    for (let i = 0; i <= steps; i++) {
+      const t = new Date(startTime + (i / steps) * periodMs)
+      const posVel = satellite.propagate(selectedSatellite.satrec, t)
+
+      if (posVel && typeof posVel.position !== 'boolean' && posVel.position) {
+        const gmst = satellite.gstime(t)
+        const geo = satellite.eciToGeodetic(posVel.position, gmst)
+
+        points.push({
+          lat: satellite.degreesLat(geo.latitude),
+          lng: satellite.degreesLong(geo.longitude),
+          alt: geo.height / EARTH_RADIUS_KM,
+        })
       }
+    }
+
+    return [{ coords: points }]
+  }, [selectedSatellite, time])
+
+  // Globe initialization
+  useEffect(() => {
+    if (globeRef.current && globeReady) {
+      globeRef.current.pointOfView({ altitude: 2.5 })
+      globeRef.current.controls().autoRotate = true
+      globeRef.current.controls().autoRotateSpeed = 0.3
+    }
+  }, [globeReady])
+
+  // Click handler
+  const handleClick = useCallback(
+    (obj: object | null) => {
+      if (globeRef.current) {
+        globeRef.current.controls().autoRotate = false
+      }
+      onSelectSatellite(obj as SatelliteData | null)
     },
-    [indexToSat, onSelect]
+    [onSelectSatellite]
   )
 
-  if (satellites.length === 0) return null
+  // Hover handler - change cursor
+  const handleHover = useCallback((obj: object | null) => {
+    document.body.style.cursor = obj ? 'pointer' : 'auto'
+  }, [])
 
   return (
-    <instancedMesh
-      ref={meshRef}
-      args={[undefined, undefined, satellites.length]}
-      onClick={handleClick}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-    >
-      <sphereGeometry args={[1, 8, 8]} />
-      <meshBasicMaterial transparent opacity={0.9} />
-    </instancedMesh>
-  )
-}
-
-// Selected satellite highlight
-function SelectedSatelliteMarker({ satellite }: { satellite: SatellitePosition }) {
-  const meshRef = useRef<THREE.Mesh>(null)
-  const pos = latLonAltToVector3(satellite.latitude, satellite.longitude, satellite.altitude)
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      // Pulse effect
-      const scale = 1 + Math.sin(state.clock.elapsedTime * 3) * 0.2
-      meshRef.current.scale.setScalar(scale)
-    }
-  })
-
-  return (
-    <mesh ref={meshRef} position={[pos.x, pos.y, pos.z]}>
-      <sphereGeometry args={[0.015, 16, 16]} />
-      <meshBasicMaterial color="#ffdf20" transparent opacity={0.8} />
-    </mesh>
-  )
-}
-
-// Orbit path visualization
-function OrbitPath({ points }: { points: OrbitPoint[] }) {
-  const linePoints = useMemo(() => {
-    return points.map((point) => {
-      const pos = latLonAltToVector3(point.latitude, point.longitude, point.altitude)
-      return [pos.x, pos.y, pos.z] as [number, number, number]
-    })
-  }, [points])
-
-  if (linePoints.length < 2) return null
-
-  return (
-    <Line
-      points={linePoints}
-      color="#ffdf20"
-      lineWidth={1}
-      transparent
-      opacity={0.6}
-    />
-  )
-}
-
-// Loading indicator
-function LoadingIndicator() {
-  const meshRef = useRef<THREE.Mesh>(null)
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.z = state.clock.elapsedTime * 2
-    }
-  })
-
-  return (
-    <mesh ref={meshRef} position={[0, 0, 2]}>
-      <ringGeometry args={[0.1, 0.12, 32]} />
-      <meshBasicMaterial color="#ffdf20" transparent opacity={0.8} />
-    </mesh>
-  )
-}
-
-// Main scene component
-function Scene({
-  satellites,
-  selectedSatellite,
-  orbitPath,
-  onSelectSatellite,
-  isLoading,
-}: SatelliteGlobeProps) {
-  return (
-    <>
-      {/* Lighting */}
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[5, 3, 5]} intensity={1.5} />
-
-      {/* Starfield background */}
-      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-
-      {/* Earth */}
-      <Earth />
-      <Atmosphere />
-
-      {/* Satellites */}
-      {satellites.length > 0 && (
-        <SatelliteInstances
-          satellites={satellites}
-          onSelect={onSelectSatellite}
-        />
-      )}
-
-      {/* Selected satellite marker */}
-      {selectedSatellite && <SelectedSatelliteMarker satellite={selectedSatellite} />}
-
-      {/* Orbit path */}
-      {orbitPath.length > 0 && <OrbitPath points={orbitPath} />}
-
-      {/* Loading indicator */}
-      {isLoading && <LoadingIndicator />}
-
-      {/* Camera controls */}
-      <OrbitControls
-        enablePan={false}
-        minDistance={1.5}
-        maxDistance={10}
-        enableDamping
-        dampingFactor={0.05}
-        rotateSpeed={0.5}
-        makeDefault={false}
+    <div className="w-full h-full">
+      <Globe
+        ref={globeRef}
+        onGlobeReady={() => setGlobeReady(true)}
+        // Globe appearance
+        globeImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg"
+        bumpImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png"
+        backgroundImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png"
+        // Particles (satellites)
+        customLayerData={particlesData}
+        customThreeObject={(d: object) => {
+          const sat = d as SatelliteData & { lat: number; lng: number; alt: number }
+          const THREE = require('three')
+          const geometry = new THREE.SphereGeometry(sat.group === 'stations' ? 0.8 : 0.4, 8, 8)
+          const material = new THREE.MeshBasicMaterial({
+            color: CONSTELLATION_COLORS[sat.group] || '#ffffff',
+            transparent: true,
+            opacity: 0.9,
+          })
+          return new THREE.Mesh(geometry, material)
+        }}
+        customThreeObjectUpdate={(obj: any, d: object) => {
+          const sat = d as SatelliteData & { lat: number; lng: number; alt: number }
+          const pos = globeRef.current?.getCoords(sat.lat, sat.lng, sat.alt)
+          if (pos) {
+            obj.position.set(pos.x, pos.y, pos.z)
+          }
+        }}
+        onCustomLayerClick={handleClick}
+        onCustomLayerHover={handleHover}
+        // Paths (orbit)
+        pathsData={orbitPath}
+        pathPoints="coords"
+        pathPointLat={(p: any) => p.lat}
+        pathPointLng={(p: any) => p.lng}
+        pathPointAlt={(p: any) => p.alt}
+        pathColor={() => '#ffdf20'}
+        pathStroke={2}
+        pathDashLength={0.01}
+        pathDashGap={0.004}
+        pathDashAnimateTime={100000}
+        // Interaction
+        enablePointerInteraction={true}
       />
-    </>
-  )
-}
-
-// Main exported component
-export default function SatelliteGlobe(props: SatelliteGlobeProps) {
-  const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null)
-
-  return (
-    <div
-      ref={setContainerRef}
-      className="w-full h-full bg-black rounded-lg overflow-hidden"
-    >
-      <Canvas
-        camera={{ position: [0, 0, 3], fov: 45 }}
-        gl={{ antialias: true, alpha: false }}
-        style={{ background: '#000' }}
-        eventSource={containerRef || undefined}
-        eventPrefix="client"
-      >
-        <Scene {...props} />
-      </Canvas>
     </div>
   )
 }

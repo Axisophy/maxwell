@@ -38,9 +38,9 @@ export default function SatelliteTrackerPage() {
   // Fetch satellite data
   const {
     satellites,
+    satelliteRecords,
     totalCount,
     selectedSatellite,
-    orbitPath,
     isLoading,
     error,
     selectSatellite,
@@ -151,11 +151,9 @@ export default function SatelliteTrackerPage() {
             ) : (
               <div className="w-full aspect-[4/3] md:aspect-[16/9]">
                 <SatelliteGlobe
-                  satellites={satellites}
+                  satelliteRecords={satelliteRecords}
                   selectedSatellite={selectedSatellite}
-                  orbitPath={orbitPath}
                   onSelectSatellite={selectSatellite}
-                  isLoading={isLoading}
                 />
               </div>
             )}
