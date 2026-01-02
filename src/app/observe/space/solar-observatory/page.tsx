@@ -263,12 +263,12 @@ function STEREOViewer() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  // STEREO-A ahead beacon EUVI 195Å image (more reliable URL)
-  // Using the direct NASA STEREO Science Center latest image
-  const imageUrl = `https://stereo-ssc.nascom.nasa.gov/browse/2024/01/01/ahead/euvi_195/512/latest.png`
-
-  // Alternative fallback: STEREO beacon summary image
-  const fallbackUrl = `https://stereo.gsfc.nasa.gov/beacon/beacon_secchi.gif?t=${Date.now()}`
+  // Use Helioviewer API for STEREO-A EUVI 195Å imagery
+  // This is more reliable than direct NASA STEREO URLs which frequently change
+  const now = new Date()
+  const dateStr = now.toISOString().slice(0, 19) + 'Z'
+  const layers = encodeURIComponent('[STEREO_A,SECCHI,EUVI,195,1,100]')
+  const imageUrl = `https://api.helioviewer.org/v2/takeScreenshot/?date=${dateStr}&imageScale=2&layers=${layers}&x0=0&y0=0&width=1024&height=1024&display=true&watermark=false`
 
   return (
     <div className="space-y-px">
@@ -286,12 +286,12 @@ function STEREOViewer() {
                 <div className="text-center text-white/40">
                   <div className="text-4xl mb-2">☉</div>
                   <div className="text-sm">STEREO-A image unavailable</div>
-                  <div className="text-xs mt-1">Beacon data may be delayed</div>
+                  <div className="text-xs mt-1">Data may be delayed</div>
                 </div>
               </div>
             ) : (
               <img
-                src={fallbackUrl}
+                src={imageUrl}
                 alt="STEREO-A view of the Sun"
                 className={`w-full h-full object-contain ${loading ? 'opacity-0' : 'opacity-100'} transition-opacity`}
                 onLoad={() => setLoading(false)}
@@ -309,8 +309,8 @@ function STEREOViewer() {
           <div className="text-xs text-white/40 mt-1">Viewing from ahead of Earth in its orbit</div>
         </div>
         <div className="text-right">
-          <div className="text-xs text-white/40">NASA STEREO</div>
-          <div className="text-[10px] text-white/30">Beacon data</div>
+          <div className="text-xs text-white/40">NASA STEREO/SECCHI</div>
+          <div className="text-[10px] text-white/30">via Helioviewer</div>
         </div>
       </div>
     </div>
