@@ -17,12 +17,12 @@ interface MobileMenuProps {
 }
 
 const mainSections = [
-  { href: '/observe', label: 'Observe', icon: ObserveIcon },
-  { href: '/pulse', label: 'Pulse', icon: PulseIcon },
-  { href: '/tools', label: 'Tools', icon: ToolsIcon },
-  { href: '/data', label: 'Data', icon: DataIcon },
-  { href: '/vault', label: 'Vault', icon: VaultIcon },
-  { href: '/play', label: 'Play', icon: PlayIcon },
+  { href: '/observe', label: 'Observe', icon: ObserveIcon, disabled: false },
+  { href: '/pulse', label: 'Pulse', icon: PulseIcon, disabled: false },
+  { href: '/tools', label: 'Tools', icon: ToolsIcon, disabled: true },
+  { href: '/data', label: 'Data', icon: DataIcon, disabled: false },
+  { href: '/vault', label: 'Vault', icon: VaultIcon, disabled: false },
+  { href: '/play', label: 'Play', icon: PlayIcon, disabled: false },
 ]
 
 const secondaryLinks = [
@@ -99,8 +99,21 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
           {/* Main Navigation frame */}
           <div className="bg-white rounded-lg overflow-hidden">
-            {mainSections.map((section, index) => {
+            {mainSections.map((section) => {
               const Icon = section.icon
+              if (section.disabled) {
+                return (
+                  <div
+                    key={section.href}
+                    className="flex items-center gap-3 p-3"
+                  >
+                    <Icon className="w-6 h-6 text-black/30" />
+                    <span className="text-sm font-medium text-black/30 uppercase">
+                      {section.label}
+                    </span>
+                  </div>
+                )
+              }
               return (
                 <Link
                   key={section.href}

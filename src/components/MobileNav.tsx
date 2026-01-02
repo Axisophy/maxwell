@@ -12,6 +12,7 @@ const navItems = [
     label: 'Observe',
     icon: ObserveIcon,
     matchPaths: ['/observe'],
+    disabled: false,
     submenu: [
       { href: '/observe/dashboard', label: 'Dashboard' },
       { href: '/observe/space', label: 'Space' },
@@ -26,6 +27,7 @@ const navItems = [
     label: 'Pulse',
     icon: PulseIcon,
     matchPaths: ['/pulse'],
+    disabled: false,
     submenu: []
   },
   {
@@ -33,6 +35,7 @@ const navItems = [
     label: 'Tools',
     icon: ToolsIcon,
     matchPaths: ['/tools'],
+    disabled: true,
     submenu: []
   },
   {
@@ -40,6 +43,7 @@ const navItems = [
     label: 'Data',
     icon: DataIcon,
     matchPaths: ['/data'],
+    disabled: false,
     submenu: [
       { href: '/data/fabric', label: 'The Fabric' },
       { href: '/data/elements', label: 'Elements' },
@@ -54,6 +58,7 @@ const navItems = [
     label: 'Vault',
     icon: VaultIcon,
     matchPaths: ['/vault'],
+    disabled: false,
     submenu: [
       { href: '/vault/ancient', label: 'Ancient' },
       { href: '/vault/renaissance', label: 'Renaissance' },
@@ -67,6 +72,7 @@ const navItems = [
     label: 'Play',
     icon: PlayIcon,
     matchPaths: ['/play'],
+    disabled: false,
     submenu: [
       { href: '/play/attractors', label: 'Attractors' },
       { href: '/play/fractals', label: 'Fractals' },
@@ -183,6 +189,20 @@ export default function MobileNav() {
                 const Icon = item.icon
                 const active = isActive(item)
                 const isOpen = openSubmenu === item.href
+
+                if (item.disabled) {
+                  return (
+                    <div
+                      key={item.href}
+                      className="flex flex-col items-center justify-center px-2 py-1 rounded-lg text-black/30"
+                    >
+                      <Icon className="w-5 h-5 mb-0.5" />
+                      <span className="text-[9px] font-medium uppercase">
+                        {item.label}
+                      </span>
+                    </div>
+                  )
+                }
 
                 return (
                   <button

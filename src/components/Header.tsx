@@ -13,12 +13,12 @@ import Logo from './Logo'
 import { ObserveIcon, PulseIcon, ToolsIcon, DataIcon, VaultIcon, PlayIcon } from '@/components/icons'
 
 const navItems = [
-  { href: '/observe', label: 'Observe', icon: ObserveIcon },
-  { href: '/pulse', label: 'Pulse', icon: PulseIcon },
-  { href: '/tools', label: 'Tools', icon: ToolsIcon },
-  { href: '/data', label: 'Data', icon: DataIcon },
-  { href: '/vault', label: 'Vault', icon: VaultIcon },
-  { href: '/play', label: 'Play', icon: PlayIcon },
+  { href: '/observe', label: 'Observe', icon: ObserveIcon, active: true },
+  { href: '/pulse', label: 'Pulse', icon: PulseIcon, active: true },
+  { href: '/tools', label: 'Tools', icon: ToolsIcon, active: false },
+  { href: '/data', label: 'Data', icon: DataIcon, active: true },
+  { href: '/vault', label: 'Vault', icon: VaultIcon, active: true },
+  { href: '/play', label: 'Play', icon: PlayIcon, active: true },
 ]
 
 // Submenus - using category names for DATA
@@ -108,18 +108,25 @@ export default function Header() {
 
             return (
               <div key={item.href} className="flex-1">
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-2 text-sm font-light tracking-wider uppercase cursor-pointer leading-none ${
-                    isActive ? 'text-white' : 'text-white'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  {item.label}
-                </Link>
+                {item.active ? (
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-2 text-sm font-light tracking-wider uppercase cursor-pointer leading-none ${
+                      isActive ? 'text-white' : 'text-white'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span className="flex items-center gap-2 text-sm font-light tracking-wider uppercase leading-none text-white/40">
+                    <Icon className="w-5 h-5" />
+                    {item.label}
+                  </span>
+                )}
 
                 {/* Submenu */}
-                {submenu && (
+                {item.active && submenu && (
                   <div className="mt-3 space-y-0.5">
                     {submenu.map((subItem) =>
                       subItem.active ? (
