@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import Breadcrumb from '@/components/ui/Breadcrumb'
@@ -28,7 +28,8 @@ const OrbitalScene = dynamic(
 
 type FocusTarget = 'sun' | 'earth' | 'moon' | null
 
-export default function OrreryPage() {
+// Inner component that uses time-dependent hooks
+function OrreryContent() {
   const timeController = useTimeController()
   const [focusTarget, setFocusTarget] = useState<FocusTarget>('earth')
   const [showOrbits, setShowOrbits] = useState(true)
@@ -234,4 +235,55 @@ export default function OrreryPage() {
       </div>
     </main>
   )
+}
+
+// Main page component - renders loading state during SSR, real content on client
+export default function OrreryPage() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <main className="min-h-screen bg-black">
+        <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
+          <div className="mb-px">
+            <div className="bg-[#1d1d1d] rounded-lg py-2 px-4">
+              <Breadcrumb
+                items={[
+                  { label: 'MXWLL', href: '/' },
+                  { label: 'Observe', href: '/observe' },
+                  { label: 'Space', href: '/observe/space' },
+                  { label: 'Orrery' },
+                ]}
+                theme="dark"
+              />
+            </div>
+          </div>
+          <div className="bg-[#1d1d1d] rounded-lg p-4 mb-px">
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl md:text-4xl font-light text-white uppercase">
+                Solar System
+              </h1>
+              <span className="text-[10px] font-mono text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded uppercase">
+                Phase 0
+              </span>
+            </div>
+            <p className="text-sm text-white/50 max-w-2xl">
+              Loading orbital engine...
+            </p>
+          </div>
+          <div className="bg-[#1d1d1d] rounded-lg overflow-hidden mb-px">
+            <div className="aspect-video md:aspect-[21/9] w-full bg-black flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+            </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  return <OrreryContent />
 }
