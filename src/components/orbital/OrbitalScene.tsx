@@ -34,16 +34,6 @@ function Sun() {
         <sphereGeometry args={[displayRadius, 32, 32]} />
         <meshBasicMaterial color={0xffff00} />
       </mesh>
-      {/* Glow */}
-      <mesh>
-        <sphereGeometry args={[displayRadius * 1.2, 32, 32]} />
-        <meshBasicMaterial
-          color={0xffaa00}
-          transparent
-          opacity={0.3}
-          side={THREE.BackSide}
-        />
-      </mesh>
       {/* Point light */}
       <pointLight color={0xffffff} intensity={2} distance={0} decay={0} />
     </group>
@@ -69,16 +59,6 @@ function Earth({ position }: { position: Vector3D }) {
       <mesh ref={meshRef}>
         <sphereGeometry args={[displayRadius, 32, 32]} />
         <meshStandardMaterial color={0x4a90d9} />
-      </mesh>
-      {/* Atmosphere glow */}
-      <mesh>
-        <sphereGeometry args={[displayRadius * 1.1, 32, 32]} />
-        <meshBasicMaterial
-          color={0x88ccff}
-          transparent
-          opacity={0.2}
-          side={THREE.BackSide}
-        />
       </mesh>
     </group>
   )
@@ -171,8 +151,10 @@ function CameraController({
       ref={controlsRef}
       enableDamping
       dampingFactor={0.05}
-      minDistance={10}
-      maxDistance={500000}
+      enableZoom={true}
+      zoomSpeed={1.5}
+      minDistance={1}
+      maxDistance={1000000}
     />
   )
 }
