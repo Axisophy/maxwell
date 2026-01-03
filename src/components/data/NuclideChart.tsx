@@ -8,7 +8,6 @@ import {
   DECAY_COLORS,
   DECAY_LABELS,
   CHART_BOUNDS,
-  getNuclide,
   getNuclidesForElement,
   type Nuclide,
   type DecayMode,
@@ -24,7 +23,7 @@ function isColorDark(hex: string): boolean {
 }
 
 // Chart configuration
-const CELL_SIZE = 12; // Base cell size in pixels
+const CELL_SIZE = 12;
 const MIN_ZOOM = 0.3;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.1;
@@ -36,7 +35,7 @@ interface NuclideChartProps {
 export default function NuclideChart({ className = '' }: NuclideChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   // State
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [zoom, setZoom] = useState(1);
@@ -72,9 +71,8 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
-  // Center chart initially
+  // Centre chart initially
   useEffect(() => {
-    // Center on a useful region (around iron, Z~26, N~30)
     const centerZ = 40;
     const centerN = 50;
     setOffset({
@@ -83,27 +81,27 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
     });
   }, [dimensions, zoom]);
 
-  // Get half-life color
+  // Get half-life colour
   const getHalfLifeColor = useCallback((nuc: Nuclide): string => {
     if (nuc.isStable) return '#000000';
     if (nuc.halfLifeSeconds === null) return '#808080';
-    
+
     const t = nuc.halfLifeSeconds;
     const YEAR = 31557600;
-    
-    if (t > 1e9 * YEAR) return '#1a1a2e'; // Very long - near stable
+
+    if (t > 1e9 * YEAR) return '#1a1a2e';
     if (t > 1e6 * YEAR) return '#16213e';
     if (t > 1000 * YEAR) return '#0f3460';
     if (t > YEAR) return '#1a508b';
-    if (t > 86400) return '#2176ae'; // > 1 day
-    if (t > 3600) return '#57c4e5'; // > 1 hour
-    if (t > 60) return '#ffc93c'; // > 1 minute
-    if (t > 1) return '#ff9a3c'; // > 1 second
-    if (t > 0.001) return '#ff6f3c'; // > 1 ms
-    return '#e84545'; // Very short
+    if (t > 86400) return '#2176ae';
+    if (t > 3600) return '#57c4e5';
+    if (t > 60) return '#ffc93c';
+    if (t > 1) return '#ff9a3c';
+    if (t > 0.001) return '#ff6f3c';
+    return '#e84545';
   }, []);
 
-  // Get color for a nuclide
+  // Get colour for a nuclide
   const getNuclideColor = useCallback((nuc: Nuclide): string => {
     if (colorMode === 'halflife') {
       return getHalfLifeColor(nuc);
@@ -115,13 +113,13 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
   const screenToChart = useCallback((screenX: number, screenY: number) => {
     const canvasRect = canvasRef.current?.getBoundingClientRect();
     if (!canvasRect) return { n: 0, z: 0 };
-    
+
     const x = screenX - canvasRect.left;
     const y = screenY - canvasRect.top;
-    
+
     const n = Math.floor((x - offset.x) / (CELL_SIZE * zoom));
     const z = Math.floor((dimensions.height - y + offset.y) / (CELL_SIZE * zoom));
-    
+
     return { n, z };
   }, [offset, zoom, dimensions.height]);
 
@@ -129,19 +127,18 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size
     canvas.width = dimensions.width * window.devicePixelRatio;
     canvas.height = dimensions.height * window.devicePixelRatio;
     canvas.style.width = `${dimensions.width}px`;
     canvas.style.height = `${dimensions.height}px`;
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-    // Clear
-    ctx.fillStyle = '#f5f5f5';
+    // Clear with light background
+    ctx.fillStyle = '#fafafa';
     ctx.fillRect(0, 0, dimensions.width, dimensions.height);
 
     const cellSize = CELL_SIZE * zoom;
@@ -149,19 +146,15 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
     // Calculate visible range
     const minVisibleN = Math.floor(-offset.x / cellSize) - 1;
     const maxVisibleN = Math.ceil((dimensions.width - offset.x) / cellSize) + 1;
-    // For Z: y = dimensions.height - (z+1)*cellSize + offset.y
-    // At y=height (bottom): z = offset.y/cellSize - 1 (min Z)
-    // At y=0 (top): z = (dimensions.height + offset.y)/cellSize - 1 (max Z)
     const minVisibleZ = Math.floor(offset.y / cellSize) - 2;
     const maxVisibleZ = Math.ceil((dimensions.height + offset.y) / cellSize) + 1;
 
     // Draw magic number lines if enabled
     if (showMagicNumbers && zoom > 0.5) {
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
       ctx.lineWidth = 2;
-      
+
       MAGIC_NUMBERS.forEach(magic => {
-        // Neutron magic number (vertical line)
         if (magic >= minVisibleN && magic <= maxVisibleN) {
           const x = offset.x + magic * cellSize;
           ctx.beginPath();
@@ -169,10 +162,8 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
           ctx.lineTo(x, dimensions.height);
           ctx.stroke();
         }
-        
-        // Proton magic number (horizontal line)
+
         if (magic >= minVisibleZ && magic <= maxVisibleZ) {
-          // Draw line at bottom edge of row Z=magic (same formula as nuclide y)
           const y = dimensions.height - magic * cellSize + offset.y;
           ctx.beginPath();
           ctx.moveTo(0, y);
@@ -190,16 +181,13 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
       const x = offset.x + nuc.n * cellSize;
       const y = dimensions.height - (nuc.z + 1) * cellSize + offset.y;
 
-      // Skip if outside visible area
       if (x + cellSize < 0 || x > dimensions.width) return;
       if (y + cellSize < 0 || y > dimensions.height) return;
 
-      // Determine if highlighted
       const isHighlighted = highlightElement !== null && nuc.z === highlightElement;
       const isSelected = selectedNuclide?.z === nuc.z && selectedNuclide?.n === nuc.n;
       const isHovered = hoveredNuclide?.z === nuc.z && hoveredNuclide?.n === nuc.n;
 
-      // Fill color
       let fillColor = getNuclideColor(nuc);
       if (highlightElement !== null && !isHighlighted) {
         fillColor = '#e0e0e0';
@@ -208,7 +196,6 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
       ctx.fillStyle = fillColor;
       ctx.fillRect(x + 0.5, y + 0.5, cellSize - 1, cellSize - 1);
 
-      // Border
       if (isSelected) {
         ctx.strokeStyle = '#e6007e';
         ctx.lineWidth = 2;
@@ -219,10 +206,9 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
         ctx.strokeRect(x + 0.5, y + 0.5, cellSize - 1, cellSize - 1);
       }
 
-      // Draw symbol if zoomed in enough
       if (zoom >= 1.5 && cellSize >= 18) {
         const cellColor = getNuclideColor(nuc);
-        ctx.fillStyle = isColorDark(cellColor) ? '#fff' : '#000';        
+        ctx.fillStyle = isColorDark(cellColor) ? '#fff' : '#000';
         ctx.font = `${Math.max(8, cellSize * 0.4)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -235,8 +221,7 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
       ctx.fillStyle = '#000';
       ctx.font = '11px sans-serif';
       ctx.textAlign = 'center';
-      
-      // N axis labels (every 20)
+
       for (let n = 0; n <= CHART_BOUNDS.maxN; n += 20) {
         if (n >= minVisibleN && n <= maxVisibleN) {
           const x = offset.x + n * cellSize + cellSize / 2;
@@ -245,8 +230,7 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
           }
         }
       }
-      
-      // Z axis labels (every 20)
+
       ctx.textAlign = 'left';
       for (let z = 0; z <= CHART_BOUNDS.maxZ; z += 20) {
         if (z >= minVisibleZ && z <= maxVisibleZ) {
@@ -258,7 +242,7 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
       }
     }
 
-  }, [dimensions, zoom, offset, nuclideMap, showMagicNumbers, colorMode, 
+  }, [dimensions, zoom, offset, nuclideMap, showMagicNumbers, colorMode,
       highlightElement, selectedNuclide, hoveredNuclide, getNuclideColor]);
 
   // Mouse handlers
@@ -302,7 +286,6 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
     const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
     const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
 
-    // Zoom toward mouse position
     const rect = canvasRef.current?.getBoundingClientRect();
     if (rect) {
       const mouseX = e.clientX - rect.left;
@@ -318,7 +301,7 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
     setZoom(newZoom);
   }, [zoom, offset]);
 
-  // Touch handlers for mobile - require two-finger gesture to prevent page scroll hijacking
+  // Touch handlers
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
   const [initialPinchZoom, setInitialPinchZoom] = useState<number>(1);
@@ -339,7 +322,6 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
   };
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    // Require two fingers to interact (prevents page scroll hijacking)
     if (e.touches.length >= 2) {
       e.preventDefault();
       const center = getTouchCenter(e.touches);
@@ -351,18 +333,15 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
   }, [offset, zoom]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    // Require two fingers
     if (isDragging && touchStart && e.touches.length >= 2) {
       e.preventDefault();
       const center = getTouchCenter(e.touches);
 
-      // Handle panning
       setOffset({
         x: center.x - touchStart.x,
         y: center.y - touchStart.y,
       });
 
-      // Handle pinch-to-zoom
       if (initialPinchDistance) {
         const currentDistance = getTouchDistance(e.touches);
         const scale = currentDistance / initialPinchDistance;
@@ -390,31 +369,35 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
   };
 
   return (
-    <div className={`flex flex-col h-full ${className}`}>
-      {/* Header */}
-      <div className="bg-white border-b border-black/10 px-4 py-3">
-        <div className="flex flex-wrap items-center gap-4 justify-between">
-          <div>
-            <h1 className="text-xl font-light text-black">Chart of Nuclides</h1>
-            <p className="text-sm text-black/50">
-              {NUCLIDES.length.toLocaleString()} known nuclides • Drag to pan, scroll to zoom
-            </p>
+    <div className={`flex flex-col h-full bg-white ${className}`}>
+      {/* Controls Header */}
+      <div className="border-b border-black/10 px-3 py-2">
+        <div className="flex flex-wrap items-center gap-3 justify-between">
+          <div className="text-xs text-black/50">
+            Drag to pan · Scroll to zoom · Click for details
           </div>
-          
+
           {/* Controls */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Color mode */}
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-black/50">Color:</span>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Colour mode toggle */}
+            <div className="flex gap-px">
               <button
                 onClick={() => setColorMode('decay')}
-                className={`px-2 py-1 rounded ${colorMode === 'decay' ? 'bg-black text-white' : 'bg-neutral-200'}`}
+                className={`px-2 py-1 text-xs font-medium rounded-l transition-colors ${
+                  colorMode === 'decay'
+                    ? 'bg-black text-white'
+                    : 'bg-black/5 text-black/60 hover:text-black'
+                }`}
               >
                 Decay
               </button>
               <button
                 onClick={() => setColorMode('halflife')}
-                className={`px-2 py-1 rounded ${colorMode === 'halflife' ? 'bg-black text-white' : 'bg-neutral-200'}`}
+                className={`px-2 py-1 text-xs font-medium rounded-r transition-colors ${
+                  colorMode === 'halflife'
+                    ? 'bg-black text-white'
+                    : 'bg-black/5 text-black/60 hover:text-black'
+                }`}
               >
                 Half-life
               </button>
@@ -423,7 +406,11 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
             {/* Magic numbers toggle */}
             <button
               onClick={() => setShowMagicNumbers(!showMagicNumbers)}
-              className={`px-2 py-1 rounded text-sm ${showMagicNumbers ? 'bg-black text-white' : 'bg-neutral-200'}`}
+              className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                showMagicNumbers
+                  ? 'bg-black text-white'
+                  : 'bg-black/5 text-black/60 hover:text-black'
+              }`}
             >
               Magic #
             </button>
@@ -432,11 +419,11 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
             <select
               value={highlightElement ?? ''}
               onChange={(e) => setHighlightElement(e.target.value ? parseInt(e.target.value) : null)}
-              className="text-sm border border-black/20 rounded px-2 py-1 bg-white"
+              className="text-xs border border-black/10 rounded px-2 py-1 bg-white"
             >
               <option value="">All elements</option>
               {Object.entries(ELEMENTS).slice(1).map(([z, el]) => (
-                <option key={z} value={z}>{el.symbol} - {el.name}</option>
+                <option key={z} value={z}>{el.symbol} — {el.name}</option>
               ))}
             </select>
           </div>
@@ -464,22 +451,22 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
           />
 
           {/* Zoom controls */}
-          <div className="absolute bottom-4 right-4 flex flex-col gap-2">
+          <div className="absolute bottom-3 right-3 flex flex-col gap-1">
             <button
               onClick={handleZoomIn}
-              className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center text-xl font-light hover:bg-neutral-100"
+              className="w-8 h-8 bg-white rounded border border-black/10 flex items-center justify-center text-lg font-light hover:bg-black/5 transition-colors"
             >
               +
             </button>
             <button
               onClick={handleZoomOut}
-              className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center text-xl font-light hover:bg-neutral-100"
+              className="w-8 h-8 bg-white rounded border border-black/10 flex items-center justify-center text-lg font-light hover:bg-black/5 transition-colors"
             >
               −
             </button>
             <button
               onClick={handleResetView}
-              className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center text-xs hover:bg-neutral-100"
+              className="w-8 h-8 bg-white rounded border border-black/10 flex items-center justify-center text-[10px] hover:bg-black/5 transition-colors"
             >
               Reset
             </button>
@@ -487,79 +474,79 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
 
           {/* Hover tooltip */}
           {hoveredNuclide && !isDragging && (
-            <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-3 pointer-events-none">
+            <div className="absolute top-3 left-3 bg-white rounded-lg border border-black/10 shadow-sm p-3 pointer-events-none">
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-mono font-bold">{hoveredNuclide.symbol}</span>
-                <span className="text-lg font-mono">{hoveredNuclide.massNumber}</span>
+                <span className="text-lg font-mono text-black/60">{hoveredNuclide.massNumber}</span>
               </div>
               <p className="text-sm text-black/60">{hoveredNuclide.name}</p>
-              <p className="text-xs font-mono text-black/50">
+              <p className="text-xs font-mono text-black/40">
                 Z={hoveredNuclide.z}, N={hoveredNuclide.n}
               </p>
             </div>
           )}
 
           {/* Zoom indicator */}
-          <div className="absolute bottom-4 left-4 bg-white/80 rounded px-2 py-1 text-xs font-mono">
+          <div className="absolute bottom-3 left-3 bg-white/90 rounded px-2 py-1 text-xs font-mono text-black/60">
             {(zoom * 100).toFixed(0)}%
           </div>
         </div>
 
         {/* Detail panel */}
         {selectedNuclide && (
-          <div className="w-80 bg-white border-l border-black/10 overflow-y-auto">
+          <div className="w-72 md:w-80 bg-white border-l border-black/10 overflow-y-auto">
             <div className="p-4">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <div className="flex items-baseline gap-2">
                     <span className="text-4xl font-mono font-bold">{selectedNuclide.symbol}</span>
-                    <span className="text-2xl font-mono">{selectedNuclide.massNumber}</span>
+                    <span className="text-2xl font-mono text-black/60">{selectedNuclide.massNumber}</span>
                   </div>
-                  <p className="text-lg text-black/60">{selectedNuclide.name}-{selectedNuclide.massNumber}</p>
+                  <p className="text-base text-black/60">{selectedNuclide.name}-{selectedNuclide.massNumber}</p>
                 </div>
                 <button
                   onClick={() => setSelectedNuclide(null)}
-                  className="text-2xl text-black/30 hover:text-black"
+                  className="w-8 h-8 flex items-center justify-center text-xl text-black/30 hover:text-black rounded hover:bg-black/5 transition-colors"
                 >
                   ×
                 </button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* Composition */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-neutral-100 rounded-lg p-3">
-                    <p className="text-xs text-black/50 uppercase tracking-wider mb-1">Protons (Z)</p>
-                    <p className="text-2xl font-mono font-bold">{selectedNuclide.z}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-black rounded-lg p-3">
+                    <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Protons (Z)</p>
+                    <p className="text-2xl font-mono font-bold text-white">{selectedNuclide.z}</p>
                   </div>
-                  <div className="bg-neutral-100 rounded-lg p-3">
-                    <p className="text-xs text-black/50 uppercase tracking-wider mb-1">Neutrons (N)</p>
-                    <p className="text-2xl font-mono font-bold">{selectedNuclide.n}</p>
+                  <div className="bg-black rounded-lg p-3">
+                    <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Neutrons (N)</p>
+                    <p className="text-2xl font-mono font-bold text-white">{selectedNuclide.n}</p>
                   </div>
                 </div>
 
                 {/* Stability */}
-                <div className="bg-neutral-100 rounded-lg p-3">
-                  <p className="text-xs text-black/50 uppercase tracking-wider mb-1">Stability</p>
+                <div className="bg-black rounded-lg p-3">
+                  <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Stability</p>
                   <div className="flex items-center gap-2">
                     <span
-                      className="w-4 h-4 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: DECAY_COLORS[selectedNuclide.decay] }}
                     />
-                    <span className="font-medium">
+                    <span className="text-sm font-medium text-white">
                       {DECAY_LABELS[selectedNuclide.decay]}
                     </span>
                   </div>
                   {!selectedNuclide.isStable && (
-                    <p className="text-sm font-mono mt-1">t½ = {selectedNuclide.halfLife}</p>
+                    <p className="text-sm font-mono text-white/60 mt-1">t½ = {selectedNuclide.halfLife}</p>
                   )}
                 </div>
 
                 {/* Abundance */}
                 {selectedNuclide.abundance !== null && (
-                  <div className="bg-neutral-100 rounded-lg p-3">
-                    <p className="text-xs text-black/50 uppercase tracking-wider mb-1">Natural Abundance</p>
-                    <p className="text-2xl font-mono font-bold">
+                  <div className="bg-black rounded-lg p-3">
+                    <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Natural Abundance</p>
+                    <p className="text-2xl font-mono font-bold text-white">
                       {selectedNuclide.abundance.toFixed(selectedNuclide.abundance < 1 ? 4 : 2)}%
                     </p>
                   </div>
@@ -567,11 +554,11 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
 
                 {/* Magic numbers */}
                 {(MAGIC_NUMBERS.includes(selectedNuclide.z) || MAGIC_NUMBERS.includes(selectedNuclide.n)) && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                    <p className="text-xs text-amber-700 uppercase tracking-wider mb-1">Magic Numbers</p>
-                    <p className="text-sm">
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                    <p className="text-[10px] text-amber-600 uppercase tracking-wider mb-1">Magic Numbers</p>
+                    <p className="text-sm text-amber-700">
                       {MAGIC_NUMBERS.includes(selectedNuclide.z) && MAGIC_NUMBERS.includes(selectedNuclide.n)
-                        ? '✨ Doubly magic nucleus - extra stable!'
+                        ? '✨ Doubly magic nucleus — extra stable!'
                         : MAGIC_NUMBERS.includes(selectedNuclide.z)
                         ? `Magic proton number (Z = ${selectedNuclide.z})`
                         : `Magic neutron number (N = ${selectedNuclide.n})`
@@ -582,15 +569,15 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
 
                 {/* Notes */}
                 {selectedNuclide.notes && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <p className="text-xs text-blue-700 uppercase tracking-wider mb-1">Notes</p>
-                    <p className="text-sm">{selectedNuclide.notes}</p>
+                  <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+                    <p className="text-[10px] text-blue-600 uppercase tracking-wider mb-1">Notes</p>
+                    <p className="text-sm text-blue-700">{selectedNuclide.notes}</p>
                   </div>
                 )}
 
                 {/* Other isotopes */}
                 <div>
-                  <p className="text-xs text-black/50 uppercase tracking-wider mb-2">
+                  <p className="text-[10px] text-black/50 uppercase tracking-wider mb-2">
                     Other {selectedNuclide.name} Isotopes
                   </p>
                   <div className="flex flex-wrap gap-1">
@@ -600,12 +587,12 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
                         <button
                           key={nuc.massNumber}
                           onClick={() => setSelectedNuclide(nuc)}
-                          className={`px-2 py-1 text-xs font-mono rounded ${
+                          className={`px-2 py-1 text-xs font-mono rounded transition-colors ${
                             nuc.massNumber === selectedNuclide.massNumber
-                              ? 'bg-black text-white'
+                              ? 'bg-[#e6007e] text-white'
                               : nuc.isStable
-                              ? 'bg-neutral-800 text-white'
-                              : 'bg-neutral-200 hover:bg-neutral-300'
+                              ? 'bg-black text-white'
+                              : 'bg-black/10 hover:bg-black/20 text-black'
                           }`}
                         >
                           {nuc.massNumber}
@@ -621,15 +608,15 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
       </div>
 
       {/* Legend */}
-      <div className="bg-white border-t border-black/10 px-4 py-3">
-        <div className="flex flex-wrap items-center gap-4 text-xs">
+      <div className="border-t border-black/10 px-3 py-2">
+        <div className="flex flex-wrap items-center gap-3 text-xs">
           {colorMode === 'decay' ? (
             <>
               <span className="text-black/50">Decay mode:</span>
               {Object.entries(DECAY_COLORS).slice(0, 8).map(([mode, color]) => (
                 <div key={mode} className="flex items-center gap-1">
                   <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
-                  <span>{DECAY_LABELS[mode as DecayMode]}</span>
+                  <span className="text-black/60">{DECAY_LABELS[mode as DecayMode]}</span>
                 </div>
               ))}
             </>
@@ -638,31 +625,31 @@ export default function NuclideChart({ className = '' }: NuclideChartProps) {
               <span className="text-black/50">Half-life:</span>
               <div className="flex items-center gap-1">
                 <span className="w-3 h-3 rounded-sm bg-black" />
-                <span>Stable</span>
+                <span className="text-black/60">Stable</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#1a508b' }} />
-                <span>&gt;1 year</span>
+                <span className="text-black/60">&gt;1 year</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#57c4e5' }} />
-                <span>&gt;1 hour</span>
+                <span className="text-black/60">&gt;1 hour</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#ffc93c' }} />
-                <span>&gt;1 min</span>
+                <span className="text-black/60">&gt;1 min</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#e84545' }} />
-                <span>&lt;1 ms</span>
+                <span className="text-black/60">&lt;1 ms</span>
               </div>
             </>
           )}
-          
+
           {showMagicNumbers && (
             <>
-              <span className="text-black/30">|</span>
-              <span className="text-black/50">Magic numbers: {MAGIC_NUMBERS.join(', ')}</span>
+              <span className="text-black/20">|</span>
+              <span className="text-black/40">Magic numbers: {MAGIC_NUMBERS.join(', ')}</span>
             </>
           )}
         </div>
