@@ -31,6 +31,11 @@ const spacePages = [
     href: '/observe/space/aurora',
   },
   {
+    title: 'Orrery',
+    description: 'Interactive solar system with real-time planetary positions',
+    href: '/observe/space/orrery',
+  },
+  {
     title: 'Satellite Tracker',
     description: '3D globe with real-time positions of thousands of satellites',
     href: '/observe/space/satellites',
