@@ -66,7 +66,7 @@ const items: DataItem[] = [
   {
     title: 'Scale of the Universe',
     href: '/data/fabric/scale',
-    status: 'coming-soon',
+    status: 'ready',
     description: 'Powers of 10 from the Planck length to the observable universe',
     stat: '10⁶²',
     statLabel: 'orders of magnitude',
@@ -80,7 +80,7 @@ const items: DataItem[] = [
   {
     title: 'Big Bang & Cosmology',
     href: '/data/fabric/cosmology',
-    status: 'coming-soon',
+    status: 'ready',
     description: 'The origin, structure, and fate of the universe',
     stat: '13.8',
     statLabel: 'billion years',

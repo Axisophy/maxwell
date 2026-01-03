@@ -65,9 +65,9 @@ const categories: Category[] = [
       { title: 'Fundamental Forces', href: '/data/fabric/forces', status: 'ready', description: 'The four forces' },
       { title: 'Fundamental Constants', href: '/data/fabric/constants', status: 'ready', description: 'The numbers reality runs on' },
       { title: 'EM Spectrum', href: '/data/fabric/spectrum', status: 'ready', description: 'Radio waves to gamma rays' },
-      { title: 'Scale of the Universe', href: '/data/fabric/scale', status: 'coming-soon', description: 'Powers of 10, quarks to cosmos' },
+      { title: 'Scale of the Universe', href: '/data/fabric/scale', status: 'ready', description: 'Powers of 10, quarks to cosmos' },
       { title: 'Permissible Universe', href: '/data/fabric/permissible-universe', status: 'ready', description: 'Mass-radius diagram of everything' },
-      { title: 'Big Bang & Cosmology', href: '/data/fabric/cosmology', status: 'coming-soon', description: 'Origin and structure of the universe' },
+      { title: 'Big Bang & Cosmology', href: '/data/fabric/cosmology', status: 'ready', description: 'Origin and structure of the universe' },
     ],
   },
   {
