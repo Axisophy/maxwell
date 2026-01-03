@@ -8,6 +8,19 @@ import { ObserveIcon } from '@/components/icons'
 // ============================================
 // TYPES
 // ============================================
+interface NOAAScalesData {
+  r: { current: number; text: string; max24h: number; minorProb: number | null; majorProb: number | null }
+  s: { current: number; text: string; max24h: number; prob: number | null }
+  g: { current: number; text: string; max24h: number; forecast24hText: string }
+  flareProb: { c: number | null; m: number | null; x: number | null }
+  timestamp: string
+}
+
+interface ProtonDataPoint {
+  time: string
+  flux: number
+}
+
 interface SolarApiData {
   kp: {
     current: number
@@ -101,6 +114,286 @@ function SolarVitalSign({
     return <Link href={href} className="block">{content}</Link>
   }
   return content
+}
+
+// ============================================
+// NOAA SCALES DASHBOARD (R-S-G)
+// ============================================
+function NOAAScalesDashboard({ data, loading }: { data: NOAAScalesData | null; loading: boolean }) {
+  const getScaleColor = (scale: number): string => {
+    if (scale === 0) return 'bg-green-500'
+    if (scale <= 2) return 'bg-yellow-400'
+    if (scale === 3) return 'bg-orange-500'
+    return 'bg-red-500'
+  }
+
+  const getScaleTextColor = (scale: number): string => {
+    if (scale === 0) return 'text-green-400'
+    if (scale <= 2) return 'text-yellow-400'
+    if (scale === 3) return 'text-orange-400'
+    return 'text-red-400'
+  }
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-3 gap-px">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="bg-black rounded-lg p-3 animate-pulse">
+            <div className="h-4 bg-white/10 rounded w-16 mb-2" />
+            <div className="h-10 bg-white/10 rounded w-12" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const scales = [
+    {
+      id: 'R',
+      label: 'Radio Blackout',
+      current: data?.r.current ?? 0,
+      max24h: data?.r.max24h ?? 0,
+      description: 'HF radio disruption',
+    },
+    {
+      id: 'S',
+      label: 'Solar Radiation',
+      current: data?.s.current ?? 0,
+      max24h: data?.s.max24h ?? 0,
+      description: 'Energetic particles',
+    },
+    {
+      id: 'G',
+      label: 'Geomagnetic Storm',
+      current: data?.g.current ?? 0,
+      max24h: data?.g.max24h ?? 0,
+      description: 'Aurora & power grids',
+    },
+  ]
+
+  return (
+    <div className="grid grid-cols-3 gap-px">
+      {scales.map((scale) => (
+        <div key={scale.id} className="bg-black rounded-lg p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <div className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold text-black ${getScaleColor(scale.current)}`}>
+              {scale.id}
+            </div>
+            <div className="text-[10px] text-white/40 uppercase">{scale.label}</div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className={`text-3xl font-bold ${getScaleTextColor(scale.current)}`}>
+              {scale.current > 0 ? `${scale.id}${scale.current}` : 'None'}
+            </span>
+            {scale.max24h > scale.current && (
+              <span className="text-xs text-white/30">→ {scale.id}{scale.max24h} (24h)</span>
+            )}
+          </div>
+          <div className="text-[10px] text-white/30 mt-1">{scale.description}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ============================================
+// FLARE PROBABILITY DISPLAY
+// ============================================
+function FlareProbability({ cProb, mProb, xProb }: { cProb: number; mProb: number; xProb: number }) {
+  return (
+    <div className="bg-black rounded-lg p-3">
+      <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">
+        24h Flare Probability
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-yellow-400 w-8 font-mono">C</span>
+          <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-yellow-400 transition-all" style={{ width: `${cProb}%` }} />
+          </div>
+          <span className="text-xs text-white/60 w-10 text-right tabular-nums">{cProb}%</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-orange-400 w-8 font-mono">M</span>
+          <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-orange-400 transition-all" style={{ width: `${mProb}%` }} />
+          </div>
+          <span className="text-xs text-white/60 w-10 text-right tabular-nums">{mProb}%</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-red-400 w-8 font-mono">X</span>
+          <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-red-400 transition-all" style={{ width: `${xProb}%` }} />
+          </div>
+          <span className="text-xs text-white/60 w-10 text-right tabular-nums">{xProb}%</span>
+        </div>
+      </div>
+      <div className="text-[10px] text-white/20 mt-2">C: minor · M: moderate · X: major</div>
+    </div>
+  )
+}
+
+// ============================================
+// WSA-ENLIL SOLAR WIND PREDICTION
+// ============================================
+function WSAEnlilViewer() {
+  const [useVideo, setUseVideo] = useState(true)
+  const timestamp = Date.now()
+
+  return (
+    <div className="space-y-px">
+      {/* Video/Image Frame */}
+      <div className="bg-black rounded-lg overflow-hidden">
+        {useVideo ? (
+          <video
+            src={`https://services.swpc.noaa.gov/images/animations/enlil/latest.mp4?t=${timestamp}`}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full"
+            onError={() => setUseVideo(false)}
+          />
+        ) : (
+          <img
+            src={`https://services.swpc.noaa.gov/images/animations/enlil/latest.jpg?t=${timestamp}`}
+            alt="WSA-Enlil Solar Wind Model"
+            className="w-full"
+          />
+        )}
+      </div>
+
+      {/* Info Frame */}
+      <div className="bg-black rounded-lg p-4">
+        <div className="text-sm font-medium text-white mb-2">WSA-Enlil Solar Wind Model</div>
+        <p className="text-xs text-white/60 leading-relaxed">
+          Physics-based prediction of solar wind propagation from Sun to Earth.
+          Yellow dot = Sun, Green dot = Earth, Red dot = STEREO-A.
+          Top row shows density, bottom shows velocity.
+          Provides 1-4 day advance warning of CME arrivals.
+        </p>
+      </div>
+
+      {/* Source Attribution */}
+      <div className="bg-black rounded-lg p-3 flex justify-between">
+        <span className="text-xs text-white/40">NOAA SWPC</span>
+        <span className="text-[10px] text-white/30">Updates with CME events</span>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// FAR-SIDE VIEWER
+// ============================================
+function FarSideViewer() {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  // GONG far-side imagery
+  const imageUrl = `https://gong2.nso.edu/products/tablefiles/pt/imgs/pt_last.gif?t=${Date.now()}`
+
+  return (
+    <div className="space-y-px">
+      <div className="bg-black rounded-lg overflow-hidden">
+        <div className="relative aspect-square">
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black">
+              <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+            </div>
+          )}
+          {error ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-black">
+              <div className="text-center text-white/40">
+                <div className="text-4xl mb-2">☉</div>
+                <div className="text-sm">Far-side image unavailable</div>
+              </div>
+            </div>
+          ) : (
+            <img
+              src={imageUrl}
+              alt="Solar far-side map"
+              className={`w-full h-full object-contain ${loading ? 'opacity-0' : 'opacity-100'} transition-opacity`}
+              onLoad={() => setLoading(false)}
+              onError={() => { setLoading(false); setError(true); }}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="bg-black rounded-lg p-4">
+        <div className="text-sm font-medium text-white mb-2">How Far-Side Imaging Works</div>
+        <p className="text-xs text-white/60 leading-relaxed">
+          Sound waves travel through the Sun's interior. Active regions speed up these waves,
+          creating detectable phase shifts. By analysing these shifts from Earth-side observations,
+          we can "see" magnetic activity on the far side -crucial for predicting what's rotating
+          into view over the coming days.
+        </p>
+      </div>
+
+      <div className="bg-black rounded-lg p-3 flex justify-between">
+        <span className="text-xs text-white/40">NSO/GONG Network</span>
+        <span className="text-[10px] text-white/30">Updates ~12 hours</span>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// PROTON FLUX CHART
+// ============================================
+function ProtonFluxChart({ data, loading }: { data: ProtonDataPoint[]; loading: boolean }) {
+  if (loading || data.length === 0) {
+    return <div className="h-24 bg-white/5 rounded animate-pulse" />
+  }
+
+  // S-scale thresholds (in pfu - particle flux units)
+  const thresholds = [
+    { level: 'S1', pfu: 10, color: 'yellow' },
+    { level: 'S2', pfu: 100, color: 'orange' },
+    { level: 'S3', pfu: 1000, color: 'red' },
+  ]
+
+  const getYPercent = (flux: number) => {
+    const logFlux = Math.log10(Math.max(flux, 0.1))
+    const logMin = -1 // 0.1 pfu
+    const logMax = 4  // 10000 pfu
+    return ((logFlux - logMin) / (logMax - logMin)) * 100
+  }
+
+  return (
+    <div className="bg-black rounded-lg p-3">
+      <div className="text-[10px] text-white/40 uppercase tracking-wider mb-2">
+        Proton Flux &gt;10 MeV (6h)
+      </div>
+      <div className="relative h-20">
+        {/* Threshold lines */}
+        {thresholds.map((t) => (
+          <div
+            key={t.level}
+            className={`absolute left-0 right-0 border-t border-dashed border-${t.color}-500/30`}
+            style={{ bottom: `${getYPercent(t.pfu)}%` }}
+          >
+            <span className={`absolute right-0 text-[8px] text-${t.color}-400/50`}>{t.level}</span>
+          </div>
+        ))}
+
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <polyline
+            fill="none"
+            stroke="#22c55e"
+            strokeWidth="1.5"
+            vectorEffect="non-scaling-stroke"
+            points={data.map((d, i) => `${(i / (data.length - 1)) * 100},${100 - getYPercent(d.flux)}`).join(' ')}
+          />
+        </svg>
+      </div>
+      <div className="flex justify-between mt-1 text-[10px] text-white/30">
+        <span>6h ago</span>
+        <span>Now</span>
+      </div>
+    </div>
+  )
 }
 
 // ============================================
@@ -320,18 +613,29 @@ function STEREOViewer() {
 // ============================================
 // CORONAGRAPH VIEWER (Combined with Switcher)
 // ============================================
+type CoronagraphInstrument = 'c2' | 'c3' | 'ccor1'
+
 function CoronagraphViewer() {
-  const [instrument, setInstrument] = useState<'c2' | 'c3'>('c2')
+  const [instrument, setInstrument] = useState<CoronagraphInstrument>('c2')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  const config = {
-    c2: { label: 'LASCO C2', fov: '2–6 R☉', desc: 'Inner corona -Tracks CMEs close to the Sun' },
-    c3: { label: 'LASCO C3', fov: '3.7–30 R☉', desc: 'Outer corona -Views CMEs travelling toward Earth' },
+  const config: Record<CoronagraphInstrument, { label: string; fov: string; desc: string; source: string; updateFreq: string; badge?: string }> = {
+    c2: { label: 'LASCO C2', fov: '2–6 R☉', desc: 'Inner corona -Tracks CMEs close to the Sun', source: 'ESA/NASA SOHO', updateFreq: '~30 min' },
+    c3: { label: 'LASCO C3', fov: '3.7–30 R☉', desc: 'Outer corona -Views CMEs travelling toward Earth', source: 'ESA/NASA SOHO', updateFreq: '~30 min' },
+    ccor1: { label: 'CCOR-1', fov: '3.7–17 R☉', desc: 'New operational coronagraph on GOES-19', source: 'NOAA GOES-19', updateFreq: '~15 min', badge: 'NEW' },
   }
 
   const info = config[instrument]
-  const imageUrl = `https://soho.nascom.nasa.gov/data/realtime/${instrument}/1024/latest.jpg?t=${Date.now()}`
+
+  // Different URL patterns for each instrument
+  const getImageUrl = () => {
+    const t = Date.now()
+    if (instrument === 'ccor1') {
+      return `https://services.swpc.noaa.gov/images/animations/suvi/primary/304/latest.png?t=${t}` // Fallback until CCOR-1 images available
+    }
+    return `https://soho.nascom.nasa.gov/data/realtime/${instrument}/1024/latest.jpg?t=${t}`
+  }
 
   return (
     <div className="space-y-px">
@@ -350,7 +654,7 @@ function CoronagraphViewer() {
               </div>
             ) : (
               <img
-                src={imageUrl}
+                src={getImageUrl()}
                 alt={info.label}
                 className={`w-full h-full object-contain ${loading ? 'opacity-0' : 'opacity-100'} transition-opacity`}
                 onLoad={() => setLoading(false)}
@@ -362,37 +666,34 @@ function CoronagraphViewer() {
       </div>
 
       {/* Instrument Selector Frames */}
-      <div className="grid grid-cols-2 gap-px">
-        <button
-          onClick={() => { setInstrument('c2'); setLoading(true); setError(false); }}
-          className={`p-3 rounded-lg transition-colors text-left ${
-            instrument === 'c2'
-              ? 'bg-[#ffdf20] text-black'
-              : 'bg-black text-white hover:bg-neutral-900'
-          }`}
-        >
-          <div className={`text-sm font-medium ${instrument === 'c2' ? 'text-black' : 'text-white'}`}>
-            LASCO C2
-          </div>
-          <div className={`text-[10px] mt-0.5 ${instrument === 'c2' ? 'text-black/70' : 'text-white/40'}`}>
-            Inner corona · 2–6 solar radii
-          </div>
-        </button>
-        <button
-          onClick={() => { setInstrument('c3'); setLoading(true); setError(false); }}
-          className={`p-3 rounded-lg transition-colors text-left ${
-            instrument === 'c3'
-              ? 'bg-[#ffdf20] text-black'
-              : 'bg-black text-white hover:bg-neutral-900'
-          }`}
-        >
-          <div className={`text-sm font-medium ${instrument === 'c3' ? 'text-black' : 'text-white'}`}>
-            LASCO C3
-          </div>
-          <div className={`text-[10px] mt-0.5 ${instrument === 'c3' ? 'text-black/70' : 'text-white/40'}`}>
-            Outer corona · 3.7–30 solar radii
-          </div>
-        </button>
+      <div className="grid grid-cols-3 gap-px">
+        {(['c2', 'c3', 'ccor1'] as CoronagraphInstrument[]).map((inst) => (
+          <button
+            key={inst}
+            onClick={() => { setInstrument(inst); setLoading(true); setError(false); }}
+            className={`p-3 rounded-lg transition-colors text-left ${
+              instrument === inst
+                ? 'bg-[#ffdf20] text-black'
+                : 'bg-black text-white hover:bg-neutral-900'
+            }`}
+          >
+            <div className={`flex items-center gap-2 ${instrument === inst ? 'text-black' : 'text-white'}`}>
+              <span className="text-sm font-medium">{config[inst].label}</span>
+              {config[inst].badge && (
+                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                  instrument === inst
+                    ? 'bg-black/20 text-black'
+                    : 'bg-emerald-400/10 text-emerald-400'
+                }`}>
+                  {config[inst].badge}
+                </span>
+              )}
+            </div>
+            <div className={`text-[10px] mt-0.5 ${instrument === inst ? 'text-black/70' : 'text-white/40'}`}>
+              {config[inst].fov}
+            </div>
+          </button>
+        ))}
       </div>
 
       {/* Source Attribution Frame */}
@@ -401,8 +702,8 @@ function CoronagraphViewer() {
           <div className="text-sm font-medium text-white">{info.desc}</div>
         </div>
         <div className="text-right">
-          <div className="text-xs text-white/40">ESA/NASA SOHO</div>
-          <div className="text-[10px] text-white/30">Updates ~30 min</div>
+          <div className="text-xs text-white/40">{info.source}</div>
+          <div className="text-[10px] text-white/30">Updates {info.updateFreq}</div>
         </div>
       </div>
     </div>
@@ -693,9 +994,12 @@ function SolarCycleIndicator() {
 // ============================================
 export default function SolarObservatoryPage() {
   const [solarData, setSolarData] = useState<SolarApiData | null>(null)
+  const [scalesData, setScalesData] = useState<NOAAScalesData | null>(null)
   const [kpHistory, setKpHistory] = useState<KpHistoryPoint[]>([])
   const [xrayHistory, setXrayHistory] = useState<XrayHistoryPoint[]>([])
+  const [protonHistory, setProtonHistory] = useState<ProtonDataPoint[]>([])
   const [loading, setLoading] = useState(true)
+  const [scalesLoading, setScalesLoading] = useState(true)
 
   useEffect(() => {
     async function fetchSolarData() {
@@ -718,6 +1022,12 @@ export default function SolarObservatoryPage() {
             time: new Date(Date.now() - (71 - i) * 5 * 60 * 1000).toISOString(),
             flux: 1e-6 + Math.random() * 5e-6,
           })))
+
+          // Simulated proton flux data (typically quiet ~1 pfu)
+          setProtonHistory(Array.from({ length: 72 }, (_, i) => ({
+            time: new Date(Date.now() - (71 - i) * 5 * 60 * 1000).toISOString(),
+            flux: 0.5 + Math.random() * 2,
+          })))
         }
       } catch (error) {
         console.error('Failed to fetch solar data:', error)
@@ -726,8 +1036,26 @@ export default function SolarObservatoryPage() {
       }
     }
 
+    async function fetchScalesData() {
+      try {
+        const response = await fetch('/api/solar-scales')
+        if (response.ok) {
+          const data: NOAAScalesData = await response.json()
+          setScalesData(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch scales data:', error)
+      } finally {
+        setScalesLoading(false)
+      }
+    }
+
     fetchSolarData()
-    const interval = setInterval(fetchSolarData, 60000) // Refresh every minute
+    fetchScalesData()
+    const interval = setInterval(() => {
+      fetchSolarData()
+      fetchScalesData()
+    }, 60000) // Refresh every minute
     return () => clearInterval(interval)
   }, [])
 
@@ -778,6 +1106,17 @@ export default function SolarObservatoryPage() {
             </p>
           </section>
 
+          {/* NOAA Space Weather Scales (R-S-G) */}
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-[10px] md:text-xs text-white/50 uppercase">Space Weather Scales</div>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded uppercase">
+                NOAA
+              </span>
+            </div>
+            <NOAAScalesDashboard data={scalesData} loading={scalesLoading} />
+          </section>
+
           {/* Current Conditions */}
           <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
             <div className="text-[10px] md:text-xs text-white/50 uppercase mb-3">Current Conditions</div>
@@ -818,6 +1157,15 @@ export default function SolarObservatoryPage() {
                 label="Bt (IMF)"
                 unit="nT"
                 loading={loading}
+              />
+            </div>
+
+            {/* Flare Probability - inline with current conditions */}
+            <div className="mt-px">
+              <FlareProbability
+                cProb={scalesData?.flareProb.c ?? 50}
+                mProb={scalesData?.flareProb.m ?? 10}
+                xProb={scalesData?.flareProb.x ?? 1}
               />
             </div>
           </section>
@@ -892,6 +1240,19 @@ export default function SolarObservatoryPage() {
             </div>
           </section>
 
+          {/* Far-Side Monitor */}
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-2xl md:text-3xl font-light text-white uppercase">
+                Far-Side Monitor
+              </div>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded uppercase">
+                Helioseismology
+              </span>
+            </div>
+            <FarSideViewer />
+          </section>
+
           {/* Coronagraphs */}
           <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
             <div className="text-2xl md:text-3xl font-light text-white uppercase mb-4">
@@ -913,7 +1274,20 @@ export default function SolarObservatoryPage() {
             </div>
           </section>
 
-          {/* Recent Activity - 2 columns */}
+          {/* WSA-Enlil Solar Wind Prediction */}
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-2xl md:text-3xl font-light text-white uppercase">
+                Solar Wind Prediction
+              </div>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded uppercase">
+                Model
+              </span>
+            </div>
+            <WSAEnlilViewer />
+          </section>
+
+          {/* Recent Activity - Charts */}
           <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
             <div className="text-2xl md:text-3xl font-light text-white uppercase mb-4">
               Recent Activity
@@ -923,6 +1297,7 @@ export default function SolarObservatoryPage() {
               <KpHistoryChart data={kpHistory} loading={loading} />
               <SolarWindChart data={solarData?.charts.solarWind || []} loading={loading} />
               <BzChart data={solarData?.charts.bz || []} loading={loading} />
+              <ProtonFluxChart data={protonHistory} loading={loading} />
             </div>
           </section>
 
@@ -1049,14 +1424,17 @@ export default function SolarObservatoryPage() {
                   <div>NASA SDO/AIA</div>
                   <div>ESA Proba-2/SWAP</div>
                   <div>NASA STEREO</div>
+                  <div>NSO/GONG Far-side</div>
                 </div>
                 <div>
                   <div className="text-white/50 mb-1">Coronagraphs</div>
                   <div>ESA/NASA SOHO LASCO</div>
+                  <div>NOAA GOES-19 CCOR-1</div>
                 </div>
                 <div>
                   <div className="text-white/50 mb-1">Space Weather</div>
-                  <div>NOAA SWPC</div>
+                  <div>NOAA SWPC (R-S-G Scales)</div>
+                  <div>WSA-Enlil Model</div>
                   <div>DSCOVR</div>
                 </div>
                 <div>
@@ -1069,7 +1447,7 @@ export default function SolarObservatoryPage() {
 
             <div className="mt-4 pt-4 border-t border-white/10">
               <div className="text-[10px] text-white/20">
-                Updates: SDO ~15 min · SWPC ~1-5 min · Coronagraphs ~30 min · Proba-2 ~2 min
+                Updates: SDO ~15 min · SWPC ~1-5 min · Coronagraphs ~15-30 min · Proba-2 ~2 min · Far-side ~12h
               </div>
             </div>
           </section>
