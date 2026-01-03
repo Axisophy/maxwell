@@ -149,12 +149,20 @@ function CameraController({
   return (
     <OrbitControls
       ref={controlsRef}
+      makeDefault
       enableDamping
       dampingFactor={0.05}
-      enableZoom={true}
+      enableZoom
+      enablePan
+      enableRotate
       zoomSpeed={1.5}
       minDistance={1}
       maxDistance={1000000}
+      mouseButtons={{
+        LEFT: THREE.MOUSE.ROTATE,
+        MIDDLE: THREE.MOUSE.DOLLY,
+        RIGHT: THREE.MOUSE.PAN,
+      }}
     />
   )
 }
@@ -211,25 +219,36 @@ export default function OrbitalScene({
   showOrbits = true,
   focusTarget,
 }: OrbitalSceneProps) {
+  // Prevent scroll events from bubbling to page
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation()
+  }
+
   return (
-    <Canvas
-      camera={{
-        fov: 45,
-        near: 0.1,
-        far: 1000000,
-        position: [300000, 100000, 300000],
-      }}
-      gl={{
-        logarithmicDepthBuffer: true,
-        antialias: true,
-      }}
-      style={{ background: '#000000' }}
+    <div
+      className="w-full h-full"
+      onWheel={handleWheel}
+      style={{ touchAction: 'none' }}
     >
-      <SceneContent
-        time={time}
-        showOrbits={showOrbits}
-        focusTarget={focusTarget}
-      />
-    </Canvas>
+      <Canvas
+        camera={{
+          fov: 45,
+          near: 0.1,
+          far: 1000000,
+          position: [300000, 100000, 300000],
+        }}
+        gl={{
+          logarithmicDepthBuffer: true,
+          antialias: true,
+        }}
+        style={{ background: '#000000' }}
+      >
+        <SceneContent
+          time={time}
+          showOrbits={showOrbits}
+          focusTarget={focusTarget}
+        />
+      </Canvas>
+    </div>
   )
 }
