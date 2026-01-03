@@ -34,7 +34,7 @@ const items: DataItem[] = [
   {
     title: 'Periodic Table',
     href: '/data/elements/periodic-table',
-    status: 'coming-soon',
+    status: 'ready',
     description: 'Interactive periodic table with properties, electron configurations, and applications',
     stat: '118',
     statLabel: 'elements',
