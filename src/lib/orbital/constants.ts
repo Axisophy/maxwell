@@ -47,7 +47,7 @@ export const TIME_SPEEDS = [
 
 // Colours for celestial bodies
 export const BODY_COLORS = {
-  sun: 0xffff00,
+  sun: 0xffdd44,
   earth: 0x4a90d9,
   moon: 0x888888,
   orbit: 0x444444,
@@ -99,23 +99,30 @@ export const DISPLAY_SCALES = {
 // Camera configuration
 export const CAMERA = {
   fov: 45,
-  near: 0.1,
-  far: 1000000,
-  initialPosition: [300000, 100000, 300000] as const,
+  near: 0.01,
+  far: 100000000,
+  initialPosition: [300, 150, 300] as const,
+  transitionDuration: 1000,  // ms for focus transitions
   focusDistances: {
     sun: 500,
+    mercury: 150,
+    venus: 180,
     earth: 200,
     moon: 50,
+    mars: 250,
+    jupiter: 800,
+    saturn: 1000,
+    uranus: 600,
+    neptune: 700,
   },
-  transitionDuration: 1000,  // ms for focus transitions
 } as const
 
 // OrbitControls configuration
 export const CONTROLS = {
   dampingFactor: 0.05,
   zoomSpeed: 1.5,
-  minDistance: 1,
-  maxDistance: 1000000,
+  minDistance: 10,
+  maxDistance: 50000,
 } as const
 
 // Animation speeds
@@ -125,21 +132,25 @@ export const ANIMATION = {
 
 // Starfield configuration
 export const STARS = {
-  radius: 300000,
-  depth: 100000,
+  radius: 50000,
+  depth: 10000,
   count: 5000,
-  factor: 100,
+  factor: 4,
 } as const
 
 // Orbit path rendering
 export const ORBIT_PATH = {
-  segments: 128,
-  lineWidth: 1,
-  opacity: 0.5,
+  lineWidth: 0.5,
+  opacity: 0.4,
+  segments: {
+    inner: 128,   // Mercury-Mars
+    outer: 64,    // Jupiter-Neptune
+    moon: 64,
+  },
 } as const
 
 // Lighting
 export const LIGHTING = {
-  ambientIntensity: 0.1,
+  ambientIntensity: 0.2,
   sunIntensity: 2,
 } as const

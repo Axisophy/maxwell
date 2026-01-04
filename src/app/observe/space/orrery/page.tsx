@@ -62,8 +62,8 @@ function OrreryContent() {
 
         <PageHeaderFrame
           variant="dark"
-          title="Solar system"
-          description="A real-time visualisation of the inner solar system. Earth and Moon positions calculated using VSOP87 planetary theory. Zoom and pan to explore."
+          title="Solar System Orrery"
+          description="Real-time positions of all eight planets calculated using high-precision ephemeris data. Orbital paths show traced positions over each planet's orbital period."
         />
 
         {/* Main visualisation */}
@@ -273,7 +273,7 @@ export default function OrreryPage() {
 
           <PageHeaderFrame
             variant="dark"
-            title="Solar system"
+            title="Solar System Orrery"
             description="Loading orbital engine..."
           />
 
