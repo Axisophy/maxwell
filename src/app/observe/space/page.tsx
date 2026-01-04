@@ -264,7 +264,7 @@ export default function SpacePage() {
           </section>
 
           {/* Space Metrics Frame */}
-          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
               Current Conditions
             </div>
@@ -297,8 +297,8 @@ export default function SpacePage() {
           </section>
 
           {/* Observatories Frame */}
-          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
-            <div className="text-[10px] text-white/40 uppercase tracking-wider mb-4">
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4 mb-px">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-2">
               Observatories
             </div>
             <p className="text-sm text-white/50 mb-4">
@@ -317,8 +317,8 @@ export default function SpacePage() {
           </section>
 
           {/* Orbital Frame */}
-          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
-            <div className="text-[10px] text-white/40 uppercase tracking-wider mb-4">
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4 mb-px">
+            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-2">
               Orbital
             </div>
             <p className="text-sm text-white/50 mb-4">
@@ -338,7 +338,7 @@ export default function SpacePage() {
           </section>
 
           {/* Widgets Frame */}
-          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
               Widgets
             </div>
