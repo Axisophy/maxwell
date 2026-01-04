@@ -12,7 +12,18 @@ import {
   generateOrbitPath,
   Vector3D,
 } from '@/lib/orbital/bodies'
-import { getRadius, SCALE } from '@/lib/orbital/constants'
+import {
+  getRadius,
+  SCALE,
+  DISPLAY_SCALES,
+  CAMERA,
+  CONTROLS,
+  ANIMATION,
+  STARS as STARS_CONFIG,
+  ORBIT_PATH,
+  LIGHTING,
+  BODY_COLORS,
+} from '@/lib/orbital/constants'
 
 interface OrbitalSceneProps {
   time: Date
@@ -21,21 +32,15 @@ interface OrbitalSceneProps {
   onCameraMove?: (position: Vector3D) => void
 }
 
-// Sun component with glow effect
+// Sun component
 function Sun() {
-  // Scale down sun for visibility at solar system scale
-  // Real sun would be ~696 units, but we scale to ~20 for visibility
-  const displayRadius = 20
-
   return (
     <group>
-      {/* Core sun */}
       <mesh>
-        <sphereGeometry args={[displayRadius, 32, 32]} />
-        <meshBasicMaterial color={0xffff00} />
+        <sphereGeometry args={[DISPLAY_SCALES.sun, 32, 32]} />
+        <meshBasicMaterial color={BODY_COLORS.sun} />
       </mesh>
-      {/* Point light */}
-      <pointLight color={0xffffff} intensity={2} distance={0} decay={0} />
+      <pointLight color={0xffffff} intensity={LIGHTING.sunIntensity} distance={0} decay={0} />
     </group>
   )
 }
@@ -43,14 +48,11 @@ function Sun() {
 // Earth component
 function Earth({ position }: { position: Vector3D }) {
   const meshRef = useRef<THREE.Mesh>(null)
-  const radius = getRadius('earth')
-  // Scale up for visibility at solar system scale
-  const displayRadius = radius * 10
+  const displayRadius = getRadius('earth') * DISPLAY_SCALES.planet
 
-  // Rotate Earth on its axis
   useFrame(() => {
     if (meshRef.current) {
-      meshRef.current.rotation.y += 0.001
+      meshRef.current.rotation.y += ANIMATION.earthRotation
     }
   })
 
@@ -58,7 +60,7 @@ function Earth({ position }: { position: Vector3D }) {
     <group position={[position.x, position.y, position.z]}>
       <mesh ref={meshRef}>
         <sphereGeometry args={[displayRadius, 32, 32]} />
-        <meshStandardMaterial color={0x4a90d9} />
+        <meshStandardMaterial color={BODY_COLORS.earth} />
       </mesh>
     </group>
   )
@@ -66,14 +68,12 @@ function Earth({ position }: { position: Vector3D }) {
 
 // Moon component
 function Moon({ position }: { position: Vector3D }) {
-  const radius = getRadius('moon')
-  // Scale up for visibility
-  const displayRadius = radius * 10
+  const displayRadius = getRadius('moon') * DISPLAY_SCALES.planet
 
   return (
     <mesh position={[position.x, position.y, position.z]}>
       <sphereGeometry args={[displayRadius, 16, 16]} />
-      <meshStandardMaterial color={0x888888} />
+      <meshStandardMaterial color={BODY_COLORS.moon} />
     </mesh>
   )
 }
@@ -90,7 +90,7 @@ function OrbitPath({
 }) {
   const elements = getOrbitalElements(bodyName)
   const points = useMemo(() => {
-    const orbitPoints = generateOrbitPath(center, elements, 128)
+    const orbitPoints = generateOrbitPath(center, elements, ORBIT_PATH.segments)
     return orbitPoints.map(p => [p.x, p.y, p.z] as [number, number, number])
   }, [center.x, center.y, center.z, elements])
 
@@ -98,14 +98,14 @@ function OrbitPath({
     <Line
       points={points}
       color={color}
-      lineWidth={1}
-      opacity={0.5}
+      lineWidth={ORBIT_PATH.lineWidth}
+      opacity={ORBIT_PATH.opacity}
       transparent
     />
   )
 }
 
-// Camera controller with floating origin
+// Camera controller with smooth transitions
 function CameraController({
   focusTarget,
   earthPosition,
@@ -117,47 +117,64 @@ function CameraController({
 }) {
   const { camera } = useThree()
   const controlsRef = useRef<any>(null)
+  const previousFocusRef = useRef<typeof focusTarget>(null)
+  const animationRef = useRef<{ startTime: number; startPos: THREE.Vector3; startTarget: THREE.Vector3 } | null>(null)
+
+  // Smooth camera transition using useFrame
+  useFrame(() => {
+    if (!animationRef.current || !controlsRef.current) return
+
+    const elapsed = Date.now() - animationRef.current.startTime
+    const progress = Math.min(elapsed / CAMERA.transitionDuration, 1)
+    // Ease out cubic for smooth deceleration
+    const eased = 1 - Math.pow(1 - progress, 3)
+
+    if (progress >= 1) {
+      animationRef.current = null
+      return
+    }
+
+    // Interpolate camera position and target
+    const currentTarget = controlsRef.current.target
+    const targetPos = getTargetPosition(focusTarget, earthPosition, moonPosition)
+    const distance = CAMERA.focusDistances[focusTarget || 'sun'] || CAMERA.focusDistances.sun
+
+    currentTarget.lerp(targetPos, eased * 0.1)
+
+    const endPos = new THREE.Vector3(
+      targetPos.x + distance,
+      targetPos.y + distance * 0.5,
+      targetPos.z + distance
+    )
+    camera.position.lerp(endPos, eased * 0.1)
+  })
 
   useEffect(() => {
     if (!focusTarget || !controlsRef.current) return
+    if (focusTarget === previousFocusRef.current) return
 
-    let target: THREE.Vector3
-    let distance: number
-
-    switch (focusTarget) {
-      case 'sun':
-        target = new THREE.Vector3(0, 0, 0)
-        distance = 500
-        break
-      case 'earth':
-        target = new THREE.Vector3(earthPosition.x, earthPosition.y, earthPosition.z)
-        distance = 200
-        break
-      case 'moon':
-        target = new THREE.Vector3(moonPosition.x, moonPosition.y, moonPosition.z)
-        distance = 50
-        break
-      default:
-        return
+    // Start smooth transition
+    animationRef.current = {
+      startTime: Date.now(),
+      startPos: camera.position.clone(),
+      startTarget: controlsRef.current.target.clone(),
     }
 
-    // Animate camera to target
-    controlsRef.current.target.copy(target)
-    camera.position.set(target.x + distance, target.y + distance * 0.5, target.z + distance)
-  }, [focusTarget, earthPosition, moonPosition, camera])
+    previousFocusRef.current = focusTarget
+  }, [focusTarget, camera])
 
   return (
     <OrbitControls
       ref={controlsRef}
       makeDefault
       enableDamping
-      dampingFactor={0.05}
+      dampingFactor={CONTROLS.dampingFactor}
       enableZoom
       enablePan
       enableRotate
-      zoomSpeed={1.5}
-      minDistance={1}
-      maxDistance={1000000}
+      zoomSpeed={CONTROLS.zoomSpeed}
+      minDistance={CONTROLS.minDistance}
+      maxDistance={CONTROLS.maxDistance}
       mouseButtons={{
         LEFT: THREE.MOUSE.ROTATE,
         MIDDLE: THREE.MOUSE.DOLLY,
@@ -165,6 +182,23 @@ function CameraController({
       }}
     />
   )
+}
+
+// Helper to get target position based on focus
+function getTargetPosition(
+  focusTarget: 'sun' | 'earth' | 'moon' | null | undefined,
+  earthPosition: Vector3D,
+  moonPosition: Vector3D
+): THREE.Vector3 {
+  switch (focusTarget) {
+    case 'earth':
+      return new THREE.Vector3(earthPosition.x, earthPosition.y, earthPosition.z)
+    case 'moon':
+      return new THREE.Vector3(moonPosition.x, moonPosition.y, moonPosition.z)
+    case 'sun':
+    default:
+      return new THREE.Vector3(0, 0, 0)
+  }
 }
 
 // Main scene content
@@ -183,10 +217,17 @@ function SceneContent({
   return (
     <>
       {/* Lighting */}
-      <ambientLight intensity={0.1} />
+      <ambientLight intensity={LIGHTING.ambientIntensity} />
 
       {/* Stars background */}
-      <Stars radius={300000} depth={100000} count={5000} factor={100} fade speed={0} />
+      <Stars
+        radius={STARS_CONFIG.radius}
+        depth={STARS_CONFIG.depth}
+        count={STARS_CONFIG.count}
+        factor={STARS_CONFIG.factor}
+        fade
+        speed={0}
+      />
 
       {/* Sun at origin */}
       <Sun />
@@ -232,10 +273,10 @@ export default function OrbitalScene({
     >
       <Canvas
         camera={{
-          fov: 45,
-          near: 0.1,
-          far: 1000000,
-          position: [300000, 100000, 300000],
+          fov: CAMERA.fov,
+          near: CAMERA.near,
+          far: CAMERA.far,
+          position: CAMERA.initialPosition as [number, number, number],
         }}
         gl={{
           logarithmicDepthBuffer: true,
