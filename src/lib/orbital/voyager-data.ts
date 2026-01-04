@@ -114,15 +114,11 @@ const VOYAGER_2_MILESTONES: MissionMilestone[] = [
 ]
 
 /**
- * Generate simplified trajectory for Voyager missions
+ * Generate trajectory for Voyager missions
  *
- * This is an approximation based on known distances at key dates.
- * For production, replace with actual JPL Horizons data.
- *
- * Voyager trajectories are roughly:
- * - Outward in a spiral due to planetary gravity assists
- * - Voyager 1 heading "north" of ecliptic plane after Saturn
- * - Voyager 2 roughly in ecliptic plane
+ * Both spacecraft launch from Earth and follow gravity-assist trajectories.
+ * This is a simplified but visually accurate approximation.
+ * For production, replace with actual JPL Horizons ephemeris data.
  */
 function generateVoyagerTrajectory(
   isVoyager1: boolean,
@@ -131,33 +127,54 @@ function generateVoyagerTrajectory(
 ): TrajectoryPoint[] {
   const points: TrajectoryPoint[] = []
 
-  // Key distance milestones (AU from Sun)
-  // Based on actual mission data
+  // Launch parameters
+  const launchYear = isVoyager1 ? 1977.68 : 1977.64  // Sept 5 / Aug 20
+
+  // Key distance milestones (AU from Sun) - based on actual mission data
   const keyDistances = isVoyager1
     ? [
-        { year: 1977.7, distance: 1 },      // Launch
-        { year: 1979.2, distance: 5.2 },    // Jupiter
-        { year: 1980.9, distance: 9.5 },    // Saturn
-        { year: 1990, distance: 40 },       // Pale Blue Dot
+        { year: 1977.68, distance: 1.0 },     // Launch from Earth
+        { year: 1978.5, distance: 2.5 },      // Outbound
+        { year: 1979.18, distance: 5.2 },     // Jupiter flyby (March 1979)
+        { year: 1980.0, distance: 7.5 },      // Between Jupiter and Saturn
+        { year: 1980.87, distance: 9.5 },     // Saturn flyby (Nov 1980)
+        { year: 1985, distance: 25 },
+        { year: 1990.12, distance: 40 },      // Pale Blue Dot
         { year: 2000, distance: 76 },
-        { year: 2012, distance: 122 },      // Heliopause
+        { year: 2004.96, distance: 94 },      // Termination shock
+        { year: 2012.65, distance: 122 },     // Heliopause
         { year: 2020, distance: 150 },
-        { year: 2026, distance: 165 },      // Current approx
+        { year: 2026, distance: 165 },
       ]
     : [
-        { year: 1977.6, distance: 1 },      // Launch
-        { year: 1979.5, distance: 5.2 },    // Jupiter
-        { year: 1981.7, distance: 9.5 },    // Saturn
-        { year: 1986.1, distance: 19.2 },   // Uranus
-        { year: 1989.7, distance: 30 },     // Neptune
+        { year: 1977.64, distance: 1.0 },     // Launch from Earth
+        { year: 1978.5, distance: 2.8 },      // Outbound (slower trajectory)
+        { year: 1979.52, distance: 5.2 },     // Jupiter flyby (July 1979)
+        { year: 1980.5, distance: 7.0 },
+        { year: 1981.65, distance: 9.5 },     // Saturn flyby (Aug 1981)
+        { year: 1984, distance: 15 },
+        { year: 1986.07, distance: 19.2 },    // Uranus flyby (Jan 1986)
+        { year: 1988, distance: 25 },
+        { year: 1989.65, distance: 30.1 },    // Neptune flyby (Aug 1989)
         { year: 2000, distance: 63 },
-        { year: 2018, distance: 119 },      // Heliopause
-        { year: 2026, distance: 137 },      // Current approx
+        { year: 2007.67, distance: 84 },      // Termination shock
+        { year: 2018.85, distance: 119 },     // Heliopause
+        { year: 2026, distance: 137 },
       ]
 
-  // Interpolate between key distances
-  for (let year = startYear; year <= endYear; year += 0.1) {
-    // Find surrounding key points
+  // Voyager 1: After Saturn, heads "up" out of ecliptic toward Ophiuchus
+  // Voyager 2: Stays closer to ecliptic, heads toward Pavo
+
+  // Direction angles (in ecliptic coordinates)
+  // These represent the final heading after all gravity assists
+  const finalEclipticLon = isVoyager1 ? 260 : 290  // degrees
+  const finalEclipticLat = isVoyager1 ? 35 : -48   // degrees (V1 goes up, V2 goes down)
+
+  for (let year = startYear; year <= endYear; year += 0.05) {
+    // Skip years before launch
+    if (year < launchYear) continue
+
+    // Find surrounding key points for distance interpolation
     let d0 = keyDistances[0]
     let d1 = keyDistances[keyDistances.length - 1]
 
@@ -169,44 +186,51 @@ function generateVoyagerTrajectory(
       }
     }
 
-    // Linear interpolation of distance
-    const t = (year - d0.year) / (d1.year - d0.year)
+    // Interpolate distance
+    const t = Math.min(1, Math.max(0, (year - d0.year) / (d1.year - d0.year)))
     const distance = d0.distance + t * (d1.distance - d0.distance)
 
-    // Calculate position
-    // Voyager 1: Heading roughly toward constellation Ophiuchus (RA ~17h, Dec +12°)
-    // Voyager 2: Heading roughly toward constellation Pavo (RA ~20h, Dec -47°)
+    // Calculate trajectory direction
+    // Near Earth: direction based on Earth's position
+    // After Jupiter: transitions to final heading
+    const yearsFromLaunch = year - launchYear
 
-    // Convert to ecliptic coordinates (simplified)
-    // The trajectories curve due to gravity assists
-    const baseAngle = isVoyager1 ? 35 : 55  // Degrees from "forward" direction
-    const yearsFromLaunch = year - (isVoyager1 ? 1977.7 : 1977.6)
+    // Earth's approximate position at launch (simplified)
+    const earthLonAtLaunch = isVoyager1 ? 342 : 327  // degrees
 
-    // Angle changes over time as spacecraft curves through gravity assists
-    let angle: number
-    if (yearsFromLaunch < 3) {
-      // Near Earth, heading outward
-      angle = 0
-    } else if (yearsFromLaunch < 5) {
-      // Jupiter assist curves trajectory
-      angle = baseAngle * 0.3
+    // Blend from Earth departure direction to final heading
+    let eclipticLon: number
+    let eclipticLat: number
+
+    if (yearsFromLaunch < 0.5) {
+      // Near Earth - radial outward from Earth's position
+      eclipticLon = earthLonAtLaunch
+      eclipticLat = 0
+    } else if (yearsFromLaunch < 3) {
+      // Jupiter encounter - trajectory bending
+      const blend = (yearsFromLaunch - 0.5) / 2.5
+      eclipticLon = earthLonAtLaunch + blend * (finalEclipticLon - earthLonAtLaunch)
+      eclipticLat = blend * finalEclipticLat * 0.3
+    } else if (yearsFromLaunch < 6) {
+      // Saturn encounter (V1) or Uranus approach (V2)
+      const blend = (yearsFromLaunch - 3) / 3
+      eclipticLon = earthLonAtLaunch + (0.3 + blend * 0.7) * (finalEclipticLon - earthLonAtLaunch)
+      eclipticLat = (0.3 + blend * 0.7) * finalEclipticLat
     } else {
-      // Post-Jupiter, relatively straight path
-      angle = baseAngle * Math.min(1, (yearsFromLaunch - 3) / 10)
+      // Final heading - nearly straight line
+      eclipticLon = finalEclipticLon
+      eclipticLat = finalEclipticLat
     }
 
-    const angleRad = (angle * Math.PI) / 180
+    // Convert to Cartesian (ecliptic coordinates, Sun at origin)
+    const lonRad = (eclipticLon * Math.PI) / 180
+    const latRad = (eclipticLat * Math.PI) / 180
 
-    // Voyager 1 goes "up" (positive z), Voyager 2 stays closer to ecliptic
-    const zAngle = isVoyager1 ? 35 : -10
-    const zRad = (zAngle * Math.PI) / 180
+    const x = distance * Math.cos(latRad) * Math.cos(lonRad)
+    const y = distance * Math.cos(latRad) * Math.sin(lonRad)
+    const z = distance * Math.sin(latRad)
 
-    // Position in AU
-    const x = distance * Math.cos(angleRad) * Math.cos(zRad)
-    const y = distance * Math.sin(angleRad) * Math.cos(zRad)
-    const z = distance * Math.sin(zRad)
-
-    // Convert year fraction to ISO date
+    // Convert year to date
     const yearInt = Math.floor(year)
     const dayOfYear = Math.floor((year - yearInt) * 365)
     const date = new Date(yearInt, 0, 1 + dayOfYear)

@@ -2,7 +2,7 @@
 
 import { useRef, useMemo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, Stars, Line } from '@react-three/drei'
+import { OrbitControls, Stars, Line, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import {
   VOYAGER_1,
@@ -35,25 +35,53 @@ function Sun() {
   )
 }
 
-// Planet component
+// Planet component with labels
 function Planet({
   position,
   radius,
   color,
+  name,
 }: {
   position: { x: number; y: number; z: number }
   radius: number
   color: number
   name: string
 }) {
-  // Scale planets for visibility (they'd be invisible otherwise)
-  const displayRadius = Math.max(radius * 500, 0.5)
+  // Make planets much more visible at solar system scale
+  // Real planets would be invisible, so we exaggerate significantly
+  const displayRadius = name === 'jupiter' ? 3 :
+                        name === 'saturn' ? 2.5 :
+                        name === 'uranus' ? 1.8 :
+                        name === 'neptune' ? 1.8 : 1
 
   return (
-    <mesh position={[position.x, position.y, position.z]}>
-      <sphereGeometry args={[displayRadius, 16, 16]} />
-      <meshStandardMaterial color={color} />
-    </mesh>
+    <group position={[position.x, position.y, position.z]}>
+      <mesh>
+        <sphereGeometry args={[displayRadius, 24, 24]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      {/* Add a subtle glow ring to make planets more visible */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[displayRadius * 1.2, displayRadius * 1.5, 32]} />
+        <meshBasicMaterial color={color} transparent opacity={0.3} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Planet label */}
+      <Html
+        position={[0, displayRadius * 2.5, 0]}
+        center
+        style={{
+          color: 'white',
+          fontSize: '10px',
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          opacity: 0.7,
+          pointerEvents: 'none',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {name}
+      </Html>
+    </group>
   )
 }
 
@@ -120,9 +148,9 @@ function TrajectoryPath({
     <Line
       points={linePoints}
       color={mission.color}
-      lineWidth={1}
+      lineWidth={2}
       transparent
-      opacity={0.6}
+      opacity={0.8}
     />
   )
 }
