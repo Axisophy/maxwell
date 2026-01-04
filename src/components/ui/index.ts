@@ -5,15 +5,13 @@
  * All components work in both Server and Client Components.
  *
  * @example
- * import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+ * import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
  */
 
 // Layout
 export { PageShell } from './PageShell'
+export { PageHeaderFrame } from './PageHeaderFrame'
 
 // Navigation
 export { BreadcrumbFrame, breadcrumbItems } from './BreadcrumbFrame'
 export type { BreadcrumbItem } from './BreadcrumbFrame'
-
-// Legacy Breadcrumb (without frame wrapper) - prefer BreadcrumbFrame for new code
-export { default as Breadcrumb } from './Breadcrumb'
