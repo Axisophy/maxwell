@@ -59,6 +59,8 @@ export default function VoyagerPage() {
   const [speed, setSpeed] = useState(0)
   const [focusTarget, setFocusTarget] = useState<FocusTarget>('overview')
   const [showOrbits, setShowOrbits] = useState(true)
+  const [showHeliopause, setShowHeliopause] = useState(false)
+  const [showFlybyMarkers, setShowFlybyMarkers] = useState(true)
 
   // Animate time
   useEffect(() => {
@@ -134,6 +136,8 @@ export default function VoyagerPage() {
                 time={time}
                 showOrbits={showOrbits}
                 showPlanets={true}
+                showHeliopause={showHeliopause}
+                showFlybyMarkers={showFlybyMarkers}
                 focusTarget={focusTarget}
               />
             </Suspense>
@@ -374,29 +378,81 @@ export default function VoyagerPage() {
           </div>
         </div>
 
-        {/* Context section */}
+        {/* Grand Tour Explanation */}
         <div className="bg-[#1d1d1d] rounded-lg p-4 mb-px">
           <div className="text-[10px] text-white/40 uppercase tracking-wider mb-4">
-            What You're Seeing
+            The Grand Tour
           </div>
-          <div className="prose prose-invert prose-sm max-w-none">
-            <p className="text-white/70">
-              The Voyager spacecraft took advantage of a rare planetary alignment that occurs
-              once every 175 years. This "Grand Tour" trajectory allowed them to visit multiple
-              outer planets using gravity assists - each planetary encounter accelerated the
-              spacecraft and bent its trajectory toward the next target.
-            </p>
-            <p className="text-white/70 mt-3">
-              Voyager 1 is now the most distant human-made object, travelling at about 17 km/s
-              relative to the Sun. At this speed, it would take about 73,000 years to reach the
-              nearest star, Proxima Centauri - if it were heading in that direction, which it isn't.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-white text-sm font-medium mb-2">A Once-in-175-Years Opportunity</h3>
+              <p className="text-white/60 text-sm leading-relaxed">
+                In the late 1970s, Jupiter, Saturn, Uranus, and Neptune aligned in a configuration
+                that occurs only once every 175 years. NASA designed the "Grand Tour" to exploit
+                this alignment, using each planet's gravity to accelerate and redirect the spacecraft
+                toward the next target.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-white text-sm font-medium mb-2">Gravity Assist Explained</h3>
+              <p className="text-white/60 text-sm leading-relaxed">
+                As a spacecraft approaches a planet, it "borrows" energy from the planet's orbital
+                motion. The planet is so massive that this energy transfer is negligible to it,
+                but for the spacecraft, it provides a significant velocity boost - like a cosmic
+                slingshot.
+              </p>
+            </div>
+          </div>
+          <div className="mt-6 pt-4 border-t border-white/10">
+            <h3 className="text-white text-sm font-medium mb-3">The Journey</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-black rounded-lg p-3">
+                <div className="text-[10px] text-white/40 uppercase mb-1">Jupiter</div>
+                <div className="text-white text-sm">V1: Mar 1979</div>
+                <div className="text-white text-sm">V2: Jul 1979</div>
+                <div className="text-xs text-white/40 mt-1">First volcanic moon (Io)</div>
+              </div>
+              <div className="bg-black rounded-lg p-3">
+                <div className="text-[10px] text-white/40 uppercase mb-1">Saturn</div>
+                <div className="text-white text-sm">V1: Nov 1980</div>
+                <div className="text-white text-sm">V2: Aug 1981</div>
+                <div className="text-xs text-white/40 mt-1">Titan's atmosphere</div>
+              </div>
+              <div className="bg-black rounded-lg p-3">
+                <div className="text-[10px] text-white/40 uppercase mb-1">Uranus</div>
+                <div className="text-white text-sm">V2 only</div>
+                <div className="text-white text-sm">Jan 1986</div>
+                <div className="text-xs text-white/40 mt-1">10 new moons found</div>
+              </div>
+              <div className="bg-black rounded-lg p-3">
+                <div className="text-[10px] text-white/40 uppercase mb-1">Neptune</div>
+                <div className="text-white text-sm">V2 only</div>
+                <div className="text-white text-sm">Aug 1989</div>
+                <div className="text-xs text-white/40 mt-1">Great Dark Spot</div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="text-purple-400 text-lg">✦</div>
+              <div>
+                <div className="text-purple-300 text-sm font-medium">Beyond the Heliosphere</div>
+                <p className="text-white/50 text-xs mt-1">
+                  Voyager 1 crossed into interstellar space in August 2012, becoming the first
+                  human-made object to leave the Sun's protective bubble. Voyager 2 followed
+                  in November 2018. Both continue transmitting data from over 20 billion km away.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* View options */}
         <div className="bg-[#1d1d1d] rounded-lg p-4 mb-px">
-          <div className="flex items-center gap-4">
+          <div className="text-[10px] text-white/40 uppercase tracking-wider mb-3">
+            View Options
+          </div>
+          <div className="flex flex-wrap items-center gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -404,7 +460,25 @@ export default function VoyagerPage() {
                 onChange={(e) => setShowOrbits(e.target.checked)}
                 className="w-4 h-4 rounded border-white/20 bg-white/10 text-[#ffdf20] focus:ring-0"
               />
-              <span className="text-sm text-white/70">Show planet orbits</span>
+              <span className="text-sm text-white/70">Planet orbits</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showFlybyMarkers}
+                onChange={(e) => setShowFlybyMarkers(e.target.checked)}
+                className="w-4 h-4 rounded border-white/20 bg-white/10 text-[#ffdf20] focus:ring-0"
+              />
+              <span className="text-sm text-white/70">Flyby markers</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showHeliopause}
+                onChange={(e) => setShowHeliopause(e.target.checked)}
+                className="w-4 h-4 rounded border-white/20 bg-white/10 text-[#ffdf20] focus:ring-0"
+              />
+              <span className="text-sm text-white/70">Heliopause boundary</span>
             </label>
           </div>
         </div>

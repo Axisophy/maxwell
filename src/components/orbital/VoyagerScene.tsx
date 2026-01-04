@@ -8,6 +8,7 @@ import {
   VOYAGER_1,
   VOYAGER_2,
   VoyagerMission,
+  MissionMilestone,
   getVoyagerPosition,
   getTrajectoryToDate,
   auToScene,
@@ -21,6 +22,8 @@ interface VoyagerSceneProps {
   time: Date
   showOrbits?: boolean
   showPlanets?: boolean
+  showHeliopause?: boolean
+  showFlybyMarkers?: boolean
   focusTarget?: 'sun' | 'voyager1' | 'voyager2' | 'overview' | null
 }
 
@@ -90,10 +93,12 @@ function Voyager({
   mission,
   time,
   isSelected,
+  showLabel = true,
 }: {
   mission: VoyagerMission
   time: Date
   isSelected: boolean
+  showLabel?: boolean
 }) {
   const position = getVoyagerPosition(mission, time)
   if (!position) return null
@@ -123,6 +128,28 @@ function Voyager({
             side={THREE.DoubleSide}
           />
         </mesh>
+      )}
+      {/* Spacecraft label */}
+      {showLabel && (
+        <Html
+          position={[0, size * 3, 0]}
+          center
+          style={{
+            color: mission.id === 'voyager1' ? '#00ff88' : '#00aaff',
+            fontSize: '11px',
+            fontWeight: 500,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            textShadow: '0 0 10px rgba(0,0,0,0.8)',
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {mission.name}
+          <div style={{ fontSize: '9px', opacity: 0.7, marginTop: '2px' }}>
+            {position.distance.toFixed(1)} AU
+          </div>
+        </Html>
       )}
     </group>
   )
@@ -155,21 +182,26 @@ function TrajectoryPath({
   )
 }
 
-// Planet orbit paths (simplified circles)
-function PlanetOrbit({
-  radius,
-  color = 0x333333
+// Planetary orbit ring (simplified circular orbits)
+function PlanetOrbitRing({
+  semiMajorAxisAU,
+  color = 0x333333,
+  opacity = 0.2
 }: {
-  radius: number
+  semiMajorAxisAU: number
   color?: number
+  opacity?: number
 }) {
+  const radius = semiMajorAxisAU * AU
+
   const points = useMemo(() => {
     const pts: THREE.Vector3[] = []
-    for (let i = 0; i <= 64; i++) {
-      const angle = (i / 64) * Math.PI * 2
+    const segments = 128
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * Math.PI * 2
       pts.push(new THREE.Vector3(
         Math.cos(angle) * radius,
-        0,
+        0,  // Ecliptic plane
         Math.sin(angle) * radius
       ))
     }
@@ -182,8 +214,149 @@ function PlanetOrbit({
       color={color}
       lineWidth={0.5}
       transparent
+      opacity={opacity}
+    />
+  )
+}
+
+// Heliopause boundary sphere
+function Heliopause({ show }: { show: boolean }) {
+  if (!show) return null
+
+  const radius = 120 * AU  // Approximately 120 AU
+
+  return (
+    <mesh>
+      <sphereGeometry args={[radius, 64, 32]} />
+      <meshBasicMaterial
+        color={0x8844aa}
+        transparent
+        opacity={0.03}
+        side={THREE.BackSide}
+      />
+    </mesh>
+  )
+}
+
+// Heliosphere ring at the ecliptic
+function HeliosphereRing({ show }: { show: boolean }) {
+  if (!show) return null
+
+  const radius = 120 * AU
+
+  const points = useMemo(() => {
+    const pts: THREE.Vector3[] = []
+    const segments = 128
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * Math.PI * 2
+      pts.push(new THREE.Vector3(
+        Math.cos(angle) * radius,
+        0,
+        Math.sin(angle) * radius
+      ))
+    }
+    return pts
+  }, [])
+
+  return (
+    <Line
+      points={points}
+      color={0x8844aa}
+      lineWidth={1}
+      transparent
       opacity={0.3}
     />
+  )
+}
+
+// Flyby marker component
+function FlybyMarker({
+  mission,
+  milestone,
+}: {
+  mission: VoyagerMission
+  milestone: MissionMilestone
+}) {
+  const position = useMemo(() => {
+    const pos = getVoyagerPosition(mission, new Date(milestone.date))
+    return pos ? auToScene(pos) : null
+  }, [mission, milestone])
+
+  if (!position || !milestone.body) return null
+
+  return (
+    <group position={[position.x, position.y, position.z]}>
+      {/* Marker sphere */}
+      <mesh>
+        <sphereGeometry args={[0.8, 16, 16]} />
+        <meshBasicMaterial color={0xffffff} />
+      </mesh>
+      {/* Pulse ring */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[1.2, 1.5, 32]} />
+        <meshBasicMaterial
+          color={mission.color}
+          transparent
+          opacity={0.6}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+    </group>
+  )
+}
+
+// Distance scale bar
+function DistanceScale() {
+  const scaleLength = 10 * AU  // 10 AU scale bar
+
+  return (
+    <group position={[-50 * AU, -20 * AU, 0]}>
+      {/* Scale line */}
+      <Line
+        points={[
+          new THREE.Vector3(0, 0, 0),
+          new THREE.Vector3(scaleLength, 0, 0),
+        ]}
+        color={0xffffff}
+        lineWidth={2}
+        transparent
+        opacity={0.5}
+      />
+      {/* End caps */}
+      <Line
+        points={[
+          new THREE.Vector3(0, -AU, 0),
+          new THREE.Vector3(0, AU, 0),
+        ]}
+        color={0xffffff}
+        lineWidth={2}
+        transparent
+        opacity={0.5}
+      />
+      <Line
+        points={[
+          new THREE.Vector3(scaleLength, -AU, 0),
+          new THREE.Vector3(scaleLength, AU, 0),
+        ]}
+        color={0xffffff}
+        lineWidth={2}
+        transparent
+        opacity={0.5}
+      />
+      {/* Label */}
+      <Html
+        position={[scaleLength / 2, -3 * AU, 0]}
+        center
+        style={{
+          color: 'white',
+          fontSize: '10px',
+          opacity: 0.5,
+          pointerEvents: 'none',
+        }}
+      >
+        10 AU (~1.5 billion km)
+      </Html>
+    </group>
   )
 }
 
@@ -258,6 +431,8 @@ function SceneContent({
   time,
   showOrbits = true,
   showPlanets = true,
+  showHeliopause = false,
+  showFlybyMarkers = false,
   focusTarget,
 }: VoyagerSceneProps) {
   // Get planet positions
@@ -280,6 +455,16 @@ function SceneContent({
   const v1Scene = v1Pos ? auToScene(v1Pos) : null
   const v2Scene = v2Pos ? auToScene(v2Pos) : null
 
+  // Get flyby milestones for current time
+  const v1Flybys = useMemo(() =>
+    VOYAGER_1.milestones.filter(m => m.body && m.date <= time.toISOString().split('T')[0]),
+    [time]
+  )
+  const v2Flybys = useMemo(() =>
+    VOYAGER_2.milestones.filter(m => m.body && m.date <= time.toISOString().split('T')[0]),
+    [time]
+  )
+
   return (
     <>
       {/* Lighting */}
@@ -298,9 +483,18 @@ function SceneContent({
       {/* Sun */}
       <Sun />
 
+      {/* Heliopause boundary */}
+      <Heliopause show={showHeliopause} />
+      <HeliosphereRing show={showHeliopause} />
+
       {/* Planet orbits */}
       {showOrbits && planetData.map(p => (
-        <PlanetOrbit key={p.name} radius={p.orbitRadius * AU} />
+        <PlanetOrbitRing
+          key={p.name}
+          semiMajorAxisAU={p.orbitRadius}
+          color={0x444444}
+          opacity={0.3}
+        />
       ))}
 
       {/* Planets */}
@@ -318,6 +512,22 @@ function SceneContent({
         )
       })}
 
+      {/* Flyby markers */}
+      {showFlybyMarkers && v1Flybys.map(milestone => (
+        <FlybyMarker
+          key={`v1-${milestone.date}`}
+          mission={VOYAGER_1}
+          milestone={milestone}
+        />
+      ))}
+      {showFlybyMarkers && v2Flybys.map(milestone => (
+        <FlybyMarker
+          key={`v2-${milestone.date}`}
+          mission={VOYAGER_2}
+          milestone={milestone}
+        />
+      ))}
+
       {/* Voyager 1 trajectory and spacecraft */}
       <TrajectoryPath mission={VOYAGER_1} time={time} />
       <Voyager
@@ -333,6 +543,9 @@ function SceneContent({
         time={time}
         isSelected={focusTarget === 'voyager2'}
       />
+
+      {/* Distance scale */}
+      <DistanceScale />
 
       {/* Camera controls */}
       <CameraController
