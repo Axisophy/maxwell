@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
 import { VaultIcon } from '@/components/icons'
 import { getBooksByEra } from '@/lib/books'
 import { readingPaths } from '@/lib/reading-paths'
@@ -140,17 +140,13 @@ export default function VaultPage() {
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
 
         {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="block bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Vault' },
-              ]}
-              theme="light"
-            />
-          </div>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Vault']
+          )}
+        />
 
         {/* Frames container */}
         <div className="flex flex-col gap-px">

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getAllPosts, getPostBySlug } from '@/lib/pulse.server'
 import { formatLabel, formatDate } from '@/lib/pulse'
+import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -37,21 +38,14 @@ export default async function PulsePostPage({ params }: PageProps) {
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
         {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <nav className="flex items-center gap-2 text-sm text-black/50">
-              <Link href="/" className="hover:text-black">
-                MXWLL
-              </Link>
-              <span>/</span>
-              <Link href="/pulse" className="hover:text-black">
-                Pulse
-              </Link>
-              <span>/</span>
-              <span className="text-black">{formatLabel(post.format)}</span>
-            </nav>
-          </div>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Pulse', '/pulse'],
+            [formatLabel(post.format)]
+          )}
+        />
 
         {/* Header Frame */}
         <div className="mb-px">
