@@ -5,6 +5,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getAllPosts, getPostBySlug } from '@/lib/pulse.server'
 import { formatLabel, formatDate } from '@/lib/pulse'
 import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PulseIcon } from '@/components/icons'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -38,6 +39,7 @@ export default async function PulsePostPage({ params }: PageProps) {
     <PageShell>
       <BreadcrumbFrame
         variant="light"
+        icon={<PulseIcon className="w-4 h-4" />}
         items={breadcrumbItems(
           ['MXWLL', '/'],
           ['Pulse', '/pulse'],
