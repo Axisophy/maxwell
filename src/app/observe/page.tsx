@@ -100,6 +100,7 @@ export default function ObservePage() {
         {/* Breadcrumb Frame */}
         <BreadcrumbFrame
           variant="light"
+          icon={<ObserveIcon className="w-4 h-4" />}
           items={breadcrumbItems(
             ['MXWLL', '/'],
             ['Observe']
