@@ -59,9 +59,9 @@ function NumberCard({ post }: { post: PulsePost }) {
   return (
     <Link
       href={`/pulse/${post.slug}`}
-      className="block bg-white rounded-lg p-2 md:p-4 hover:ring-2 hover:ring-black/10 transition-all"
+      className="flex flex-col justify-center bg-white rounded-lg p-2 md:p-4 min-h-[280px] hover:ring-2 hover:ring-black/10 transition-all"
     >
-      <div className="text-xs text-black/50 uppercase tracking-wider">
+      <div className="text-xs text-black/50 uppercase tracking-wider text-center">
         The Number · {post.topic}
       </div>
 
@@ -145,7 +145,7 @@ function PostcardCard({ post }: { post: PulsePost }) {
   return (
     <Link
       href={`/pulse/${post.slug}`}
-      className="block bg-white rounded-lg overflow-hidden hover:ring-2 hover:ring-black/10 transition-all"
+      className="block h-full bg-white rounded-lg overflow-hidden hover:ring-2 hover:ring-black/10 transition-all"
     >
       <div className="relative aspect-[4/3]">
         {post.image && (
