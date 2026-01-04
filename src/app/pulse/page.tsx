@@ -1,5 +1,6 @@
 import { getAllPosts, getFeaturedPost } from '@/lib/pulse.server'
 import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
+import { PulseIcon } from '@/components/icons'
 import PulseContent from './PulseContent'
 
 export const metadata = {
@@ -15,6 +16,7 @@ export default function PulsePage() {
     <PageShell>
       <BreadcrumbFrame
         variant="light"
+        icon={<PulseIcon className="w-4 h-4" />}
         items={breadcrumbItems(
           ['MXWLL', '/'],
           ['Pulse']
