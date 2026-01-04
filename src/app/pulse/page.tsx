@@ -1,5 +1,5 @@
 import { getAllPosts, getFeaturedPost } from '@/lib/pulse.server'
-import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import PulseContent from './PulseContent'
 
 export const metadata = {
@@ -21,17 +21,11 @@ export default function PulsePage() {
         )}
       />
 
-      {/* Header Frame */}
-      <div className="mb-px">
-        <div className="bg-white rounded-lg p-2 md:p-4">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase">
-            Pulse
-          </h1>
-          <p className="text-sm text-black/60 mt-2">
-            The editorial voice for science. Retrospective, not reactive.
-          </p>
-        </div>
-      </div>
+      <PageHeaderFrame
+        variant="light"
+        title="Pulse"
+        description="The editorial voice for science. Retrospective, not reactive."
+      />
 
       {/* Client component handles filtering */}
       <PulseContent allPosts={allPosts} featuredPost={featuredPost} />
