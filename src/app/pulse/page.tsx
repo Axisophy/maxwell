@@ -1,5 +1,5 @@
+import Link from 'next/link'
 import { getAllPosts, getFeaturedPost } from '@/lib/pulse.server'
-import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui/BreadcrumbFrame'
 import PulseContent from './PulseContent'
 
 export const metadata = {
@@ -15,13 +15,17 @@ export default function PulsePage() {
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
         {/* Breadcrumb Frame */}
-        <BreadcrumbFrame
-          variant="light"
-          items={breadcrumbItems(
-            ['MXWLL', '/'],
-            ['Pulse']
-          )}
-        />
+        <div className="mb-px">
+          <div className="bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
+            <nav className="flex items-center gap-2 text-sm text-black/50">
+              <Link href="/" className="hover:text-black transition-colors">
+                MXWLL
+              </Link>
+              <span className="text-black/30">/</span>
+              <span className="text-black">Pulse</span>
+            </nav>
+          </div>
+        </div>
 
         {/* Header Frame */}
         <div className="mb-px">
