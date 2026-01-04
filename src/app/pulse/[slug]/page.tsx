@@ -54,7 +54,7 @@ export default async function PulsePostPage({ params }: PageProps) {
             {formatLabel(post.format)} · {post.topic}
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-light mt-2">{post.title}</h1>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-[-0.03em] text-black mt-2">{post.title}</h1>
 
           {post.excerpt && (
             <p className="text-base text-black/60 mt-3 max-w-2xl">{post.excerpt}</p>
