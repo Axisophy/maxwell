@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 
 export const metadata = {
   title: 'Advertising - MXWLL',
@@ -7,17 +8,25 @@ export const metadata = {
 
 export default function AdvertisingPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <div className="px-4 md:px-8 lg:px-12 pt-12 md:pt-16 lg:pt-20 pb-16 md:pb-20 lg:pb-24">
-        <div className="max-w-full md:max-w-[640px] lg:max-w-[720px] md:mx-auto">
-          {/* Header */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-8">
-            Advertising
-          </h1>
+    <PageShell>
+      <BreadcrumbFrame
+        variant="light"
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['About', '/about'],
+          ['Advertising']
+        )}
+      />
 
-          <p className="text-base md:text-lg text-black mb-8">
-            MXWLL is developing an advertising model that respects both our audience and our partners. We believe advertising can be valuable - when it's relevant, high-quality, and carefully curated.
-          </p>
+      <PageHeaderFrame
+        variant="light"
+        title="Advertising"
+        description="MXWLL is developing an advertising model that respects both our audience and our partners. We believe advertising can be valuable - when it's relevant, high-quality, and carefully curated."
+      />
+
+      {/* Content Frame */}
+      <div className="bg-white rounded-lg p-4 md:p-8 mb-px">
+        <div className="max-w-2xl">
 
           {/* Our approach */}
           <section className="mb-12">
@@ -105,14 +114,14 @@ export default function AdvertisingPage() {
           {/* Other pages */}
           <section className="pt-8 mt-12 border-t border-black/10">
             <div className="flex flex-wrap gap-6">
-              <Link 
-                href="/about/partnerships" 
+              <Link
+                href="/about/partnerships"
                 className="text-black underline underline-offset-4 hover:no-underline"
               >
                 Institutional partnerships →
               </Link>
-              <Link 
-                href="/about" 
+              <Link
+                href="/about"
                 className="text-black underline underline-offset-4 hover:no-underline"
               >
                 About MXWLL →
@@ -124,6 +133,6 @@ export default function AdvertisingPage() {
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { ObserveIcon } from '@/components/icons'
 import VitalSign from './components/VitalSign'
 import PopulationCounter from './components/PopulationCounter'
@@ -104,27 +104,19 @@ export default function ObservePage() {
           )}
         />
 
-        {/* Frames container */}
-        <div className="flex flex-col gap-px">
+      <PageHeaderFrame
+        variant="light"
+        title="Observe"
+        description="Live science happening right now. Real-time data from NASA, NOAA, CERN, and observatories worldwide."
+      />
 
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <ObserveIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Observe
-            </h1>
-            <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Live science happening right now. Real-time data from NASA, NOAA, CERN, and observatories worldwide.
-            </p>
-          </section>
+      {/* Vital Signs Frame */}
+      <section className="bg-white rounded-lg p-2 md:p-4 mb-px">
+        <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
+          Vital Signs
+        </div>
 
-          {/* Vital Signs Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
-              Vital Signs
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px">
               {/* Row 1: Earth metrics */}
               <VitalSign
                 value={data?.earthquakes?.count || 0}
@@ -251,36 +243,34 @@ export default function ObservePage() {
                 label="Internet Traffic (Tbps)"
                 href="/observe/infrastructure/internet"
                 loading={loading}
-              />
-            </div>
-
-            {/* Last updated */}
-            {data?.updatedAt && (
-              <div className="mt-6 text-xs text-black/30">
-                Last updated: {new Date(data.updatedAt).toLocaleTimeString()}
-              </div>
-            )}
-          </section>
-
-          {/* Explore Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
-              Explore
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
-              {portals.map((portal) => (
-                <PortalCard
-                  key={portal.href}
-                  title={portal.title}
-                  description={portal.description}
-                  href={portal.href}
-                />
-              ))}
-            </div>
-          </section>
-
+          />
         </div>
+
+        {/* Last updated */}
+        {data?.updatedAt && (
+          <div className="mt-6 text-xs text-black/30">
+            Last updated: {new Date(data.updatedAt).toLocaleTimeString()}
+          </div>
+        )}
+      </section>
+
+      {/* Explore Frame */}
+      <section className="bg-white rounded-lg p-2 md:p-4">
+        <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
+          Explore
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
+          {portals.map((portal) => (
+            <PortalCard
+              key={portal.href}
+              title={portal.title}
+              description={portal.description}
+              href={portal.href}
+            />
+          ))}
+        </div>
+      </section>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />

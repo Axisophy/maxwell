@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { VaultIcon } from '@/components/icons'
 import { getBooksByEra } from '@/lib/books'
 import { readingPaths } from '@/lib/reading-paths'
@@ -136,35 +136,24 @@ export default function VaultPage() {
   }, 0)
 
   return (
-    <main className="min-h-screen bg-black">
-      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
+    <PageShell>
+      <BreadcrumbFrame
+        variant="light"
+        icon={<VaultIcon className="w-4 h-4" />}
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['Vault']
+        )}
+      />
 
-        {/* Breadcrumb Frame */}
-        <BreadcrumbFrame
-          variant="light"
-          items={breadcrumbItems(
-            ['MXWLL', '/'],
-            ['Vault']
-          )}
-        />
+      <PageHeaderFrame
+        variant="light"
+        title="Vault"
+        description="A curated collection of scientific texts spanning 2,500 years of human inquiry. Public domain works presented as beautiful, readable digital editions."
+      />
 
-        {/* Frames container */}
-        <div className="flex flex-col gap-px">
-
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <VaultIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Vault
-            </h1>
-            <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              A curated collection of scientific texts spanning 2,500 years of human inquiry.
-              Public domain works presented as beautiful, readable digital editions.
-            </p>
-          </section>
-
-          {/* Collection Stats Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
+      {/* Collection Stats Frame */}
+      <section className="bg-white rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
               The Collection
             </div>
@@ -283,14 +272,11 @@ export default function VaultPage() {
               >
                 Play & Explore →
               </Link>
-            </div>
-          </section>
-
         </div>
-      </div>
+      </section>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }

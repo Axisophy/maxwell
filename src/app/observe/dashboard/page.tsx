@@ -7,7 +7,7 @@ import { WIDGET_REGISTRY } from '@/lib/dashboard/widget-registry'
 import { getSetById, getDefaultSet } from '@/lib/dashboard/widget-sets'
 import { WIDGET_COMPONENTS } from '@/lib/dashboard/widget-components'
 import { getSelectedSetId } from '@/lib/dashboard/storage'
-import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { ObserveIcon } from '@/components/icons'
 
 export default function DashboardPage() {
@@ -60,6 +60,7 @@ export default function DashboardPage() {
     <PageShell>
       <BreadcrumbFrame
         variant="light"
+        icon={<ObserveIcon className="w-4 h-4" />}
         items={breadcrumbItems(
           ['MXWLL', '/'],
           ['Observe', '/observe'],
@@ -67,23 +68,14 @@ export default function DashboardPage() {
         )}
       />
 
-        {/* Frames container */}
-        <div className="flex flex-col gap-px">
+      <PageHeaderFrame
+        variant="light"
+        title="Dashboard"
+        description="Live data from space agencies, research stations, and sensors worldwide. Switch between curated collections or register to build your own."
+      />
 
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <ObserveIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Dashboard
-            </h1>
-            <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Live data from space agencies, research stations, and sensors worldwide.
-              Switch between curated collections or register to build your own.
-            </p>
-          </section>
-
-          {/* Selector Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
+      {/* Selector Frame */}
+      <section className="bg-white rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
               Viewing
             </div>
@@ -94,24 +86,22 @@ export default function DashboardPage() {
                   isRegistered={false}
                 />
               )}
-            </div>
-          </section>
-
-          {/* Widget Grid - directly on black background, no containing frame */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
-            {isClient ? renderWidgets() : (
-              <>
-                {[...Array(6)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-lg h-64 animate-pulse"
-                  />
-                ))}
-              </>
-            )}
-          </div>
-
         </div>
+      </section>
+
+      {/* Widget Grid - directly on black background, no containing frame */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
+        {isClient ? renderWidgets() : (
+          <>
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-lg h-64 animate-pulse"
+              />
+            ))}
+          </>
+        )}
+      </div>
 
       {/* Mobile bottom padding for nav */}
       <div className="h-20 md:hidden" />

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { ObserveIcon } from '@/components/icons'
 
 // ============================================
@@ -1076,31 +1076,24 @@ export default function SolarObservatoryPage() {
   return (
     <PageShell>
       <BreadcrumbFrame
-          variant="dark"
-          items={breadcrumbItems(
-            ['MXWLL', '/'],
-            ['Observe', '/observe'],
-            ['Space', '/observe/space'],
-            ['Solar Observatory']
-          )}
-        />
+        variant="dark"
+        icon={<ObserveIcon className="w-4 h-4" />}
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['Observe', '/observe'],
+          ['Space', '/observe/space'],
+          ['Solar Observatory']
+        )}
+      />
 
-        {/* Content Frames */}
-        <div className="flex flex-col gap-px">
+      <PageHeaderFrame
+        variant="dark"
+        title="Solar Observatory"
+        description="Real-time solar imagery and space weather conditions from NASA, ESA, and NOAA observatories."
+      />
 
-          {/* Header Section */}
-          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
-            <ObserveIcon className="text-white mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-white uppercase mb-3">
-              Solar Observatory
-            </h1>
-            <p className="text-base md:text-lg text-white/60 max-w-2xl">
-              Real-time solar imagery and space weather conditions from NASA, ESA, and NOAA observatories.
-            </p>
-          </section>
-
-          {/* NOAA Space Weather Scales (R-S-G) */}
-          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+      {/* NOAA Space Weather Scales (R-S-G) */}
+      <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4 mb-px">
             <div className="flex items-center gap-3 mb-4">
               <div className="text-[10px] md:text-xs text-white/50 uppercase">Space Weather Scales</div>
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded uppercase">
@@ -1442,10 +1435,9 @@ export default function SolarObservatoryPage() {
               <div className="text-[10px] text-white/20">
                 Updates: SDO ~15 min · SWPC ~1-5 min · Coronagraphs ~15-30 min · Proba-2 ~2 min · Far-side ~12h
               </div>
-            </div>
-          </section>
-
         </div>
+      </section>
+
     </PageShell>
   )
 }

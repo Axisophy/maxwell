@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { PlayIcon } from '@/components/icons'
 
 const playCategories = [
@@ -149,39 +149,24 @@ function ComingSoonCard({
 
 export default function PlayPage() {
   return (
-    <main className="min-h-screen bg-black">
-      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
+    <PageShell>
+      <BreadcrumbFrame
+        variant="light"
+        icon={<PlayIcon className="w-4 h-4" />}
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['Play']
+        )}
+      />
 
-        {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="block bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Play' },
-              ]}
-              theme="light"
-            />
-          </div>
-        </div>
+      <PageHeaderFrame
+        variant="light"
+        title="Play"
+        description="Mathematical visualisations, interactive simulations, and science-themed games. Beautiful complexity you can explore and manipulate."
+      />
 
-        {/* Frames container */}
-        <div className="flex flex-col gap-px">
-
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <PlayIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Play
-            </h1>
-            <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Mathematical visualisations, interactive simulations, and science-themed games.
-              Beautiful complexity you can explore and manipulate.
-            </p>
-          </section>
-
-          {/* Stats Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
+      {/* Stats Frame */}
+      <section className="bg-white rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
               Explorations
             </div>
@@ -304,14 +289,11 @@ export default function PlayPage() {
               >
                 Observe →
               </Link>
-            </div>
-          </section>
-
         </div>
-      </div>
+      </section>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }

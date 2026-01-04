@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { DataIcon } from '@/components/icons'
 
 // ============================================================================
@@ -96,6 +96,7 @@ export default function FabricPage() {
     <PageShell>
       <BreadcrumbFrame
         variant="light"
+        icon={<DataIcon className="w-4 h-4" />}
         items={breadcrumbItems(
           ['MXWLL', '/'],
           ['Data', '/data'],
@@ -103,23 +104,14 @@ export default function FabricPage() {
         )}
       />
 
-        {/* Frames container */}
-        <div className="flex flex-col gap-px">
+      <PageHeaderFrame
+        variant="light"
+        title="The Fabric"
+        description="What reality is woven from. The fundamental particles, forces, and constants that determine how the universe works at every scale."
+      />
 
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              The Fabric
-            </h1>
-            <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              What reality is woven from. The fundamental particles, forces, and constants
-              that determine how the universe works at every scale.
-            </p>
-          </section>
-
-          {/* Key Numbers Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
+      {/* Key Numbers Frame */}
+      <section className="bg-white rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
               Fundamental Constants
             </div>
@@ -199,10 +191,8 @@ export default function FabricPage() {
               >
                 Particle Detectors →
               </Link>
-            </div>
-          </section>
-
         </div>
+      </section>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { DataIcon } from '@/components/icons'
 
 // ============================================================================
@@ -83,40 +83,25 @@ const items: DataItem[] = [
 
 export default function CosmosPage() {
   return (
-    <main className="min-h-screen bg-black">
-      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
+    <PageShell>
+      <BreadcrumbFrame
+        variant="light"
+        icon={<DataIcon className="w-4 h-4" />}
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['Data', '/data'],
+          ['The Cosmos']
+        )}
+      />
 
-        {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Data', href: '/data' },
-                { label: 'The Cosmos' },
-              ]}
-              theme="light"
-            />
-          </div>
-        </div>
+      <PageHeaderFrame
+        variant="light"
+        title="The Cosmos"
+        description="Everything beyond Earth. The Solar System, stars, galaxies, and the structure of the universe at the largest scales."
+      />
 
-        {/* Frames container */}
-        <div className="flex flex-col gap-px">
-
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              The Cosmos
-            </h1>
-            <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Everything beyond Earth. The Solar System, stars, galaxies,
-              and the structure of the universe at the largest scales.
-            </p>
-          </section>
-
-          {/* Key Numbers Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
+      {/* Key Numbers Frame */}
+      <section className="bg-white rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
               By The Numbers
             </div>
@@ -184,15 +169,12 @@ export default function CosmosPage() {
               >
                 Earth →
               </Link>
-            </div>
-          </section>
-
         </div>
-      </div>
+      </section>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }
 

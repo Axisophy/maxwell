@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 
 export const metadata = {
   title: 'Contact - MXWLL',
@@ -7,17 +8,25 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <div className="px-4 md:px-8 lg:px-12 pt-12 md:pt-16 lg:pt-20 pb-16 md:pb-20 lg:pb-24">
-        <div className="max-w-full md:max-w-[640px] lg:max-w-[720px] md:mx-auto">
-          {/* Header */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-8">
-            Contact
-          </h1>
+    <PageShell>
+      <BreadcrumbFrame
+        variant="light"
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['About', '/about'],
+          ['Contact']
+        )}
+      />
 
-          <p className="text-base md:text-lg text-black mb-8">
-            We'd love to hear from you. Whether you have a question, suggestion, or just want to say hello.
-          </p>
+      <PageHeaderFrame
+        variant="light"
+        title="Contact"
+        description="We'd love to hear from you. Whether you have a question, suggestion, or just want to say hello."
+      />
+
+      {/* Content Frame */}
+      <div className="bg-white rounded-lg p-4 md:p-8 mb-px">
+        <div className="max-w-2xl">
 
           {/* Email */}
           <section className="mb-12">
@@ -60,26 +69,26 @@ export default function ContactPage() {
           <section className="pt-8 border-t border-black/10">
             <p className="text-sm text-black/50 mb-4">Looking for something specific?</p>
             <div className="flex flex-wrap gap-6">
-              <Link 
-                href="/collaborations" 
+              <Link
+                href="/collaborations"
                 className="text-black underline underline-offset-4 hover:no-underline"
               >
                 Collaborations →
               </Link>
-              <Link 
-                href="/about/partnerships" 
+              <Link
+                href="/about/partnerships"
                 className="text-black underline underline-offset-4 hover:no-underline"
               >
                 Institutional partnerships →
               </Link>
-              <Link 
-                href="/about/investment" 
+              <Link
+                href="/about/investment"
                 className="text-black underline underline-offset-4 hover:no-underline"
               >
                 Investment opportunities →
               </Link>
-              <Link 
-                href="/about/advertising" 
+              <Link
+                href="/about/advertising"
                 className="text-black underline underline-offset-4 hover:no-underline"
               >
                 Advertising →
@@ -91,6 +100,6 @@ export default function ContactPage() {
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }

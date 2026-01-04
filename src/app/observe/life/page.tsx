@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { ObserveIcon } from '@/components/icons'
 
 interface LifeData {
@@ -152,6 +152,7 @@ export default function LifePortalPage() {
     <PageShell>
       <BreadcrumbFrame
         variant="light"
+        icon={<ObserveIcon className="w-4 h-4" />}
         items={breadcrumbItems(
           ['MXWLL', '/'],
           ['Observe', '/observe'],
@@ -159,22 +160,14 @@ export default function LifePortalPage() {
         )}
       />
 
-        {/* Frames container */}
-        <div className="flex flex-col gap-px">
+      <PageHeaderFrame
+        variant="light"
+        title="Life"
+        description="Monitoring the living world. Wildlife tracking, ocean acoustics, and bird observations from researchers and citizen scientists."
+      />
 
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <ObserveIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Life
-            </h1>
-            <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Monitoring the living world. Wildlife tracking, ocean acoustics, and bird observations from researchers and citizen scientists.
-            </p>
-          </section>
-
-          {/* Vital Signs Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
+      {/* Vital Signs Frame */}
+      <section className="bg-white rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-4">
               The Living Planet
             </div>
@@ -262,10 +255,8 @@ export default function LifePortalPage() {
               >
                 Dashboard →
               </Link>
-            </div>
-          </section>
-
         </div>
+      </section>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />

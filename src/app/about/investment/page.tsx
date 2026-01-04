@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 
 export const metadata = {
   title: 'Investment - MXWLL',
@@ -7,17 +8,25 @@ export const metadata = {
 
 export default function InvestmentPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <div className="px-4 md:px-8 lg:px-12 pt-12 md:pt-16 lg:pt-20 pb-16 md:pb-20 lg:pb-24">
-        <div className="max-w-full md:max-w-[640px] lg:max-w-[720px] md:mx-auto">
-          {/* Header */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-8">
-            Investment
-          </h1>
+    <PageShell>
+      <BreadcrumbFrame
+        variant="light"
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['About', '/about'],
+          ['Investment']
+        )}
+      />
 
-          <p className="text-base md:text-lg text-black mb-8">
-            MXWLL is building the quality layer for science - a platform that combines beautiful design, live data, and deep content. We're seeking partners who share our vision for transforming how the world engages with science.
-          </p>
+      <PageHeaderFrame
+        variant="light"
+        title="Investment"
+        description="MXWLL is building the quality layer for science - a platform that combines beautiful design, live data, and deep content. We're seeking partners who share our vision for transforming how the world engages with science."
+      />
+
+      {/* Content Frame */}
+      <div className="bg-white rounded-lg p-4 md:p-8 mb-px">
+        <div className="max-w-2xl">
 
           {/* The opportunity */}
           <section className="mb-12">
@@ -87,14 +96,14 @@ export default function InvestmentPage() {
           {/* Other pages */}
           <section className="pt-8 mt-12 border-t border-black/10">
             <div className="flex flex-wrap gap-6">
-              <Link 
-                href="/about" 
+              <Link
+                href="/about"
                 className="text-black underline underline-offset-4 hover:no-underline"
               >
                 About MXWLL →
               </Link>
-              <Link 
-                href="/about/partnerships" 
+              <Link
+                href="/about/partnerships"
                 className="text-black underline underline-offset-4 hover:no-underline"
               >
                 Institutional partnerships →
@@ -106,6 +115,6 @@ export default function InvestmentPage() {
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { ObserveIcon } from '@/components/icons'
 
 interface DetectorsData {
@@ -192,6 +192,7 @@ export default function DetectorsPortalPage() {
     <PageShell>
       <BreadcrumbFrame
         variant="dark"
+        icon={<ObserveIcon className="w-4 h-4" />}
         items={breadcrumbItems(
           ['MXWLL', '/'],
           ['Observe', '/observe'],
@@ -199,22 +200,14 @@ export default function DetectorsPortalPage() {
         )}
       />
 
-        {/* Frames container */}
-        <div className="flex flex-col gap-px">
+      <PageHeaderFrame
+        variant="dark"
+        title="Detectors"
+        description="The world's most sensitive instruments, listening to the universe. Particles, waves, and signals invisible to human senses."
+      />
 
-          {/* Header Frame */}
-          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
-            <ObserveIcon className="text-white mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-white uppercase mb-3">
-              Detectors
-            </h1>
-            <p className="text-base md:text-lg text-white/60 max-w-2xl">
-              The world's most sensitive instruments, listening to the universe. Particles, waves, and signals invisible to human senses.
-            </p>
-          </section>
-
-          {/* Detector Status Frame */}
-          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+      {/* Detector Status Frame */}
+      <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
               Detector Status
             </div>
@@ -341,10 +334,8 @@ export default function DetectorsPortalPage() {
               <div className="text-xs text-white/40">
                 CERN LHC Page 1 · LIGO/Virgo GraceDB · IceCube GCN · NMDB Neutron Monitors
               </div>
-            </div>
-          </section>
-
         </div>
+      </section>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />

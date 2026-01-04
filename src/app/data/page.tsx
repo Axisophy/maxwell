@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { DataIcon } from '@/components/icons'
 
 // ============================================================================
@@ -189,29 +189,21 @@ export default function DataPage() {
     <PageShell>
       <BreadcrumbFrame
         variant="light"
+        icon={<DataIcon className="w-4 h-4" />}
         items={breadcrumbItems(
           ['MXWLL', '/'],
           ['Data']
         )}
       />
 
+      <PageHeaderFrame
+        variant="light"
+        title="Data"
+        description="Reference datasets, interactive visualisations, and encyclopaedic coverage. The raw material of science, presented properly."
+      />
+
         {/* Frames container */}
         <div className="flex flex-col gap-px">
-
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Data
-            </h1>
-            <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Reference datasets, interactive visualisations, and encyclopaedic coverage.
-              The raw material of science, presented properly.
-            </p>
-            <p className="text-sm text-black/40 mt-2">
-              {stats.ready} datasets ready · {stats.comingSoon} coming soon
-            </p>
-          </section>
 
           {/* Key Numbers Frame - VitalSign style */}
           <section className="bg-white rounded-lg p-2 md:p-4">

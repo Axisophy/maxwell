@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { PageShell, BreadcrumbFrame, PageHeaderFrame, breadcrumbItems } from '@/components/ui'
 import { DataIcon } from '@/components/icons'
 
 // ============================================================================
@@ -65,40 +65,25 @@ const items: DataItem[] = [
 
 export default function MathematicsPage() {
   return (
-    <main className="min-h-screen bg-black">
-      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
+    <PageShell>
+      <BreadcrumbFrame
+        variant="light"
+        icon={<DataIcon className="w-4 h-4" />}
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['Data', '/data'],
+          ['Mathematics']
+        )}
+      />
 
-        {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Data', href: '/data' },
-                { label: 'Mathematics' },
-              ]}
-              theme="light"
-            />
-          </div>
-        </div>
+      <PageHeaderFrame
+        variant="light"
+        title="Mathematics"
+        description="Pure mathematics. Numbers, sequences, geometry, topology, and the abstract structures that underpin all of science."
+      />
 
-        {/* Frames container */}
-        <div className="flex flex-col gap-px">
-
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <DataIcon className="text-black mb-3 w-12 h-12 md:w-16 md:h-16 lg:w-[100px] lg:h-[100px]" />
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Mathematics
-            </h1>
-            <p className="text-base md:text-lg text-black/60 max-w-2xl">
-              Pure mathematics. Numbers, sequences, geometry, topology, and the abstract
-              structures that underpin all of science.
-            </p>
-          </section>
-
-          {/* Key Numbers Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
+      {/* Key Numbers Frame */}
+      <section className="bg-white rounded-lg p-2 md:p-4 mb-px">
             <div className="text-2xl md:text-3xl lg:text-4xl font-light text-black uppercase mb-6">
               Mathematical Constants
             </div>
@@ -173,15 +158,12 @@ export default function MathematicsPage() {
               >
                 Vault (Euclid, Newton) →
               </Link>
-            </div>
-          </section>
-
         </div>
-      </div>
+      </section>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }
 
