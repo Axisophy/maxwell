@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import { getAllPosts, getPostBySlug, formatLabel, formatDate } from '@/lib/pulse'
+import { getAllPosts, getPostBySlug } from '@/lib/pulse.server'
+import { formatLabel, formatDate } from '@/lib/pulse'
 
 interface PageProps {
   params: Promise<{ slug: string }>

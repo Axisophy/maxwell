@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getAllPosts, getFeaturedPost } from '@/lib/pulse'
+import { getAllPosts, getFeaturedPost } from '@/lib/pulse.server'
 import PulseContent from './PulseContent'
 
 export const metadata = {
