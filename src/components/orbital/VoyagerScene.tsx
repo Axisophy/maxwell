@@ -492,8 +492,8 @@ function SceneContent({
         <PlanetOrbitRing
           key={p.name}
           semiMajorAxisAU={p.orbitRadius}
-          color={0x444444}
-          opacity={0.3}
+          color={p.color}
+          opacity={0.4}
         />
       ))}
 
