@@ -7,3 +7,4 @@
 export * from './constants'
 export * from './time'
 export * from './bodies'
+export * from './voyager-data'
