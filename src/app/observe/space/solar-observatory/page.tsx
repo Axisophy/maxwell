@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
 import { ObserveIcon } from '@/components/icons'
 
 // ============================================
@@ -1074,11 +1074,8 @@ export default function SolarObservatoryPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black">
-      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
-
-        {/* Breadcrumb Frame */}
-        <BreadcrumbFrame
+    <PageShell>
+      <BreadcrumbFrame
           variant="dark"
           items={breadcrumbItems(
             ['MXWLL', '/'],
@@ -1449,7 +1446,6 @@ export default function SolarObservatoryPage() {
           </section>
 
         </div>
-      </div>
-    </main>
+    </PageShell>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
 import { ObserveIcon } from '@/components/icons'
 import VitalSign from './components/VitalSign'
 import PopulationCounter from './components/PopulationCounter'
@@ -94,11 +94,8 @@ export default function ObservePage() {
   const kpStatus = data?.kpIndex?.value && data.kpIndex.value >= 5 ? 'warning' : 'normal'
 
   return (
-    <main className="min-h-screen bg-black">
-      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
-
-        {/* Breadcrumb Frame */}
-        <BreadcrumbFrame
+    <PageShell>
+      <BreadcrumbFrame
           variant="light"
           icon={<ObserveIcon className="w-4 h-4" />}
           items={breadcrumbItems(
@@ -284,10 +281,9 @@ export default function ObservePage() {
           </section>
 
         </div>
-      </div>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }

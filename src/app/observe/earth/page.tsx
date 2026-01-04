@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
 import { ObserveIcon } from '@/components/icons'
 
 interface EarthData {
@@ -152,22 +152,15 @@ export default function EarthPage() {
   }, [])
 
   return (
-    <main className="min-h-screen bg-black">
-      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
-
-        {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="block bg-[#1d1d1d] rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Observe', href: '/observe' },
-                { label: 'Earth' },
-              ]}
-              theme="dark"
-            />
-          </div>
-        </div>
+    <PageShell>
+      <BreadcrumbFrame
+        variant="dark"
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['Observe', '/observe'],
+          ['Earth']
+        )}
+      />
 
         {/* Frames container */}
         <div className="flex flex-col gap-px">
@@ -324,10 +317,9 @@ export default function EarthPage() {
           </section>
 
         </div>
-      </div>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }
