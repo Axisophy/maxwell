@@ -23,7 +23,7 @@ export default function FeaturedCard({ post }: FeaturedCardProps) {
           {formatLabel(post.format)} · {post.topic}
         </div>
 
-        <h2 className="text-2xl md:text-3xl font-serif font-bold mt-2">{post.title}</h2>
+        <h2 className="text-2xl md:text-3xl font-serif font-bold text-black mt-2">{post.title}</h2>
 
         {post.excerpt && (
           <p className="text-sm text-black/60 mt-2 max-w-2xl">{post.excerpt}</p>

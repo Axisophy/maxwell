@@ -86,7 +86,7 @@ export default async function PulsePostPage({ params }: PageProps) {
       {/* Content Frame */}
       <div className="mb-px">
         <div className="bg-white rounded-lg p-4 md:p-8">
-          <article className="prose prose-lg max-w-2xl mx-auto prose-headings:font-light prose-p:text-black/80 prose-a:text-black prose-a:underline prose-a:underline-offset-4 hover:prose-a:no-underline">
+          <article className="prose prose-lg max-w-[800px] mx-auto font-serif prose-headings:font-light prose-p:text-black/80 prose-a:text-black prose-a:underline prose-a:underline-offset-4 hover:prose-a:no-underline">
             <MDXRemote source={post.content} />
           </article>
         </div>

@@ -40,7 +40,7 @@ function StandardCard({ post }: { post: PulsePost }) {
           {formatLabel(post.format)} · {post.topic}
         </div>
 
-        <h3 className="text-lg md:text-xl font-serif font-bold mt-2">{post.title}</h3>
+        <h3 className="text-lg md:text-xl font-serif font-bold text-black mt-2">{post.title}</h3>
 
         {post.excerpt && (
           <p className="text-sm text-black/60 mt-2 line-clamp-2">{post.excerpt}</p>
@@ -91,7 +91,7 @@ function QuestionCard({ post }: { post: PulsePost }) {
         The Question · {post.topic}
       </div>
 
-      <p className="text-lg md:text-xl font-serif font-bold italic mt-3">"{post.question}"</p>
+      <p className="text-lg md:text-xl font-serif font-bold italic text-black mt-3">"{post.question}"</p>
 
       <div className="flex items-center gap-3 mt-4">
         {post.respondentImage && (
@@ -105,7 +105,7 @@ function QuestionCard({ post }: { post: PulsePost }) {
           </div>
         )}
         <div>
-          <div className="text-sm font-medium">{post.respondent}</div>
+          <div className="text-sm font-medium text-black">{post.respondent}</div>
           <div className="text-xs text-black/50">{post.respondentTitle}</div>
         </div>
       </div>
@@ -129,7 +129,7 @@ function SignalCard({ post }: { post: PulsePost }) {
         Signal · {post.topic} · {formatShortDate(post.date)}, {time}
       </div>
 
-      <p className="text-sm mt-2">{post.title}</p>
+      <p className="text-sm text-black mt-2">{post.title}</p>
 
       {post.observeLinks && post.observeLinks.length > 0 && (
         <div className="text-xs text-black/50 mt-2">
