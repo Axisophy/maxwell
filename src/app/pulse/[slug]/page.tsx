@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getAllPosts, getPostBySlug } from '@/lib/pulse.server'
 import { formatLabel, formatDate } from '@/lib/pulse'
-import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui/BreadcrumbFrame'
 
 interface PageProps {
   params: Promise<{ slug: string }>

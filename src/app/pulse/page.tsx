@@ -1,5 +1,5 @@
 import { getAllPosts, getFeaturedPost } from '@/lib/pulse.server'
-import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui/BreadcrumbFrame'
 import PulseContent from './PulseContent'
 
 export const metadata = {
