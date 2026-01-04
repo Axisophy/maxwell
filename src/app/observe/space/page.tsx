@@ -14,32 +14,42 @@ interface SpaceData {
   updatedAt: string
 }
 
-const spacePages = [
+// Observatories - live data feeds
+const observatories = [
   {
     title: 'Solar Observatory',
-    description: 'Live imagery from SDO, SOHO, and STEREO spacecraft',
+    description: 'Live views of the Sun from SDO, STEREO, and SOHO',
     href: '/observe/space/solar-observatory',
   },
   {
-    title: 'Lunar Atlas',
-    description: 'Interactive Moon map and phase tracker',
-    href: '/observe/space/lunar-atlas',
-  },
-  {
-    title: 'Aurora',
-    description: 'Northern and southern lights forecast',
+    title: 'Aurora Forecast',
+    description: 'Northern and southern lights prediction',
     href: '/observe/space/aurora',
   },
   {
-    title: 'Orrery',
-    description: 'Interactive solar system with real-time planetary positions',
-    href: '/observe/space/orrery',
+    title: 'Lunar Atlas',
+    description: 'Interactive Moon map and current phase',
+    href: '/observe/space/lunar-atlas',
+  },
+]
+
+// Orbital - interactive 3D exhibits
+const orbitalExhibits = [
+  {
+    title: 'Space Stations',
+    description: 'Real-time tracking of ISS and Tiangong',
+    href: '/observe/space/stations',
+    live: true,
   },
   {
-    title: 'Satellite Tracker',
-    description: '3D globe with real-time positions of thousands of satellites',
-    href: '/observe/space/satellites',
-    comingSoon: true,
+    title: 'Voyager Journey',
+    description: '50 years of interplanetary exploration',
+    href: '/observe/space/voyager',
+  },
+  {
+    title: 'Orrery',
+    description: 'Sun, Earth, and Moon orbital mechanics',
+    href: '/observe/space/orrery',
   },
 ]
 
@@ -108,11 +118,13 @@ function SpaceCard({
   description,
   href,
   comingSoon = false,
+  live = false,
 }: {
   title: string
   description: string
   href: string
   comingSoon?: boolean
+  live?: boolean
 }) {
   if (comingSoon) {
     return (
@@ -135,9 +147,16 @@ function SpaceCard({
       href={href}
       className="block p-2 md:p-4 bg-black rounded-lg border border-white/10 hover:border-white/30 transition-colors"
     >
-      <h2 className="text-2xl md:text-3xl font-light text-white uppercase mb-2">
-        {title}
-      </h2>
+      <div className="flex items-center gap-2 mb-2">
+        <h2 className="text-2xl md:text-3xl font-light text-white uppercase">
+          {title}
+        </h2>
+        {live && (
+          <span className="text-[10px] px-1.5 py-0.5 bg-green-400/10 text-green-400 rounded uppercase">
+            Live
+          </span>
+        )}
+      </div>
       <p className="text-sm text-white/50">
         {description}
       </p>
@@ -279,17 +298,40 @@ export default function SpacePage() {
 
           {/* Observatories Frame */}
           <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
-            <div className="text-2xl md:text-3xl lg:text-4xl font-light text-white uppercase mb-4">
+            <div className="text-[10px] text-white/40 uppercase tracking-wider mb-4">
               Observatories
             </div>
+            <p className="text-sm text-white/50 mb-4">
+              Live data feeds from solar observatories and space weather monitors.
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
-              {spacePages.map((page) => (
+              {observatories.map((page) => (
                 <SpaceCard
                   key={page.href}
                   title={page.title}
                   description={page.description}
                   href={page.href}
-                  comingSoon={page.comingSoon}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Orbital Frame */}
+          <section className="bg-[#1d1d1d] rounded-lg p-2 md:p-4">
+            <div className="text-[10px] text-white/40 uppercase tracking-wider mb-4">
+              Orbital
+            </div>
+            <p className="text-sm text-white/50 mb-4">
+              Interactive 3D visualisations of spacecraft, satellites, and orbital mechanics.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px">
+              {orbitalExhibits.map((exhibit) => (
+                <SpaceCard
+                  key={exhibit.href}
+                  title={exhibit.title}
+                  description={exhibit.description}
+                  href={exhibit.href}
+                  live={'live' in exhibit ? exhibit.live : false}
                 />
               ))}
             </div>
