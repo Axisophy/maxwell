@@ -18,18 +18,18 @@ export default function FeaturedCard({ post }: FeaturedCardProps) {
         </div>
       )}
 
-      <div className="p-4 md:p-6">
-        <div className="text-[10px] text-black/40 uppercase tracking-wider">
+      <div className="p-2 md:p-4">
+        <div className="text-xs text-black/50 uppercase tracking-wider">
           {formatLabel(post.format)} · {post.topic}
         </div>
 
-        <h2 className="text-2xl md:text-3xl font-light mt-2">{post.title}</h2>
+        <h2 className="text-2xl md:text-3xl font-serif font-bold mt-2">{post.title}</h2>
 
         {post.excerpt && (
           <p className="text-sm text-black/60 mt-2 max-w-2xl">{post.excerpt}</p>
         )}
 
-        <div className="text-xs text-black/40 mt-4">
+        <div className="text-xs text-black/50 mt-4">
           {post.readTime} min read · {formatDate(post.date)}
         </div>
       </div>

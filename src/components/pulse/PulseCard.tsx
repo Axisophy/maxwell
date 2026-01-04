@@ -35,18 +35,18 @@ function StandardCard({ post }: { post: PulsePost }) {
         </div>
       )}
 
-      <div className="p-3 md:p-4">
-        <div className="text-[10px] text-black/40 uppercase tracking-wider">
+      <div className="p-2 md:p-4">
+        <div className="text-xs text-black/50 uppercase tracking-wider">
           {formatLabel(post.format)} · {post.topic}
         </div>
 
-        <h3 className="text-lg md:text-xl font-light mt-2">{post.title}</h3>
+        <h3 className="text-lg md:text-xl font-serif font-bold mt-2">{post.title}</h3>
 
         {post.excerpt && (
           <p className="text-sm text-black/60 mt-2 line-clamp-2">{post.excerpt}</p>
         )}
 
-        <div className="text-xs text-black/40 mt-3">
+        <div className="text-xs text-black/50 mt-3">
           {post.readTime} min read · {formatShortDate(post.date)}
         </div>
       </div>
@@ -59,21 +59,21 @@ function NumberCard({ post }: { post: PulsePost }) {
   return (
     <Link
       href={`/pulse/${post.slug}`}
-      className="block bg-white rounded-lg p-4 md:p-6 hover:ring-2 hover:ring-black/10 transition-all"
+      className="block bg-white rounded-lg p-2 md:p-4 hover:ring-2 hover:ring-black/10 transition-all"
     >
-      <div className="text-[10px] text-black/40 uppercase tracking-wider">
+      <div className="text-xs text-black/50 uppercase tracking-wider">
         The Number · {post.topic}
       </div>
 
       <div className="py-6 md:py-8 text-center">
-        <div className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+        <div className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-black">
           {post.number}
         </div>
       </div>
 
       <p className="text-sm text-black/60 text-center">{post.excerpt}</p>
 
-      <div className="text-xs text-black/40 mt-4 text-center">
+      <div className="text-xs text-black/50 mt-4 text-center">
         {formatShortDate(post.date)}
       </div>
     </Link>
@@ -85,13 +85,13 @@ function QuestionCard({ post }: { post: PulsePost }) {
   return (
     <Link
       href={`/pulse/${post.slug}`}
-      className="block bg-white rounded-lg p-4 md:p-6 hover:ring-2 hover:ring-black/10 transition-all"
+      className="block bg-white rounded-lg p-2 md:p-4 hover:ring-2 hover:ring-black/10 transition-all"
     >
-      <div className="text-[10px] text-black/40 uppercase tracking-wider">
+      <div className="text-xs text-black/50 uppercase tracking-wider">
         The Question · {post.topic}
       </div>
 
-      <p className="text-lg md:text-xl font-light italic mt-3">"{post.question}"</p>
+      <p className="text-lg md:text-xl font-serif font-bold italic mt-3">"{post.question}"</p>
 
       <div className="flex items-center gap-3 mt-4">
         {post.respondentImage && (
@@ -110,7 +110,7 @@ function QuestionCard({ post }: { post: PulsePost }) {
         </div>
       </div>
 
-      <div className="text-xs text-black/40 mt-3">{formatShortDate(post.date)}</div>
+      <div className="text-xs text-black/50 mt-3">{formatShortDate(post.date)}</div>
     </Link>
   )
 }
@@ -123,9 +123,9 @@ function SignalCard({ post }: { post: PulsePost }) {
   return (
     <Link
       href={`/pulse/${post.slug}`}
-      className="block bg-white rounded-lg p-3 md:p-4 hover:ring-2 hover:ring-black/10 transition-all"
+      className="block bg-white rounded-lg p-2 md:p-4 hover:ring-2 hover:ring-black/10 transition-all"
     >
-      <div className="text-[10px] text-black/40 uppercase tracking-wider">
+      <div className="text-xs text-black/50 uppercase tracking-wider">
         Signal · {post.topic} · {formatShortDate(post.date)}, {time}
       </div>
 
@@ -152,11 +152,11 @@ function PostcardCard({ post }: { post: PulsePost }) {
           <Image src={post.image} alt={post.title} fill className="object-cover" />
         )}
 
-        <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
-          <div className="text-[10px] text-white/70 uppercase tracking-wider">
+        <div className="absolute inset-x-0 bottom-0 p-2 md:p-4 bg-gradient-to-t from-black/70 to-transparent">
+          <div className="text-xs text-white/70 uppercase tracking-wider">
             Postcard · {post.topic}
           </div>
-          <h3 className="text-white font-light mt-1">{post.title}</h3>
+          <h3 className="text-white font-serif font-bold mt-1">{post.title}</h3>
         </div>
       </div>
     </Link>
