@@ -75,7 +75,6 @@ export function PageHeaderFrame({
           font-sans font-bold
           tracking-[-0.03em]
           ${styles.title}
-          uppercase
           mb-3
         `}
       >
