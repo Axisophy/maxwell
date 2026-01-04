@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { cachedFetch, TTL } from '@/lib/cache'
 
 // ===========================================
 // VOLCANO WATCH API
@@ -6,6 +7,7 @@ import { NextResponse } from 'next/server'
 // Data source: Smithsonian Global Volcanism Program
 // https://volcano.si.edu/reports_weekly.cfm
 // Secondary: USGS Volcano Hazards Program
+// Uses Vercel KV caching - data updates weekly
 // ===========================================
 
 interface Volcano {
@@ -22,10 +24,6 @@ interface Volcano {
   currentActivity?: string
   aviationCode?: 'green' | 'yellow' | 'orange' | 'red'
 }
-
-// Cache for 1 hour (data updates weekly)
-let cache: { data: VolcanoResponse; timestamp: number } | null = null
-const CACHE_DURATION = 60 * 60 * 1000
 
 interface VolcanoResponse {
   timestamp: string
@@ -209,44 +207,49 @@ const ACTIVE_VOLCANOES: Volcano[] = [
   },
 ]
 
+const CACHE_KEY = 'api:volcanoes:active'
+
 export async function GET() {
-  // Check cache
-  if (cache && Date.now() - cache.timestamp < CACHE_DURATION) {
-    return NextResponse.json(cache.data)
-  }
-
   try {
-    // TODO: In production, scrape Smithsonian GVP weekly report
-    // or integrate with USGS API for US volcanoes
-    // For now, use curated data based on recent reports
+    const { data, cacheStatus } = await cachedFetch<VolcanoResponse>({
+      key: CACHE_KEY,
+      ttl: TTL.HOURLY,
+      fetcher: async () => {
+        // TODO: In production, scrape Smithsonian GVP weekly report
+        // or integrate with USGS API for US volcanoes
+        // For now, use curated data based on recent reports
 
-    const activeCount = ACTIVE_VOLCANOES.filter(v => v.alertLevel === 'warning').length
-    const watchCount = ACTIVE_VOLCANOES.filter(v => v.alertLevel === 'watch').length
-    const advisoryCount = ACTIVE_VOLCANOES.filter(v => v.alertLevel === 'advisory').length
+        const activeCount = ACTIVE_VOLCANOES.filter((v) => v.alertLevel === 'warning').length
+        const watchCount = ACTIVE_VOLCANOES.filter((v) => v.alertLevel === 'watch').length
+        const advisoryCount = ACTIVE_VOLCANOES.filter((v) => v.alertLevel === 'advisory').length
 
-    const data: VolcanoResponse = {
-      timestamp: new Date().toISOString(),
-      summary: {
-        activeCount,
-        elevatedCount: watchCount,
-        advisoryCount,
+        return {
+          timestamp: new Date().toISOString(),
+          summary: {
+            activeCount,
+            elevatedCount: watchCount,
+            advisoryCount,
+          },
+          volcanoes: ACTIVE_VOLCANOES.sort((a, b) => {
+            // Sort by alert level (warning first)
+            const levels = { warning: 0, watch: 1, advisory: 2, normal: 3 }
+            return levels[a.alertLevel] - levels[b.alertLevel]
+          }),
+        }
       },
-      volcanoes: ACTIVE_VOLCANOES.sort((a, b) => {
-        // Sort by alert level (warning first)
-        const levels = { warning: 0, watch: 1, advisory: 2, normal: 3 }
-        return levels[a.alertLevel] - levels[b.alertLevel]
-      }),
-    }
+    })
 
-    cache = { data, timestamp: Date.now() }
-    return NextResponse.json(data)
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+        'X-Cache-Status': cacheStatus,
+      },
+    })
   } catch (error) {
-    console.error('Error in volcanoes API:', error)
+    console.error('[api/volcanoes] Error:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch volcano data' },
+      { error: 'Failed to fetch volcano data', timestamp: new Date().toISOString() },
       { status: 500 }
     )
   }
 }
-
-export const revalidate = 3600 // Revalidate every hour

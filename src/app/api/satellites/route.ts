@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server'
+import { cachedFetch, TTL } from '@/lib/cache'
 
-// CelesTrak TLE endpoints (free, no auth required)
+// ===========================================
+// SATELLITE TLE API
+// ===========================================
+// Data source: CelesTrak (free, no auth required)
+// Uses Vercel KV caching - TLEs update ~daily
+// ===========================================
+
 const TLE_SOURCES = {
   stations: 'https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle',
   gps: 'https://celestrak.org/NORAD/elements/gp.php?GROUP=gps-ops&FORMAT=tle',
@@ -12,9 +19,13 @@ const TLE_SOURCES = {
 
 type ConstellationType = keyof typeof TLE_SOURCES
 
-// In-memory cache with timestamps
-const cache: Record<string, { data: string; timestamp: number }> = {}
-const CACHE_TTL = 60 * 60 * 1000 // 1 hour - TLE data doesn't change that frequently
+interface ParsedSatellite {
+  name: string
+  noradId: string
+  line1: string
+  line2: string
+  group: string
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -36,52 +47,53 @@ export async function GET(request: Request) {
   try {
     const results: Record<string, ParsedSatellite[]> = {}
 
+    // Fetch each group with caching
     for (const group of validGroups) {
-      // Check cache
-      const cached = cache[group]
-      const now = Date.now()
+      try {
+        const { data: tleData } = await cachedFetch({
+          key: `api:satellites:tle-${group}`,
+          ttl: TTL.HOURLY,
+          fetcher: async () => {
+            const response = await fetch(TLE_SOURCES[group], {
+              headers: {
+                'User-Agent': 'MXWLL/1.0 (https://mxwll.io)',
+              },
+            })
 
-      let tleData: string
+            if (!response.ok) {
+              throw new Error(`CelesTrak responded with ${response.status}`)
+            }
 
-      if (cached && now - cached.timestamp < CACHE_TTL) {
-        tleData = cached.data
-      } else {
-        // Fetch fresh data
-        const response = await fetch(TLE_SOURCES[group], {
-          headers: {
-            'User-Agent': 'MXWLL-Satellite-Tracker/1.0',
+            return response.text()
           },
         })
 
-        if (!response.ok) {
-          console.error(`Failed to fetch ${group}: ${response.status}`)
-          continue
-        }
-
-        tleData = await response.text()
-        cache[group] = { data: tleData, timestamp: now }
+        // Parse TLE data
+        results[group] = parseTLE(tleData, group)
+      } catch (err) {
+        console.error(`[api/satellites] Failed to fetch ${group}:`, err)
+        // Continue with other groups
       }
-
-      // Parse TLE data
-      results[group] = parseTLE(tleData, group)
     }
 
-    return NextResponse.json({
-      satellites: results,
-      updatedAt: new Date().toISOString(),
-    })
+    return NextResponse.json(
+      {
+        satellites: results,
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+        },
+      }
+    )
   } catch (error) {
-    console.error('Satellite API error:', error)
-    return NextResponse.json({ error: 'Failed to fetch satellite data' }, { status: 500 })
+    console.error('[api/satellites] Error:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch satellite data', timestamp: new Date().toISOString() },
+      { status: 500 }
+    )
   }
-}
-
-interface ParsedSatellite {
-  name: string
-  noradId: string
-  line1: string
-  line2: string
-  group: string
 }
 
 function parseTLE(tleData: string, group: string): ParsedSatellite[] {
