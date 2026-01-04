@@ -63,7 +63,7 @@ const variants = {
     textHover: 'hover:text-black',
     textCurrent: 'text-black',
     separator: 'text-black/30',
-    iconColor: 'text-black/40',
+    iconColor: 'text-black',  // Full colour for section icon
   },
   dark: {
     frame: 'bg-[#1d1d1d]',
@@ -71,7 +71,7 @@ const variants = {
     textHover: 'hover:text-white',
     textCurrent: 'text-white',
     separator: 'text-white/30',
-    iconColor: 'text-white/40',
+    iconColor: 'text-white',  // Full colour for section icon
   },
 }
 
@@ -91,7 +91,7 @@ export function BreadcrumbFrame({
     <div className={`mb-px ${className}`}>
       <div className={`${styles.frame} rounded-lg py-1 md:py-2 px-2 md:px-4`}>
         <nav
-          className={`flex items-center gap-2 text-sm`}
+          className="flex items-center gap-2 text-xs font-sans"
           aria-label="Breadcrumb"
         >
           {/* Optional section icon */}
