@@ -1,42 +1,34 @@
 'use client';
 
 import Link from 'next/link';
-import Breadcrumb from '@/components/ui/Breadcrumb';
 import EMSpectrumChart from '@/components/data/EMSpectrumChart';
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui';
+import { DataIcon } from '@/components/icons';
 
 export default function EMSpectrumPage() {
   return (
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
 
-        {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Data', href: '/data' },
-                { label: 'The Fabric', href: '/data/fabric' },
-                { label: 'EM Spectrum' },
-              ]}
-              theme="light"
-            />
-          </div>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['The Fabric', '/data/fabric'],
+            ['EM Spectrum']
+          )}
+        />
 
         {/* Frames container */}
         <div className="flex flex-col gap-px">
 
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Electromagnetic Spectrum
-            </h1>
-            <p className="text-sm md:text-base text-black/60 max-w-2xl">
-              From gamma rays to radio waves -19 orders of magnitude of electromagnetic radiation.
-              The visible spectrum we evolved to see represents less than 0.0035% of what's out there.
-            </p>
-          </section>
+          <PageHeaderFrame
+            variant="light"
+            title="Electromagnetic Spectrum"
+            description="From gamma rays to radio waves — 19 orders of magnitude of electromagnetic radiation. The visible spectrum we evolved to see represents less than 0.0035% of what's out there."
+          />
 
           {/* Key Numbers Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">

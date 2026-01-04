@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { ObserveIcon } from '@/components/icons'
 
 // Dynamic import for map (client-side only)
 const FiresMap = dynamic(() => import('./components/FiresMap'), {
@@ -91,26 +92,22 @@ export default function ActiveFiresPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Observe', href: '/observe' },
-              { label: 'Earth', href: '/observe/earth' },
-              { label: 'Active Fires' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            Active Fires
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Global fire detection from NASA FIRMS satellite data. MODIS and VIIRS sensors
-            detect thermal anomalies indicating active burning.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<ObserveIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Observe', '/observe'],
+            ['Earth', '/observe/earth'],
+            ['Active Fires']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="light"
+          title="Active fires"
+          description="Global fire detection from NASA FIRMS satellite data. MODIS and VIIRS sensors detect thermal anomalies indicating active burning."
+        />
 
         {/* Controls */}
         <div className="flex flex-wrap items-center gap-4 mb-6">

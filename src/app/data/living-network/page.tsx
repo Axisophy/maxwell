@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import Breadcrumb from '@/components/ui/Breadcrumb';
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui';
+import { DataIcon } from '@/components/icons';
 import CollapsibleTree from '@/components/living-network/CollapsibleTree';
 import { buildFullTree, kingdoms } from '@/lib/living-network/data';
 
@@ -24,24 +25,21 @@ export default function LivingNetworkPage() {
       <div className="h-14 md:hidden" />
 
       <div className="px-4 md:px-8 lg:px-12 pt-6 md:pt-8 lg:pt-12 pb-16 md:pb-20 lg:pb-24">
-        {/* Breadcrumb */}
-        <Breadcrumb
-          items={[
-            { label: 'Data', href: '/data' },
-            { label: 'Living Network', href: '/data/living-network' },
-          ]}
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['Living Network']
+          )}
         />
 
-        {/* Header */}
-        <div className="mt-4 mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-4">
-            The Living Network
-          </h1>
-          <p className="text-base md:text-lg text-black max-w-2xl">
-            Every living thing is your relative. This is the family tree - from the first cells 3.8
-            billion years ago to the 2 million species alive today.
-          </p>
-        </div>
+        <PageHeaderFrame
+          variant="light"
+          title="The Living Network"
+          description="Every living thing is your relative. This is the family tree - from the first cells 3.8 billion years ago to the 2 million species alive today."
+        />
 
         {/* Stats bar */}
         <div className="flex flex-wrap gap-6 md:gap-12 mb-8 md:mb-12 py-4 border-y border-black/10">

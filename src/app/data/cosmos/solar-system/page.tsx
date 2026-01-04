@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { DataIcon } from '@/components/icons'
 import OrbitalDiagram from '@/components/data/solar-system/OrbitalDiagram'
 import PlanetNavigationGrid from '@/components/data/solar-system/PlanetNavigationGrid'
 import SizeComparisonChart from '@/components/data/solar-system/SizeComparisonChart'
@@ -15,25 +16,22 @@ export default function SolarSystemPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Data', href: '/data' },
-              { label: 'Solar System' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            The Solar System
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Eight planets, hundreds of moons, and one star we call home -
-            4.6 billion years in the making.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['The Cosmos', '/data/cosmos'],
+            ['Solar System']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="light"
+          title="The Solar System"
+          description="Eight planets, hundreds of moons, and one star we call home — 4.6 billion years in the making."
+        />
 
         {/* Hero: Orbital Diagram */}
         <section className="mb-8 md:mb-12">

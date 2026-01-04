@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { ObserveIcon } from '@/components/icons'
 
 interface SpaceWeatherData {
   kpIndex: number
@@ -90,27 +91,22 @@ export default function AuroraPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Observe', href: '/observe' },
-              { label: 'Space', href: '/observe/space' },
-              { label: 'Aurora Forecast' },
-            ]}
-            theme="dark"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light mb-3">
-            Aurora Forecast
-          </h1>
-          <p className="text-base md:text-lg text-white/60 max-w-2xl">
-            Real-time aurora probability based on current space weather conditions.
-            The OVATION Prime model uses solar wind data from L1 to predict where
-            aurora will be visible in the next 30 minutes.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="dark"
+          icon={<ObserveIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Observe', '/observe'],
+            ['Space', '/observe/space'],
+            ['Aurora Forecast']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="dark"
+          title="Aurora forecast"
+          description="Real-time aurora probability based on current space weather conditions. The OVATION Prime model uses solar wind data from L1 to predict where aurora will be visible in the next 30 minutes."
+        />
 
         {/* Current Conditions Panel */}
         <section className="mb-8">

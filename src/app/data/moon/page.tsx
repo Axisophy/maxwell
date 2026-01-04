@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import { ArrowLeft, Map, Globe, ExternalLink } from 'lucide-react';
+import { Map, ExternalLink } from 'lucide-react';
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui';
+import { DataIcon } from '@/components/icons';
 
 export default function MoonDataPage() {
   return (
@@ -9,22 +11,21 @@ export default function MoonDataPage() {
 
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
         <div className="max-w-full md:max-w-[720px] lg:max-w-[800px] md:mx-auto">
-          {/* Back link */}
-          <Link
-            href="/data"
-            className="inline-flex items-center gap-2 text-sm text-black/50 hover:text-black mb-8 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Data
-          </Link>
+          <BreadcrumbFrame
+            variant="light"
+            icon={<DataIcon className="w-4 h-4" />}
+            items={breadcrumbItems(
+              ['MXWLL', '/'],
+              ['Data', '/data'],
+              ['Moon']
+            )}
+          />
 
-          {/* Header */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-4">
-            The Moon
-          </h1>
-          <p className="text-lg md:text-xl text-black/70 mb-8">
-            Earth&apos;s only natural satellite, 384,400 km away.
-          </p>
+          <PageHeaderFrame
+            variant="light"
+            title="The Moon"
+            description="Earth's only natural satellite, 384,400 km away."
+          />
 
           {/* Quick links to atlas */}
           <div className="flex flex-wrap gap-3 mb-12">

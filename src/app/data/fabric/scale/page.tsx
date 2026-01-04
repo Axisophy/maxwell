@@ -2,25 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-
-function Breadcrumb({ items }: { items: { label: string; href?: string }[] }) {
-  return (
-    <nav className="flex items-center gap-2 text-sm">
-      {items.map((item, i) => (
-        <span key={i} className="flex items-center gap-2">
-          {i > 0 && <span className="text-white/30">/</span>}
-          {item.href ? (
-            <Link href={item.href} className="text-white/50 hover:text-white transition-colors">
-              {item.label}
-            </Link>
-          ) : (
-            <span className="text-white">{item.label}</span>
-          )}
-        </span>
-      ))}
-    </nav>
-  );
-}
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui';
+import { DataIcon } from '@/components/icons';
 
 // Scale data - from Planck length to observable universe
 const SCALES = [
@@ -510,29 +493,22 @@ export default function ScaleOfUniversePage() {
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
 
-        {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="bg-[#1d1d1d] rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Data', href: '/data' },
-                { label: 'The Fabric', href: '/data/fabric' },
-                { label: 'Scale of the Universe' },
-              ]}
-            />
-          </div>
-        </div>
+        <BreadcrumbFrame
+          variant="dark"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['The Fabric', '/data/fabric'],
+            ['Scale of the Universe']
+          )}
+        />
 
-        {/* Header Frame */}
-        <div className="bg-[#1d1d1d] rounded-lg p-2 md:p-4 mb-px">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-white uppercase">
-            Scale of the Universe
-          </h1>
-          <p className="text-sm md:text-base text-white/60 mt-2 max-w-2xl">
-            From the Planck length to the observable universe — a journey through 61 orders of magnitude.
-          </p>
-        </div>
+        <PageHeaderFrame
+          variant="dark"
+          title="Scale of the Universe"
+          description="From the Planck length to the observable universe — a journey through 61 orders of magnitude."
+        />
 
         {/* Scale Ruler */}
         <div className="mb-px">

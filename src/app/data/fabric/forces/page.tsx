@@ -1,42 +1,34 @@
 'use client';
 
 import Link from 'next/link';
-import Breadcrumb from '@/components/ui/Breadcrumb';
 import FundamentalForcesChart from '@/components/data/FundamentalForcesChart';
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui';
+import { DataIcon } from '@/components/icons';
 
 export default function FundamentalForcesPage() {
   return (
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
 
-        {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Data', href: '/data' },
-                { label: 'The Fabric', href: '/data/fabric' },
-                { label: 'Forces' },
-              ]}
-              theme="light"
-            />
-          </div>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['The Fabric', '/data/fabric'],
+            ['Forces']
+          )}
+        />
 
         {/* Frames container */}
         <div className="flex flex-col gap-px">
 
-          {/* Header Frame */}
-          <section className="bg-white rounded-lg p-2 md:p-4">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black uppercase mb-3">
-              Fundamental Forces
-            </h1>
-            <p className="text-sm md:text-base text-black/60 max-w-2xl">
-              The four fundamental interactions that govern all phenomena in the universe -
-              from quarks to galaxies. Three are described by the Standard Model; gravity remains separate.
-            </p>
-          </section>
+          <PageHeaderFrame
+            variant="light"
+            title="Fundamental Forces"
+            description="The four fundamental interactions that govern all phenomena in the universe — from quarks to galaxies. Three are described by the Standard Model; gravity remains separate."
+          />
 
           {/* Key Numbers Frame */}
           <section className="bg-white rounded-lg p-2 md:p-4">

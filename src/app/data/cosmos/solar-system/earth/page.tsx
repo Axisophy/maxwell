@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { DataIcon } from '@/components/icons'
 
 export const metadata: Metadata = {
   title: 'Earth | Solar System | MXWLL',
@@ -37,26 +38,22 @@ export default function EarthPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Data', href: '/data' },
-              { label: 'Solar System', href: '/data/solar-system' },
-              { label: 'Earth' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            Earth
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            The third planet from the Sun -our pale blue dot. The only known world
-            with liquid water on its surface, a protective atmosphere, and life.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['Solar System', '/data/cosmos/solar-system'],
+            ['Earth']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="light"
+          title="Earth"
+          description="The third planet from the Sun - our pale blue dot. The only known world with liquid water on its surface, a protective atmosphere, and life."
+        />
 
         {/* Hero Image */}
         <section className="mb-8 md:mb-12">

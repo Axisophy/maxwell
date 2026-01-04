@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { ObserveIcon } from '@/components/icons'
 
 interface NeutrinoAlert {
   id: string
@@ -57,26 +58,22 @@ export default function NeutrinosPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Observe', href: '/observe' },
-              { label: 'Detectors', href: '/observe/detectors' },
-              { label: 'Neutrinos' },
-            ]}
-            theme="dark"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light mb-3">
-            Neutrino Observatories
-          </h1>
-          <p className="text-base md:text-lg text-white/60 max-w-2xl">
-            Ghost particles from the cosmos. Nearly massless, barely interacting with matter,
-            yet trillions pass through you every second.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="dark"
+          icon={<ObserveIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Observe', '/observe'],
+            ['Detectors', '/observe/detectors'],
+            ['Neutrinos']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="dark"
+          title="Neutrino observatories"
+          description="Ghost particles from the cosmos. Nearly massless, barely interacting with matter, yet trillions pass through you every second."
+        />
 
         {/* Alert Summary */}
         <section className="mb-8">

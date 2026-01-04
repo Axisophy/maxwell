@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { DataIcon } from '@/components/icons'
 import SourcesPanel from './components/SourcesPanel'
 import OverviewView from './components/views/OverviewView'
 import DeepTimeView from './components/views/DeepTimeView'
@@ -53,16 +55,22 @@ export default function ClimateDataCentre() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            Earth Climate Data Centre
-          </h1>
-          <p className="text-base md:text-lg text-neutral-600 max-w-3xl">
-            Comprehensive climate data from NASA, NOAA, and leading research institutions. 
-            Explore historical trends, compare datasets, and understand the evidence.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['Earth', '/data/earth'],
+            ['Climate']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="light"
+          title="Earth Climate Data Centre"
+          description="Comprehensive climate data from NASA, NOAA, and leading research institutions. Explore historical trends, compare datasets, and understand the evidence."
+        />
 
         {/* Sources Panel (collapsible) */}
         <div className="mb-8">

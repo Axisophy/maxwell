@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { DataIcon } from '@/components/icons'
 import NeptuneStatsGrid from '@/components/data/neptune/NeptuneStatsGrid'
 import TritonSection from '@/components/data/neptune/TritonSection'
 
@@ -22,26 +23,22 @@ export default function NeptunePage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Data', href: '/data' },
-              { label: 'Solar System', href: '/data/solar-system' },
-              { label: 'Neptune' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            Neptune
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            The windswept ice giant at the edge of the solar system. Visited only once,
-            in 1989, for just 9 hours. Still full of mysteries.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['Solar System', '/data/cosmos/solar-system'],
+            ['Neptune']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="light"
+          title="Neptune"
+          description="The windswept ice giant at the edge of the solar system. Visited only once, in 1989, for just 9 hours. Still full of mysteries."
+        />
 
         {/* Hero Image Placeholder */}
         <section className="mb-8 md:mb-12">

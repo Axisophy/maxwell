@@ -2,7 +2,8 @@
 
 import { useRef, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import Breadcrumb from '@/components/ui/Breadcrumb';
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui';
+import { DataIcon } from '@/components/icons';
 import type { ExtractionMapHandle } from '@/components/data/extraction/ExtractionMapContainer';
 
 // Dynamically import the map component to avoid SSR issues with Mapbox
@@ -57,21 +58,22 @@ export default function ExtractionPage() {
 
       {/* Page Header */}
       <div className="px-4 md:px-8 lg:px-12 py-6 md:py-8">
-        <Breadcrumb
-          items={[
-            { label: 'Data', href: '/data' },
-            { label: 'Extraction', href: '/data/extraction' },
-          ]}
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['Earth', '/data/earth'],
+            ['Extraction']
+          )}
         />
-        <div className="mt-4 max-w-3xl">
-          <h1 className="text-3xl md:text-4xl font-light text-black">
-            The Geography of Extraction
-          </h1>
-          <p className="text-black/50 mt-2 text-lg">
-            Every device, building, and vehicle begins as rock pulled from the Earth.
-            Explore where humanity extracts the raw materials of modern civilization.
-          </p>
-        </div>
+
+        <PageHeaderFrame
+          variant="light"
+          title="The geography of extraction"
+          description="Every device, building, and vehicle begins as rock pulled from the Earth. Explore where humanity extracts the raw materials of modern civilization."
+        />
       </div>
 
       {/* Map Section */}

@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { ObserveIcon } from '@/components/icons'
 import OverviewTab from './components/OverviewTab'
 import SatellitesTab from './components/SatellitesTab'
 import OceanTab from './components/OceanTab'
@@ -44,26 +45,22 @@ export default function WeatherPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Observe', href: '/observe' },
-              { label: 'Earth', href: '/observe/earth' },
-              { label: 'Weather' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            Weather
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Global weather patterns and atmospheric conditions. Satellite imagery, ocean currents,
-            jet streams, and storm tracking.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<ObserveIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Observe', '/observe'],
+            ['Earth', '/observe/earth'],
+            ['Weather']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="light"
+          title="Weather"
+          description="Global weather patterns and atmospheric conditions. Satellite imagery, ocean currents, jet streams, and storm tracking."
+        />
 
         {/* Tab Navigation */}
         <div className="flex flex-wrap gap-1 mb-6 border-b border-black/10 pb-px">

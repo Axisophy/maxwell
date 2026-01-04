@@ -7,7 +7,8 @@
 // that can exist in the universe
 
 import React, { useState, useCallback, useMemo } from 'react'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
+import { DataIcon } from '@/components/icons'
 import { CosmicObject, ObjectCategory, ViewMode, ModalState, BigQuestion } from './lib/types'
 import {
   ALL_OBJECTS,
@@ -125,16 +126,17 @@ export default function PermissibleUniversePage() {
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             {/* Title */}
             <div>
-              <Breadcrumb
-                items={[
-                  { label: 'MXWLL', href: '/' },
-                  { label: 'Data', href: '/data' },
-                  { label: 'Permissible Universe' },
-                ]}
-                theme="dark"
+              <BreadcrumbFrame
+                variant="dark"
+                icon={<DataIcon className="w-4 h-4" />}
+                items={breadcrumbItems(
+                  ['MXWLL', '/'],
+                  ['Data', '/data'],
+                  ['Permissible Universe']
+                )}
                 className="mb-2"
               />
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-sans font-bold tracking-[-0.03em]">
                 The Permissible Universe
               </h1>
               <p className="text-white/60 mt-2 max-w-2xl text-sm md:text-base">

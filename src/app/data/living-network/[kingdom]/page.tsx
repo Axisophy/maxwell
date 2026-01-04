@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Breadcrumb from '@/components/ui/Breadcrumb';
+import { BreadcrumbFrame, breadcrumbItems } from '@/components/ui';
+import { DataIcon } from '@/components/icons';
 import { getTaxonById, kingdoms, getTaxonChildren } from '@/lib/living-network/data';
 import VitalStats from '@/components/living-network/VitalStats';
 import NotableMembers from '@/components/living-network/NotableMembers';
@@ -43,13 +44,15 @@ export default async function KingdomPage({ params }: PageProps) {
       <div className="h-14 md:hidden" />
 
       <div className="px-4 md:px-8 lg:px-12 pt-6 md:pt-8 lg:pt-12 pb-16 md:pb-20 lg:pb-24">
-        {/* Breadcrumb */}
-        <Breadcrumb
-          items={[
-            { label: 'Data', href: '/data' },
-            { label: 'Living Network', href: '/data/living-network' },
-            { label: taxon.name, href: `/data/living-network/${taxon.id}` },
-          ]}
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['Living Network', '/data/living-network'],
+            [taxon.name]
+          )}
         />
 
         {/* Header */}

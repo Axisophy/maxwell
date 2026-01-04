@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { ObserveIcon } from '@/components/icons'
 
 interface Cable {
   name: string
@@ -112,26 +113,22 @@ export default function InternetPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-white">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Observe', href: '/observe' },
-              { label: 'Infrastructure', href: '/observe/infrastructure' },
-              { label: 'Internet' },
-            ]}
-            theme="dark"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light mb-3">
-            Submarine Cables
-          </h1>
-          <p className="text-base md:text-lg text-white/60 max-w-2xl">
-            The physical backbone of the internet. Over 550 cables stretching 1.4 million
-            kilometres across ocean floors, carrying 99% of intercontinental data.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="dark"
+          icon={<ObserveIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Observe', '/observe'],
+            ['Infrastructure', '/observe/infrastructure'],
+            ['Internet']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="dark"
+          title="Submarine cables"
+          description="The physical backbone of the internet. Over 550 cables stretching 1.4 million kilometres across ocean floors, carrying 99% of intercontinental data."
+        />
 
         {/* Global Stats */}
         <section className="mb-8">

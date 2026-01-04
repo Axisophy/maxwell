@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import Breadcrumb from '@/components/ui/Breadcrumb';
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui';
+import { ObserveIcon } from '@/components/icons';
 import { Earthquake, Volcano } from '@/lib/unrest/types';
 import SeismicPanel from '@/components/SeismicPanel';
 import UnrestSummaryBar from '@/components/unrest/UnrestSummaryBar';
@@ -77,26 +78,22 @@ export default function UnrestPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Observe', href: '/observe' },
-              { label: 'Earth', href: '/observe/earth' },
-              { label: 'Unrest' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            Unrest
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Live monitoring of planetary disturbance: seismic activity, volcanic alerts,
-            tropical systems, and space weather from around the world.
-          </p>
-        </div>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<ObserveIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Observe', '/observe'],
+            ['Earth', '/observe/earth'],
+            ['Unrest']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="light"
+          title="Unrest"
+          description="Live monitoring of planetary disturbance: seismic activity, volcanic alerts, tropical systems, and space weather from around the world."
+        />
 
         {/* Summary Stats Bar */}
         {data && (

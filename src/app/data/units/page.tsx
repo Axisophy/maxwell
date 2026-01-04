@@ -2,25 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-
-function Breadcrumb({ items }: { items: { label: string; href?: string }[] }) {
-  return (
-    <nav className="flex items-center gap-2 text-sm">
-      {items.map((item, i) => (
-        <span key={i} className="flex items-center gap-2">
-          {i > 0 && <span className="text-white/30">/</span>}
-          {item.href ? (
-            <Link href={item.href} className="text-white/50 hover:text-white transition-colors">
-              {item.label}
-            </Link>
-          ) : (
-            <span className="text-white">{item.label}</span>
-          )}
-        </span>
-      ))}
-    </nav>
-  );
-}
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui';
+import { DataIcon } from '@/components/icons';
 
 // SI Base Units
 const SI_BASE_UNITS = [
@@ -203,29 +186,21 @@ export default function UnitsPage() {
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
 
-        {/* Breadcrumb */}
-        <div className="mb-px">
-          <div className="bg-[#1d1d1d] rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Data', href: '/data' },
-                { label: 'Units & Measurement' },
-              ]}
-            />
-          </div>
-        </div>
+        <BreadcrumbFrame
+          variant="dark"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['Units & Measurement']
+          )}
+        />
 
-        {/* Header */}
-        <div className="bg-[#1d1d1d] rounded-lg p-2 md:p-4 mb-px">
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-light text-white uppercase">
-            Units & Measurement
-          </h1>
-          <p className="text-xs md:text-base text-white/60 mt-2 max-w-2xl">
-            The language of quantitative science. From the seven SI base units to the specialised
-            conventions of particle physics and astronomy — how we measure the universe.
-          </p>
-        </div>
+        <PageHeaderFrame
+          variant="dark"
+          title="Units & measurement"
+          description="The language of quantitative science. From the seven SI base units to the specialised conventions of particle physics and astronomy - how we measure the universe."
+        />
 
         {/* Quick Navigation */}
         <div className="bg-[#1d1d1d] rounded-lg p-2 md:p-4 mb-px">

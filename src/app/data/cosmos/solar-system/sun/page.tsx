@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { DataIcon } from '@/components/icons'
 import SunHeroSlideshow from '@/components/data/sun/SunHeroSlideshow'
 import KeyStatsGrid from '@/components/data/sun/KeyStatsGrid'
 import StructureDiagram from '@/components/data/sun/StructureDiagram'
@@ -18,28 +19,27 @@ export default function SunDataPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5]">
       <div className="px-4 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-16 md:pb-20 lg:pb-24">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <Breadcrumb
-            items={[
-              { label: 'MXWLL', href: '/' },
-              { label: 'Data', href: '/data' },
-              { label: 'Solar System' },
-              { label: 'Sun' },
-            ]}
-            theme="light"
-            className="mb-2"
-          />
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-3">
-            The Sun
-          </h1>
-          <p className="text-base md:text-lg text-black/60 max-w-2xl">
-            Our star - a G-type main-sequence yellow dwarf. The source of nearly all energy
-            on Earth and the gravitational anchor of the solar system.
-          </p>
+        <BreadcrumbFrame
+          variant="light"
+          icon={<DataIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Data', '/data'],
+            ['Solar System', '/data/cosmos/solar-system'],
+            ['Sun']
+          )}
+        />
+
+        <PageHeaderFrame
+          variant="light"
+          title="The Sun"
+          description="Our star - a G-type main-sequence yellow dwarf. The source of nearly all energy on Earth and the gravitational anchor of the solar system."
+        />
+
+        <div className="mb-6 md:mb-8 -mt-4">
           <Link
             href="/observe/solar-observatory"
-            className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-[#e6007e] transition-colors mt-3"
+            className="inline-flex items-center gap-2 text-sm font-medium text-black hover:text-[#e6007e] transition-colors"
           >
             See it live →
           </Link>

@@ -2,6 +2,8 @@
 
 import { useState, useMemo, useEffect, Suspense } from 'react'
 import dynamic from 'next/dynamic'
+import { BreadcrumbFrame, breadcrumbItems, PageHeaderFrame } from '@/components/ui'
+import { ObserveIcon } from '@/components/icons'
 import {
   VOYAGER_1,
   VOYAGER_2,
@@ -92,20 +94,16 @@ export default function VoyagerPage() {
   return (
     <main className="min-h-screen bg-black">
       <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
-        {/* Breadcrumb */}
-        <div className="mb-px">
-          <div className="bg-[#1d1d1d] rounded-lg py-2 px-4">
-            <nav className="flex items-center gap-2 text-sm text-white/50">
-              <span className="hover:text-white cursor-pointer">MXWLL</span>
-              <span>/</span>
-              <span className="hover:text-white cursor-pointer">Observe</span>
-              <span>/</span>
-              <span className="hover:text-white cursor-pointer">Space</span>
-              <span>/</span>
-              <span className="text-white">Voyager</span>
-            </nav>
-          </div>
-        </div>
+        <BreadcrumbFrame
+          variant="dark"
+          icon={<ObserveIcon className="w-4 h-4" />}
+          items={breadcrumbItems(
+            ['MXWLL', '/'],
+            ['Observe', '/observe'],
+            ['Space', '/observe/space'],
+            ['Voyager']
+          )}
+        />
 
         {/* Header */}
         <div className="bg-[#1d1d1d] rounded-lg p-4 mb-px">
