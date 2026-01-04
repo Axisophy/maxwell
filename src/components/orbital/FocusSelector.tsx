@@ -1,16 +1,23 @@
 'use client'
 
-type FocusTarget = 'sun' | 'earth' | 'moon' | null
+type FocusTarget = string | null
 
 interface FocusSelectorProps {
   current: FocusTarget
   onChange: (target: FocusTarget) => void
 }
 
-const FOCUS_OPTIONS: { id: FocusTarget; label: string; color: string }[] = [
+const FOCUS_OPTIONS: { id: string; label: string; color: string }[] = [
   { id: 'sun', label: 'Sun', color: 'bg-yellow-500' },
+  { id: 'mercury', label: 'Mercury', color: 'bg-gray-500' },
+  { id: 'venus', label: 'Venus', color: 'bg-yellow-300' },
   { id: 'earth', label: 'Earth', color: 'bg-blue-500' },
   { id: 'moon', label: 'Moon', color: 'bg-gray-400' },
+  { id: 'mars', label: 'Mars', color: 'bg-orange-600' },
+  { id: 'jupiter', label: 'Jupiter', color: 'bg-orange-400' },
+  { id: 'saturn', label: 'Saturn', color: 'bg-yellow-200' },
+  { id: 'uranus', label: 'Uranus', color: 'bg-cyan-300' },
+  { id: 'neptune', label: 'Neptune', color: 'bg-blue-400' },
 ]
 
 export default function FocusSelector({ current, onChange }: FocusSelectorProps) {

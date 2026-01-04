@@ -8,13 +8,14 @@ import {
   getEarthPosition,
   getMoonPosition,
   getMoonHeliocentricPosition,
-  getOrbitalElements,
-  generateOrbitPath,
+  getAllPlanetPositions,
+  getHeliocentricPosition,
   Vector3D,
 } from '@/lib/orbital/bodies'
+import * as Astronomy from 'astronomy-engine'
 import {
   getRadius,
-  SCALE,
+  AU,
   DISPLAY_SCALES,
   CAMERA,
   CONTROLS,
@@ -23,12 +24,17 @@ import {
   ORBIT_PATH,
   LIGHTING,
   BODY_COLORS,
+  PLANET_COLORS,
+  ORBITAL_PERIODS,
+  ORBITAL_RADII,
 } from '@/lib/orbital/constants'
 
 interface OrbitalSceneProps {
   time: Date
   showOrbits?: boolean
-  focusTarget?: 'sun' | 'earth' | 'moon' | null
+  showInnerPlanets?: boolean
+  showOuterPlanets?: boolean
+  focusTarget?: string | null
   onCameraMove?: (position: Vector3D) => void
 }
 
@@ -78,21 +84,51 @@ function Moon({ position }: { position: Vector3D }) {
   )
 }
 
-// Orbit path component
+// Generate orbit path by tracing actual body positions over one period
 function OrbitPath({
-  center,
   bodyName,
   color = '#444444',
+  segments = 128,
+  time,
 }: {
-  center: Vector3D
   bodyName: string
   color?: string
+  segments?: number
+  time: Date
 }) {
-  const elements = getOrbitalElements(bodyName)
   const points = useMemo(() => {
-    const orbitPoints = generateOrbitPath(center, elements, ORBIT_PATH.segments)
-    return orbitPoints.map(p => [p.x, p.y, p.z] as [number, number, number])
-  }, [center.x, center.y, center.z, elements])
+    const pts: THREE.Vector3[] = []
+    const period = ORBITAL_PERIODS[bodyName] || 365.25
+    const msPerSegment = (period * 24 * 60 * 60 * 1000) / segments
+
+    for (let i = 0; i <= segments; i++) {
+      const t = new Date(time.getTime() - (period * 24 * 60 * 60 * 1000) + (i * msPerSegment))
+
+      if (bodyName === 'moon') {
+        const pos = getMoonHeliocentricPosition(t).position
+        pts.push(new THREE.Vector3(pos.x, pos.y, pos.z))
+      } else {
+        // Map body name to Astronomy.Body
+        const bodyMap: Record<string, Astronomy.Body> = {
+          mercury: Astronomy.Body.Mercury,
+          venus: Astronomy.Body.Venus,
+          earth: Astronomy.Body.Earth,
+          mars: Astronomy.Body.Mars,
+          jupiter: Astronomy.Body.Jupiter,
+          saturn: Astronomy.Body.Saturn,
+          uranus: Astronomy.Body.Uranus,
+          neptune: Astronomy.Body.Neptune,
+        }
+        const body = bodyMap[bodyName]
+        if (body) {
+          const pos = getHeliocentricPosition(body, t).position
+          pts.push(new THREE.Vector3(pos.x, pos.y, pos.z))
+        }
+      }
+    }
+
+    return pts
+  }, [bodyName, segments, time])
 
   return (
     <Line
@@ -105,20 +141,91 @@ function OrbitPath({
   )
 }
 
+// Planet component
+function Planet({
+  name,
+  position,
+  color,
+  isSelected,
+}: {
+  name: string
+  position: { x: number; y: number; z: number }
+  color: number
+  isSelected?: boolean
+}) {
+  // Scale planets for visibility - outer planets larger
+  const baseSize = ORBITAL_RADII[name] > 5 ? 3 : ORBITAL_RADII[name] > 1 ? 1.5 : 1
+  const size = isSelected ? baseSize * 1.3 : baseSize
+
+  return (
+    <mesh position={[position.x, position.y, position.z]}>
+      <sphereGeometry args={[size, 24, 24]} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  )
+}
+
+// Orbit ring for a planet (simplified circular)
+function PlanetOrbitRing({
+  radiusAU,
+  color,
+  opacity = 0.3,
+}: {
+  radiusAU: number
+  color: number
+  opacity?: number
+}) {
+  const radius = radiusAU * AU
+
+  const points = useMemo(() => {
+    const pts: THREE.Vector3[] = []
+    const segments = 128
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * Math.PI * 2
+      pts.push(new THREE.Vector3(
+        Math.cos(angle) * radius,
+        0,
+        Math.sin(angle) * radius
+      ))
+    }
+    return pts
+  }, [radius])
+
+  return (
+    <Line
+      points={points}
+      color={color}
+      lineWidth={0.5}
+      transparent
+      opacity={opacity}
+    />
+  )
+}
+
 // Camera controller with smooth transitions
 function CameraController({
   focusTarget,
-  earthPosition,
+  planetPositions,
   moonPosition,
 }: {
-  focusTarget?: 'sun' | 'earth' | 'moon' | null
-  earthPosition: Vector3D
+  focusTarget?: string | null
+  planetPositions: Record<string, { position: Vector3D }>
   moonPosition: Vector3D
 }) {
   const { camera } = useThree()
   const controlsRef = useRef<any>(null)
   const previousFocusRef = useRef<typeof focusTarget>(null)
   const animationRef = useRef<{ startTime: number; startPos: THREE.Vector3; startTarget: THREE.Vector3 } | null>(null)
+
+  // Get focus distance based on target (outer planets need more distance)
+  const getFocusDistance = (target: string | null | undefined): number => {
+    if (!target || target === 'sun') return CAMERA.focusDistances.sun
+    if (target === 'moon') return CAMERA.focusDistances.moon
+    const radius = ORBITAL_RADII[target] || 1
+    if (radius > 5) return 1000  // Outer planets
+    if (radius > 1) return 400   // Mars
+    return CAMERA.focusDistances.earth  // Inner planets
+  }
 
   // Smooth camera transition using useFrame
   useFrame(() => {
@@ -136,8 +243,8 @@ function CameraController({
 
     // Interpolate camera position and target
     const currentTarget = controlsRef.current.target
-    const targetPos = getTargetPosition(focusTarget, earthPosition, moonPosition)
-    const distance = CAMERA.focusDistances[focusTarget || 'sun'] || CAMERA.focusDistances.sun
+    const targetPos = getTargetPosition(focusTarget, planetPositions, moonPosition)
+    const distance = getFocusDistance(focusTarget)
 
     currentTarget.lerp(targetPos, eased * 0.1)
 
@@ -186,33 +293,46 @@ function CameraController({
 
 // Helper to get target position based on focus
 function getTargetPosition(
-  focusTarget: 'sun' | 'earth' | 'moon' | null | undefined,
-  earthPosition: Vector3D,
+  focusTarget: string | null | undefined,
+  planetPositions: Record<string, { position: Vector3D }>,
   moonPosition: Vector3D
 ): THREE.Vector3 {
-  switch (focusTarget) {
-    case 'earth':
-      return new THREE.Vector3(earthPosition.x, earthPosition.y, earthPosition.z)
-    case 'moon':
-      return new THREE.Vector3(moonPosition.x, moonPosition.y, moonPosition.z)
-    case 'sun':
-    default:
-      return new THREE.Vector3(0, 0, 0)
+  if (!focusTarget || focusTarget === 'sun') {
+    return new THREE.Vector3(0, 0, 0)
   }
+  if (focusTarget === 'moon') {
+    return new THREE.Vector3(moonPosition.x, moonPosition.y, moonPosition.z)
+  }
+  const planet = planetPositions[focusTarget]
+  if (planet) {
+    return new THREE.Vector3(planet.position.x, planet.position.y, planet.position.z)
+  }
+  return new THREE.Vector3(0, 0, 0)
 }
+
+// Planet list with metadata
+const PLANETS = [
+  { name: 'mercury', inner: true },
+  { name: 'venus', inner: true },
+  { name: 'earth', inner: true },
+  { name: 'mars', inner: true },
+  { name: 'jupiter', inner: false },
+  { name: 'saturn', inner: false },
+  { name: 'uranus', inner: false },
+  { name: 'neptune', inner: false },
+]
 
 // Main scene content
 function SceneContent({
   time,
   showOrbits = true,
+  showInnerPlanets = true,
+  showOuterPlanets = true,
   focusTarget,
 }: OrbitalSceneProps) {
-  // Calculate positions
-  const earthPos = useMemo(() => getEarthPosition(time).position, [time])
+  // Get all planet positions
+  const planetPositions = useMemo(() => getAllPlanetPositions(time), [time])
   const moonHelioPos = useMemo(() => getMoonHeliocentricPosition(time).position, [time])
-
-  // Sun is at origin
-  const sunPos: Vector3D = { x: 0, y: 0, z: 0 }
 
   return (
     <>
@@ -232,22 +352,57 @@ function SceneContent({
       {/* Sun at origin */}
       <Sun />
 
-      {/* Earth's orbit */}
-      {showOrbits && <OrbitPath center={sunPos} bodyName="earth" color="#4a90d9" />}
+      {/* Planet orbit rings */}
+      {showOrbits && PLANETS.map(p => {
+        const show = p.inner ? showInnerPlanets : showOuterPlanets
+        if (!show) return null
+        return (
+          <PlanetOrbitRing
+            key={`orbit-${p.name}`}
+            radiusAU={ORBITAL_RADII[p.name]}
+            color={PLANET_COLORS[p.name]}
+            opacity={0.2}
+          />
+        )
+      })}
 
-      {/* Earth */}
-      <Earth position={earthPos} />
+      {/* Planets */}
+      {PLANETS.map(p => {
+        const show = p.inner ? showInnerPlanets : showOuterPlanets
+        if (!show) return null
+        const pos = planetPositions[p.name]
+        if (!pos) return null
 
-      {/* Moon's orbit (around Earth) */}
-      {showOrbits && <OrbitPath center={earthPos} bodyName="moon" color="#666666" />}
+        // Use Earth component for earth (has rotation animation)
+        if (p.name === 'earth') {
+          return <Earth key={p.name} position={pos.position} />
+        }
 
-      {/* Moon (heliocentric position for correct rendering) */}
-      <Moon position={moonHelioPos} />
+        return (
+          <Planet
+            key={p.name}
+            name={p.name}
+            position={pos.position}
+            color={PLANET_COLORS[p.name]}
+            isSelected={focusTarget === p.name}
+          />
+        )
+      })}
+
+      {/* Moon (special case - orbits Earth) */}
+      {showInnerPlanets && (
+        <Moon position={moonHelioPos} />
+      )}
+
+      {/* Moon orbit path (traced from actual positions) */}
+      {showOrbits && showInnerPlanets && (
+        <OrbitPath bodyName="moon" color="#888888" time={time} />
+      )}
 
       {/* Camera controls */}
       <CameraController
         focusTarget={focusTarget}
-        earthPosition={earthPos}
+        planetPositions={planetPositions}
         moonPosition={moonHelioPos}
       />
     </>
@@ -258,6 +413,8 @@ function SceneContent({
 export default function OrbitalScene({
   time,
   showOrbits = true,
+  showInnerPlanets = true,
+  showOuterPlanets = true,
   focusTarget,
 }: OrbitalSceneProps) {
   // Prevent scroll events from bubbling to page
@@ -287,6 +444,8 @@ export default function OrbitalScene({
         <SceneContent
           time={time}
           showOrbits={showOrbits}
+          showInnerPlanets={showInnerPlanets}
+          showOuterPlanets={showOuterPlanets}
           focusTarget={focusTarget}
         />
       </Canvas>

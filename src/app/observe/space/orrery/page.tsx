@@ -27,13 +27,15 @@ const OrbitalScene = dynamic(
   }
 )
 
-type FocusTarget = 'sun' | 'earth' | 'moon' | null
+type FocusTarget = string | null
 
 // Inner component that uses time-dependent hooks
 function OrreryContent() {
   const timeController = useTimeController()
   const [focusTarget, setFocusTarget] = useState<FocusTarget>('earth')
   const [showOrbits, setShowOrbits] = useState(true)
+  const [showInnerPlanets, setShowInnerPlanets] = useState(true)
+  const [showOuterPlanets, setShowOuterPlanets] = useState(true)
 
   // Calculate current positions for info display
   const earthPos = getEarthPosition(timeController.time).position
@@ -75,6 +77,8 @@ function OrreryContent() {
               <OrbitalScene
                 time={timeController.time}
                 showOrbits={showOrbits}
+                showInnerPlanets={showInnerPlanets}
+                showOuterPlanets={showOuterPlanets}
                 focusTarget={focusTarget}
               />
             </Suspense>
@@ -99,15 +103,35 @@ function OrreryContent() {
               <div className="text-[10px] text-white/40 uppercase tracking-wider mb-3">
                 View Options
               </div>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showOrbits}
-                  onChange={(e) => setShowOrbits(e.target.checked)}
-                  className="w-4 h-4 rounded border-white/20 bg-white/10 text-[#ffdf20] focus:ring-0 focus:ring-offset-0"
-                />
-                <span className="text-sm text-white">Show orbit paths</span>
-              </label>
+              <div className="space-y-2">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showOrbits}
+                    onChange={(e) => setShowOrbits(e.target.checked)}
+                    className="w-4 h-4 rounded border-white/20 bg-white/10 text-[#ffdf20] focus:ring-0 focus:ring-offset-0"
+                  />
+                  <span className="text-sm text-white">Show orbit paths</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showInnerPlanets}
+                    onChange={(e) => setShowInnerPlanets(e.target.checked)}
+                    className="w-4 h-4 rounded border-white/20 bg-white/10 text-[#ffdf20] focus:ring-0 focus:ring-offset-0"
+                  />
+                  <span className="text-sm text-white/70">Inner planets (Mercury–Mars)</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showOuterPlanets}
+                    onChange={(e) => setShowOuterPlanets(e.target.checked)}
+                    className="w-4 h-4 rounded border-white/20 bg-white/10 text-[#ffdf20] focus:ring-0 focus:ring-offset-0"
+                  />
+                  <span className="text-sm text-white/70">Outer planets (Jupiter–Neptune)</span>
+                </label>
+              </div>
             </div>
           </div>
         </div>

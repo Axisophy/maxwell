@@ -53,6 +53,43 @@ export const BODY_COLORS = {
   orbit: 0x444444,
 } as const
 
+// Planet colours (approximate visual colours)
+export const PLANET_COLORS: Record<string, number> = {
+  mercury: 0x8c8c8c,  // Grey
+  venus: 0xe6c87a,    // Pale yellow
+  earth: 0x4a90d9,    // Blue
+  mars: 0xd4673a,     // Rusty red
+  jupiter: 0xd4a574,  // Orange-brown bands
+  saturn: 0xf4d59e,   // Pale gold
+  uranus: 0x9fc5e8,   // Cyan
+  neptune: 0x5b7bb3,  // Deep blue
+}
+
+// Orbital periods in days
+export const ORBITAL_PERIODS: Record<string, number> = {
+  mercury: 87.97,
+  venus: 224.7,
+  earth: 365.25,
+  mars: 687,
+  jupiter: 4333,
+  saturn: 10759,
+  uranus: 30687,
+  neptune: 60190,
+  moon: 27.3,
+}
+
+// Semi-major axes in AU
+export const ORBITAL_RADII: Record<string, number> = {
+  mercury: 0.387,
+  venus: 0.723,
+  earth: 1.0,
+  mars: 1.524,
+  jupiter: 5.203,
+  saturn: 9.537,
+  uranus: 19.19,
+  neptune: 30.07,
+}
+
 // Display scale multipliers for visibility at solar system scale
 export const DISPLAY_SCALES = {
   sun: 20,        // Sun display radius (real would be ~696 units)

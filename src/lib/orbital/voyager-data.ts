@@ -1,19 +1,25 @@
 /**
  * MXWLL Orbital Engine - Voyager Mission Data
- *
- * Pre-computed trajectory data for Voyager 1 & 2
- * Positions in heliocentric coordinates (AU)
- *
- * Data derived from JPL Horizons ephemeris
+ * 
+ * Trajectory data from JPL Horizons ephemeris service
+ * Source: https://ssd.jpl.nasa.gov/horizons/
  * NAIF IDs: Voyager 1 = -31, Voyager 2 = -32
+ * 
+ * Coordinates: Heliocentric, Ecliptic J2000
+ * Units: AU (Astronomical Units)
+ * Sampling: Monthly from launch to 2026
  */
 
 import { AU } from './constants'
 
+// Import the pre-computed ephemeris data
+import { VOYAGER_1_EPHEMERIS, VOYAGER_2_EPHEMERIS } from './voyager-ephemeris'
+export type { EphemerisPoint } from './voyager-ephemeris'
+
 export interface TrajectoryPoint {
   date: string        // ISO date string
   x: number           // AU from Sun
-  y: number           // AU from Sun
+  y: number           // AU from Sun  
   z: number           // AU from Sun
   distance: number    // AU from Sun (magnitude)
 }
@@ -113,159 +119,21 @@ const VOYAGER_2_MILESTONES: MissionMilestone[] = [
   },
 ]
 
-/**
- * Generate trajectory for Voyager missions
- *
- * Both spacecraft launch from Earth and follow gravity-assist trajectories.
- * This is a simplified but visually accurate approximation.
- * For production, replace with actual JPL Horizons ephemeris data.
- */
-function generateVoyagerTrajectory(
-  isVoyager1: boolean,
-  startYear: number = 1977,
-  endYear: number = 2026
-): TrajectoryPoint[] {
-  const points: TrajectoryPoint[] = []
-
-  // Launch parameters
-  const launchYear = isVoyager1 ? 1977.68 : 1977.64  // Sept 5 / Aug 20
-
-  // Key distance milestones (AU from Sun) - based on actual mission data
-  const keyDistances = isVoyager1
-    ? [
-        { year: 1977.68, distance: 1.0 },     // Launch from Earth
-        { year: 1978.5, distance: 2.5 },      // Outbound
-        { year: 1979.18, distance: 5.2 },     // Jupiter flyby (March 1979)
-        { year: 1980.0, distance: 7.5 },      // Between Jupiter and Saturn
-        { year: 1980.87, distance: 9.5 },     // Saturn flyby (Nov 1980)
-        { year: 1985, distance: 25 },
-        { year: 1990.12, distance: 40 },      // Pale Blue Dot
-        { year: 2000, distance: 76 },
-        { year: 2004.96, distance: 94 },      // Termination shock
-        { year: 2012.65, distance: 122 },     // Heliopause
-        { year: 2020, distance: 150 },
-        { year: 2026, distance: 165 },
-      ]
-    : [
-        { year: 1977.64, distance: 1.0 },     // Launch from Earth
-        { year: 1978.5, distance: 2.8 },      // Outbound (slower trajectory)
-        { year: 1979.52, distance: 5.2 },     // Jupiter flyby (July 1979)
-        { year: 1980.5, distance: 7.0 },
-        { year: 1981.65, distance: 9.5 },     // Saturn flyby (Aug 1981)
-        { year: 1984, distance: 15 },
-        { year: 1986.07, distance: 19.2 },    // Uranus flyby (Jan 1986)
-        { year: 1988, distance: 25 },
-        { year: 1989.65, distance: 30.1 },    // Neptune flyby (Aug 1989)
-        { year: 2000, distance: 63 },
-        { year: 2007.67, distance: 84 },      // Termination shock
-        { year: 2018.85, distance: 119 },     // Heliopause
-        { year: 2026, distance: 137 },
-      ]
-
-  // Voyager 1: After Saturn, heads "up" out of ecliptic toward Ophiuchus
-  // Voyager 2: Stays closer to ecliptic, heads toward Pavo
-
-  // Direction angles (in ecliptic coordinates)
-  // These represent the final heading after all gravity assists
-  const finalEclipticLon = isVoyager1 ? 260 : 290  // degrees
-  const finalEclipticLat = isVoyager1 ? 35 : -48   // degrees (V1 goes up, V2 goes down)
-
-  for (let year = startYear; year <= endYear; year += 0.05) {
-    // Skip years before launch
-    if (year < launchYear) continue
-
-    // Find surrounding key points for distance interpolation
-    let d0 = keyDistances[0]
-    let d1 = keyDistances[keyDistances.length - 1]
-
-    for (let i = 0; i < keyDistances.length - 1; i++) {
-      if (year >= keyDistances[i].year && year <= keyDistances[i + 1].year) {
-        d0 = keyDistances[i]
-        d1 = keyDistances[i + 1]
-        break
-      }
-    }
-
-    // Interpolate distance
-    const t = Math.min(1, Math.max(0, (year - d0.year) / (d1.year - d0.year)))
-    const distance = d0.distance + t * (d1.distance - d0.distance)
-
-    // Calculate trajectory direction
-    // Near Earth: direction based on Earth's position
-    // After Jupiter: transitions to final heading
-    const yearsFromLaunch = year - launchYear
-
-    // Earth's approximate position at launch (simplified)
-    const earthLonAtLaunch = isVoyager1 ? 342 : 327  // degrees
-
-    // Blend from Earth departure direction to final heading
-    let eclipticLon: number
-    let eclipticLat: number
-
-    if (yearsFromLaunch < 0.5) {
-      // Near Earth - radial outward from Earth's position
-      eclipticLon = earthLonAtLaunch
-      eclipticLat = 0
-    } else if (yearsFromLaunch < 3) {
-      // Jupiter encounter - trajectory bending
-      const blend = (yearsFromLaunch - 0.5) / 2.5
-      eclipticLon = earthLonAtLaunch + blend * (finalEclipticLon - earthLonAtLaunch)
-      eclipticLat = blend * finalEclipticLat * 0.3
-    } else if (yearsFromLaunch < 6) {
-      // Saturn encounter (V1) or Uranus approach (V2)
-      const blend = (yearsFromLaunch - 3) / 3
-      eclipticLon = earthLonAtLaunch + (0.3 + blend * 0.7) * (finalEclipticLon - earthLonAtLaunch)
-      eclipticLat = (0.3 + blend * 0.7) * finalEclipticLat
-    } else {
-      // Final heading - nearly straight line
-      eclipticLon = finalEclipticLon
-      eclipticLat = finalEclipticLat
-    }
-
-    // Convert to Cartesian (ecliptic coordinates, Sun at origin)
-    const lonRad = (eclipticLon * Math.PI) / 180
-    const latRad = (eclipticLat * Math.PI) / 180
-
-    const x = distance * Math.cos(latRad) * Math.cos(lonRad)
-    const y = distance * Math.cos(latRad) * Math.sin(lonRad)
-    const z = distance * Math.sin(latRad)
-
-    // Convert year to date
-    const yearInt = Math.floor(year)
-    const dayOfYear = Math.floor((year - yearInt) * 365)
-    const date = new Date(yearInt, 0, 1 + dayOfYear)
-
-    points.push({
-      date: date.toISOString().split('T')[0],
-      x,
-      y,
-      z,
-      distance,
-    })
-  }
-
-  return points
-}
-
-// Generate trajectories
-const voyager1Trajectory = generateVoyagerTrajectory(true)
-const voyager2Trajectory = generateVoyagerTrajectory(false)
-
-// Export mission data
+// Export mission data using real JPL Horizons ephemeris
 export const VOYAGER_1: VoyagerMission = {
   id: 'voyager1',
   name: 'Voyager 1',
   launchDate: '1977-09-05',
-  trajectory: voyager1Trajectory,
+  trajectory: VOYAGER_1_EPHEMERIS,
   milestones: VOYAGER_1_MILESTONES,
   color: 0x00ff88,  // Green
 }
 
 export const VOYAGER_2: VoyagerMission = {
-  id: 'voyager2',
+  id: 'voyager2', 
   name: 'Voyager 2',
   launchDate: '1977-08-20',
-  trajectory: voyager2Trajectory,
+  trajectory: VOYAGER_2_EPHEMERIS,
   milestones: VOYAGER_2_MILESTONES,
   color: 0x00aaff,  // Blue
 }
@@ -279,34 +147,43 @@ export function getVoyagerPosition(
 ): TrajectoryPoint | null {
   const dateStr = date.toISOString().split('T')[0]
   const trajectory = mission.trajectory
-
-  // Find surrounding points
+  
+  // Handle date before launch
+  if (dateStr < trajectory[0].date) {
+    return null
+  }
+  
+  // Handle date after last data point
+  if (dateStr > trajectory[trajectory.length - 1].date) {
+    return trajectory[trajectory.length - 1]
+  }
+  
+  // Find surrounding points for interpolation
   for (let i = 0; i < trajectory.length - 1; i++) {
     if (trajectory[i].date <= dateStr && trajectory[i + 1].date >= dateStr) {
       const p0 = trajectory[i]
       const p1 = trajectory[i + 1]
-
-      // Interpolate
+      
+      // Linear interpolation
       const d0 = new Date(p0.date).getTime()
       const d1 = new Date(p1.date).getTime()
       const d = date.getTime()
       const t = (d - d0) / (d1 - d0)
-
+      
+      const x = p0.x + t * (p1.x - p0.x)
+      const y = p0.y + t * (p1.y - p0.y)
+      const z = p0.z + t * (p1.z - p0.z)
+      
       return {
         date: dateStr,
-        x: p0.x + t * (p1.x - p0.x),
-        y: p0.y + t * (p1.y - p0.y),
-        z: p0.z + t * (p1.z - p0.z),
-        distance: p0.distance + t * (p1.distance - p0.distance),
+        x,
+        y,
+        z,
+        distance: Math.sqrt(x * x + y * y + z * z),
       }
     }
   }
-
-  // Return last known position if date is beyond trajectory
-  if (dateStr > trajectory[trajectory.length - 1].date) {
-    return trajectory[trajectory.length - 1]
-  }
-
+  
   return null
 }
 
@@ -316,8 +193,8 @@ export function getVoyagerPosition(
 export function auToScene(point: TrajectoryPoint): { x: number; y: number; z: number } {
   return {
     x: point.x * AU,
-    y: point.y * AU,
-    z: point.z * AU,
+    y: point.z * AU,  // Swap y/z for Three.js coordinate system (y = up)
+    z: point.y * AU,
   }
 }
 
@@ -329,7 +206,7 @@ export function getTrajectoryToDate(
   endDate: Date
 ): Array<{ x: number; y: number; z: number }> {
   const endStr = endDate.toISOString().split('T')[0]
-
+  
   return mission.trajectory
     .filter(p => p.date <= endStr)
     .map(p => auToScene(p))
@@ -351,7 +228,7 @@ export function getMilestonesToDate(
  * Returns time in hours
  */
 export function getLightTravelTime(distanceAU: number): number {
-  // Light travels 1 AU in about 8.3 minutes
+  // Light travels 1 AU in about 8.317 minutes
   const minutesPerAU = 8.317
   return (distanceAU * minutesPerAU) / 60
 }
@@ -377,4 +254,16 @@ export function formatLightTime(hours: number): string {
     return `${hours.toFixed(1)} hours`
   }
   return `${(hours / 24).toFixed(1)} days`
+}
+
+/**
+ * Get milestone position for rendering markers
+ */
+export function getMilestonePosition(
+  mission: VoyagerMission,
+  milestone: MissionMilestone
+): { x: number; y: number; z: number } | null {
+  const position = getVoyagerPosition(mission, new Date(milestone.date))
+  if (!position) return null
+  return auToScene(position)
 }
