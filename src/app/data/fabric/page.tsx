@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Breadcrumb from '@/components/ui/Breadcrumb'
+import { PageShell, BreadcrumbFrame, breadcrumbItems } from '@/components/ui'
 import { DataIcon } from '@/components/icons'
 
 // ============================================================================
@@ -93,22 +93,15 @@ const items: DataItem[] = [
 
 export default function FabricPage() {
   return (
-    <main className="min-h-screen bg-black">
-      <div className="px-2 md:px-4 pt-2 md:pt-4 pb-4 md:pb-8">
-
-        {/* Breadcrumb Frame */}
-        <div className="mb-px">
-          <div className="bg-white rounded-lg py-1 md:py-2 px-2 md:px-4">
-            <Breadcrumb
-              items={[
-                { label: 'MXWLL', href: '/' },
-                { label: 'Data', href: '/data' },
-                { label: 'The Fabric' },
-              ]}
-              theme="light"
-            />
-          </div>
-        </div>
+    <PageShell>
+      <BreadcrumbFrame
+        variant="light"
+        items={breadcrumbItems(
+          ['MXWLL', '/'],
+          ['Data', '/data'],
+          ['The Fabric']
+        )}
+      />
 
         {/* Frames container */}
         <div className="flex flex-col gap-px">
@@ -210,11 +203,10 @@ export default function FabricPage() {
           </section>
 
         </div>
-      </div>
 
       {/* Mobile bottom padding */}
       <div className="h-20 md:hidden" />
-    </main>
+    </PageShell>
   )
 }
 
