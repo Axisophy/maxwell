@@ -48,8 +48,13 @@ const orbitalExhibits = [
   },
   {
     title: 'Orrery',
-    description: 'Sun, Earth, and Moon orbital mechanics',
+    description: 'All eight planets with traced orbital paths',
     href: '/observe/space/orrery',
+  },
+  {
+    title: 'Comets',
+    description: 'Track Halley, Hale-Bopp, NEOWISE and more',
+    href: '/observe/space/comets',
   },
 ]
 
